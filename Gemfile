@@ -17,3 +17,5 @@ gem "rubocop-sorbet", "~> 0.7", require: false
 
 gem "sorbet-static-and-runtime"
 gem "tapioca", "~> 0.11", require: false
+
+gem "ruby-lsp", path: "../ruby-lsp"

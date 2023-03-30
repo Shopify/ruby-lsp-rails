@@ -1,4 +1,12 @@
 PATH
+  remote: ../ruby-lsp
+  specs:
+    ruby-lsp (0.4.3)
+      language_server-protocol (~> 3.17.0)
+      sorbet-runtime
+      syntax_tree (>= 6.1.1, < 7)
+
+PATH
   remote: .
   specs:
     rails_ruby_lsp (0.1.0)
@@ -184,10 +192,6 @@ GEM
       rubocop (~> 1.44)
     rubocop-sorbet (0.7.0)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.4.3)
-      language_server-protocol (~> 3.17.0)
-      sorbet-runtime
-      syntax_tree (>= 6.1.1, < 7)
     ruby-progressbar (1.13.0)
     sorbet (0.5.10736)
       sorbet-static (= 0.5.10736)
@@ -243,6 +247,7 @@ DEPENDENCIES
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.12)
   rubocop-sorbet (~> 0.7)
+  ruby-lsp!
   sorbet-static-and-runtime
   sqlite3
   tapioca (~> 0.11)
