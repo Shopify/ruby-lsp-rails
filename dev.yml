@@ -1,0 +1,24 @@
+name: rails-ruby-lsp
+
+type: ruby
+
+up:
+  - ruby: '3.2.1'
+  - bundler:
+      gemfile: Gemfile
+
+commands:
+  style: bin/rubocop
+  server:
+    aliases: ["s"]
+    run: bin/rails server
+  typecheck:
+    aliases: ["tc"]
+    run: "bundle exec srb tc"
+  test:
+    run: "bin/rails test"
+    syntax:
+      argument: file
+      optional: args...
+open:
+  app: http://localhost:3000
