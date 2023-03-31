@@ -10,7 +10,7 @@ module RailsRubyLsp
 
     initializer "rails_ruby_lsp.routes" do
       config.after_initialize do |app|
-        if Rails.env.development?
+        if Rails.env.development? || Rails.env.test?
           app.routes.prepend do
             T.bind(self, ActionDispatch::Routing::Mapper)
             mount(RailsRubyLsp::Engine => "/rails_ruby_lsp")

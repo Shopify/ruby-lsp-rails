@@ -6,3 +6,5 @@
 require "rails/all"
 require "ruby_lsp/internal"
 require "syntax_tree"
+require "syntax_tree/dsl"
+require "minitest/mock"

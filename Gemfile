@@ -18,4 +18,5 @@ gem "rubocop-sorbet", "~> 0.7", require: false
 gem "sorbet-static-and-runtime"
 gem "tapioca", "~> 0.11", require: false
 
+# TODO: remove this line once we release a Ruby LSP version including the hover extension point
 gem "ruby-lsp", path: "../ruby-lsp"

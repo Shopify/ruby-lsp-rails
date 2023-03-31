@@ -16,7 +16,7 @@ module RailsRubyLsp
           schema_file = File.join(RailsClient.instance.root, "db", "schema.rb")
           content = +""
           content << "[Schema](file://#{schema_file})\n\n" if File.exist?(schema_file)
-          content << model[:columns].map { |name, type| "**#{name}** | #{type}\n" }.join("\n")
+          content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
           content
         end
       end
