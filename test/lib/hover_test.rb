@@ -6,7 +6,6 @@ require "test_helper"
 module RailsRubyLsp
   class HoverTest < ActiveSupport::TestCase
     test "hook returns model column information" do
-      response = T.let(nil, T.nilable(String))
       expected_response = {
         columns: [
           ["id", "integer"],
@@ -18,14 +17,16 @@ module RailsRubyLsp
         ],
       }
 
+      listener = Hover.new
+
       stub_http_request("200", expected_response.to_json) do
         RailsClient.instance.stub(:check_if_server_is_running!, true) do
-          response = Hover.run(Const("User"))
+          RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
         end
       end
 
-      assert_equal(<<~CONTENT, response)
-        [Schema](file:///Users/viniciusstock/src/github.com/Shopify/rails_ruby_lsp/test/dummy/db/schema.rb)
+      assert_equal(<<~CONTENT, T.must(listener.response).contents.value)
+        [Schema](file://#{RailsClient.instance.root}/db/schema.rb)
 
         **id**: integer
 
