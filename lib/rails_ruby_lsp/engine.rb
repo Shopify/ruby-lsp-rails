@@ -17,10 +17,11 @@ module RailsRubyLsp
           end
         end
 
-        host = ENV.fetch("HOST") { "localhost" }
-        port = ENV.fetch("PORT") { "3000" }
-
-        File.write("#{Rails.root}/tmp/app_uri.txt", "http://#{host}:#{port}")
+        if defined?(Rails::Server)
+          ssl_enable, host, port = Rails::Server::Options.new.parse!(ARGV).values_at(:SSLEnable, :Host, :Port)
+          File.write("#{Rails.root}/tmp/app_uri.txt", "http://#{host}:#{port}")
+          "#{ssl_enable ? 'https' : 'http'}://#{host}:#{port}"
+        end
       end
     end
   end
