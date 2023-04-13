@@ -16,7 +16,7 @@ module RailsRubyLsp
       else
         head(:not_found)
       end
-    rescue NameError
+    rescue NameError, ActiveRecord::TableNotSpecified
       head(:not_found)
     end
   end

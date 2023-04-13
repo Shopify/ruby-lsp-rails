@@ -12,7 +12,7 @@ module RailsRubyLsp
     include Singleton
 
     SERVER_NOT_RUNNING_MESSAGE = "Rails server is not running. " \
-      "To get Rails features in the editor, boot the Rails server and restart the Ruby LSP"
+      "To get Rails features in the editor, boot the Rails server"
 
     sig { returns(String) }
     attr_reader :root

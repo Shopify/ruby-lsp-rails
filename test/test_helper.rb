@@ -10,9 +10,8 @@ ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __d
 require "rails/test_help"
 require "minitest/mock"
 require "syntax_tree/dsl"
-
 require "ruby_lsp/internal"
-require "ruby_lsp/extension"
+require "ruby_lsp/rails_ruby_lsp/extension"
 
 # Load fixtures from the engine
 if ActiveSupport::TestCase.respond_to?(:fixture_path=)
