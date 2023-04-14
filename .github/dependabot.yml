@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "bundler"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "Shopify/ruby-dev-exp"
+    labels:
+      - "dependencies"
+      - "ruby"
