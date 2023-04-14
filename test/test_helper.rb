@@ -33,5 +33,13 @@ module ActiveSupport
 
       Net::HTTP.stub(:get_response, response, &block)
     end
+
+    def setup
+      File.write("test/dummy/tmp/app_uri.txt", "http://localhost:3000")
+    end
+
+    def teardown
+      FileUtils.rm("test/dummy/tmp/app_uri.txt")
+    end
   end
 end
