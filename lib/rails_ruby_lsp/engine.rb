@@ -19,7 +19,7 @@ module RailsRubyLsp
 
         if defined?(Rails::Server)
           ssl_enable, host, port = Rails::Server::Options.new.parse!(ARGV).values_at(:SSLEnable, :Host, :Port)
-          app_uri = "#{ssl_enable ? 'https' : 'http'}://#{host}:#{port}"
+          app_uri = "#{ssl_enable ? "https" : "http"}://#{host}:#{port}"
           File.write("#{Rails.root}/tmp/app_uri.txt", app_uri)
         end
       end
