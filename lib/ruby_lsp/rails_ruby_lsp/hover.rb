@@ -25,9 +25,11 @@ module RailsRubyLsp
         model = RailsClient.instance.model(node.value)
         return if model.nil?
 
-        schema_file = File.join(RailsClient.instance.root, "db", "schema.rb")
+        schema_file = model[:schema_file]
         content = +""
-        content << "[Schema](file://#{schema_file})\n\n" if File.exist?(schema_file)
+        if schema_file
+          content << "[Schema](file://#{schema_file})\n\n"
+        end
         content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
         contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
         @response = RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
