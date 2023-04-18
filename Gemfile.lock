@@ -14,6 +14,7 @@ PATH
     rails_ruby_lsp (0.1.0)
       rails (>= 7.0.4.3)
       ruby-lsp (>= 0.4.0)
+      sorbet-runtime (>= 0.5.9897)
 
 GEM
   remote: https://rubygems.org/
