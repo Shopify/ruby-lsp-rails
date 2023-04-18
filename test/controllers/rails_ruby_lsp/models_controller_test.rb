@@ -7,11 +7,12 @@ module RailsRubyLsp
   class ModelsControllerTest < ActionDispatch::IntegrationTest
     T.unsafe(self).include(Engine.routes.url_helpers)
 
-    test "GET show returns column information for exsting models" do
+    test "GET show returns column information for existing models" do
       get model_url(id: "User")
       assert_response(:success)
       assert_equal(
         {
+          "schema_file" => "#{RailsClient.instance.root}/db/schema.rb",
           "columns" => [
             ["id", "integer"],
             ["first_name", "string"],

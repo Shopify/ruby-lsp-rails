@@ -21,6 +21,8 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActiveSupport::TestCase.fixtures(:all)
 end
 
+$VERBOSE = nil unless ENV["VERBOSE"] || ENV["CI"]
+
 module ActiveSupport
   class TestCase
     include SyntaxTree::DSL
