@@ -9,6 +9,7 @@ gemspec
 gem "puma"
 gem "sqlite3"
 gem "debug", ">= 1.7.0"
+gem "mocha"
 gem "rubocop", "~> 1.48", require: false
 gem "rubocop-shopify", "~> 2.13", require: false
 gem "rubocop-minitest", "~> 0.30.0", require: false

@@ -11,13 +11,11 @@ module RailsRubyLsp
     end
 
     test "activate checks if Rails server is running" do
-      mock = Minitest::Mock.new
-      mock.expect(:check_if_server_is_running!, true)
+      rails_client = stub("rails_client", check_if_server_is_running!: true)
 
-      RailsRubyLsp::RailsClient.stub(:instance, mock) do
-        extension = Extension.new
-        assert_predicate(extension, :activate)
-      end
+      RailsRubyLsp::RailsClient.stubs(instance: rails_client)
+      extension = Extension.new
+      assert_predicate(extension, :activate)
     end
   end
 end

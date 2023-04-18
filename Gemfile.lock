@@ -114,6 +114,8 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     minitest (5.18.0)
+    mocha (2.0.2)
+      ruby2_keywords (>= 0.0.5)
     net-imap (0.3.4)
       date
       net-protocol
@@ -197,6 +199,7 @@ GEM
     rubocop-sorbet (0.7.0)
       rubocop (>= 0.90.0)
     ruby-progressbar (1.13.0)
+    ruby2_keywords (0.0.5)
     sorbet (0.5.10782)
       sorbet-static (= 0.5.10782)
     sorbet-runtime (0.5.10782)
@@ -245,6 +248,7 @@ PLATFORMS
 
 DEPENDENCIES
   debug (>= 1.7.0)
+  mocha
   puma
   rails_ruby_lsp!
   rubocop (~> 1.48)

@@ -20,11 +20,9 @@ module RailsRubyLsp
 
       listener = Hover.new
 
-      stub_http_request("200", expected_response.to_json) do
-        RailsClient.instance.stub(:check_if_server_is_running!, true) do
-          RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
-        end
-      end
+      stub_http_request("200", expected_response.to_json)
+      RailsClient.instance.stubs(check_if_server_is_running!: true)
+      RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
 
       assert_equal(<<~CONTENT, T.must(listener.response).contents.value)
         [Schema](file://#{RailsClient.instance.root}/db/schema.rb)
@@ -51,11 +49,9 @@ module RailsRubyLsp
 
       listener = Hover.new
 
-      stub_http_request("200", expected_response.to_json) do
-        RailsClient.instance.stub(:check_if_server_is_running!, true) do
-          RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
-        end
-      end
+      stub_http_request("200", expected_response.to_json)
+      RailsClient.instance.stubs(check_if_server_is_running!: true)
+      RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
 
       assert_includes(
         T.must(listener.response).contents.value,
@@ -71,11 +67,9 @@ module RailsRubyLsp
 
       listener = Hover.new
 
-      stub_http_request("200", expected_response.to_json) do
-        RailsClient.instance.stub(:check_if_server_is_running!, true) do
-          RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
-        end
-      end
+      stub_http_request("200", expected_response.to_json)
+      RailsClient.instance.stubs(check_if_server_is_running!: true)
+      RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
 
       refute_match(/Schema/, T.must(listener.response).contents.value)
     end

@@ -17,9 +17,8 @@ module RailsRubyLsp
         ],
       }
 
-      stub_http_request("200", expected_response.to_json) do
-        assert_equal(expected_response, RailsClient.instance.model("User"))
-      end
+      stub_http_request("200", expected_response.to_json)
+      assert_equal(expected_response, RailsClient.instance.model("User"))
     end
   end
 end
