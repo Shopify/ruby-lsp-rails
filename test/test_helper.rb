@@ -8,7 +8,7 @@ require_relative "../test/dummy/config/environment"
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("../test/dummy/db/migrate", __dir__)]
 ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __dir__)
 require "rails/test_help"
-require "minitest/mock"
+require "mocha/minitest"
 require "syntax_tree/dsl"
 require "ruby_lsp/internal"
 require "ruby_lsp/rails_ruby_lsp/extension"
@@ -27,13 +27,13 @@ module ActiveSupport
   class TestCase
     include SyntaxTree::DSL
 
-    def stub_http_request(code, body, &block)
-      response = Minitest::Mock.new
-      response.expect(:is_a?, true, [Net::HTTPResponse])
-      response.expect(:code, "200")
-      response.expect(:body, body)
+    def stub_http_request(code, body)
+      response = mock("response")
+      response.expects(:is_a?).with(Net::HTTPResponse).returns(true)
+      response.expects(:code).returns("200")
+      response.expects(:body).returns(body)
 
-      Net::HTTP.stub(:get_response, response, &block)
+      Net::HTTP.stubs(:get_response).returns(response)
     end
 
     def setup
