@@ -1,26 +1,40 @@
-# RailsRubyLsp
+# Rails Ruby Lsp
 
-The RailsRubyLsp is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension for extra Rails editor features. As long
-as this gem is a part of the project's bundle, the Ruby LSP will automatically load it to provide extra features.
+The Rails Ruby Lsp is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension for extra Rails editor features, such as:
 
-## Usage
+- Displaying an ActiveRecord model's database columns and types when hovering over it
+- (More to come!)
 
-This gem includes two elements that together allow for more Rails functionality in the editor. The first is a Rails
-engine that automatically exposes some APIs when running the Rails server in development mode. The second is a Ruby LSP
-extension that knows how to connect to the exposed APIs to fetch runtime information from the Rails server.
-
-In order to get the extra functionality in the editor, the Rails server must be running.
-
-Note: the Ruby LSP does not need to be restarted every time the Rails server is booted. If you need to shutdown the
-server, the extra features will simply disappear and come back once the server is running again.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+To install, add the following line to your application's Gemfile:
 
 ```ruby
-gem "rails_ruby_lsp"
+group :development do
+  gem "rails_ruby_lsp"
+end
 ```
+
+## Usage
+
+1. Start your Rails server
+1. Hover over an ActiveRecord model to see its details
+
+## How It Works
+
+This gem consists of two components that enable enhanced Rails functionality in the editor:
+
+1. A Rails engine that automatically exposes APIs when Rails server is running
+1. A Ruby LSP extension that connects to the exposed APIs to fetch runtime information from the Rails server
+
+This is why the Rails server needs to be running for features to work.
+
+> **Note**
+>
+> There is no need to restart the Ruby LSP every time the Rails server is booted.
+> If the server is shut down, the extra features will temporarily disappear and reappear once the server is running again.
+
 
 ## Contributing
 
