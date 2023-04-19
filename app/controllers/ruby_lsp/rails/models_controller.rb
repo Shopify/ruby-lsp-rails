@@ -10,13 +10,13 @@ module RubyLsp
       def show
         const = Object.const_get(params[:id]) # rubocop:disable Sorbet/ConstantsFromStrings
 
-        begin
-          schema_file = ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
-        rescue => e
-          warn("Could not locate schema: #{e.message}")
-        end
-
         if const < ActiveRecord::Base
+          begin
+            schema_file = ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
+          rescue => e
+            warn("Could not locate schema: #{e.message}")
+          end
+
           render(json: {
             columns: const.columns.map { |column| [column.name, column.type] },
             schema_file: schema_file,
