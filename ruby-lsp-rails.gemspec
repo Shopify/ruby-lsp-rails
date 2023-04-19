@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative "lib/rails_ruby_lsp/version"
+require_relative "lib/ruby_lsp_rails/version"
 
 Gem::Specification.new do |spec|
-  spec.name        = "rails_ruby_lsp"
-  spec.version     = RailsRubyLsp::VERSION
+  spec.name        = "ruby-lsp-rails"
+  spec.version     = RubyLsp::Rails::VERSION
   spec.authors     = ["Shopify"]
   spec.email       = ["ruby@shopify.com"]
-  spec.homepage    = "https://github.com/Shopify/rails_ruby_lsp"
+  spec.homepage    = "https://github.com/Shopify/ruby-lsp-rails"
   spec.summary     = "A Ruby LSP extension for Rails"
   spec.description = "A Ruby LSP extension that adds extra editor functionality for Rails applications"
   spec.license     = "MIT"

@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-# Specify your gem's dependencies in rails_ruby_lsp.gemspec.
+# Specify your gem's dependencies in ruby_lsp_rails.gemspec.
 gemspec
 
 gem "puma"
