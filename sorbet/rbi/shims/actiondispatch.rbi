@@ -3,7 +3,7 @@
 
 module ActionDispatch
   class IntegrationTest
-    sig { params(id: String).returns(String) }
-    def model_url(id:); end
+    sig { params(model: String).returns(String) }
+    def model_url(model:); end
   end
 end

@@ -8,7 +8,7 @@ module RubyLsp
 
       sig { returns(T.untyped) }
       def show
-        const = Object.const_get(params[:id]) # rubocop:disable Sorbet/ConstantsFromStrings
+        const = Object.const_get(params[:model]) # rubocop:disable Sorbet/ConstantsFromStrings
 
         begin
           schema_file = ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)

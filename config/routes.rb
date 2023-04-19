@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 
 RubyLsp::Rails::Engine.routes.draw do
-  resources :models, only: [:show]
+  resources :models, only: [:show], param: :model
 end
