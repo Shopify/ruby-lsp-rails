@@ -8,7 +8,7 @@ module RubyLsp
 
       sig { returns(T.untyped) }
       def show
-        const = Object.const_get(params[:id]) # rubocop:disable Sorbet/ConstantsFromStrings
+        const = Object.const_get(params[:model]) # rubocop:disable Sorbet/ConstantsFromStrings
 
         if const < ActiveRecord::Base
           begin
