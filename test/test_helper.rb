@@ -11,7 +11,7 @@ require "rails/test_help"
 require "mocha/minitest"
 require "syntax_tree/dsl"
 require "ruby_lsp/internal"
-require "ruby_lsp/rails_ruby_lsp/extension"
+require "ruby_lsp/ruby_lsp_rails/extension"
 
 # Load fixtures from the engine
 if ActiveSupport::TestCase.respond_to?(:fixture_path=)

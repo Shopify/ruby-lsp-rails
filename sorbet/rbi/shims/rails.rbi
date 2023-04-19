@@ -6,7 +6,7 @@ module Rails
     sig { returns(Application) }
     def application; end
   end
-  
+
   class Server
     class Options
       def parse!(args); end
@@ -19,11 +19,13 @@ module Rails
   end
 end
 
-module RailsRubyLsp
-  class Engine
-    class << self
-      sig { returns(ActionDispatch::Routing::RouteSet) }
-      def routes; end
+module RubyLsp
+  module Rails
+    class Engine
+      class << self
+        sig { returns(ActionDispatch::Routing::RouteSet) }
+        def routes; end
+      end
     end
   end
 end

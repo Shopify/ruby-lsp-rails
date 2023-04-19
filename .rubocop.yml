@@ -13,6 +13,10 @@ AllCops:
   Exclude:
     - "test/dummy/db/**/*.rb"
 
+Naming/FileName:
+  Exclude:
+  - "lib/ruby-lsp-rails.rb"
+
 Sorbet/FalseSigil:
   Enabled: false
 

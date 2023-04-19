@@ -1,6 +1,6 @@
-# Rails Ruby Lsp
+# Ruby LSP Rails
 
-The Rails Ruby Lsp is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension for extra Rails editor features, such as:
+Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension for extra Rails editor features, such as:
 
 - Displaying an ActiveRecord model's database columns and types when hovering over it
 - (More to come!)
@@ -12,7 +12,7 @@ To install, add the following line to your application's Gemfile:
 
 ```ruby
 group :development do
-  gem "rails_ruby_lsp"
+  gem "ruby-lsp-rails"
 end
 ```
 
@@ -38,11 +38,11 @@ This is why the Rails server needs to be running for features to work.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Shopify/rails_ruby_lsp. This project is
+Bug reports and pull requests are welcome on GitHub at https://github.com/Shopify/ruby-lsp-rails. This project is
 intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the
-[Contributor Covenant](https://github.com/Shopify/rails_ruby_lsp/blob/main/CODE_OF_CONDUCT.md) code of conduct.
+[Contributor Covenant](https://github.com/Shopify/ruby-lsp-rails/blob/main/CODE_OF_CONDUCT.md) code of conduct.
 
 ## License
 
 The gem is available as open source under the terms of the
-[MIT License](https://github.com/Shopify/rails_ruby_lsp/blob/main/LICENSE.txt).
+[MIT License](https://github.com/Shopify/ruby-lsp-rails/blob/main/LICENSE.txt).

@@ -78,9 +78,6 @@ module GeneratedUrlHelpersModule
   def rails_representation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def rails_ruby_lsp_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def rails_sendgrid_inbound_emails_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -94,6 +91,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def rails_storage_redirect_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def ruby_lsp_rails_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def update_rails_disk_service_url(*args); end
