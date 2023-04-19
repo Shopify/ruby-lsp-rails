@@ -18,14 +18,3 @@ module Rails
     def configure(&block); end
   end
 end
-
-module RubyLsp
-  module Rails
-    class Engine
-      class << self
-        sig { returns(ActionDispatch::Routing::RouteSet) }
-        def routes; end
-      end
-    end
-  end
-end

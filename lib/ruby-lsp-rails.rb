@@ -3,7 +3,7 @@
 
 require "sorbet-runtime"
 require "ruby_lsp_rails/version"
-require "ruby_lsp_rails/engine"
+require "ruby_lsp_rails/railtie"
 
 module RubyLSP
   module Rails
