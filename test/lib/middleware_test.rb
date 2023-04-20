@@ -6,10 +6,8 @@ require "test_helper"
 module RubyLsp
   module Rails
     class ModelsControllerTest < ActionDispatch::IntegrationTest
-      T.unsafe(self).include(Engine.routes.url_helpers)
-
       test "GET show returns column information for existing models" do
-        get model_url(model: "User")
+        get "/ruby_lsp_rails/models/User"
         assert_response(:success)
         assert_equal(
           {
@@ -28,12 +26,12 @@ module RubyLsp
       end
 
       test "GET show returns not_found if model doesn't exist" do
-        get model_url(model: "NonExistentModel")
+        get "/ruby_lsp_rails/models/Foo"
         assert_response(:not_found)
       end
 
       test "GET show returns not_found if class is not a model" do
-        get model_url(model: "ApplicationJob")
+        get "/ruby_lsp_rails/models/ApplicationJob"
         assert_response(:not_found)
       end
     end
