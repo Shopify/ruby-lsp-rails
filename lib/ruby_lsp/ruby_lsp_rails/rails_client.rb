@@ -28,7 +28,7 @@ module RubyLsp
 
         unless File.exist?(app_uri_path)
           raise NeedsRestartError, <<~MESSAGE
-            The The Ruby LSP Rails extension needs to be initialized. Please restart the Rails server and the Ruby LSP
+            The Ruby LSP Rails extension needs to be initialized. Please restart the Rails server and the Ruby LSP
             to get Rails features in the editor
           MESSAGE
         end
