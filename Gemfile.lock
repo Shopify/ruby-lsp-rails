@@ -1,19 +1,9 @@
-GIT
-  remote: https://github.com/Shopify/ruby-lsp.git
-  revision: c30616958f7a0505ad5f9dedac82d441c1f2cac3
-  branch: main
-  specs:
-    ruby-lsp (0.4.4)
-      language_server-protocol (~> 3.17.0)
-      sorbet-runtime
-      syntax_tree (>= 6.1.1, < 7)
-
 PATH
   remote: .
   specs:
     ruby-lsp-rails (0.1.0)
       rails (>= 6.0)
-      ruby-lsp (>= 0.4.0)
+      ruby-lsp (>= 0.4.5, < 0.5.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
@@ -114,7 +104,6 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    mini_portile2 (2.8.1)
     minitest (5.18.0)
     mocha (2.0.2)
       ruby2_keywords (>= 0.0.5)
@@ -129,10 +118,9 @@ GEM
       net-protocol
     netrc (0.11.0)
     nio4r (2.5.9)
-    nokogiri (1.14.3)
-      mini_portile2 (~> 2.8.0)
-      racc (~> 1.4)
     nokogiri (1.14.3-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.14.3-x86_64-linux)
       racc (~> 1.4)
     parallel (1.22.1)
     parser (3.2.2.0)
@@ -201,6 +189,10 @@ GEM
       rubocop (~> 1.50)
     rubocop-sorbet (0.7.0)
       rubocop (>= 0.90.0)
+    ruby-lsp (0.4.5)
+      language_server-protocol (~> 3.17.0)
+      sorbet-runtime
+      syntax_tree (>= 6.1.1, < 7)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sorbet (0.5.10782)
@@ -260,7 +252,6 @@ DEPENDENCIES
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.13)
   rubocop-sorbet (~> 0.7)
-  ruby-lsp!
   ruby-lsp-rails!
   sorbet-static-and-runtime
   sqlite3
