@@ -38,6 +38,21 @@ module RubyLsp
       ensure
         File.write(T.must(app_uri_path), "http://localhost:3000")
       end
+
+      test "instantiation finds the right directory when bundle gemfile points to .ruby-lsp" do
+        previous_bundle_gemfile = ENV["BUNDLE_GEMFILE"]
+        project_root = Pathname.new(previous_bundle_gemfile).dirname
+
+        # If the RailsClient singleton was initialized in a different test successfully, then there would be no chance
+        # for this assertion to pass. We need to reset the singleton instance in order to force `initialize` to be
+        # executed again
+        Singleton.send(:__init__, RailsClient)
+
+        ENV["BUNDLE_GEMFILE"] = "#{project_root}/.ruby-lsp/Gemfile"
+        assert_equal("#{project_root}/test/dummy", RailsClient.instance.root)
+      ensure
+        ENV["BUNDLE_GEMFILE"] = previous_bundle_gemfile
+      end
     end
   end
 end
