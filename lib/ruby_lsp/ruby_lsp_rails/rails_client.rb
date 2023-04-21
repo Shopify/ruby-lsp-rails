@@ -24,7 +24,7 @@ module RubyLsp
         project_root = Pathname.new(ENV["BUNDLE_GEMFILE"]).dirname
 
         if project_root.basename.to_s == ".ruby-lsp"
-          project_root = project_root.sub("/.ruby-lsp", "")
+          project_root = project_root.join("../")
         end
 
         dummy_path = File.join(project_root, "test", "dummy")
