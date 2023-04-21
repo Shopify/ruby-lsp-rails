@@ -22,6 +22,6 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency("rails", ">= 6.0")
-  spec.add_dependency("ruby-lsp", ">= 0.4.5", "< 0.5.0")
+  spec.add_dependency("ruby-lsp", "~> 0.4.5")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9897")
 end
