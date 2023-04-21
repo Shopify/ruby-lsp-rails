@@ -22,6 +22,11 @@ module RubyLsp
       sig { void }
       def initialize
         project_root = Pathname.new(ENV["BUNDLE_GEMFILE"]).dirname
+
+        if project_root.basename.to_s == ".ruby-lsp"
+          project_root = project_root.sub("/.ruby-lsp", "")
+        end
+
         dummy_path = File.join(project_root, "test", "dummy")
         @root = T.let(Dir.exist?(dummy_path) ? dummy_path : project_root.to_s, String)
         app_uri_path = "#{@root}/tmp/app_uri.txt"
