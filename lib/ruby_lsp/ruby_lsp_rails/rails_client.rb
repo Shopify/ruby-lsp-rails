@@ -8,6 +8,7 @@ module RubyLsp
   module Rails
     class RailsClient
       class ServerNotRunningError < StandardError; end
+      class NeedsRestartError < StandardError; end
 
       extend T::Sig
       include Singleton
@@ -20,9 +21,19 @@ module RubyLsp
 
       sig { void }
       def initialize
-        @root = T.let(Dir.exist?("test/dummy") ? File.join(Dir.pwd, "test", "dummy") : Dir.pwd, String)
-        base_uri = File.read("#{@root}/tmp/app_uri.txt").chomp
+        project_root = Pathname.new(ENV["BUNDLE_GEMFILE"]).dirname
+        dummy_path = File.join(project_root, "test", "dummy")
+        @root = T.let(Dir.exist?(dummy_path) ? dummy_path : project_root.to_s, String)
+        app_uri_path = "#{@root}/tmp/app_uri.txt"
 
+        unless File.exist?(app_uri_path)
+          raise NeedsRestartError, <<~MESSAGE
+            The Ruby LSP Rails extension needs to be initialized. Please restart the Rails server and the Ruby LSP
+            to get Rails features in the editor
+          MESSAGE
+        end
+
+        base_uri = File.read(app_uri_path).chomp
         @uri = T.let("#{base_uri}/ruby_lsp_rails", String)
       end
 
