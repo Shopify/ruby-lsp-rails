@@ -1,6 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "rails/railtie"
 require "ruby_lsp_rails/middleware"
 
 module RubyLsp
