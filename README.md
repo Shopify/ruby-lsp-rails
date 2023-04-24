@@ -5,7 +5,6 @@ Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension fo
 - Displaying an ActiveRecord model's database columns and types when hovering over it
 - (More to come!)
 
-
 ## Installation
 
 To install, add the following line to your application's Gemfile:
@@ -25,7 +24,7 @@ end
 
 This gem consists of two components that enable enhanced Rails functionality in the editor:
 
-1. A Rails engine that automatically exposes APIs when Rails server is running
+1. A Rack middleware that automatically exposes APIs when Rails server is running
 1. A Ruby LSP extension that connects to the exposed APIs to fetch runtime information from the Rails server
 
 This is why the Rails server needs to be running for features to work.
@@ -34,7 +33,6 @@ This is why the Rails server needs to be running for features to work.
 >
 > There is no need to restart the Ruby LSP every time the Rails server is booted.
 > If the server is shut down, the extra features will temporarily disappear and reappear once the server is running again.
-
 
 ## Contributing
 
