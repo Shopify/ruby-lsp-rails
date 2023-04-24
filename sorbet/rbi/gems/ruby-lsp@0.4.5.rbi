@@ -135,7 +135,7 @@ RubyLsp::Document::Scanner::SURROGATE_PAIR_START = T.let(T.unsafe(nil), Integer)
 # - For nonpositional requests, use `visit` to go through the AST, which will fire events for each listener as nodes
 # are found
 #
-# = Example
+# # Example
 #
 # ```ruby
 # target_node = document.locate_node(position)
@@ -394,21 +394,21 @@ RubyLsp::Interface = LanguageServer::Protocol::Interface
 
 # A request that will sit in the queue until it's executed
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#61
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#67
 class RubyLsp::Job
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#71
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#77
   sig { params(request: T::Hash[::Symbol, T.untyped], cancelled: T::Boolean).void }
   def initialize(request:, cancelled:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#77
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#83
   sig { void }
   def cancel; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#68
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#74
   sig { returns(T::Boolean) }
   def cancelled; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#65
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#71
   sig { returns(T::Hash[::Symbol, T.untyped]) }
   def request; end
 end
@@ -427,7 +427,7 @@ class RubyLsp::Listener
 
   ResponseType = type_member
 
-  # source://sorbet-runtime/0.5.10736lib/types/private/abstract/declare.rb#37
+  # source://sorbet-runtime/0.5.10782lib/types/private/abstract/declare.rb#37
   def initialize(*args, **_arg1, &blk); end
 
   # Override this method with an attr_reader that returns the response of your listener. The listener should
@@ -464,20 +464,30 @@ end
 
 # A notification to be sent to the client
 #
+# @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
+#
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#12
-class RubyLsp::Notification
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#22
+class RubyLsp::Message
+  abstract!
+
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#25
   sig { params(message: ::String, params: ::Object).void }
   def initialize(message:, params:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#16
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#19
   sig { returns(::String) }
   def message; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#19
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#22
   sig { returns(::Object) }
   def params; end
 end
+
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#31
+class RubyLsp::Notification < ::RubyLsp::Message; end
+
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#32
+class RubyLsp::Request < ::RubyLsp::Message; end
 
 # Supported features
 #
@@ -1202,15 +1212,15 @@ class RubyLsp::Requests::OnTypeFormatting < ::RubyLsp::Requests::BaseRequest
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#120
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#124
   sig { params(text: ::String, position: {line: ::Integer, character: ::Integer}).void }
   def add_edit_with_text(text, position = T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#152
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#156
   sig { params(line: ::String).returns(::Integer) }
   def find_indentation(line); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#114
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#118
   sig { params(spaces: ::String).void }
   def handle_comment_line(spaces); end
 
@@ -1226,7 +1236,7 @@ class RubyLsp::Requests::OnTypeFormatting < ::RubyLsp::Requests::BaseRequest
   sig { void }
   def handle_statement_end; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#133
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#137
   sig { params(line: ::Integer, character: ::Integer).void }
   def move_cursor_to(line, character); end
 end
@@ -1864,32 +1874,32 @@ end
 
 # The final result of running a request before its IO is finalized
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#29
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#35
 class RubyLsp::Result
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#52
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#58
   sig do
     params(
       response: T.untyped,
-      notifications: T::Array[::RubyLsp::Notification],
+      messages: T::Array[::RubyLsp::Message],
       error: T.nilable(::Exception),
       request_time: T.nilable(::Float)
     ).void
   end
-  def initialize(response:, notifications:, error: T.unsafe(nil), request_time: T.unsafe(nil)); end
+  def initialize(response:, messages:, error: T.unsafe(nil), request_time: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#39
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#45
   sig { returns(T.nilable(::Exception)) }
   def error; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#36
-  sig { returns(T::Array[::RubyLsp::Notification]) }
-  def notifications; end
-
   # source://ruby-lsp/lib/ruby_lsp/utils.rb#42
+  sig { returns(T::Array[::RubyLsp::Message]) }
+  def messages; end
+
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#48
   sig { returns(T.nilable(::Float)) }
   def request_time; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#33
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#39
   sig { returns(T.untyped) }
   def response; end
 end
@@ -1900,7 +1910,7 @@ class RubyLsp::Server
   sig { void }
   def initialize; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#31
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#32
   sig { void }
   def start; end
 
@@ -1908,15 +1918,15 @@ class RubyLsp::Server
 
   # Finalize a Queue::Result. All IO operations should happen here to avoid any issues with cancelling requests
   #
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#103
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#104
   sig { params(result: ::RubyLsp::Result, request: T::Hash[::Symbol, T.untyped]).void }
   def finalize_request(result, request); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#78
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#79
   sig { returns(::Thread) }
   def new_worker; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#138
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#147
   sig do
     params(
       request: T::Hash[::Symbol, T.untyped],
