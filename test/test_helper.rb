@@ -25,7 +25,7 @@ module ActiveSupport
       response.expects(:code).returns("200")
       response.expects(:body).returns(body)
 
-      Net::HTTP.stubs(:get_response).returns(response)
+      Net::HTTP.any_instance.expects(:get).returns(response)
     end
 
     def setup

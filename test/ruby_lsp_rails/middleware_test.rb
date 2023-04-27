@@ -34,6 +34,11 @@ module RubyLsp
         get "/ruby_lsp_rails/models/ApplicationJob"
         assert_response(:not_found)
       end
+
+      test "GET activate returns success to display that server is running" do
+        get "/ruby_lsp_rails/activate"
+        assert_response(:success)
+      end
     end
   end
 end

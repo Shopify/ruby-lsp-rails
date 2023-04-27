@@ -53,6 +53,14 @@ module RubyLsp
       ensure
         ENV["BUNDLE_GEMFILE"] = previous_bundle_gemfile
       end
+
+      test "check_if_server_is_running! raises if no server is found" do
+        Net::HTTP.any_instance.expects(:get).raises(Errno::ECONNREFUSED)
+
+        assert_raises(RailsClient::ServerNotRunningError) do
+          RailsClient.instance.check_if_server_is_running!
+        end
+      end
     end
   end
 end

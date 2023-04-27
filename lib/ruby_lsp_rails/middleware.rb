@@ -6,7 +6,7 @@ module RubyLsp
     class Middleware
       extend T::Sig
 
-      PATH_REGEXP = %r{/ruby_lsp_rails/models/(?<model_name>.+)}
+      BASE_PATH = "/ruby_lsp_rails/"
 
       sig { params(app: T.untyped).void }
       def initialize(app)
@@ -16,13 +16,16 @@ module RubyLsp
       sig { params(env: T::Hash[T.untyped, T.untyped]).returns(T::Array[T.untyped]) }
       def call(env)
         request = ActionDispatch::Request.new(env)
-        # TODO: improve the model name regex
-        match = request.path.match(PATH_REGEXP)
+        path = request.path
+        return @app.call(env) unless path.start_with?(BASE_PATH)
 
-        if match
-          resolve_database_info_from_model(match[:model_name])
+        route, argument = path.delete_prefix(BASE_PATH).split("/")
+
+        case route
+        when "models"
+          resolve_database_info_from_model(argument)
         else
-          @app.call(env)
+          [200, { "Content-Type" => "text/plain" }, []]
         end
       rescue
         @app.call(env)
