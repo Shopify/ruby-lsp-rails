@@ -5,6 +5,7 @@ require "ruby_lsp/extension"
 
 require_relative "rails_client"
 require_relative "hover"
+require_relative "code_lens"
 
 module RubyLsp
   module Rails

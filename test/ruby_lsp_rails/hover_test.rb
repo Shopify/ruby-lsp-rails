@@ -19,7 +19,8 @@ module RubyLsp
           ],
         }
 
-        listener = Hover.new
+        message_queue = Thread::Queue.new
+        listener = Hover.new("", message_queue)
 
         stub_http_request("200", expected_response.to_json)
         RailsClient.instance.stubs(check_if_server_is_running!: true)
@@ -48,7 +49,8 @@ module RubyLsp
           columns: [],
         }
 
-        listener = Hover.new
+        message_queue = Thread::Queue.new
+        listener = Hover.new("", message_queue)
 
         stub_http_request("200", expected_response.to_json)
         RailsClient.instance.stubs(check_if_server_is_running!: true)
@@ -66,7 +68,8 @@ module RubyLsp
           columns: [],
         }
 
-        listener = Hover.new
+        message_queue = Thread::Queue.new
+        listener = Hover.new("", message_queue)
 
         stub_http_request("200", expected_response.to_json)
         RailsClient.instance.stubs(check_if_server_is_running!: true)

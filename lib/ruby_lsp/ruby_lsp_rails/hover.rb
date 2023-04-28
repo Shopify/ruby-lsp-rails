@@ -14,8 +14,8 @@ module RubyLsp
       sig { override.returns(ResponseType) }
       attr_reader :response
 
-      sig { void }
-      def initialize
+      sig { params(uri: String, message_queue: Thread::Queue).void }
+      def initialize(uri, message_queue)
         @response = T.let(nil, ResponseType)
         super
       end
