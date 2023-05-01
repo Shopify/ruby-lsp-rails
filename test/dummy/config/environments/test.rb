@@ -17,7 +17,7 @@ Rails.application.configure do
   # Eager loading loads your whole application. When running a single test locally,
   # this probably isn't necessary. It's a good idea to do in a continuous integration
   # system, or in some way before deploying your code.
-  config.eager_load = ENV["CI"].present?
+  config.eager_load = true
 
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
@@ -35,16 +35,6 @@ Rails.application.configure do
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
-
-  # Store uploaded files on the local file system in a temporary directory.
-  config.active_storage.service = :test
-
-  config.action_mailer.perform_caching = false
-
-  # Tell Action Mailer not to deliver emails to the real world.
-  # The :test delivery method accumulates sent emails in the
-  # ActionMailer::Base.deliveries array.
-  config.action_mailer.delivery_method = :test
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
