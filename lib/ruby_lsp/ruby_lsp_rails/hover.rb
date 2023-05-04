@@ -3,6 +3,17 @@
 
 module RubyLsp
   module Rails
+    # ![Hover demo](../../hover.gif)
+    #
+    # Augment [hover](https://microsoft.github.io/language-server-protocol/specification#textDocument_hover) with
+    # information about a model.
+    #
+    # # Example
+    #
+    # ```ruby
+    # User.all
+    # # ^ hovering here will show information about the User model
+    # ```
     class Hover < ::RubyLsp::Listener
       extend T::Sig
       extend T::Generic

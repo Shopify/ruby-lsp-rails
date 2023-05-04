@@ -126,6 +126,8 @@ GEM
     parser (3.2.2.0)
       ast (~> 2.4.1)
     prettier_print (1.2.1)
+    psych (5.1.0)
+      stringio
     puma (6.2.2)
       nio4r (~> 2.0)
     racc (1.6.2)
@@ -165,6 +167,8 @@ GEM
       parser (>= 2.6.4.0)
       sorbet-runtime (>= 0.5.9204)
       unparser
+    rdoc (6.5.0)
+      psych (>= 4.0.0)
     regexp_parser (2.8.0)
     reline (0.3.3)
       io-console (~> 0.5)
@@ -210,6 +214,7 @@ GEM
       thor (>= 0.19.2)
     sqlite3 (1.6.2-arm64-darwin)
     sqlite3 (1.6.2-x86_64-linux)
+    stringio (3.0.6)
     syntax_tree (6.1.1)
       prettier_print (>= 1.2.0)
     tapioca (0.11.5)
@@ -247,6 +252,7 @@ DEPENDENCIES
   debug (>= 1.7.0)
   mocha
   puma
+  rdoc
   rubocop (~> 1.48)
   rubocop-minitest (~> 0.30.0)
   rubocop-rake (~> 0.6.0)

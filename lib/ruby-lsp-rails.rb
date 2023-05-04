@@ -7,7 +7,7 @@ require "pathname"
 require "ruby_lsp_rails/version"
 require "ruby_lsp_rails/railtie"
 
-module RubyLSP
+module RubyLsp
   module Rails
   end
 end
