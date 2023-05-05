@@ -6,6 +6,14 @@ require "test_helper"
 module RubyLsp
   module Rails
     class HoverTest < ActiveSupport::TestCase
+      setup do
+        @message_queue = Thread::Queue.new
+      end
+
+      teardown do
+        @message_queue.close
+      end
+
       test "hook returns model column information" do
         expected_response = {
           schema_file: "#{RailsClient.instance.root}/db/schema.rb",
@@ -19,11 +27,12 @@ module RubyLsp
           ],
         }
 
-        listener = Hover.new
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(emitter, @message_queue)
 
         stub_http_request("200", expected_response.to_json)
         RailsClient.instance.stubs(check_if_server_is_running!: true)
-        RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
+        emitter.emit_for_target(Const("User"))
 
         assert_equal(<<~CONTENT, T.must(listener.response).contents.value)
           [Schema](file://#{RailsClient.instance.root}/db/schema.rb)
@@ -47,12 +56,12 @@ module RubyLsp
           schema_file: "#{RailsClient.instance.root}/db/structure.sql",
           columns: [],
         }
-
-        listener = Hover.new
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(emitter, @message_queue)
 
         stub_http_request("200", expected_response.to_json)
         RailsClient.instance.stubs(check_if_server_is_running!: true)
-        RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
+        emitter.emit_for_target(Const("User"))
 
         assert_includes(
           T.must(listener.response).contents.value,
@@ -66,11 +75,12 @@ module RubyLsp
           columns: [],
         }
 
-        listener = Hover.new
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(emitter, @message_queue)
 
         stub_http_request("200", expected_response.to_json)
         RailsClient.instance.stubs(check_if_server_is_running!: true)
-        RubyLsp::EventEmitter.new(listener).emit_for_target(Const("User"))
+        emitter.emit_for_target(Const("User"))
 
         refute_match(/Schema/, T.must(listener.response).contents.value)
       end

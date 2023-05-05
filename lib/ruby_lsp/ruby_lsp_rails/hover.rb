@@ -14,27 +14,27 @@ module RubyLsp
       sig { override.returns(ResponseType) }
       attr_reader :response
 
-      sig { void }
-      def initialize
-        @response = T.let(nil, ResponseType)
+      sig { params(emitter: RubyLsp::EventEmitter, message_queue: Thread::Queue).void }
+      def initialize(emitter, message_queue)
         super
+
+        @response = T.let(nil, ResponseType)
+        emitter.register(self, :on_const)
       end
 
-      listener_events do
-        sig { params(node: SyntaxTree::Const).void }
-        def on_const(node)
-          model = RailsClient.instance.model(node.value)
-          return if model.nil?
+      sig { params(node: SyntaxTree::Const).void }
+      def on_const(node)
+        model = RailsClient.instance.model(node.value)
+        return if model.nil?
 
-          schema_file = model[:schema_file]
-          content = +""
-          if schema_file
-            content << "[Schema](file://#{schema_file})\n\n"
-          end
-          content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
-          contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
-          @response = RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
+        schema_file = model[:schema_file]
+        content = +""
+        if schema_file
+          content << "[Schema](file://#{schema_file})\n\n"
         end
+        content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
+        contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
+        @response = RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
       end
     end
   end
