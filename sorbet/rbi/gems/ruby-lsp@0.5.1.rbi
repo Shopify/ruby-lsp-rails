@@ -1831,13 +1831,6 @@ class RubyLsp::Requests::Support::RuboCopDiagnosticsRunner
     ).returns(T::Array[::RubyLsp::Requests::Support::RuboCopDiagnostic])
   end
   def run(uri, document); end
-
-  class << self
-    private
-
-    def allocate; end
-    def new(*_arg0); end
-  end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_formatting_runner.rb#13
@@ -1852,13 +1845,6 @@ class RubyLsp::Requests::Support::RuboCopFormattingRunner
   # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_formatting_runner.rb#24
   sig { params(uri: ::String, document: ::RubyLsp::Document).returns(::String) }
   def run(uri, document); end
-
-  class << self
-    private
-
-    def allocate; end
-    def new(*_arg0); end
-  end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#36
@@ -1969,13 +1955,6 @@ class RubyLsp::Requests::Support::SyntaxTreeFormattingRunner
   # source://ruby-lsp/lib/ruby_lsp/requests/support/syntax_tree_formatting_runner.rb#29
   sig { params(uri: ::String, document: ::RubyLsp::Document).returns(T.nilable(::String)) }
   def run(uri, document); end
-
-  class << self
-    private
-
-    def allocate; end
-    def new(*_arg0); end
-  end
 end
 
 # The final result of running a request before its IO is finalized
@@ -2127,14 +2106,12 @@ class URI::Source < ::URI::File
   sig { params(v: T.nilable(::String)).returns(T::Boolean) }
   def check_host(v); end
 
-  # source://uri/0.12.0uri/generic.rb#243
   def gem_name; end
 
   # source://ruby-lsp/lib/ruby_lsp/requests/support/source_uri.rb#26
   sig { returns(T.nilable(::String)) }
   def gem_version; end
 
-  # source://uri/0.12.0uri/generic.rb#283
   def line_number; end
 
   # source://ruby-lsp/lib/ruby_lsp/requests/support/source_uri.rb#52
