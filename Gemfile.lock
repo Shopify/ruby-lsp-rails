@@ -253,7 +253,6 @@ DEPENDENCIES
   mocha
   puma
   rdoc
-  rubocop (~> 1.51)
   rubocop-minitest (~> 0.31.0)
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.13)
