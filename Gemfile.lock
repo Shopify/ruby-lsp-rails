@@ -217,7 +217,7 @@ GEM
     stringio (3.0.6)
     syntax_tree (6.1.1)
       prettier_print (>= 1.2.0)
-    tapioca (0.11.5)
+    tapioca (0.11.6)
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
@@ -226,7 +226,7 @@ GEM
       spoom (~> 1.2.0, >= 1.2.0)
       thor (>= 1.2.0)
       yard-sorbet
-    thor (1.2.1)
+    thor (1.2.2)
     timeout (0.3.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
