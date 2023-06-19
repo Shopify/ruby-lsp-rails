@@ -3,7 +3,7 @@ PATH
   specs:
     ruby-lsp-rails (0.1.0)
       rails (>= 6.0)
-      ruby-lsp (~> 0.5.1)
+      ruby-lsp (>= 0.5.1, < 0.7.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
@@ -195,7 +195,7 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.7.0)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.5.1)
+    ruby-lsp (0.6.1)
       language_server-protocol (~> 3.17.0)
       sorbet-runtime
       syntax_tree (>= 6.1.1, < 7)
