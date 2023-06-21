@@ -27,6 +27,9 @@ RDoc::Task.new do |rdoc|
   rdoc.options.push("--copy-files", "LICENSE.txt")
 end
 
-RubyLsp::CheckDocs.new(FileList["#{__dir__}/lib/ruby_lsp/ruby_lsp_rails/**/*.rb"])
+RubyLsp::CheckDocs.new(
+  FileList["#{__dir__}/lib/ruby_lsp/ruby_lsp_rails/**/*.rb"],
+  FileList["#{__dir__}/**/*.gif"],
+)
 
 task default: :test
