@@ -14,7 +14,15 @@ module RubyLsp
           if defined?(::Rails::Server)
             ssl_enable, host, port = ::Rails::Server::Options.new.parse!(ARGV).values_at(:SSLEnable, :Host, :Port)
             app_uri = "#{ssl_enable ? "https" : "http"}://#{host}:#{port}"
-            File.write("#{::Rails.root}/tmp/app_uri.txt", app_uri)
+            app_uri_path = "#{::Rails.root}/tmp/app_uri.txt"
+            File.write(app_uri_path, app_uri)
+
+            at_exit do
+              # The app_uri.txt file should only exist when the server is running. The extension uses its presence to
+              # report if the server is running or not. If the server is not running, some of the extension features
+              # will not be available.
+              File.delete(app_uri_path) if File.exist?(app_uri_path)
+            end
           end
         end
       end
