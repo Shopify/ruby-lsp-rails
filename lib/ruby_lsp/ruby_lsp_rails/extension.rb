@@ -13,7 +13,6 @@ module RubyLsp
 
       sig { override.void }
       def activate
-        # Must be the last statement in activate since it raises to display a notification for the user
         RubyLsp::Rails::RailsClient.instance.check_if_server_is_running!
       end
 
