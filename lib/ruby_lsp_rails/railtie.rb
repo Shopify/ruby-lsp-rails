@@ -8,7 +8,7 @@ module RubyLsp
   module Rails
     class Railtie < ::Rails::Railtie
       initializer "ruby_lsp_rails.setup" do |app|
-        app.config.middleware.insert_after(ActionDispatch::ShowExceptions, RubyLsp::Rails::Middleware)
+        app.config.middleware.insert_before(ActionDispatch::Static, RubyLsp::Rails::Middleware)
 
         config.after_initialize do |_app|
           if defined?(::Rails::Server)
