@@ -3,32 +3,26 @@
 
 module RubyLsp
   module Rails
-    class Middleware
+    class RackApp
       extend T::Sig
 
       BASE_PATH = "/ruby_lsp_rails/"
-
-      sig { params(app: T.untyped).void }
-      def initialize(app)
-        @app = app
-      end
 
       sig { params(env: T::Hash[T.untyped, T.untyped]).returns(T::Array[T.untyped]) }
       def call(env)
         request = ActionDispatch::Request.new(env)
         path = request.path
-        return @app.call(env) unless path.start_with?(BASE_PATH)
 
         route, argument = path.delete_prefix(BASE_PATH).split("/")
 
         case route
+        when "activate"
+          [200, { "Content-Type" => "application/json" }, []]
         when "models"
           resolve_database_info_from_model(argument)
         else
-          [200, { "Content-Type" => "text/plain" }, []]
+          not_found
         end
-      rescue
-        @app.call(env)
       end
 
       private

@@ -10,8 +10,22 @@ Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension fo
 To install, add the following line to your application's Gemfile:
 
 ```ruby
+# Gemfile
 group :development do
   gem "ruby-lsp-rails"
+end
+```
+Some features rely on server introspection, and use a Rack server which is automatically mounted by using a Railtie.
+
+For applications with specialized routing requirements, such as custom sharding, this may not be compatible. It can
+be disabled with:
+
+```ruby
+# config/environments/development.rb
+Rails.application.configure do
+  # ...
+  config.ruby_lsp_rails.server = false
+  # ...
 end
 ```
 
@@ -41,7 +55,7 @@ cause the test runner to hang.
 
 This gem consists of two components that enable enhanced Rails functionality in the editor:
 
-1. A Rack middleware that automatically exposes APIs when Rails server is running
+1. A Rack app that automatically exposes APIs when Rails server is running
 1. A Ruby LSP extension that connects to the exposed APIs to fetch runtime information from the Rails server
 
 This is why the Rails server needs to be running for some features to work.
