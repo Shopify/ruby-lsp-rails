@@ -13,8 +13,6 @@ require "syntax_tree/dsl"
 require "ruby_lsp/internal"
 require "ruby_lsp/ruby_lsp_rails/extension"
 
-$VERBOSE = nil unless ENV["VERBOSE"] || ENV["CI"]
-
 module ActiveSupport
   class TestCase
     include SyntaxTree::DSL
