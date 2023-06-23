@@ -50,7 +50,6 @@ module RubyLsp
         @visibility = T.let("public", String)
         @prev_visibility = T.let("public", String)
         @path = T.let(URI(uri).path, T.nilable(String))
-        @relative_path = T.let(Pathname.new(@path).relative_path_from(RailsClient.instance.root).to_s, String)
         emitter.register(self, :on_command, :on_class, :on_def)
 
         super(emitter, message_queue)
@@ -70,7 +69,7 @@ module RubyLsp
         return unless test_name
 
         line_number = node.location.start_line
-        command = "#{BASE_COMMAND} #{@relative_path}:#{line_number}"
+        command = "#{BASE_COMMAND} #{@path}:#{line_number}"
         add_test_code_lens(node, name: test_name, command: command, kind: :example)
       end
 
@@ -80,7 +79,7 @@ module RubyLsp
         method_name = node.name.value
         if method_name.start_with?("test_")
           line_number = node.location.start_line
-          command = "#{BASE_COMMAND} #{@relative_path}:#{line_number}"
+          command = "#{BASE_COMMAND} #{@path}:#{line_number}"
           add_test_code_lens(node, name: method_name, command: command, kind: :example)
         end
       end
@@ -89,7 +88,7 @@ module RubyLsp
       def on_class(node)
         class_name = node.constant.constant.value
         if class_name.end_with?("Test")
-          command = "#{BASE_COMMAND} #{@relative_path}"
+          command = "#{BASE_COMMAND} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
         end
       end
