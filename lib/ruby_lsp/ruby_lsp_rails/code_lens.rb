@@ -47,8 +47,6 @@ module RubyLsp
       sig { params(uri: String, emitter: EventEmitter, message_queue: Thread::Queue).void }
       def initialize(uri, emitter, message_queue)
         @response = T.let([], ResponseType)
-        @visibility = T.let("public", String)
-        @prev_visibility = T.let("public", String)
         @path = T.let(URI(uri).path, T.nilable(String))
         emitter.register(self, :on_command, :on_class, :on_def)
 
@@ -57,8 +55,6 @@ module RubyLsp
 
       sig { params(node: SyntaxTree::Command).void }
       def on_command(node)
-        return unless @visibility == "public"
-
         message_value = node.message.value
         return unless message_value == "test" && node.arguments.parts.any?
 
