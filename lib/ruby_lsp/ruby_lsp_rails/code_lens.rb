@@ -5,7 +5,7 @@ module RubyLsp
   module Rails
     # ![CodeLens demo](../../code_lens.gif)
     #
-    # This feature adds several CodeLens features for Rails applications using the built-in test framework:
+    # This feature adds several CodeLens features for Rails applications using the Active Support test framework:
     # - Run tests in the VS Terminal
     # - Run tests in the VS Code Test Explorer
     # - Debug tests
