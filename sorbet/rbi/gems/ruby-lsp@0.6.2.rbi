@@ -21,7 +21,7 @@ module RubyLsp::DependencyDetector
     sig { returns(::String) }
     def detected_test_library; end
 
-    # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#36
+    # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#40
     sig { params(gem_pattern: ::Regexp).returns(T::Boolean) }
     def direct_dependency?(gem_pattern); end
   end
@@ -191,86 +191,90 @@ class RubyLsp::EventEmitter < ::SyntaxTree::Visitor
   sig { params(listener: RubyLsp::Listener[T.untyped], events: ::Symbol).void }
   def register(listener, *events); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#170
-  sig { override.params(node: ::SyntaxTree::Binary).void }
-  def visit_binary(node); end
-
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#158
-  sig { override.params(node: ::SyntaxTree::BlockVar).void }
-  def visit_block_var(node); end
-
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#84
-  sig { override.params(node: ::SyntaxTree::CallNode).void }
-  def visit_call(node); end
-
   # Visit dispatchers are below. Notice that for nodes that create a new scope (e.g.: classes, modules, method defs)
   # we need both an `on_*` and `after_*` event. This is because some requests must know when we exit the scope
   #
   # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#57
+  sig { override.params(node: T.nilable(::SyntaxTree::Node)).void }
+  def visit(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#176
+  sig { override.params(node: ::SyntaxTree::Binary).void }
+  def visit_binary(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#164
+  sig { override.params(node: ::SyntaxTree::BlockVar).void }
+  def visit_block_var(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#90
+  sig { override.params(node: ::SyntaxTree::CallNode).void }
+  def visit_call(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#63
   sig { override.params(node: ::SyntaxTree::ClassDeclaration).void }
   def visit_class(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#71
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#77
   sig { override.params(node: ::SyntaxTree::Command).void }
   def visit_command(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#78
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#84
   sig { override.params(node: ::SyntaxTree::CommandCall).void }
   def visit_command_call(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#122
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#128
   sig { override.params(node: ::SyntaxTree::Comment).void }
   def visit_comment(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#176
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#182
   sig { override.params(node: ::SyntaxTree::Const).void }
   def visit_const(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#97
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#103
   sig { override.params(node: ::SyntaxTree::ConstPathField).void }
   def visit_const_path_field(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#109
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#115
   sig { override.params(node: ::SyntaxTree::DefNode).void }
   def visit_def(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#146
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#152
   sig { override.params(node: ::SyntaxTree::Field).void }
   def visit_field(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#134
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#140
   sig { override.params(node: ::SyntaxTree::Kw).void }
   def visit_kw(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#164
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#170
   sig { override.params(node: ::SyntaxTree::LambdaVar).void }
   def visit_lambda_var(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#64
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#70
   sig { override.params(node: ::SyntaxTree::ModuleDeclaration).void }
   def visit_module(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#140
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#146
   sig { override.params(node: ::SyntaxTree::Params).void }
   def visit_params(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#128
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#134
   sig { override.params(node: ::SyntaxTree::Rescue).void }
   def visit_rescue(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#103
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#109
   sig { override.params(node: ::SyntaxTree::TopConstField).void }
   def visit_top_const_field(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#116
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#122
   sig { override.params(node: ::SyntaxTree::VarField).void }
   def visit_var_field(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#152
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#158
   sig { override.params(node: ::SyntaxTree::VarRef).void }
   def visit_var_ref(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#91
+  # source://ruby-lsp/lib/ruby_lsp/event_emitter.rb#97
   sig { override.params(node: ::SyntaxTree::VCall).void }
   def visit_vcall(node); end
 end
@@ -289,11 +293,11 @@ class RubyLsp::Executor
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#540
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#547
   sig { void }
   def check_formatter_is_available; end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#305
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#312
   sig do
     params(
       uri: ::String,
@@ -303,11 +307,11 @@ class RubyLsp::Executor
   end
   def code_action(uri, range, context); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#312
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#319
   sig { params(params: T::Hash[::Symbol, T.untyped]).returns(::LanguageServer::Protocol::Interface::CodeAction) }
   def code_action_resolve(params); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#370
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#377
   sig do
     params(
       uri: ::String,
@@ -316,7 +320,7 @@ class RubyLsp::Executor
   end
   def completion(uri, position); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#342
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#349
   sig { params(uri: ::String).returns(T.nilable(::LanguageServer::Protocol::Interface::FullDocumentDiagnosticReport)) }
   def diagnostic(uri); end
 
@@ -325,7 +329,7 @@ class RubyLsp::Executor
     params(
       uri: ::String,
       position: {line: ::Integer, character: ::Integer}
-    ).returns(T::Array[::LanguageServer::Protocol::Interface::DocumentHighlight])
+    ).returns(T.nilable(T::Array[::LanguageServer::Protocol::Interface::DocumentHighlight]))
   end
   def document_highlight(uri, position); end
 
@@ -346,7 +350,7 @@ class RubyLsp::Executor
   end
   def hover(uri, position); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#412
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#419
   sig do
     params(
       options: T::Hash[::Symbol, T.untyped]
@@ -354,7 +358,7 @@ class RubyLsp::Executor
   end
   def initialize_request(options); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#285
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#292
   sig do
     params(
       uri: ::String,
@@ -386,7 +390,7 @@ class RubyLsp::Executor
   end
   def selection_range(uri, positions); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#351
+  # source://ruby-lsp/lib/ruby_lsp/executor.rb#358
   sig do
     params(
       uri: ::String,
@@ -492,7 +496,7 @@ class RubyLsp::Extension
     sig { returns(T::Array[::RubyLsp::Extension]) }
     def load_extensions; end
 
-    # source://sorbet-runtime/0.5.10838lib/types/private/abstract/declare.rb#37
+    # source://sorbet-runtime/0.5.10875lib/types/private/abstract/declare.rb#37
     def new(*args, **_arg1, &blk); end
   end
 end
@@ -557,7 +561,7 @@ class RubyLsp::Listener
     sig { returns(T::Array[T.class_of(RubyLsp::Listener)]) }
     def listeners; end
 
-    # source://sorbet-runtime/0.5.10838lib/types/private/abstract/declare.rb#37
+    # source://sorbet-runtime/0.5.10875lib/types/private/abstract/declare.rb#37
     def new(*args, **_arg1, &blk); end
   end
 end
@@ -583,7 +587,7 @@ class RubyLsp::Message
   def params; end
 
   class << self
-    # source://sorbet-runtime/0.5.10838lib/types/private/abstract/declare.rb#37
+    # source://sorbet-runtime/0.5.10875lib/types/private/abstract/declare.rb#37
     def new(*args, **_arg1, &blk); end
   end
 end
@@ -642,7 +646,7 @@ class RubyLsp::Requests::BaseRequest < ::SyntaxTree::Visitor
   def visit_all(nodes); end
 
   class << self
-    # source://sorbet-runtime/0.5.10838lib/types/private/abstract/declare.rb#37
+    # source://sorbet-runtime/0.5.10875lib/types/private/abstract/declare.rb#37
     def new(*args, **_arg1, &blk); end
   end
 end
@@ -777,7 +781,7 @@ class RubyLsp::Requests::CodeLens < ::RubyLsp::Listener
 
   ResponseType = type_member { { fixed: T::Array[::LanguageServer::Protocol::Interface::CodeLens] } }
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#37
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#38
   sig do
     params(
       uri: ::String,
@@ -788,61 +792,61 @@ class RubyLsp::Requests::CodeLens < ::RubyLsp::Listener
   end
   def initialize(uri, emitter, message_queue, test_library); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#132
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#136
   sig { params(node: ::SyntaxTree::CallNode).void }
   def after_call(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#76
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#78
   sig { params(node: ::SyntaxTree::ClassDeclaration).void }
   def after_class(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#113
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#117
   sig { params(node: ::SyntaxTree::Command).void }
   def after_command(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#148
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#152
   sig { params(other: RubyLsp::Listener[ResponseType]).returns(T.self_type) }
   def merge_response!(other); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#119
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#123
   sig { params(node: ::SyntaxTree::CallNode).void }
   def on_call(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#61
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#62
   sig { params(node: ::SyntaxTree::ClassDeclaration).void }
   def on_class(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#99
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#103
   sig { params(node: ::SyntaxTree::Command).void }
   def on_command(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#82
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#84
   sig { params(node: ::SyntaxTree::DefNode).void }
   def on_def(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#138
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#142
   sig { params(node: ::SyntaxTree::VCall).void }
   def on_vcall(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#34
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#35
   sig { override.returns(ResponseType) }
   def response; end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#228
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#240
   sig { params(node: ::SyntaxTree::Command, remote: ::String).void }
   def add_open_gem_remote_code_lens(node, remote); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#156
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#160
   sig { params(node: ::SyntaxTree::Node, name: ::String, command: ::String, kind: ::Symbol).void }
   def add_test_code_lens(node, name:, command:, kind:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#206
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#218
   sig { params(class_name: ::String, method_name: T.nilable(::String)).returns(::String) }
   def generate_test_command(class_name:, method_name: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#195
+  # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#202
   sig { params(node: ::SyntaxTree::Command).returns(T.nilable(::String)) }
   def resolve_gem_remote(node); end
 end
@@ -852,6 +856,9 @@ RubyLsp::Requests::CodeLens::ACCESS_MODIFIERS = T.let(T.unsafe(nil), Array)
 
 # source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#30
 RubyLsp::Requests::CodeLens::BASE_COMMAND = T.let(T.unsafe(nil), String)
+
+# source://ruby-lsp/lib/ruby_lsp/requests/code_lens.rb#32
+RubyLsp::Requests::CodeLens::SUPPORTED_TEST_LIBRARIES = T.let(T.unsafe(nil), Array)
 
 # ![Diagnostics demo](../../diagnostics.gif)
 #
@@ -899,35 +906,38 @@ end
 # ```
 #
 # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#25
-class RubyLsp::Requests::DocumentHighlight < ::RubyLsp::Requests::BaseRequest
-  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#29
-  sig { params(document: ::RubyLsp::Document, position: {line: ::Integer, character: ::Integer}).void }
-  def initialize(document, position); end
+class RubyLsp::Requests::DocumentHighlight < ::RubyLsp::Listener
+  extend T::Generic
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#39
-  sig { override.returns(T.all(::Object, T::Array[::LanguageServer::Protocol::Interface::DocumentHighlight])) }
-  def run; end
+  ResponseType = type_member { { fixed: T::Array[::LanguageServer::Protocol::Interface::DocumentHighlight] } }
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#46
-  sig { override.params(node: T.nilable(::SyntaxTree::Node)).void }
-  def visit(node); end
+  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#41
+  sig do
+    params(
+      target: T.nilable(::SyntaxTree::Node),
+      parent: T.nilable(::SyntaxTree::Node),
+      emitter: ::RubyLsp::EventEmitter,
+      message_queue: ::Thread::Queue
+    ).void
+  end
+  def initialize(target, parent, emitter, message_queue); end
+
+  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#63
+  sig { params(node: T.nilable(::SyntaxTree::Node)).void }
+  def on_node(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#31
+  sig { override.returns(ResponseType) }
+  def response; end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#89
+  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#84
   sig { params(match: ::RubyLsp::Requests::Support::HighlightTarget::HighlightMatch).void }
   def add_highlight(match); end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#73
-  sig do
-    params(
-      position: {line: ::Integer, character: ::Integer}
-    ).returns(T.nilable(::RubyLsp::Requests::Support::HighlightTarget))
-  end
-  def find(position); end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#57
+# source://ruby-lsp/lib/ruby_lsp/requests/document_highlight.rb#72
 RubyLsp::Requests::DocumentHighlight::DIRECT_HIGHLIGHTS = T.let(T.unsafe(nil), Array)
 
 # ![Document link demo](../../document_link.gif)
@@ -1323,7 +1333,7 @@ end
 # source://ruby-lsp/lib/ruby_lsp/requests/hover.rb#26
 RubyLsp::Requests::Hover::ALLOWED_TARGETS = T.let(T.unsafe(nil), Array)
 
-# ![Inlay hint demo](../../inlay_hint.gif)
+# ![Inlay hint demo](../../inlay_hints.gif)
 #
 # [Inlay hints](https://microsoft.github.io/language-server-protocol/specification#textDocument_inlayHint)
 # are labels added directly in the code that explicitly show the user something that might
@@ -1386,37 +1396,37 @@ class RubyLsp::Requests::OnTypeFormatting < ::RubyLsp::Requests::BaseRequest
   end
   def initialize(document, position, trigger_character); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#46
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#44
   sig { override.returns(T.all(::Object, T::Array[::LanguageServer::Protocol::Interface::TextEdit])) }
   def run; end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#124
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#107
   sig { params(text: ::String, position: {line: ::Integer, character: ::Integer}).void }
   def add_edit_with_text(text, position = T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#156
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#139
   sig { params(line: ::String).returns(::Integer) }
   def find_indentation(line); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#118
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#101
   sig { params(spaces: ::String).void }
   def handle_comment_line(spaces); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#74
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#72
   sig { void }
   def handle_curly_brace; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#66
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#64
   sig { void }
   def handle_pipe; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#82
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#80
   sig { void }
   def handle_statement_end; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#137
+  # source://ruby-lsp/lib/ruby_lsp/requests/on_type_formatting.rb#120
   sig { params(line: ::Integer, character: ::Integer).void }
   def move_cursor_to(line, character); end
 end
