@@ -20,12 +20,12 @@ module RubyLsp
     #
     # ```ruby
     # Run
-    # class HelloTest < ActiveSupport::TestCase
-    #   test "outputs hello" do
+    # class HelloTest < ActiveSupport::TestCase # <- Will show code lenses above for running or debugging the whole test
+    #   test "outputs hello" do # <- Will show code lenses above for running or debugging this test
     #     # ...
     #   end
     #
-    #   test "outputs goodbye" do
+    #   test "outputs goodbye" do # <- Will show code lenses above for running or debugging this test
     #     # ...
     #   end
     # end
