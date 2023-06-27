@@ -3,7 +3,7 @@
 Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension for extra Rails editor features, such as:
 
 - Displaying an ActiveRecord model's database columns and types when hovering over it
-- Running tests using a Code Lens, or with the Test Explorer view
+- Running tests and debugging tests through the terminal or the editor's UI
 
 ## Installation
 
