@@ -14,7 +14,7 @@ module RubyLsp
     # [code lens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
     # request informs the editor of runnable commands such as tests
     #
-    # Example:
+    # # Example:
     #
     # For the following code, Code Lenses will be added above the class definition above each test method.
     #
