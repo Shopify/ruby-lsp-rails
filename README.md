@@ -15,6 +15,7 @@ group :development do
 end
 ```
 
+
 ## Usage
 
 ### Hover to reveal ActiveRecord schema
@@ -23,6 +24,11 @@ end
 1. Hover over an ActiveRecord model to see its details
 
 Nested models (e.g. `Admin::User`) are not yet supported.
+
+### Documentation
+
+See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-depth details about the
+[supported features](https://shopify.github.io/ruby-lsp/RubyLsp/Rails.html).
 
 ### Running Tests
 
