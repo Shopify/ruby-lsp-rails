@@ -15,7 +15,6 @@ group :development do
 end
 ```
 
-
 ## Usage
 
 ### Hover to reveal ActiveRecord schema
