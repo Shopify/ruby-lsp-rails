@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class ModelsControllerTest < ActionDispatch::IntegrationTest
+    class RackAppTest < ActionDispatch::IntegrationTest
       test "GET show returns column information for existing models" do
         get "/ruby_lsp_rails/models/User"
         assert_response(:success)

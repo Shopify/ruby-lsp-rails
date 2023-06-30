@@ -2,15 +2,24 @@
 # frozen_string_literal: true
 
 require "rails/railtie"
-require "ruby_lsp_rails/middleware"
+require "ruby_lsp_rails/rack_app"
 
 module RubyLsp
   module Rails
     class Railtie < ::Rails::Railtie
-      initializer "ruby_lsp_rails.setup" do |app|
-        app.config.middleware.insert_after(ActionDispatch::ShowExceptions, RubyLsp::Rails::Middleware)
+      config.ruby_lsp_rails = ActiveSupport::OrderedOptions.new
+      config.ruby_lsp_rails.server = true
 
-        config.after_initialize do |_app|
+      initializer "ruby_lsp_rails.setup" do |_app|
+        config.after_initialize do |app|
+          unless config.ruby_lsp_rails.server == false
+            app.routes.prepend do
+              T.bind(self, ActionDispatch::Routing::Mapper)
+              mount(RackApp.new => RackApp::BASE_PATH)
+            end
+          end
+
+          # If we start the app with `bin/rails console` then `Rails::Server` is not defined.
           if defined?(::Rails::Server)
             ssl_enable, host, port = ::Rails::Server::Options.new.parse!(ARGV).values_at(:SSLEnable, :Host, :Port)
             app_uri = "#{ssl_enable ? "https" : "http"}://#{host}:#{port}"
