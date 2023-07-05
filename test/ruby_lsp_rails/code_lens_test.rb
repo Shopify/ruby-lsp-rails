@@ -56,6 +56,25 @@ module RubyLsp
         assert_equal(3, response.size)
       end
 
+      test "ignores tests with interpolation in their names" do
+        # Note that we need to quote the heredoc RUBY marker to prevent interpolation when defining the test.
+        @store.set(uri: "file:///fake.rb", source: <<~'RUBY', version: 1)
+          class Test < ActiveSupport::TestCase
+            test "before #{1 + 1} after" do
+              # test body
+            end
+          end
+        RUBY
+
+        response = RubyLsp::Executor.new(@store, @message_queue).execute({
+          method: "textDocument/codeLens",
+          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+        }).response
+
+        # The 3 responses are for the test class, none for the test declaration.
+        assert_equal(3, response.size)
+      end
+
       test "ignores tests with a non-string name argument" do
         @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
