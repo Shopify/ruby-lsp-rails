@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.2.0)
+    ruby-lsp-rails (0.2.1)
       rails (>= 6.0)
       ruby-lsp (>= 0.6.2, < 0.8.0)
       sorbet-runtime (>= 0.5.9897)
