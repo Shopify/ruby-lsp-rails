@@ -61,6 +61,9 @@ module RubyLsp
         first_argument = node.arguments.parts.first
         return unless first_argument.is_a?(SyntaxTree::StringLiteral)
 
+        # The test name may be a blank string while the code is being typed
+        return if first_argument.parts.empty?
+
         test_name = first_argument.parts.first.value
         return unless test_name
 
