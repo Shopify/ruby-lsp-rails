@@ -8,6 +8,7 @@ module RubyLsp
     class CodeLensTest < ActiveSupport::TestCase
       setup do
         @message_queue = Thread::Queue.new
+        @store = RubyLsp::Store.new
       end
 
       def teardown
@@ -15,8 +16,7 @@ module RubyLsp
       end
 
       test "recognizes Rails Active Support test cases" do
-        store = RubyLsp::Store.new
-        store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test "an example" do
               # test body
@@ -24,7 +24,7 @@ module RubyLsp
           end
         RUBY
 
-        response = RubyLsp::Executor.new(store, @message_queue).execute({
+        response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
           params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
         }).response
@@ -39,8 +39,7 @@ module RubyLsp
       end
 
       test "ignores unnamed tests (empty string)" do
-        store = RubyLsp::Store.new
-        store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test "" do
               # test body
@@ -48,7 +47,25 @@ module RubyLsp
           end
         RUBY
 
-        response = RubyLsp::Executor.new(store, @message_queue).execute({
+        response = RubyLsp::Executor.new(@store, @message_queue).execute({
+          method: "textDocument/codeLens",
+          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+        }).response
+
+        # The 3 responses are for the test class, none for the test declaration.
+        assert_equal(3, response.size)
+      end
+
+      test "ignores tests with a non-string name argument" do
+        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+          class Test < ActiveSupport::TestCase
+            test foo do
+              # test body
+            end
+          end
+        RUBY
+
+        response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
           params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
         }).response
@@ -58,8 +75,7 @@ module RubyLsp
       end
 
       test "ignores test cases without a name" do
-        store = RubyLsp::Store.new
-        store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test do
               # test body
@@ -67,7 +83,7 @@ module RubyLsp
           end
         RUBY
 
-        response = RubyLsp::Executor.new(store, @message_queue).execute({
+        response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
           params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
         }).response
@@ -77,8 +93,7 @@ module RubyLsp
       end
 
       test "recognizes plain test cases" do
-        store = RubyLsp::Store.new
-        store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             def test_example
               # test body
@@ -86,7 +101,7 @@ module RubyLsp
           end
         RUBY
 
-        response = RubyLsp::Executor.new(store, @message_queue).execute({
+        response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
           params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
         }).response
