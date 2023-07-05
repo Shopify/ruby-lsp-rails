@@ -64,6 +64,9 @@ module RubyLsp
         # The test name may be a blank string while the code is being typed
         return if first_argument.parts.empty?
 
+        # We can't handle interpolation yet
+        return unless first_argument.parts.all? { |part| part.is_a?(SyntaxTree::TStringContent) }
+
         test_name = first_argument.parts.first.value
         return unless test_name
 
