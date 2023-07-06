@@ -48,14 +48,14 @@ module RubyLsp
         return unless response.code == "200"
 
         JSON.parse(response.body.chomp, symbolize_names: true)
-      rescue Errno::ECONNREFUSED, ServerAddressUnknown
+      rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, Net::ReadTimeout, ServerAddressUnknown
         nil
       end
 
       sig { void }
       def check_if_server_is_running!
         request("activate", 0.2)
-      rescue Errno::ECONNREFUSED, ServerAddressUnknown
+      rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, ServerAddressUnknown
         warn(SERVER_NOT_RUNNING_MESSAGE)
       rescue Net::ReadTimeout
         # If the server is running, but the initial request is taking too long, we don't want to block the
