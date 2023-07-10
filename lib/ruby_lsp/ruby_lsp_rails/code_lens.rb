@@ -59,16 +59,26 @@ module RubyLsp
         return unless message_value == "test" && node.arguments.parts.any?
 
         first_argument = node.arguments.parts.first
-        return unless first_argument.is_a?(SyntaxTree::StringLiteral)
+
+        parts = case first_argument
+        when SyntaxTree::StringConcat
+          # We only support two lines of concatenation on test names
+          if first_argument.left.is_a?(SyntaxTree::StringLiteral) &&
+              first_argument.right.is_a?(SyntaxTree::StringLiteral)
+            [*first_argument.left.parts, *first_argument.right.parts]
+          end
+        when SyntaxTree::StringLiteral
+          first_argument.parts
+        end
 
         # The test name may be a blank string while the code is being typed
-        return if first_argument.parts.empty?
+        return if parts.nil? || parts.empty?
 
         # We can't handle interpolation yet
-        return unless first_argument.parts.all? { |part| part.is_a?(SyntaxTree::TStringContent) }
+        return unless parts.all? { |part| part.is_a?(SyntaxTree::TStringContent) }
 
-        test_name = first_argument.parts.first.value
-        return unless test_name
+        test_name = parts.map(&:value).join
+        return if test_name.empty?
 
         line_number = node.location.start_line
         command = "#{BASE_COMMAND} #{@path}:#{line_number}"
