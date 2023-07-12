@@ -20,8 +20,6 @@ module RubyLsp
 
       ResponseType = type_member { { fixed: T.nilable(::RubyLsp::Interface::Hover) } }
 
-      ::RubyLsp::Requests::Hover.add_listener(self)
-
       sig { override.returns(ResponseType) }
       attr_reader :response
 

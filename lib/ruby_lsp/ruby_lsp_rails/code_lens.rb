@@ -39,8 +39,6 @@ module RubyLsp
       ResponseType = type_member { { fixed: T::Array[::RubyLsp::Interface::CodeLens] } }
       BASE_COMMAND = "bin/rails test"
 
-      ::RubyLsp::Requests::CodeLens.add_listener(self)
-
       sig { override.returns(ResponseType) }
       attr_reader :response
 

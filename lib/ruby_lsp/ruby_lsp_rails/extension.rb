@@ -14,6 +14,9 @@ module RubyLsp
 
       sig { override.void }
       def activate
+        ::RubyLsp::Requests::Hover.add_listener(RubyLsp::Rails::Hover)
+        ::RubyLsp::Requests::CodeLens.add_listener(RubyLsp::Rails::CodeLens)
+
         RubyLsp::Rails::RailsClient.instance.check_if_server_is_running!
       end
 

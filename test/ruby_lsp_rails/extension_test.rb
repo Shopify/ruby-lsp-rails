@@ -17,6 +17,9 @@ module RubyLsp
         RubyLsp::Rails::RailsClient.stubs(instance: rails_client)
         extension = Extension.new
         assert_predicate(extension, :activate)
+      ensure
+        ::RubyLsp::Requests::Hover.listeners.clear
+        ::RubyLsp::Requests::CodeLens.listeners.clear
       end
     end
   end

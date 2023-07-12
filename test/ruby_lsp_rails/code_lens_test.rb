@@ -7,11 +7,13 @@ module RubyLsp
   module Rails
     class CodeLensTest < ActiveSupport::TestCase
       setup do
+        ::RubyLsp::Requests::CodeLens.add_listener(RubyLsp::Rails::CodeLens)
         @message_queue = Thread::Queue.new
         @store = RubyLsp::Store.new
       end
 
       def teardown
+        ::RubyLsp::Requests::CodeLens.listeners.clear
         T.must(@message_queue).close
       end
 
