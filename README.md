@@ -45,7 +45,7 @@ See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-de
 
 ### Running Tests
 
-1. Open a test which inherits from `ActiveSupport::TestCase` or one if its descendants, such as `ActionDispatch::IntegrationTest`.
+1. Open a test which inherits from `ActiveSupport::TestCase` or one its descendants, such as `ActionDispatch::IntegrationTest`.
 2. Click on the "Run", "Run in Terminal" or "Debug" code lens which appears above the test class, or an individual test.
 
 Note: When using the Test Explorer view, if your code contains a statement to pause execution (e.g. `debugger`) it will
