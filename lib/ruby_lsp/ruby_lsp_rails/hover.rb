@@ -40,7 +40,7 @@ module RubyLsp
         schema_file = model[:schema_file]
         content = +""
         if schema_file
-          content << "[Schema](file://#{schema_file})\n\n"
+          content << "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})\n\n"
         end
         content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
         contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
