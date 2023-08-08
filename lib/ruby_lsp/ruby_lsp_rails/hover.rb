@@ -20,22 +20,21 @@ module RubyLsp
 
       ResponseType = type_member { { fixed: T.nilable(::RubyLsp::Interface::Hover) } }
 
-      ::RubyLsp::Requests::Hover.add_listener(self)
-
       sig { override.returns(ResponseType) }
       attr_reader :response
 
-      sig { params(emitter: RubyLsp::EventEmitter, message_queue: Thread::Queue).void }
-      def initialize(emitter, message_queue)
-        super
+      sig { params(client: RailsClient, emitter: RubyLsp::EventEmitter, message_queue: Thread::Queue).void }
+      def initialize(client, emitter, message_queue)
+        super(emitter, message_queue)
 
         @response = T.let(nil, ResponseType)
+        @client = client
         emitter.register(self, :on_const)
       end
 
       sig { params(node: SyntaxTree::Const).void }
       def on_const(node)
-        model = RailsClient.instance.model(node.value)
+        model = @client.model(node.value)
         return if model.nil?
 
         schema_file = model[:schema_file]

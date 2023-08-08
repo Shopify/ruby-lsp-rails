@@ -39,15 +39,13 @@ module RubyLsp
       ResponseType = type_member { { fixed: T::Array[::RubyLsp::Interface::CodeLens] } }
       BASE_COMMAND = "bin/rails test"
 
-      ::RubyLsp::Requests::CodeLens.add_listener(self)
-
       sig { override.returns(ResponseType) }
       attr_reader :response
 
-      sig { params(uri: String, emitter: EventEmitter, message_queue: Thread::Queue).void }
+      sig { params(uri: URI::Generic, emitter: EventEmitter, message_queue: Thread::Queue).void }
       def initialize(uri, emitter, message_queue)
         @response = T.let([], ResponseType)
-        @path = T.let(URI(uri).path, T.nilable(String))
+        @path = T.let(uri.to_standardized_path, T.nilable(String))
         emitter.register(self, :on_command, :on_class, :on_def)
 
         super(emitter, message_queue)
@@ -109,6 +107,8 @@ module RubyLsp
 
       sig { params(node: SyntaxTree::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)
+        return unless @path
+
         arguments = [
           @path,
           name,
