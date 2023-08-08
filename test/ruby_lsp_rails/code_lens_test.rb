@@ -9,6 +9,7 @@ module RubyLsp
       setup do
         @message_queue = Thread::Queue.new
         @store = RubyLsp::Store.new
+        @uri = URI("file:///fake.rb")
       end
 
       def teardown
@@ -16,7 +17,7 @@ module RubyLsp
       end
 
       test "recognizes Rails Active Support test cases" do
-        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: @uri, source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test "an example" do
               # test body
@@ -26,7 +27,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The first 3 responses are for the test class.
@@ -39,7 +40,7 @@ module RubyLsp
       end
 
       test "recognizes multiline escaped strings" do
-        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: @uri, source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test "an example" \
               "multiline" do
@@ -50,7 +51,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The first 3 responses are for the test class.
@@ -63,7 +64,7 @@ module RubyLsp
       end
 
       test "ignores unnamed tests (empty string)" do
-        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: @uri, source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test "" do
               # test body
@@ -73,7 +74,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -82,7 +83,7 @@ module RubyLsp
 
       test "ignores tests with interpolation in their names" do
         # Note that we need to quote the heredoc RUBY marker to prevent interpolation when defining the test.
-        @store.set(uri: "file:///fake.rb", source: <<~'RUBY', version: 1)
+        @store.set(uri: @uri, source: <<~'RUBY', version: 1)
           class Test < ActiveSupport::TestCase
             test "before #{1 + 1} after" do
               # test body
@@ -92,7 +93,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -100,7 +101,7 @@ module RubyLsp
       end
 
       test "ignores tests with a non-string name argument" do
-        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: @uri, source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test foo do
               # test body
@@ -110,7 +111,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -118,7 +119,7 @@ module RubyLsp
       end
 
       test "ignores test cases without a name" do
-        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: @uri, source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             test do
               # test body
@@ -128,7 +129,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -136,7 +137,7 @@ module RubyLsp
       end
 
       test "recognizes plain test cases" do
-        @store.set(uri: "file:///fake.rb", source: <<~RUBY, version: 1)
+        @store.set(uri: @uri, source: <<~RUBY, version: 1)
           class Test < ActiveSupport::TestCase
             def test_example
               # test body
@@ -146,7 +147,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: "file:///fake.rb" }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
         }).response
 
         # The first 3 responses are for the test declaration.

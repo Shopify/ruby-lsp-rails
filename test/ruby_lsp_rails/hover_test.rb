@@ -7,6 +7,8 @@ module RubyLsp
   module Rails
     class HoverTest < ActiveSupport::TestCase
       setup do
+        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
+        @client = RailsClient.new
         @message_queue = Thread::Queue.new
       end
 
@@ -16,7 +18,7 @@ module RubyLsp
 
       test "hook returns model column information" do
         expected_response = {
-          schema_file: "#{RailsClient.instance.root}/db/schema.rb",
+          schema_file: "#{@client.root}/db/schema.rb",
           columns: [
             ["id", "integer"],
             ["first_name", "string"],
@@ -28,14 +30,14 @@ module RubyLsp
         }
 
         emitter = RubyLsp::EventEmitter.new
-        listener = Hover.new(emitter, @message_queue)
+        listener = Hover.new(@client, emitter, @message_queue)
 
         stub_http_request("200", expected_response.to_json)
-        RailsClient.instance.stubs(check_if_server_is_running!: true)
+        @client.stubs(check_if_server_is_running!: true)
         emitter.emit_for_target(Const("User"))
 
         assert_equal(<<~CONTENT, T.must(listener.response).contents.value)
-          [Schema](file://#{RailsClient.instance.root}/db/schema.rb)
+          [Schema](file://#{@client.root}/db/schema.rb)
 
           **id**: integer
 
@@ -53,19 +55,19 @@ module RubyLsp
 
       test "handles `db/structure.sql` instead of `db/schema.rb`" do
         expected_response = {
-          schema_file: "#{RailsClient.instance.root}/db/structure.sql",
+          schema_file: "#{@client.root}/db/structure.sql",
           columns: [],
         }
         emitter = RubyLsp::EventEmitter.new
-        listener = Hover.new(emitter, @message_queue)
+        listener = Hover.new(@client, emitter, @message_queue)
 
         stub_http_request("200", expected_response.to_json)
-        RailsClient.instance.stubs(check_if_server_is_running!: true)
+        @client.stubs(check_if_server_is_running!: true)
         emitter.emit_for_target(Const("User"))
 
         assert_includes(
           T.must(listener.response).contents.value,
-          "[Schema](file://#{RailsClient.instance.root}/db/structure.sql)",
+          "[Schema](file://#{@client.root}/db/structure.sql)",
         )
       end
 
@@ -76,10 +78,10 @@ module RubyLsp
         }
 
         emitter = RubyLsp::EventEmitter.new
-        listener = Hover.new(emitter, @message_queue)
+        listener = Hover.new(@client, emitter, @message_queue)
 
         stub_http_request("200", expected_response.to_json)
-        RailsClient.instance.stubs(check_if_server_is_running!: true)
+        @client.stubs(check_if_server_is_running!: true)
         emitter.emit_for_target(Const("User"))
 
         refute_match(/Schema/, T.must(listener.response).contents.value)

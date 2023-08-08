@@ -11,7 +11,7 @@ module RubyLsp
         assert_response(:success)
         assert_equal(
           {
-            "schema_file" => "#{RailsClient.instance.root}/db/schema.rb",
+            "schema_file" => "#{RailsClient.new.root}/db/schema.rb",
             "columns" => [
               ["id", "integer"],
               ["first_name", "string"],
