@@ -27,7 +27,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The first 3 responses are for the test class.
@@ -51,7 +51,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The first 3 responses are for the test class.
@@ -74,7 +74,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -93,7 +93,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -111,7 +111,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -129,7 +129,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The 3 responses are for the test class, none for the test declaration.
@@ -147,7 +147,7 @@ module RubyLsp
 
         response = RubyLsp::Executor.new(@store, @message_queue).execute({
           method: "textDocument/codeLens",
-          params: { textDocument: { uri: @uri.to_s }, position: { line: 0, character: 0 } },
+          params: { textDocument: { uri: @uri }, position: { line: 0, character: 0 } },
         }).response
 
         # The first 3 responses are for the test declaration.
