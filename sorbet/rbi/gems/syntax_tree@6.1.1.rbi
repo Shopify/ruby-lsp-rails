@@ -9014,7 +9014,7 @@ class SyntaxTree::Parser < ::Ripper
   # Attaches comments to the nodes in the tree that most closely correspond to
   # the location of the comments.
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2911
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2916
   def attach_comments(program, comments); end
 
   # This represents the current place in the source string that we've gotten
@@ -9118,13 +9118,13 @@ class SyntaxTree::Parser < ::Ripper
   # declaration has block-local variables. Once it does, we parse those out
   # and convert them into Ident nodes.
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2362
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2367
   def lambda_locals(source); end
 
   # Responsible for finding the nearest nodes to the given comment within the
   # context of the given encapsulating node.
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2946
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2951
   def nearest_nodes(node, comment); end
 
   # :call-seq:
@@ -9165,7 +9165,7 @@ class SyntaxTree::Parser < ::Ripper
   #
   # @raise [ParseError]
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2863
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2868
   def on_alias_error(error, *_arg1); end
 
   # :call-seq:
@@ -9262,7 +9262,7 @@ class SyntaxTree::Parser < ::Ripper
   #
   # @raise [ParseError]
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2863
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2868
   def on_assign_error(error, *_arg1); end
 
   # :call-seq:
@@ -9382,7 +9382,7 @@ class SyntaxTree::Parser < ::Ripper
   #
   # @raise [ParseError]
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2863
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2868
   def on_class_name_error(error, *_arg1); end
 
   # :call-seq:
@@ -9417,32 +9417,32 @@ class SyntaxTree::Parser < ::Ripper
   # :call-seq:
   #   on_const: (String value) -> Const
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1208
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1213
   def on_const(value); end
 
   # :call-seq:
   #   on_const_path_field: (untyped parent, Const constant) ->
   #     ConstPathField | Field
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1224
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1229
   def on_const_path_field(parent, constant); end
 
   # :call-seq:
   #   on_const_path_ref: (untyped parent, Const constant) -> ConstPathRef
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1243
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1248
   def on_const_path_ref(parent, constant); end
 
   # :call-seq:
   #   on_const_ref: (Const constant) -> ConstRef
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1253
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1258
   def on_const_ref(constant); end
 
   # :call-seq:
   #   on_cvar: (String value) -> CVar
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1259
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1264
   def on_cvar(value); end
 
   # :call-seq:
@@ -9452,13 +9452,13 @@ class SyntaxTree::Parser < ::Ripper
   #     untyped bodystmt
   #   ) -> DefNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1278
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1283
   def on_def(name, params, bodystmt); end
 
   # :call-seq:
   #   on_defined: (untyped value) -> Defined
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1346
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1351
   def on_defined(value); end
 
   # :call-seq:
@@ -9470,37 +9470,37 @@ class SyntaxTree::Parser < ::Ripper
   #     BodyStmt bodystmt
   #   ) -> DefNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1370
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1375
   def on_defs(target, operator, name, params, bodystmt); end
 
   # :call-seq:
   #   on_do_block: (BlockVar block_var, BodyStmt bodystmt) -> BlockNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1435
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1440
   def on_do_block(block_var, bodystmt); end
 
   # :call-seq:
   #   on_dot2: ((nil | untyped) left, (nil | untyped) right) -> RangeNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1459
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1464
   def on_dot2(left, right); end
 
   # :call-seq:
   #   on_dot3: ((nil | untyped) left, (nil | untyped) right) -> RangeNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1475
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1480
   def on_dot3(left, right); end
 
   # :call-seq:
   #   on_dyna_symbol: (StringContent string_content) -> DynaSymbol
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1491
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1496
   def on_dyna_symbol(string_content); end
 
   # :call-seq:
   #   on_else: (Statements statements) -> Else
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1517
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1522
   def on_else(statements); end
 
   # :call-seq:
@@ -9510,49 +9510,49 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | Elsif | Else) consequent
   #   ) -> Elsif
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1558
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1563
   def on_elsif(predicate, statements, consequent); end
 
   # :call-seq:
   #   on_embdoc: (String value) -> EmbDoc
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1588
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1593
   def on_embdoc(value); end
 
   # :call-seq:
   #   on_embdoc_beg: (String value) -> EmbDoc
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1595
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1600
   def on_embdoc_beg(value); end
 
   # :call-seq:
   #   on_embdoc_end: (String value) -> EmbDoc
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1606
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1611
   def on_embdoc_end(value); end
 
   # :call-seq:
   #   on_embexpr_beg: (String value) -> EmbExprBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1630
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1635
   def on_embexpr_beg(value); end
 
   # :call-seq:
   #   on_embexpr_end: (String value) -> EmbExprEnd
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1649
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1654
   def on_embexpr_end(value); end
 
   # :call-seq:
   #   on_embvar: (String value) -> EmbVar
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1668
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1673
   def on_embvar(value); end
 
   # :call-seq:
   #   on_ensure: (Statements statements) -> Ensure
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1687
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1692
   def on_ensure(statements); end
 
   # The handler for this event accepts no parameters (though in previous
@@ -9561,13 +9561,13 @@ class SyntaxTree::Parser < ::Ripper
   # :call-seq:
   #   on_excessed_comma: () -> ExcessedComma
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1714
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1719
   def on_excessed_comma(*_arg0); end
 
   # :call-seq:
   #   on_fcall: ((Const | Ident) value) -> CallNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1722
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1727
   def on_fcall(value); end
 
   # :call-seq:
@@ -9577,13 +9577,13 @@ class SyntaxTree::Parser < ::Ripper
   #     (Const | Ident) name
   #   ) -> Field
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1738
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1743
   def on_field(parent, operator, name); end
 
   # :call-seq:
   #   on_float: (String value) -> FloatLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1749
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1754
   def on_float(value); end
 
   # :call-seq:
@@ -9594,7 +9594,7 @@ class SyntaxTree::Parser < ::Ripper
   #     VarField right
   #   ) -> FndPtn
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1769
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1774
   def on_fndptn(constant, left, values, right); end
 
   # :call-seq:
@@ -9604,37 +9604,37 @@ class SyntaxTree::Parser < ::Ripper
   #     Statements statements
   #   ) -> For
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1821
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1826
   def on_for(index, collection, statements); end
 
   # :call-seq:
   #   on_gvar: (String value) -> GVar
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1859
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1864
   def on_gvar(value); end
 
   # :call-seq:
   #   on_hash: ((nil | Array[AssocNew | AssocSplat]) assocs) -> HashLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1874
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1879
   def on_hash(assocs); end
 
   # :call-seq:
   #   on_heredoc_beg: (String value) -> HeredocBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1887
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1892
   def on_heredoc_beg(value); end
 
   # :call-seq:
   #   on_heredoc_dedent: (StringContent string, Integer width) -> Heredoc
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1906
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1911
   def on_heredoc_dedent(string, width); end
 
   # :call-seq:
   #   on_heredoc_end: (String value) -> Heredoc
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1920
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1925
   def on_heredoc_end(value); end
 
   # :call-seq:
@@ -9644,13 +9644,13 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | VarField) keyword_rest
   #   ) -> HshPtn
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#1956
+  # source://syntax_tree/lib/syntax_tree/parser.rb#1961
   def on_hshptn(constant, keywords, keyword_rest); end
 
   # :call-seq:
   #   on_ident: (String value) -> Ident
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2026
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2031
   def on_ident(value); end
 
   # :call-seq:
@@ -9660,25 +9660,25 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | Elsif | Else) consequent
   #   ) -> IfNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2045
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2050
   def on_if(predicate, statements, consequent); end
 
   # :call-seq:
   #   on_if_mod: (untyped predicate, untyped statement) -> IfNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2085
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2090
   def on_if_mod(predicate, statement); end
 
   # :call-seq:
   #   on_ifop: (untyped predicate, untyped truthy, untyped falsy) -> IfOp
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2074
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2079
   def on_ifop(predicate, truthy, falsy); end
 
   # :call-seq:
   #   on_imaginary: (String value) -> Imaginary
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2107
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2112
   def on_imaginary(value); end
 
   # :call-seq:
@@ -9689,43 +9689,43 @@ class SyntaxTree::Parser < ::Ripper
   #            (nil | In | Else) consequent
   #          ) -> In
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2127
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2132
   def on_in(pattern, statements, consequent); end
 
   # :call-seq:
   #   on_int: (String value) -> Int
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2172
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2177
   def on_int(value); end
 
   # :call-seq:
   #   on_ivar: (String value) -> IVar
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2187
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2192
   def on_ivar(value); end
 
   # :call-seq:
   #   on_kw: (String value) -> Kw
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2202
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2207
   def on_kw(value); end
 
   # :call-seq:
   #   on_kwrest_param: ((nil | Ident) name) -> KwRestParam
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2221
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2226
   def on_kwrest_param(name); end
 
   # :call-seq:
   #   on_label: (String value) -> Label
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2230
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2235
   def on_label(value); end
 
   # :call-seq:
   #   on_label_end: (String value) -> LabelEnd
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2245
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2250
   def on_label_end(value); end
 
   # :call-seq:
@@ -9734,37 +9734,37 @@ class SyntaxTree::Parser < ::Ripper
   #     (BodyStmt | Statements) statements
   #   ) -> Lambda
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2267
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2272
   def on_lambda(params, statements); end
 
   # :call-seq:
   #   on_lambda_var: (Params params, Array[ Ident ] locals) -> LambdaVar
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2349
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2354
   def on_lambda_var(params, locals); end
 
   # :call-seq:
   #   on_lbrace: (String value) -> LBrace
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2432
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2437
   def on_lbrace(value); end
 
   # :call-seq:
   #   on_lbracket: (String value) -> LBracket
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2451
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2456
   def on_lbracket(value); end
 
   # :call-seq:
   #   on_lparen: (String value) -> LParen
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2470
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2475
   def on_lparen(value); end
 
   # :call-seq:
   #   on_massign: ((MLHS | MLHSParen) target, untyped value) -> MAssign
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2493
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2498
   def on_massign(target, value); end
 
   # :call-seq:
@@ -9773,7 +9773,7 @@ class SyntaxTree::Parser < ::Ripper
   #     (ArgParen | Args) arguments
   #   ) -> CallNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2509
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2514
   def on_method_add_arg(call, arguments); end
 
   # :call-seq:
@@ -9782,7 +9782,7 @@ class SyntaxTree::Parser < ::Ripper
   #     Block block
   #   ) -> Break | MethodAddBlock
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2527
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2532
   def on_method_add_block(call, block); end
 
   # :call-seq:
@@ -9791,13 +9791,13 @@ class SyntaxTree::Parser < ::Ripper
   #     (ARefField | Field | Ident | MLHSParen | VarField) part
   #   ) -> MLHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2556
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2561
   def on_mlhs_add(mlhs, part); end
 
   # :call-seq:
   #   on_mlhs_add_post: (MLHS left, MLHS right) -> MLHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2565
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2570
   def on_mlhs_add_post(left, right); end
 
   # :call-seq:
@@ -9806,19 +9806,19 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | ARefField | Field | Ident | VarField) part
   #   ) -> MLHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2577
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2582
   def on_mlhs_add_star(mlhs, part); end
 
   # :call-seq:
   #   on_mlhs_new: () -> MLHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2590
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2595
   def on_mlhs_new; end
 
   # :call-seq:
   #   on_mlhs_paren: ((MLHS | MLHSParen) contents) -> MLHSParen
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2600
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2605
   def on_mlhs_paren(contents); end
 
   # :call-seq:
@@ -9827,43 +9827,43 @@ class SyntaxTree::Parser < ::Ripper
   #     BodyStmt bodystmt
   #   ) -> ModuleDeclaration
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2618
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2623
   def on_module(constant, bodystmt); end
 
   # :call-seq:
   #   on_mrhs_add: (MRHS mrhs, untyped part) -> MRHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2650
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2655
   def on_mrhs_add(mrhs, part); end
 
   # :call-seq:
   #   on_mrhs_add_star: (MRHS mrhs, untyped value) -> MRHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2659
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2664
   def on_mrhs_add_star(mrhs, value); end
 
   # :call-seq:
   #   on_mrhs_new: () -> MRHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2640
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2645
   def on_mrhs_new; end
 
   # :call-seq:
   #   on_mrhs_new_from_args: (Args arguments) -> MRHS
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2681
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2686
   def on_mrhs_new_from_args(arguments); end
 
   # :call-seq:
   #   on_next: (Args arguments) -> Next
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2687
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2692
   def on_next(arguments); end
 
   # :call-seq:
   #   on_op: (String value) -> Op
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2706
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2711
   def on_op(value); end
 
   # :call-seq:
@@ -9879,7 +9879,7 @@ class SyntaxTree::Parser < ::Ripper
   #     untyped value
   #   ) -> OpAssign
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2735
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2740
   def on_opassign(target, operator, value); end
 
   # If we encounter a parse error, just immediately bail out so that our
@@ -9887,7 +9887,7 @@ class SyntaxTree::Parser < ::Ripper
   #
   # @raise [ParseError]
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2863
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2868
   def on_param_error(error, *_arg1); end
 
   # :call-seq:
@@ -9901,13 +9901,13 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | :& | BlockArg) block
   #   ) -> Params
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2758
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2763
   def on_params(requireds, optionals, rest, posts, keywords, keyword_rest, block); end
 
   # :call-seq:
   #   on_paren: (untyped contents) -> Paren
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2823
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2828
   def on_paren(contents); end
 
   # If we encounter a parse error, just immediately bail out so that our
@@ -9915,79 +9915,79 @@ class SyntaxTree::Parser < ::Ripper
   #
   # @raise [ParseError]
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2863
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2868
   def on_parse_error(error, *_arg1); end
 
   # :call-seq:
   #   on_period: (String value) -> Period
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2873
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2878
   def on_period(value); end
 
   # :call-seq:
   #   on_program: (Statements statements) -> Program
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#2888
+  # source://syntax_tree/lib/syntax_tree/parser.rb#2893
   def on_program(statements); end
 
   # :call-seq:
   #   on_qsymbols_add: (QSymbols qsymbols, TStringContent element) -> QSymbols
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3000
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3005
   def on_qsymbols_add(qsymbols, element); end
 
   # :call-seq:
   #   on_qsymbols_beg: (String value) -> QSymbolsBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3010
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3015
   def on_qsymbols_beg(value); end
 
   # :call-seq:
   #   on_qsymbols_new: () -> QSymbols
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3029
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3034
   def on_qsymbols_new; end
 
   # :call-seq:
   #   on_qwords_add: (QWords qwords, TStringContent element) -> QWords
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3041
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3046
   def on_qwords_add(qwords, element); end
 
   # :call-seq:
   #   on_qwords_beg: (String value) -> QWordsBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3051
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3056
   def on_qwords_beg(value); end
 
   # :call-seq:
   #   on_qwords_new: () -> QWords
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3070
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3075
   def on_qwords_new; end
 
   # :call-seq:
   #   on_rational: (String value) -> RationalLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3082
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3087
   def on_rational(value); end
 
   # :call-seq:
   #   on_rbrace: (String value) -> RBrace
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3097
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3102
   def on_rbrace(value); end
 
   # :call-seq:
   #   on_rbracket: (String value) -> RBracket
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3116
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3121
   def on_rbracket(value); end
 
   # :call-seq:
   #   on_redo: () -> Redo
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3135
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3140
   def on_redo; end
 
   # :call-seq:
@@ -9996,19 +9996,19 @@ class SyntaxTree::Parser < ::Ripper
   #     (StringDVar | StringEmbExpr | TStringContent) part
   #   ) -> RegexpContent
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3146
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3151
   def on_regexp_add(regexp_content, part); end
 
   # :call-seq:
   #   on_regexp_beg: (String value) -> RegexpBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3156
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3161
   def on_regexp_beg(value); end
 
   # :call-seq:
   #   on_regexp_end: (String value) -> RegexpEnd
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3175
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3180
   def on_regexp_end(value); end
 
   # :call-seq:
@@ -10017,13 +10017,13 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | RegexpEnd) ending
   #   ) -> RegexpLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3193
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3198
   def on_regexp_literal(regexp_content, ending); end
 
   # :call-seq:
   #   on_regexp_new: () -> RegexpContent
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3211
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3216
   def on_regexp_new; end
 
   # :call-seq:
@@ -10034,55 +10034,55 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | Rescue) consequent
   #   ) -> Rescue
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3228
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3233
   def on_rescue(exceptions, variable, statements, consequent); end
 
   # :call-seq:
   #   on_rescue_mod: (untyped statement, untyped value) -> RescueMod
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3281
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3286
   def on_rescue_mod(statement, value); end
 
   # :call-seq:
   #   on_rest_param: ((nil | Ident) name) -> RestParam
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3293
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3298
   def on_rest_param(name); end
 
   # :call-seq:
   #   on_retry: () -> Retry
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3302
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3307
   def on_retry; end
 
   # :call-seq:
   #   on_return: (Args arguments) -> ReturnNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3310
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3315
   def on_return(arguments); end
 
   # :call-seq:
   #   on_return0: () -> ReturnNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3321
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3326
   def on_return0; end
 
   # :call-seq:
   #   on_rparen: (String value) -> RParen
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3329
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3334
   def on_rparen(value); end
 
   # :call-seq:
   #   on_sclass: (untyped target, BodyStmt bodystmt) -> SClass
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3348
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3353
   def on_sclass(target, bodystmt); end
 
   # :call-seq:
   #   on_semicolon: (String value) -> Semicolon
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3381
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3386
   def on_semicolon(value); end
 
   # stmts_add is a parser event that represents a single statement inside a
@@ -10090,13 +10090,13 @@ class SyntaxTree::Parser < ::Ripper
   # parent stmts node as well as an stmt which can be any expression in
   # Ruby.
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3400
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3405
   def on_stmts_add(statements, statement); end
 
   # :call-seq:
   #   on_stmts_new: () -> Statements
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3413
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3418
   def on_stmts_new; end
 
   # :call-seq:
@@ -10105,7 +10105,7 @@ class SyntaxTree::Parser < ::Ripper
   #     (StringEmbExpr | StringDVar | TStringContent) part
   #   ) -> StringContent
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3426
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3431
   def on_string_add(string, part); end
 
   # :call-seq:
@@ -10114,44 +10114,44 @@ class SyntaxTree::Parser < ::Ripper
   #     StringLiteral right
   #   ) -> StringConcat
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3443
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3448
   def on_string_concat(left, right); end
 
   # :call-seq:
   #   on_string_content: () -> StringContent
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3453
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3458
   def on_string_content; end
 
   # :call-seq:
   #   on_string_dvar: ((Backref | VarRef) variable) -> StringDVar
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3463
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3468
   def on_string_dvar(variable); end
 
   # :call-seq:
   #   on_string_embexpr: (Statements statements) -> StringEmbExpr
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3474
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3479
   def on_string_embexpr(statements); end
 
   # :call-seq:
   #   on_string_literal: (String string) -> Heredoc | StringLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3504
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3509
   def on_string_literal(string); end
 
   # :call-seq:
   #   on_super: ((ArgParen | Args) arguments) -> Super
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3544
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3549
   def on_super(arguments); end
 
   # symbeg is a token that represents the beginning of a symbol literal. In
   # most cases it will contain just ":" as in the value, but if its a dynamic
   # symbol being defined it will contain ":'" or ":\"".
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3556
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3561
   def on_symbeg(value); end
 
   # :call-seq:
@@ -10159,7 +10159,7 @@ class SyntaxTree::Parser < ::Ripper
   #     (Backtick | Const | CVar | GVar | Ident | IVar | Kw | Op) value
   #   ) -> SymbolContent
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3577
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3582
   def on_symbol(value); end
 
   # :call-seq:
@@ -10170,80 +10170,80 @@ class SyntaxTree::Parser < ::Ripper
   #     ) value
   #   ) -> SymbolLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3590
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3595
   def on_symbol_literal(value); end
 
   # :call-seq:
   #   on_symbols_add: (Symbols symbols, Word word) -> Symbols
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3606
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3611
   def on_symbols_add(symbols, word); end
 
   # :call-seq:
   #   on_symbols_beg: (String value) -> SymbolsBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3616
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3621
   def on_symbols_beg(value); end
 
   # :call-seq:
   #   on_symbols_new: () -> Symbols
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3635
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3640
   def on_symbols_new; end
 
   # :call-seq:
   #   on_tlambda: (String value) -> TLambda
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3647
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3652
   def on_tlambda(value); end
 
   # :call-seq:
   #   on_tlambeg: (String value) -> TLamBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3666
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3671
   def on_tlambeg(value); end
 
   # :call-seq:
   #   on_top_const_field: (Const constant) -> TopConstRef
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3685
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3690
   def on_top_const_field(constant); end
 
   # :call-seq:
   #   on_top_const_ref: (Const constant) -> TopConstRef
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3696
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3701
   def on_top_const_ref(constant); end
 
   # :call-seq:
   #   on_tstring_beg: (String value) -> TStringBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3707
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3712
   def on_tstring_beg(value); end
 
   # :call-seq:
   #   on_tstring_content: (String value) -> TStringContent
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3726
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3731
   def on_tstring_content(value); end
 
   # :call-seq:
   #   on_tstring_end: (String value) -> TStringEnd
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3741
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3746
   def on_tstring_end(value); end
 
   # :call-seq:
   #   on_unary: (:not operator, untyped statement) -> Not
   #           | (Symbol operator, untyped statement) -> Unary
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3761
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3766
   def on_unary(operator, statement); end
 
   # :call-seq:
   #   on_undef: (Array[DynaSymbol | SymbolLiteral] symbols) -> Undef
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3804
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3809
   def on_undef(symbols); end
 
   # :call-seq:
@@ -10253,31 +10253,31 @@ class SyntaxTree::Parser < ::Ripper
   #     ((nil | Elsif | Else) consequent)
   #   ) -> UnlessNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3819
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3824
   def on_unless(predicate, statements, consequent); end
 
   # :call-seq:
   #   on_unless_mod: (untyped predicate, untyped statement) -> UnlessNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3848
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3853
   def on_unless_mod(predicate, statement); end
 
   # :call-seq:
   #   on_until: (untyped predicate, Statements statements) -> UntilNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3862
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3867
   def on_until(predicate, statements); end
 
   # :call-seq:
   #   on_until_mod: (untyped predicate, untyped statement) -> UntilNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3893
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3898
   def on_until_mod(predicate, statement); end
 
   # :call-seq:
   #   on_var_alias: (GVar left, (Backref | GVar) right) -> AliasNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3906
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3911
   def on_var_alias(left, right); end
 
   # :call-seq:
@@ -10285,25 +10285,25 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | Const | CVar | GVar | Ident | IVar) value
   #   ) -> VarField
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3920
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3925
   def on_var_field(value); end
 
   # :call-seq:
   #   on_var_ref: ((Const | CVar | GVar | Ident | IVar | Kw) value) -> VarRef
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3935
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3940
   def on_var_ref(value); end
 
   # :call-seq:
   #   on_vcall: (Ident ident) -> VCall
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3941
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3946
   def on_vcall(ident); end
 
   # :call-seq:
   #   on_void_stmt: () -> VoidStmt
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3947
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3952
   def on_void_stmt; end
 
   # :call-seq:
@@ -10313,19 +10313,19 @@ class SyntaxTree::Parser < ::Ripper
   #     (nil | Else | When) consequent
   #   ) -> When
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3960
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3965
   def on_when(arguments, statements, consequent); end
 
   # :call-seq:
   #   on_while: (untyped predicate, Statements statements) -> WhileNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3992
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3997
   def on_while(predicate, statements); end
 
   # :call-seq:
   #   on_while_mod: (untyped predicate, untyped statement) -> WhileNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4023
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4028
   def on_while_mod(predicate, statement); end
 
   # :call-seq:
@@ -10334,31 +10334,31 @@ class SyntaxTree::Parser < ::Ripper
   #     (StringEmbExpr | StringDVar | TStringContent) part
   #   ) -> Word
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4039
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4044
   def on_word_add(word, part); end
 
   # :call-seq:
   #   on_word_new: () -> Word
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4048
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4053
   def on_word_new; end
 
   # :call-seq:
   #   on_words_add: (Words words, Word word) -> Words
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4058
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4063
   def on_words_add(words, word); end
 
   # :call-seq:
   #   on_words_beg: (String value) -> WordsBeg
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4068
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4073
   def on_words_beg(value); end
 
   # :call-seq:
   #   on_words_new: () -> Words
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4087
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4092
   def on_words_new; end
 
   # :call-seq:
@@ -10367,37 +10367,37 @@ class SyntaxTree::Parser < ::Ripper
   #     (StringEmbExpr | StringDVar | TStringContent) part
   #   ) -> XString
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4106
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4111
   def on_xstring_add(xstring, part); end
 
   # :call-seq:
   #   on_xstring_literal: (XString xstring) -> Heredoc | XStringLiteral
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4130
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4135
   def on_xstring_literal(xstring); end
 
   # :call-seq:
   #   on_xstring_new: () -> XString
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4115
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4120
   def on_xstring_new; end
 
   # :call-seq:
   #   on_yield: ((Args | Paren) arguments) -> YieldNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4153
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4158
   def on_yield(arguments); end
 
   # :call-seq:
   #   on_yield0: () -> YieldNode
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4164
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4169
   def on_yield0; end
 
   # :call-seq:
   #   on_zsuper: () -> ZSuper
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#4172
+  # source://syntax_tree/lib/syntax_tree/parser.rb#4177
   def on_zsuper; end
 end
 
@@ -10499,16 +10499,16 @@ end
 # attached to the AST. Because of this they only need to track their
 # associated location so they can be used for computing bounds.
 #
-# source://syntax_tree/lib/syntax_tree/parser.rb#3371
+# source://syntax_tree/lib/syntax_tree/parser.rb#3376
 class SyntaxTree::Parser::Semicolon
   # @return [Semicolon] a new instance of Semicolon
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3374
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3379
   def initialize(location); end
 
   # Returns the value of attribute location.
   #
-  # source://syntax_tree/lib/syntax_tree/parser.rb#3372
+  # source://syntax_tree/lib/syntax_tree/parser.rb#3377
   def location; end
 end
 

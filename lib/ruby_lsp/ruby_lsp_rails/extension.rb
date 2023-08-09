@@ -12,9 +12,39 @@ module RubyLsp
     class Extension < ::RubyLsp::Extension
       extend T::Sig
 
+      sig { returns(RailsClient) }
+      def client
+        @client ||= T.let(RailsClient.new, T.nilable(RailsClient))
+      end
+
       sig { override.void }
       def activate
-        RubyLsp::Rails::RailsClient.instance.check_if_server_is_running!
+        client.check_if_server_is_running!
+      end
+
+      sig { override.void }
+      def deactivate; end
+
+      # Creates a new CodeLens listener. This method is invoked on every CodeLens request
+      sig do
+        override.params(
+          uri: URI::Generic,
+          emitter: EventEmitter,
+          message_queue: Thread::Queue,
+        ).returns(T.nilable(Listener[T::Array[Interface::CodeLens]]))
+      end
+      def create_code_lens_listener(uri, emitter, message_queue)
+        CodeLens.new(uri, emitter, message_queue)
+      end
+
+      sig do
+        override.params(
+          emitter: EventEmitter,
+          message_queue: Thread::Queue,
+        ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
+      end
+      def create_hover_listener(emitter, message_queue)
+        Hover.new(client, emitter, message_queue)
       end
 
       sig { override.returns(String) }

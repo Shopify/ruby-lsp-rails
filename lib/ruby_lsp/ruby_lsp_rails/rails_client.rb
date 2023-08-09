@@ -1,7 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "singleton"
 require "net/http"
 
 module RubyLsp
@@ -10,7 +9,6 @@ module RubyLsp
       class ServerAddressUnknown < StandardError; end
 
       extend T::Sig
-      include Singleton
 
       SERVER_NOT_RUNNING_MESSAGE = "Rails server is not running. " \
         "To get Rails features in the editor, boot the Rails server"
