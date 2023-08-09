@@ -23,8 +23,8 @@ module RubyLsp
           if defined?(::Rails::Server)
             ssl_enable, host, port = ::Rails::Server::Options.new.parse!(ARGV).values_at(:SSLEnable, :Host, :Port)
             app_uri = "#{ssl_enable ? "https" : "http"}://#{host}:#{port}"
-            app_uri_path = "#{::Rails.root}/tmp/app_uri.txt"
-            File.write(app_uri_path, app_uri)
+            app_uri_path = ::Rails.root.join("tmp", "app_uri.txt")
+            app_uri_path.write(app_uri)
 
             at_exit do
               # The app_uri.txt file should only exist when the server is running. The extension uses its presence to

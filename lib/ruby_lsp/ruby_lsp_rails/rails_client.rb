@@ -13,30 +13,23 @@ module RubyLsp
       SERVER_NOT_RUNNING_MESSAGE = "Rails server is not running. " \
         "To get Rails features in the editor, boot the Rails server"
 
-      sig { returns(String) }
+      sig { returns(Pathname) }
       attr_reader :root
 
       sig { void }
       def initialize
-        project_root = Pathname.new(ENV["BUNDLE_GEMFILE"]).dirname
+        project_root = T.let(Bundler.with_unbundled_env { Bundler.default_gemfile }.dirname, Pathname)
+        dummy_path = project_root.join("test", "dummy")
 
-        if project_root.basename.to_s == ".ruby-lsp"
-          project_root = project_root.join("../")
-        end
+        @root = T.let(dummy_path.exist? ? dummy_path : project_root, Pathname)
+        app_uri_path = @root.join("tmp", "app_uri.txt")
 
-        dummy_path = File.join(project_root, "test", "dummy")
-        @root = T.let(Dir.exist?(dummy_path) ? dummy_path : project_root.to_s, String)
-        app_uri_path = "#{@root}/tmp/app_uri.txt"
+        if app_uri_path.exist?
+          url = URI(app_uri_path.read.chomp)
 
-        if File.exist?(app_uri_path)
-          url = File.read(app_uri_path).chomp
-
-          scheme, rest = url.split("://")
-          uri, port = T.must(rest).split(":")
-
-          @ssl = T.let(scheme == "https", T::Boolean)
-          @uri = T.let(T.must(uri), T.nilable(String))
-          @port = T.let(T.must(port).to_i, Integer)
+          @ssl = T.let(url.scheme == "https", T::Boolean)
+          @uri = T.let(T.must(url.path), T.nilable(String))
+          @port = T.let(T.must(url.port).to_i, Integer)
         end
       end
 

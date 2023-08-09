@@ -40,7 +40,7 @@ module RubyLsp
         project_root = Pathname.new(previous_bundle_gemfile).dirname
 
         ENV["BUNDLE_GEMFILE"] = "#{project_root}/.ruby-lsp/Gemfile"
-        assert_equal("#{project_root}/test/dummy", RailsClient.new.root)
+        assert_equal("#{project_root}/test/dummy", RailsClient.new.root.to_s)
       ensure
         ENV["BUNDLE_GEMFILE"] = previous_bundle_gemfile
       end
