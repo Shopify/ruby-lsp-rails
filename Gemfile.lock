@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: c0980d30360149d0c77beb79850e047440c628bf
+  revision: 3779b5069dd1742d878cc0e322fc642e730efa42
   branch: main
   specs:
     actioncable (7.1.0.alpha)
@@ -128,8 +128,8 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.6.0)
-    irb (1.6.4)
-      reline (>= 0.3.0)
+    irb (1.7.4)
+      reline (>= 0.3.6)
     json (2.6.3)
     language_server-protocol (3.17.0.3)
     loofah (2.21.3)
@@ -196,7 +196,7 @@ GEM
     rdoc (6.5.0)
       psych (>= 4.0.0)
     regexp_parser (2.8.1)
-    reline (0.3.4)
+    reline (0.3.7)
       io-console (~> 0.5)
     rexml (3.2.6)
     rubocop (1.55.1)
