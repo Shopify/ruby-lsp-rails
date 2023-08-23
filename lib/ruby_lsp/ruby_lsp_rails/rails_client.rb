@@ -28,7 +28,10 @@ module RubyLsp
           url = URI(app_uri_path.read.chomp)
 
           @ssl = T.let(url.scheme == "https", T::Boolean)
-          @uri = T.let(T.must(url.path), T.nilable(String))
+          @address = T.let(
+            [url.host, url.path].reject { |component| component.nil? || component.empty? }.join("/"),
+            T.nilable(String),
+          )
           @port = T.let(T.must(url.port).to_i, Integer)
         end
       end
@@ -62,9 +65,9 @@ module RubyLsp
 
       sig { params(path: String, timeout: T.nilable(Float)).returns(Net::HTTPResponse) }
       def request(path, timeout = nil)
-        raise ServerAddressUnknown unless @uri
+        raise ServerAddressUnknown unless @address
 
-        http = Net::HTTP.new(@uri, @port)
+        http = Net::HTTP.new(@address, @port)
         http.use_ssl = @ssl
         http.read_timeout = timeout if timeout
         http.get("/ruby_lsp_rails/#{path}")
