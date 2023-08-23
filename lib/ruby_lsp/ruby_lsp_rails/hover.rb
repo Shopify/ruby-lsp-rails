@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require_relative "support/rails_document_client"
+
 module RubyLsp
   module Rails
     # ![Hover demo](../../hover.gif)
@@ -29,7 +31,7 @@ module RubyLsp
 
         @response = T.let(nil, ResponseType)
         @client = client
-        emitter.register(self, :on_const)
+        emitter.register(self, :on_const, :on_command, :on_const_path_ref, :on_call)
       end
 
       sig { params(node: SyntaxTree::Const).void }
@@ -45,6 +47,36 @@ module RubyLsp
         content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
         contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
         @response = RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
+      end
+
+      sig { params(node: SyntaxTree::Command).void }
+      def on_command(node)
+        message = node.message
+        @response = generate_rails_document_link_hover(message.value, message)
+      end
+
+      sig { params(node: SyntaxTree::ConstPathRef).void }
+      def on_const_path_ref(node)
+        @response = generate_rails_document_link_hover(full_constant_name(node), node)
+      end
+
+      sig { params(node: SyntaxTree::CallNode).void }
+      def on_call(node)
+        message = node.message
+        return if message.is_a?(Symbol)
+
+        @response = generate_rails_document_link_hover(message.value, message)
+      end
+
+      private
+
+      sig { params(name: String, node: SyntaxTree::Node).returns(T.nilable(Interface::Hover)) }
+      def generate_rails_document_link_hover(name, node)
+        urls = Support::RailsDocumentClient.generate_rails_document_urls(name)
+        return if urls.empty?
+
+        contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: urls.join("\n\n"))
+        RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
       end
     end
   end
