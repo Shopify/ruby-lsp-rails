@@ -62,6 +62,15 @@ module RubyLsp
           RailsClient.new.check_if_server_is_running!
         end
       end
+
+      test "defaults path to localhost" do
+        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
+
+        client = RailsClient.new
+        assert_equal("localhost", client.instance_variable_get(:@address))
+        assert_equal(3000, client.instance_variable_get(:@port))
+        refute(client.instance_variable_get(:@ssl))
+      end
     end
   end
 end
