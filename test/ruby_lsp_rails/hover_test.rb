@@ -10,6 +10,11 @@ module RubyLsp
         File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
         @client = RailsClient.new
         @message_queue = Thread::Queue.new
+
+        # Build the Rails documents index ahead of time
+        capture_io do
+          Support::RailsDocumentClient.send(:search_index)
+        end
       end
 
       teardown do
@@ -85,6 +90,56 @@ module RubyLsp
         emitter.emit_for_target(Const("User"))
 
         refute_match(/Schema/, T.must(listener.response).contents.value)
+      end
+
+      test "shows documentation for routes DSLs" do
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(@client, emitter, @message_queue)
+        emitter.emit_for_target(Command(Ident("root"), "projects#index", nil))
+
+        response = T.must(listener.response).contents.value
+        assert_match(/\[Rails Document: `ActionDispatch::Routing::Mapper::Resources#root`\]/, response)
+        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-root\)}, response)
+      end
+
+      test "shows documentation for controller DSLs" do
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(@client, emitter, @message_queue)
+        emitter.emit_for_target(Command(Ident("before_action"), "foo", nil))
+
+        response = T.must(listener.response).contents.value
+        assert_match(/\[Rails Document: `AbstractController::Callbacks::ClassMethods#before_action`\]/, response)
+        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-before_action\)}, response)
+      end
+
+      test "shows documentation for job DSLs" do
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(@client, emitter, @message_queue)
+        emitter.emit_for_target(Command(Ident("queue_as"), "default", nil))
+
+        response = T.must(listener.response).contents.value
+        assert_match(/\[Rails Document: `ActiveJob::QueueName::ClassMethods#queue_as`\]/, response)
+        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-queue_as\)}, response)
+      end
+
+      test "shows documentation for model DSLs" do
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(@client, emitter, @message_queue)
+        emitter.emit_for_target(CallNode(nil, ".", Ident("validate"), "foo"))
+
+        response = T.must(listener.response).contents.value
+        assert_match(/\[Rails Document: `ActiveModel::EachValidator#validate`\]/, response)
+        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-validate\)}, response)
+      end
+
+      test "shows documentation for Rails constants" do
+        emitter = RubyLsp::EventEmitter.new
+        listener = Hover.new(@client, emitter, @message_queue)
+        emitter.emit_for_target(ConstPathRef(VarRef(Const("ActiveRecord")), Const("Base")))
+
+        response = T.must(listener.response).contents.value
+        assert_match(/\[Rails Document: `ActiveRecord::Base`\]/, response)
+        assert_match(%r{\(https://api\.rubyonrails\.org/.*Base\.html\)}, response)
       end
     end
   end
