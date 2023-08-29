@@ -8,6 +8,7 @@ module RubyLsp
     module Support
       class RailsDocumentClient
         RAILS_DOC_HOST = "https://api.rubyonrails.org"
+
         SUPPORTED_RAILS_DOC_NAMESPACES = T.let(
           Regexp.union(
             /ActionDispatch/,
@@ -31,9 +32,8 @@ module RubyLsp
 
         class << self
           extend T::Sig
-          sig do
-            params(name: String).returns(T::Array[String])
-          end
+
+          sig { params(name: String).returns(T::Array[String]) }
           def generate_rails_document_urls(name)
             docs = search_index&.fetch(name, nil)
 
