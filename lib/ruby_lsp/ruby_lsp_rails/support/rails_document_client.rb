@@ -8,6 +8,7 @@ module RubyLsp
     module Support
       class RailsDocumentClient
         RAILS_DOC_HOST = "https://api.rubyonrails.org"
+
         SUPPORTED_RAILS_DOC_NAMESPACES = T.let(
           Regexp.union(
             /ActionDispatch/,
@@ -31,9 +32,8 @@ module RubyLsp
 
         class << self
           extend T::Sig
-          sig do
-            params(name: String).returns(T::Array[String])
-          end
+
+          sig { params(name: String).returns(T::Array[String]) }
           def generate_rails_document_urls(name)
             docs = search_index&.fetch(name, nil)
 
@@ -70,18 +70,20 @@ module RubyLsp
 
             response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/v#{RAILTIES_VERSION}/js/search_index.js"))
 
-            if response.code == "302"
+            body = case response
+            when Net::HTTPSuccess
+              response.body
+            when Net::HTTPRedirection
               # If the version's doc is not found, e.g. Rails main, it'll be redirected
               # In this case, we just fetch the latest doc
               response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/js/search_index.js"))
-            end
-
-            if response.code == "200"
-              process_search_index(response.body)
+              response.body if response.is_a?(Net::HTTPSuccess)
             else
               warn("Response failed: #{response.inspect}")
               nil
             end
+
+            process_search_index(body) if body
           rescue StandardError => e
             warn("Exception occurred when fetching Rails document index: #{e.inspect}")
           end
