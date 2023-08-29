@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 24876e6a7982569aa421b2aa95ba095126dfd532
+  revision: 9d8ac620afc44d5f2b872b0710177852933c82d3
   branch: main
   specs:
     actioncable (7.1.0.alpha)
@@ -68,6 +68,7 @@ GIT
       marcel (~> 1.0)
     activesupport (7.1.0.alpha)
       base64
+      bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       connection_pool (>= 2.2.5)
       drb
@@ -111,6 +112,7 @@ GEM
   specs:
     ast (2.4.2)
     base64 (0.1.1)
+    bigdecimal (3.1.4)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
