@@ -253,7 +253,7 @@ GEM
       sorbet-runtime (>= 0.5.9204)
       syntax_tree (>= 6.1.1)
       thor (>= 0.19.2)
-    sqlite3 (1.6.3)
+    sqlite3 (1.6.4)
       mini_portile2 (~> 2.8.0)
     stringio (3.0.7)
     syntax_tree (6.1.1)
