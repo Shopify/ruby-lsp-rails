@@ -6,6 +6,7 @@ require "ruby_lsp/extension"
 require_relative "rails_client"
 require_relative "hover"
 require_relative "code_lens"
+require_relative "document_symbol"
 
 module RubyLsp
   module Rails
@@ -45,6 +46,16 @@ module RubyLsp
       end
       def create_hover_listener(emitter, message_queue)
         Hover.new(client, emitter, message_queue)
+      end
+
+      sig do
+        override.params(
+          emitter: EventEmitter,
+          message_queue: Thread::Queue,
+        ).returns(T.nilable(Listener[T::Array[Interface::DocumentSymbol]]))
+      end
+      def create_document_symbol_listener(emitter, message_queue)
+        DocumentSymbol.new(emitter, message_queue)
       end
 
       sig { override.returns(String) }
