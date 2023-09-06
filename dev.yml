@@ -3,7 +3,7 @@ name: ruby-lsp-rails
 type: ruby
 
 up:
-  - ruby: '3.2.1'
+  - ruby: '3.2.2'
   - bundler:
       gemfile: Gemfile
 

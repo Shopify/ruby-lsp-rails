@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "rails/railtie"
+require "rails"
 require "ruby_lsp_rails/rack_app"
 
 module RubyLsp
