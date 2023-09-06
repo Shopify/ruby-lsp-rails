@@ -1,11 +1,15 @@
 # typed: strict
 # frozen_string_literal: true
 
+require_relative "support/active_support_test_helper"
+
 module RubyLsp
   module Rails
     class DocumentSymbol < ::RubyLsp::Listener
       extend T::Sig
       extend T::Generic
+
+      include ActiveSupportTestHelper
 
       ResponseType = type_member { { fixed: T::Array[::RubyLsp::Interface::DocumentSymbol] } }
       SymbolHierarchyRoot = RubyLsp::Requests::DocumentSymbol::SymbolHierarchyRoot
@@ -43,30 +47,9 @@ module RubyLsp
 
       sig { params(node: SyntaxTree::Command).void }
       def on_command(node)
-        message_value = node.message.value
-        return unless message_value == "test" && node.arguments.parts.any?
+        test_name = active_support_test_name(node)
 
-        first_argument = node.arguments.parts.first
-
-        parts = case first_argument
-        when SyntaxTree::StringConcat
-          # We only support two lines of concatenation on test names
-          if first_argument.left.is_a?(SyntaxTree::StringLiteral) &&
-              first_argument.right.is_a?(SyntaxTree::StringLiteral)
-            [*first_argument.left.parts, *first_argument.right.parts]
-          end
-        when SyntaxTree::StringLiteral
-          first_argument.parts
-        end
-
-        # The test name may be a blank string while the code is being typed
-        return if parts.nil? || parts.empty?
-
-        # We can't handle interpolation yet
-        return unless parts.all? { |part| part.is_a?(SyntaxTree::TStringContent) }
-
-        test_name = parts.map(&:value).join
-        return if test_name.empty?
+        return unless test_name
 
         create_document_symbol(
           name: test_name,
