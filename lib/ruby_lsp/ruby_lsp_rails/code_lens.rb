@@ -40,11 +40,11 @@ module RubyLsp
       BASE_COMMAND = "bin/rails test"
 
       sig { override.returns(ResponseType) }
-      attr_reader :response
+      attr_reader :_response
 
       sig { params(uri: URI::Generic, emitter: EventEmitter, message_queue: Thread::Queue).void }
       def initialize(uri, emitter, message_queue)
-        @response = T.let([], ResponseType)
+        @_response = T.let([], ResponseType)
         @path = T.let(uri.to_standardized_path, T.nilable(String))
         emitter.register(self, :on_command, :on_class, :on_def)
 
@@ -121,7 +121,7 @@ module RubyLsp
           },
         ]
 
-        @response << create_code_lens(
+        @_response << create_code_lens(
           node,
           title: "Run",
           command_name: "rubyLsp.runTest",
@@ -129,7 +129,7 @@ module RubyLsp
           data: { type: "test", kind: kind },
         )
 
-        @response << create_code_lens(
+        @_response << create_code_lens(
           node,
           title: "Run In Terminal",
           command_name: "rubyLsp.runTestInTerminal",
@@ -137,7 +137,7 @@ module RubyLsp
           data: { type: "test_in_terminal", kind: kind },
         )
 
-        @response << create_code_lens(
+        @_response << create_code_lens(
           node,
           title: "Debug",
           command_name: "rubyLsp.debugTest",
