@@ -23,13 +23,13 @@ module RubyLsp
       ResponseType = type_member { { fixed: T.nilable(::RubyLsp::Interface::Hover) } }
 
       sig { override.returns(ResponseType) }
-      attr_reader :response
+      attr_reader :_response
 
       sig { params(client: RailsClient, emitter: RubyLsp::EventEmitter, message_queue: Thread::Queue).void }
       def initialize(client, emitter, message_queue)
         super(emitter, message_queue)
 
-        @response = T.let(nil, ResponseType)
+        @_response = T.let(nil, ResponseType)
         @client = client
         emitter.register(self, :on_const, :on_command, :on_const_path_ref, :on_call)
       end
@@ -46,18 +46,18 @@ module RubyLsp
         end
         content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
         contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
-        @response = RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
+        @_response = RubyLsp::Interface::Hover.new(range: range_from_syntax_tree_node(node), contents: contents)
       end
 
       sig { params(node: SyntaxTree::Command).void }
       def on_command(node)
         message = node.message
-        @response = generate_rails_document_link_hover(message.value, message)
+        @_response = generate_rails_document_link_hover(message.value, message)
       end
 
       sig { params(node: SyntaxTree::ConstPathRef).void }
       def on_const_path_ref(node)
-        @response = generate_rails_document_link_hover(full_constant_name(node), node)
+        @_response = generate_rails_document_link_hover(full_constant_name(node), node)
       end
 
       sig { params(node: SyntaxTree::CallNode).void }
@@ -65,7 +65,7 @@ module RubyLsp
         message = node.message
         return if message.is_a?(Symbol)
 
-        @response = generate_rails_document_link_hover(message.value, message)
+        @_response = generate_rails_document_link_hover(message.value, message)
       end
 
       private
