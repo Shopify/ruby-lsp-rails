@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 42db7f307f9cc1fb0cc5da68c830d08f625429cf
+  revision: b5d63b9b16c6f251eaa08f61086f21ff3ef3292f
   branch: main
   specs:
     actioncable (7.1.0.alpha)
@@ -125,14 +125,14 @@ GEM
     drb (2.1.1)
       ruby2_keywords
     erubi (1.12.0)
-    globalid (1.2.0)
+    globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.6.0)
-    irb (1.8.0)
-      rdoc (~> 6.5)
-      reline (>= 0.3.6)
+    irb (1.8.1)
+      rdoc
+      reline (>= 0.3.8)
     json (2.6.3)
     language_server-protocol (3.17.0.3)
     loofah (2.21.3)
@@ -146,7 +146,7 @@ GEM
     marcel (1.0.2)
     mini_mime (1.1.5)
     mini_portile2 (2.8.4)
-    minitest (5.19.0)
+    minitest (5.20.0)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
     mutex_m (0.1.2)
@@ -256,7 +256,7 @@ GEM
       thor (>= 0.19.2)
     sqlite3 (1.6.4)
       mini_portile2 (~> 2.8.0)
-    stringio (3.0.7)
+    stringio (3.0.8)
     syntax_tree (6.1.1)
       prettier_print (>= 1.2.0)
     tapioca (0.11.8)
