@@ -104,7 +104,7 @@ PATH
   specs:
     ruby-lsp-rails (0.2.5)
       rails (>= 6.0)
-      ruby-lsp (>= 0.10.0, < 0.11.0)
+      ruby-lsp (>= 0.11.0, < 0.12.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
@@ -221,11 +221,10 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.7.4)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.10.1)
+    ruby-lsp (0.11.0)
       language_server-protocol (~> 3.17.0)
-      sorbet-runtime
-      syntax_tree (>= 6.1.1, < 7)
-      yarp (>= 0.11, < 0.12)
+      sorbet-runtime (>= 0.5.5685)
+      yarp (>= 0.12, < 0.13)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sorbet (0.5.11054)
@@ -244,7 +243,7 @@ GEM
     sqlite3 (1.6.6)
       mini_portile2 (~> 2.8.0)
     stringio (3.0.8)
-    syntax_tree (6.1.1)
+    syntax_tree (6.2.0)
       prettier_print (>= 1.2.0)
     tapioca (0.11.9)
       bundler (>= 2.2.25)
@@ -270,7 +269,7 @@ GEM
     yard-sorbet (0.8.1)
       sorbet-runtime (>= 0.5)
       yard (>= 0.9)
-    yarp (0.11.0)
+    yarp (0.12.0)
     zeitwerk (2.6.12)
 
 PLATFORMS

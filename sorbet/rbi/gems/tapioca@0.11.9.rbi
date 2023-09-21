@@ -3455,30 +3455,30 @@ end
 
 # source://tapioca/lib/tapioca/helpers/source_uri.rb#7
 class URI::Source < ::URI::File
-  # source://ruby-lsp/0.10.1lib/ruby_lsp/requests/support/source_uri.rb#62
+  # source://ruby-lsp/0.11.0lib/ruby_lsp/requests/support/source_uri.rb#62
   sig { params(v: T.nilable(::String)).returns(T::Boolean) }
   def check_host(v); end
 
   # source://uri/0.12.1uri/generic.rb#243
   def gem_name; end
 
-  # source://ruby-lsp/0.10.1lib/ruby_lsp/requests/support/source_uri.rb#26
+  # source://ruby-lsp/0.11.0lib/ruby_lsp/requests/support/source_uri.rb#26
   sig { returns(T.nilable(::String)) }
   def gem_version; end
 
   # source://uri/0.12.1uri/generic.rb#283
   def line_number; end
 
-  # source://ruby-lsp/0.10.1lib/ruby_lsp/requests/support/source_uri.rb#52
+  # source://ruby-lsp/0.11.0lib/ruby_lsp/requests/support/source_uri.rb#52
   sig { params(v: T.nilable(::String)).void }
   def set_path(v); end
 
-  # source://ruby-lsp/0.10.1lib/ruby_lsp/requests/support/source_uri.rb#74
+  # source://ruby-lsp/0.11.0lib/ruby_lsp/requests/support/source_uri.rb#74
   sig { returns(::String) }
   def to_s; end
 
   class << self
-    # source://ruby-lsp/0.10.1lib/ruby_lsp/requests/support/source_uri.rb#39
+    # source://ruby-lsp/0.11.0lib/ruby_lsp/requests/support/source_uri.rb#39
     sig do
       params(
         gem_name: ::String,

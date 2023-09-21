@@ -27,8 +27,8 @@ module RubyLsp
             app_uri_path.write(app_uri)
 
             at_exit do
-              # The app_uri.txt file should only exist when the server is running. The extension uses its presence to
-              # report if the server is running or not. If the server is not running, some of the extension features
+              # The app_uri.txt file should only exist when the server is running. The addon uses its presence to
+              # report if the server is running or not. If the server is not running, some of the addon features
               # will not be available.
               File.delete(app_uri_path) if File.exist?(app_uri_path)
             end
