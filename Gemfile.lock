@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: ebcd7233ea1307448f2d97eaf56a8d303200e5f7
+  revision: 2d196d489810afec94eccdffed4ed4a2743f7b6e
   branch: main
   specs:
     actioncable (7.1.0.beta1)
@@ -156,7 +156,7 @@ GEM
       net-protocol
     net-protocol (0.2.1)
       timeout
-    net-smtp (0.3.3)
+    net-smtp (0.4.0)
       net-protocol
     netrc (0.11.0)
     nio4r (2.5.9)
@@ -271,7 +271,7 @@ GEM
       sorbet-runtime (>= 0.5)
       yard (>= 0.9)
     yarp (0.11.0)
-    zeitwerk (2.6.11)
+    zeitwerk (2.6.12)
 
 PLATFORMS
   arm64-darwin
