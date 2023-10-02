@@ -199,7 +199,7 @@ GEM
     reline (0.3.8)
       io-console (~> 0.5)
     rexml (3.2.6)
-    rubocop (1.56.2)
+    rubocop (1.56.4)
       base64 (~> 0.1.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
@@ -213,7 +213,7 @@ GEM
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.29.0)
       parser (>= 3.2.1.0)
-    rubocop-minitest (0.31.1)
+    rubocop-minitest (0.32.2)
       rubocop (>= 1.39, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
@@ -261,7 +261,7 @@ GEM
       concurrent-ruby (~> 1.0)
     tzinfo-data (1.2023.3)
       tzinfo (>= 1.0.0)
-    unicode-display_width (2.4.2)
+    unicode-display_width (2.5.0)
     webrick (1.8.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
@@ -287,7 +287,7 @@ DEPENDENCIES
   puma
   rails!
   rdoc
-  rubocop-minitest (~> 0.31.1)
+  rubocop-minitest (~> 0.32.2)
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.14)
   rubocop-sorbet (~> 0.7)
