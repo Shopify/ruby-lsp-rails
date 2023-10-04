@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Shopify"]
   spec.email       = ["ruby@shopify.com"]
   spec.homepage    = "https://github.com/Shopify/ruby-lsp-rails"
-  spec.summary     = "A Ruby LSP extension for Rails"
-  spec.description = "A Ruby LSP extension that adds extra editor functionality for Rails applications"
+  spec.summary     = "A Ruby LSP addon for Rails"
+  spec.description = "A Ruby LSP addon that adds extra editor functionality for Rails applications"
   spec.license     = "MIT"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
@@ -22,6 +22,6 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency("rails", ">= 6.0")
-  spec.add_dependency("ruby-lsp", ">= 0.10.0", "< 0.11.0")
+  spec.add_dependency("ruby-lsp", ">= 0.11.0", "< 0.12.0")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9897")
 end

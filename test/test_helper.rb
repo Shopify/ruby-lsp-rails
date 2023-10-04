@@ -12,7 +12,7 @@ require "rails/test_help"
 require "mocha/minitest"
 require "syntax_tree/dsl"
 require "ruby_lsp/internal"
-require "ruby_lsp/ruby_lsp_rails/extension"
+require "ruby_lsp/ruby_lsp_rails/addon"
 
 module ActiveSupport
   class TestCase

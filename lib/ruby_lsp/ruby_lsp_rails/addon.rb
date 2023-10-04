@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "ruby_lsp/extension"
+require "ruby_lsp/addon"
 
 require_relative "rails_client"
 require_relative "hover"
@@ -9,7 +9,7 @@ require_relative "code_lens"
 
 module RubyLsp
   module Rails
-    class Extension < ::RubyLsp::Extension
+    class Addon < ::RubyLsp::Addon
       extend T::Sig
 
       sig { returns(RailsClient) }
@@ -39,11 +39,13 @@ module RubyLsp
 
       sig do
         override.params(
+          nesting: T::Array[String],
+          index: RubyIndexer::Index,
           emitter: EventEmitter,
           message_queue: Thread::Queue,
         ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
       end
-      def create_hover_listener(emitter, message_queue)
+      def create_hover_listener(nesting, index, emitter, message_queue)
         Hover.new(client, emitter, message_queue)
       end
 

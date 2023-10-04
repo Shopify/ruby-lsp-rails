@@ -46,47 +46,45 @@ module RubyLsp
       def initialize(uri, emitter, message_queue)
         @_response = T.let([], ResponseType)
         @path = T.let(uri.to_standardized_path, T.nilable(String))
-        emitter.register(self, :on_command, :on_class, :on_def)
+        emitter.register(self, :on_call, :on_class, :on_def)
 
         super(emitter, message_queue)
       end
 
-      sig { params(node: SyntaxTree::Command).void }
-      def on_command(node)
-        message_value = node.message.value
-        return unless message_value == "test" && node.arguments.parts.any?
+      sig { params(node: YARP::CallNode).void }
+      def on_call(node)
+        message_value = node.message
+        return unless message_value == "test"
 
-        first_argument = node.arguments.parts.first
+        arguments = node.arguments&.arguments
+        return unless arguments&.any?
 
-        parts = case first_argument
-        when SyntaxTree::StringConcat
+        first_argument = arguments.first
+
+        content = case first_argument
+        when YARP::StringConcatNode
+          left = first_argument.left
+          right = first_argument.right
           # We only support two lines of concatenation on test names
-          if first_argument.left.is_a?(SyntaxTree::StringLiteral) &&
-              first_argument.right.is_a?(SyntaxTree::StringLiteral)
-            [*first_argument.left.parts, *first_argument.right.parts]
+          if left.is_a?(YARP::StringNode) &&
+              right.is_a?(YARP::StringNode)
+            left.content + right.content
           end
-        when SyntaxTree::StringLiteral
-          first_argument.parts
+        when YARP::StringNode
+          first_argument.content
         end
 
-        # The test name may be a blank string while the code is being typed
-        return if parts.nil? || parts.empty?
-
-        # We can't handle interpolation yet
-        return unless parts.all? { |part| part.is_a?(SyntaxTree::TStringContent) }
-
-        test_name = parts.map(&:value).join
-        return if test_name.empty?
+        return unless content && !content.empty?
 
         line_number = node.location.start_line
         command = "#{BASE_COMMAND} #{@path}:#{line_number}"
-        add_test_code_lens(node, name: test_name, command: command, kind: :example)
+        add_test_code_lens(node, name: content, command: command, kind: :example)
       end
 
       # Although uncommon, Rails tests can be written with the classic "def test_name" syntax.
-      sig { params(node: SyntaxTree::DefNode).void }
+      sig { params(node: YARP::DefNode).void }
       def on_def(node)
-        method_name = node.name.value
+        method_name = node.name.to_s
         if method_name.start_with?("test_")
           line_number = node.location.start_line
           command = "#{BASE_COMMAND} #{@path}:#{line_number}"
@@ -94,9 +92,9 @@ module RubyLsp
         end
       end
 
-      sig { params(node: SyntaxTree::ClassDeclaration).void }
+      sig { params(node: YARP::ClassNode).void }
       def on_class(node)
-        class_name = node.constant.constant.value
+        class_name = node.constant_path.slice
         if class_name.end_with?("Test")
           command = "#{BASE_COMMAND} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
@@ -105,7 +103,7 @@ module RubyLsp
 
       private
 
-      sig { params(node: SyntaxTree::Node, name: String, command: String, kind: Symbol).void }
+      sig { params(node: YARP::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)
         return unless @path
 

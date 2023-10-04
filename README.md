@@ -1,6 +1,6 @@
 # Ruby LSP Rails
 
-Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) extension for extra Rails editor features, such as:
+Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for extra Rails editor features, such as:
 
 - Displaying an ActiveRecord model's database columns and types when hovering over it
 - Running tests and debugging tests through the terminal or the editor's UI
@@ -56,7 +56,7 @@ cause the test runner to hang.
 This gem consists of two components that enable enhanced Rails functionality in the editor:
 
 1. A Rack app that automatically exposes APIs when Rails server is running
-1. A Ruby LSP extension that connects to the exposed APIs to fetch runtime information from the Rails server
+1. A Ruby LSP addon that connects to the exposed APIs to fetch runtime information from the Rails server
 
 This is why the Rails server needs to be running for some features to work.
 
