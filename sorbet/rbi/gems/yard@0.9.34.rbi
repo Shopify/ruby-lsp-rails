@@ -490,19 +490,19 @@ RUBY19 = T.let(T.unsafe(nil), TrueClass)
 #
 # source://yard/lib/yard/server/rack_adapter.rb#93
 class Rack::Request
-  # source://rack/2.2.6.4lib/rack/request.rb#26
+  # source://rack/3.0.8lib/rack/request.rb#62
   def initialize(env); end
 
-  # source://rack/2.2.6.4lib/rack/request.rb#40
+  # source://rack/3.0.8lib/rack/request.rb#76
   def delete_param(k); end
 
-  # source://rack/2.2.6.4lib/rack/request.rb#31
+  # source://rack/3.0.8lib/rack/request.rb#67
   def params; end
 
-  # source://rack/2.2.6.4lib/rack/request.rb#31
+  # source://rack/3.0.8lib/rack/request.rb#67
   def query; end
 
-  # source://rack/2.2.6.4lib/rack/request.rb#35
+  # source://rack/3.0.8lib/rack/request.rb#71
   def update_param(k, v); end
 
   # Returns the value of attribute version_supplied.
@@ -523,11 +523,23 @@ class Rack::Request
   def xhr?; end
 
   class << self
-    # source://rack/2.2.6.4lib/rack/request.rb#16
+    # source://rack/3.0.8lib/rack/request.rb#31
+    def forwarded_priority; end
+
+    # source://rack/3.0.8lib/rack/request.rb#31
+    def forwarded_priority=(_arg0); end
+
+    # source://rack/3.0.8lib/rack/request.rb#18
     def ip_filter; end
 
-    # source://rack/2.2.6.4lib/rack/request.rb#16
+    # source://rack/3.0.8lib/rack/request.rb#18
     def ip_filter=(_arg0); end
+
+    # source://rack/3.0.8lib/rack/request.rb#40
+    def x_forwarded_proto_priority; end
+
+    # source://rack/3.0.8lib/rack/request.rb#40
+    def x_forwarded_proto_priority=(_arg0); end
   end
 end
 
@@ -633,6 +645,28 @@ class SymbolHash < ::Hash
     # source://yard/lib/yard/core_ext/symbol_hash.rb#28
     def [](*hsh); end
   end
+end
+
+# @private
+#
+# source://yard/lib/yard/server/webrick_adapter.rb#42
+class WEBrick::HTTPRequest
+  # Returns the value of attribute version_supplied.
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#43
+  def version_supplied; end
+
+  # Sets the attribute version_supplied
+  #
+  # @param value the value to set the attribute version_supplied to.
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#43
+  def version_supplied=(_arg0); end
+
+  # @return [Boolean]
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#44
+  def xhr?; end
 end
 
 # Gem::YARDoc provides methods to generate YARDoc and yri data for installed gems
@@ -14445,8 +14479,8 @@ class YARD::Server::RackMiddleware
   def call(env); end
 end
 
-# source://yard/lib/yard/server/rack_adapter.rb#12
-YARD::Server::RackServer = Rack::Server
+# source://yard/lib/yard/server/rack_adapter.rb#8
+YARD::Server::RackServer = Rackup::Server
 
 # A router class implements the logic used to recognize a request for a specific
 # URL and run specific {Commands::Base commands}.
@@ -14666,6 +14700,50 @@ module YARD::Server::StaticCaching
   #
   # source://yard/lib/yard/server/static_caching.rb#34
   def check_static_cache; end
+end
+
+# The main adapter to initialize a WEBrick server.
+#
+# @since 0.6.0
+#
+# source://yard/lib/yard/server/webrick_adapter.rb#7
+class YARD::Server::WebrickAdapter < ::YARD::Server::Adapter
+  # Initializes a WEBrick server. If {Adapter#server_options} contains a
+  # +:daemonize+ key set to true, the server will be daemonized.
+  #
+  # @since 0.6.0
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#10
+  def start; end
+end
+
+# The main WEBrick servlet implementation, accepting only GET requests.
+#
+# @since 0.6.0
+#
+# source://yard/lib/yard/server/webrick_adapter.rb#20
+class YARD::Server::WebrickServlet < ::WEBrick::HTTPServlet::AbstractServlet
+  # @return [WebrickServlet] a new instance of WebrickServlet
+  # @since 0.6.0
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#23
+  def initialize(server, adapter); end
+
+  # @since 0.6.0
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#21
+  def adapter; end
+
+  # @since 0.6.0
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#21
+  def adapter=(_arg0); end
+
+  # @private
+  # @since 0.6.0
+  #
+  # source://yard/lib/yard/server/webrick_adapter.rb#29
+  def do_GET(request, response); end
 end
 
 # Stubs marshal dumps and acts a delegate class for an object by path

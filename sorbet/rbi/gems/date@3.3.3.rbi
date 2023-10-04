@@ -14,59 +14,59 @@ class Date
   #
   # @return [Boolean]
   #
-  # source://date//date.rb#13
+  # source://date/date.rb#13
   def infinite?; end
 end
 
 class Date::Infinity < ::Numeric
   # @return [Infinity] a new instance of Infinity
   #
-  # source://date//date.rb#19
+  # source://date/date.rb#19
   def initialize(d = T.unsafe(nil)); end
 
-  # source://date//date.rb#33
+  # source://date/date.rb#33
   def +@; end
 
-  # source://date//date.rb#32
+  # source://date/date.rb#32
   def -@; end
 
-  # source://date//date.rb#35
+  # source://date/date.rb#35
   def <=>(other); end
 
-  # source://date//date.rb#30
+  # source://date/date.rb#30
   def abs; end
 
-  # source://date//date.rb#51
+  # source://date/date.rb#51
   def coerce(other); end
 
   # @return [Boolean]
   #
-  # source://date//date.rb#26
+  # source://date/date.rb#26
   def finite?; end
 
   # @return [Boolean]
   #
-  # source://date//date.rb#27
+  # source://date/date.rb#27
   def infinite?; end
 
   # @return [Boolean]
   #
-  # source://date//date.rb#28
+  # source://date/date.rb#28
   def nan?; end
 
-  # source://date//date.rb#59
+  # source://date/date.rb#59
   def to_f; end
 
   # @return [Boolean]
   #
-  # source://date//date.rb#25
+  # source://date/date.rb#25
   def zero?; end
 
   protected
 
-  # source://date//date.rb#21
+  # source://date/date.rb#21
   def d; end
 end
 
-# source://date//date.rb#7
+# source://date/date.rb#7
 Date::VERSION = T.let(T.unsafe(nil), String)
