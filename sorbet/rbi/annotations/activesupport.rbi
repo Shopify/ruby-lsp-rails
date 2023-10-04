@@ -1,4 +1,4 @@
-# typed: strict
+# typed: true
 
 # DO NOT EDIT MANUALLY
 # This file was pulled from a central RBI files repository.
@@ -41,6 +41,14 @@ class ActiveSupport::TestCase
 
   sig { params(name: String, block: T.proc.bind(T.attached_class).void).void }
   def self.test(name, &block); end
+end
+
+class ActiveSupport::TimeWithZone
+  # @shim: Methods on ActiveSupport::TimeWithZone are delegated to `Time` using `method_missing
+  include ::DateAndTime::Zones
+
+  # @shim: Methods on ActiveSupport::TimeWithZone are delegated to `Time` using `method_missing
+  include ::DateAndTime::Calculations
 end
 
 class Object
@@ -120,8 +128,8 @@ class Array
   sig { params(object: T.untyped).returns(T::Array[T.untyped]) }
   def self.wrap(object); end
 
-  sig { returns(T.untyped) }
-  def extract!; end
+  sig { params(block: T.nilable(T.proc.params(element: Elem).returns(T.untyped))).returns(T.any(T::Array[Elem], T::Enumerator[Elem])) }
+  def extract!(&block); end
 
   sig { returns(ActiveSupport::ArrayInquirer) }
   def inquiry; end
