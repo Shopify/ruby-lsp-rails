@@ -37,7 +37,54 @@ module RubyLsp
         stub_http_request("200", expected_response.to_json)
         @client.stubs(check_if_server_is_running!: true)
 
-        response = hover_on_source("User", { line: 0, character: 0 })
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_equal(<<~CONTENT, response.contents.value)
+          [Schema](file://#{@client.root}/db/schema.rb)
+
+          **id**: integer
+
+          **first_name**: string
+
+          **last_name**: string
+
+          **age**: integer
+
+          **created_at**: datetime
+
+          **updated_at**: datetime
+        CONTENT
+      end
+
+      test "return column information for namespaced models" do
+        expected_response = {
+          schema_file: "#{@client.root}/db/schema.rb",
+          columns: [
+            ["id", "integer"],
+            ["first_name", "string"],
+            ["last_name", "string"],
+            ["age", "integer"],
+            ["created_at", "datetime"],
+            ["updated_at", "datetime"],
+          ],
+        }
+
+        stub_http_request("200", expected_response.to_json)
+        @client.stubs(check_if_server_is_running!: true)
+
+        response = hover_on_source(<<~RUBY, { line: 4, character: 6 })
+          module Blog
+            class User < ApplicationRecord
+            end
+          end
+
+          Blog::User
+        RUBY
 
         assert_equal(<<~CONTENT, response.contents.value)
           [Schema](file://#{@client.root}/db/schema.rb)
@@ -65,7 +112,12 @@ module RubyLsp
         stub_http_request("200", expected_response.to_json)
         @client.stubs(check_if_server_is_running!: true)
 
-        response = hover_on_source("User", { line: 0, character: 0 })
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
 
         assert_includes(
           response.contents.value,
@@ -82,7 +134,12 @@ module RubyLsp
         stub_http_request("200", expected_response.to_json)
         @client.stubs(check_if_server_is_running!: true)
 
-        response = hover_on_source("User", { line: 0, character: 0 })
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
 
         refute_match(/Schema/, response.contents.value)
       end
@@ -116,7 +173,11 @@ module RubyLsp
       end
 
       test "shows documentation for Rails constants" do
-        value = hover_on_source("ActiveRecord::Base", { line: 0, character: 14 }).contents.value
+        value = hover_on_source(<<~RUBY, { line: 2, character: 14 }).contents.value
+          class ActiveRecord::Base
+          end
+          ActiveRecord::Base
+        RUBY
 
         assert_match(/\[Rails Document: `ActiveRecord::Base`\]/, value)
         assert_match(%r{\(https://api\.rubyonrails\.org/.*Base\.html\)}, value)
@@ -129,7 +190,11 @@ module RubyLsp
         store = RubyLsp::Store.new
         store.set(uri: uri, source: source, version: 1)
 
-        response = RubyLsp::Executor.new(store, @message_queue).execute(
+        executor = RubyLsp::Executor.new(store, @message_queue)
+        executor.instance_variable_get(:@index).index_single(
+          RubyIndexer::IndexablePath.new(nil, T.must(uri.to_standardized_path)), source
+        )
+        response = executor.execute(
           {
             method: "textDocument/hover",
             params: {
