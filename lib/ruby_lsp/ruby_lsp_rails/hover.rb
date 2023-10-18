@@ -30,22 +30,22 @@ module RubyLsp
           client: RailsClient,
           nesting: T::Array[String],
           index: RubyIndexer::Index,
-          emitter: RubyLsp::EventEmitter,
+          dispatcher: Prism::Dispatcher,
           message_queue: Thread::Queue,
         ).void
       end
-      def initialize(client, nesting, index, emitter, message_queue)
-        super(emitter, message_queue)
+      def initialize(client, nesting, index, dispatcher, message_queue)
+        super(dispatcher, message_queue)
 
         @_response = T.let(nil, ResponseType)
         @client = client
         @nesting = nesting
         @index = index
-        emitter.register(self, :on_constant_path, :on_constant_read, :on_call)
+        dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
       end
 
-      sig { params(node: YARP::ConstantPathNode).void }
-      def on_constant_path(node)
+      sig { params(node: Prism::ConstantPathNode).void }
+      def on_constant_path_node_enter(node)
         entries = @index.resolve(node.slice, @nesting)
         return unless entries
 
@@ -62,8 +62,8 @@ module RubyLsp
         @_response = RubyLsp::Interface::Hover.new(range: range_from_location(node.location), contents: contents)
       end
 
-      sig { params(node: YARP::ConstantReadNode).void }
-      def on_constant_read(node)
+      sig { params(node: Prism::ConstantReadNode).void }
+      def on_constant_read_node_enter(node)
         entries = @index.resolve(node.name.to_s, @nesting)
         return unless entries
 
@@ -74,8 +74,8 @@ module RubyLsp
         @_response = RubyLsp::Interface::Hover.new(range: range_from_location(node.location), contents: contents)
       end
 
-      sig { params(node: YARP::CallNode).void }
-      def on_call(node)
+      sig { params(node: Prism::CallNode).void }
+      def on_call_node_enter(node)
         message_value = node.message
         message_loc = node.message_loc
 
@@ -98,7 +98,7 @@ module RubyLsp
         content
       end
 
-      sig { params(name: String, location: YARP::Location).returns(T.nilable(Interface::Hover)) }
+      sig { params(name: String, location: Prism::Location).returns(T.nilable(Interface::Hover)) }
       def generate_rails_document_link_hover(name, location)
         urls = Support::RailsDocumentClient.generate_rails_document_urls(name)
         return if urls.empty?
