@@ -104,7 +104,7 @@ PATH
   specs:
     ruby-lsp-rails (0.2.6)
       rails (>= 6.0)
-      ruby-lsp (>= 0.11.0, < 0.12.0)
+      ruby-lsp (>= 0.12.0, < 0.13.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
@@ -168,6 +168,7 @@ GEM
       ast (~> 2.4.1)
       racc
     prettier_print (1.2.1)
+    prism (0.15.1)
     psych (5.1.1.1)
       stringio
     puma (6.4.0)
@@ -221,10 +222,10 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.7.4)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.11.2)
+    ruby-lsp (0.12.0)
       language_server-protocol (~> 3.17.0)
+      prism (>= 0.15.1, < 0.16)
       sorbet-runtime (>= 0.5.5685)
-      yarp (>= 0.12, < 0.13)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sorbet (0.5.11074)
