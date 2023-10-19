@@ -29,24 +29,24 @@ module RubyLsp
       sig do
         override.params(
           uri: URI::Generic,
-          emitter: EventEmitter,
+          dispatcher: Prism::Dispatcher,
           message_queue: Thread::Queue,
         ).returns(T.nilable(Listener[T::Array[Interface::CodeLens]]))
       end
-      def create_code_lens_listener(uri, emitter, message_queue)
-        CodeLens.new(uri, emitter, message_queue)
+      def create_code_lens_listener(uri, dispatcher, message_queue)
+        CodeLens.new(uri, dispatcher, message_queue)
       end
 
       sig do
         override.params(
           nesting: T::Array[String],
           index: RubyIndexer::Index,
-          emitter: EventEmitter,
+          dispatcher: Prism::Dispatcher,
           message_queue: Thread::Queue,
         ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
       end
-      def create_hover_listener(nesting, index, emitter, message_queue)
-        Hover.new(client, nesting, index, emitter, message_queue)
+      def create_hover_listener(nesting, index, dispatcher, message_queue)
+        Hover.new(client, nesting, index, dispatcher, message_queue)
       end
 
       sig { override.returns(String) }

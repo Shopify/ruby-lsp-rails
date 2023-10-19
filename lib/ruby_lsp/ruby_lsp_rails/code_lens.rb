@@ -42,17 +42,17 @@ module RubyLsp
       sig { override.returns(ResponseType) }
       attr_reader :_response
 
-      sig { params(uri: URI::Generic, emitter: EventEmitter, message_queue: Thread::Queue).void }
-      def initialize(uri, emitter, message_queue)
+      sig { params(uri: URI::Generic, dispatcher: Prism::Dispatcher, message_queue: Thread::Queue).void }
+      def initialize(uri, dispatcher, message_queue)
         @_response = T.let([], ResponseType)
         @path = T.let(uri.to_standardized_path, T.nilable(String))
-        emitter.register(self, :on_call, :on_class, :on_def)
+        dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter)
 
-        super(emitter, message_queue)
+        super(dispatcher, message_queue)
       end
 
-      sig { params(node: YARP::CallNode).void }
-      def on_call(node)
+      sig { params(node: Prism::CallNode).void }
+      def on_call_node_enter(node)
         message_value = node.message
         return unless message_value == "test"
 
@@ -62,15 +62,15 @@ module RubyLsp
         first_argument = arguments.first
 
         content = case first_argument
-        when YARP::StringConcatNode
+        when Prism::StringConcatNode
           left = first_argument.left
           right = first_argument.right
           # We only support two lines of concatenation on test names
-          if left.is_a?(YARP::StringNode) &&
-              right.is_a?(YARP::StringNode)
+          if left.is_a?(Prism::StringNode) &&
+              right.is_a?(Prism::StringNode)
             left.content + right.content
           end
-        when YARP::StringNode
+        when Prism::StringNode
           first_argument.content
         end
 
@@ -82,8 +82,8 @@ module RubyLsp
       end
 
       # Although uncommon, Rails tests can be written with the classic "def test_name" syntax.
-      sig { params(node: YARP::DefNode).void }
-      def on_def(node)
+      sig { params(node: Prism::DefNode).void }
+      def on_def_node_enter(node)
         method_name = node.name.to_s
         if method_name.start_with?("test_")
           line_number = node.location.start_line
@@ -92,8 +92,8 @@ module RubyLsp
         end
       end
 
-      sig { params(node: YARP::ClassNode).void }
-      def on_class(node)
+      sig { params(node: Prism::ClassNode).void }
+      def on_class_node_enter(node)
         class_name = node.constant_path.slice
         if class_name.end_with?("Test")
           command = "#{BASE_COMMAND} #{@path}"
@@ -103,7 +103,7 @@ module RubyLsp
 
       private
 
-      sig { params(node: YARP::Node, name: String, command: String, kind: Symbol).void }
+      sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)
         return unless @path
 
