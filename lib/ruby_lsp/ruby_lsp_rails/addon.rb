@@ -46,7 +46,7 @@ module RubyLsp
         ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
       end
       def create_hover_listener(nesting, index, emitter, message_queue)
-        Hover.new(client, emitter, message_queue)
+        Hover.new(client, nesting, index, emitter, message_queue)
       end
 
       sig { override.returns(String) }
