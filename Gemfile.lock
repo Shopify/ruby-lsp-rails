@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 2872d55a3be118525380afca3da312a930db51ee
+  revision: 55bf2df5e9dd5a9f94fcb4ba390e6da217dae5ee
   branch: main
   specs:
     actioncable (7.2.0.alpha)
@@ -33,6 +33,7 @@ GIT
       actionview (= 7.2.0.alpha)
       activesupport (= 7.2.0.alpha)
       nokogiri (>= 1.8.5)
+      racc
       rack (>= 2.2.4)
       rack-session (>= 1.0.1)
       rack-test (>= 0.6.3)
@@ -74,7 +75,6 @@ GIT
       drb
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
-      mutex_m
       tzinfo (~> 2.0)
     rails (7.2.0.alpha)
       actioncable (= 7.2.0.alpha)
@@ -144,12 +144,11 @@ GEM
       net-smtp
     marcel (1.0.2)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.4)
+    mini_portile2 (2.8.5)
     minitest (5.20.0)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
-    mutex_m (0.1.2)
-    net-imap (0.4.1)
+    net-imap (0.4.2)
       date
       net-protocol
     net-pop (0.1.2)
@@ -255,7 +254,7 @@ GEM
       spoom (~> 1.2.0, >= 1.2.0)
       thor (>= 1.2.0)
       yard-sorbet
-    thor (1.2.2)
+    thor (1.3.0)
     timeout (0.4.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
