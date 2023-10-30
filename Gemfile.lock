@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 55bf2df5e9dd5a9f94fcb4ba390e6da217dae5ee
+  revision: 9483a19bcd92d556934eea4bc4ca29ead3d5277b
   branch: main
   specs:
     actioncable (7.2.0.alpha)
@@ -148,7 +148,7 @@ GEM
     minitest (5.20.0)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
-    net-imap (0.4.2)
+    net-imap (0.4.3)
       date
       net-protocol
     net-pop (0.1.2)
@@ -189,7 +189,7 @@ GEM
       loofah (~> 2.21)
       nokogiri (~> 1.14)
     rainbow (3.1.1)
-    rake (13.0.6)
+    rake (13.1.0)
     rbi (0.1.1)
       sorbet-runtime (>= 0.5.9204)
       yarp (>= 0.11.0)
