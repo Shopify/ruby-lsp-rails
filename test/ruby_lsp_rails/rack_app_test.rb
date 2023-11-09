@@ -31,7 +31,7 @@ module RubyLsp
       end
 
       test "GET show returns not_found if class is not a model" do
-        get "/ruby_lsp_rails/models/ApplicationJob"
+        get "/ruby_lsp_rails/models/Time"
         assert_response(:not_found)
       end
 
