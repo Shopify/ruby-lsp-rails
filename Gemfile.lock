@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 757f4896417f86b58303e416f4040a2b434abdd6
+  revision: 0ad26f789013f3e07d7dc453303a8240a4da0d38
   branch: main
   specs:
     actioncable (7.2.0.alpha)
@@ -136,7 +136,7 @@ GEM
       reline (>= 0.3.8)
     json (2.6.3)
     language_server-protocol (3.17.0.3)
-    loofah (2.21.4)
+    loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.8.1)
@@ -160,8 +160,8 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     netrc (0.11.0)
-    nio4r (2.5.9)
-    nokogiri (1.15.4)
+    nio4r (2.6.0)
+    nokogiri (1.15.5)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     parallel (1.23.0)
@@ -276,7 +276,6 @@ GEM
 
 PLATFORMS
   arm64-darwin
-  x64-mingw-ucrt
   x64-mingw32
   x86_64-darwin
   x86_64-linux
