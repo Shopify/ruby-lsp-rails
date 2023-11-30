@@ -46,7 +46,10 @@ module RubyLsp
       def initialize(uri, dispatcher)
         @_response = T.let([], ResponseType)
         @path = T.let(uri.to_standardized_path, T.nilable(String))
-        dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter)
+        @group_id = T.let(1, Integer)
+        @group_id_stack = T.let([], T::Array[Integer])
+
+        dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter, :on_class_node_leave)
 
         super(dispatcher)
       end
@@ -97,6 +100,14 @@ module RubyLsp
           command = "#{BASE_COMMAND} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
         end
+
+        @group_id_stack.push(@group_id)
+        @group_id += 1
+      end
+
+      sig { params(node: Prism::ClassNode).void }
+      def on_class_node_leave(node)
+        @group_id_stack.pop
       end
 
       private
@@ -117,12 +128,15 @@ module RubyLsp
           },
         ]
 
+        grouping_data = { group_id: @group_id_stack.last, kind: kind }
+        grouping_data[:id] = @group_id if kind == :group
+
         @_response << create_code_lens(
           node,
           title: "Run",
           command_name: "rubyLsp.runTest",
           arguments: arguments,
-          data: { type: "test", kind: kind },
+          data: { type: "test", **grouping_data },
         )
 
         @_response << create_code_lens(
@@ -130,7 +144,7 @@ module RubyLsp
           title: "Run In Terminal",
           command_name: "rubyLsp.runTestInTerminal",
           arguments: arguments,
-          data: { type: "test_in_terminal", kind: kind },
+          data: { type: "test_in_terminal", **grouping_data },
         )
 
         @_response << create_code_lens(
@@ -138,7 +152,7 @@ module RubyLsp
           title: "Debug",
           command_name: "rubyLsp.debugTest",
           arguments: arguments,
-          data: { type: "debug", kind: kind },
+          data: { type: "debug", **grouping_data },
         )
       end
     end
