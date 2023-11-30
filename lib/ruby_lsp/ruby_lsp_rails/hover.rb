@@ -31,11 +31,10 @@ module RubyLsp
           nesting: T::Array[String],
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
-          message_queue: Thread::Queue,
         ).void
       end
-      def initialize(client, nesting, index, dispatcher, message_queue)
-        super(dispatcher, message_queue)
+      def initialize(client, nesting, index, dispatcher)
+        super(dispatcher)
 
         @_response = T.let(nil, ResponseType)
         @client = client

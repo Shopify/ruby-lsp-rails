@@ -42,13 +42,13 @@ module RubyLsp
       sig { override.returns(ResponseType) }
       attr_reader :_response
 
-      sig { params(uri: URI::Generic, dispatcher: Prism::Dispatcher, message_queue: Thread::Queue).void }
-      def initialize(uri, dispatcher, message_queue)
+      sig { params(uri: URI::Generic, dispatcher: Prism::Dispatcher).void }
+      def initialize(uri, dispatcher)
         @_response = T.let([], ResponseType)
         @path = T.let(uri.to_standardized_path, T.nilable(String))
         dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter)
 
-        super(dispatcher, message_queue)
+        super(dispatcher)
       end
 
       sig { params(node: Prism::CallNode).void }
@@ -62,13 +62,11 @@ module RubyLsp
         first_argument = arguments.first
 
         content = case first_argument
-        when Prism::StringConcatNode
-          left = first_argument.left
-          right = first_argument.right
-          # We only support two lines of concatenation on test names
-          if left.is_a?(Prism::StringNode) &&
-              right.is_a?(Prism::StringNode)
-            left.content + right.content
+        when Prism::InterpolatedStringNode
+          parts = first_argument.parts
+
+          if parts.all? { |part| part.is_a?(Prism::StringNode) }
+            T.cast(parts, T::Array[Prism::StringNode]).map(&:content).join
           end
         when Prism::StringNode
           first_argument.content

@@ -16,7 +16,10 @@ module RubyLsp
 
         RubyLsp::Rails::RailsClient.stubs(instance: rails_client)
         addon = Addon.new
-        assert_predicate(addon, :activate)
+        queue = Thread::Queue.new
+        assert(addon.activate(queue))
+      ensure
+        T.must(queue).close
       end
     end
   end
