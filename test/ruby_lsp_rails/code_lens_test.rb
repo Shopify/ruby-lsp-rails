@@ -122,6 +122,66 @@ module RubyLsp
         assert_match("Debug", response[5].command.title)
       end
 
+      test "assigns the correct hierarchy to test structure" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          class Test < ActiveSupport::TestCase
+            test "an example" do
+              # test body
+            end
+
+            class NestedTest < ActiveSupport::TestCase
+              test "other" do
+                # other test body
+              end
+            end
+
+            test "back to the same level" do
+              # test body
+            end
+          end
+        RUBY
+
+        data = response.map(&:data)
+
+        # Code lenses for `Test`
+        explorer, terminal, debug = data.shift(3)
+        assert_nil(explorer[:group_id])
+        assert_nil(terminal[:group_id])
+        assert_nil(debug[:group_id])
+        assert_equal(1, explorer[:id])
+        assert_equal(1, terminal[:id])
+        assert_equal(1, debug[:id])
+
+        # Code lenses for `an example`
+        explorer, terminal, debug = data.shift(3)
+        assert_equal(1, explorer[:group_id])
+        assert_equal(1, terminal[:group_id])
+        assert_equal(1, debug[:group_id])
+
+        # Code lenses for `NestedTest`
+        explorer, terminal, debug = data.shift(3)
+        assert_equal(1, explorer[:group_id])
+        assert_equal(1, terminal[:group_id])
+        assert_equal(1, debug[:group_id])
+        assert_equal(2, explorer[:id])
+        assert_equal(2, terminal[:id])
+        assert_equal(2, debug[:id])
+
+        # Code lenses for `other`
+        explorer, terminal, debug = data.shift(3)
+        assert_equal(2, explorer[:group_id])
+        assert_equal(2, terminal[:group_id])
+        assert_equal(2, debug[:group_id])
+
+        # Code lenses for `back to the same level`
+        explorer, terminal, debug = data.shift(3)
+        assert_equal(1, explorer[:group_id])
+        assert_equal(1, terminal[:group_id])
+        assert_equal(1, debug[:group_id])
+
+        assert_empty(data)
+      end
+
       private
 
       def generate_code_lens_for_source(source)

@@ -17,8 +17,8 @@ module RubyLsp
         @client ||= T.let(RailsClient.new, T.nilable(RailsClient))
       end
 
-      sig { override.void }
-      def activate
+      sig { override.params(message_queue: Thread::Queue).void }
+      def activate(message_queue)
         client.check_if_server_is_running!
       end
 
@@ -30,11 +30,10 @@ module RubyLsp
         override.params(
           uri: URI::Generic,
           dispatcher: Prism::Dispatcher,
-          message_queue: Thread::Queue,
         ).returns(T.nilable(Listener[T::Array[Interface::CodeLens]]))
       end
-      def create_code_lens_listener(uri, dispatcher, message_queue)
-        CodeLens.new(uri, dispatcher, message_queue)
+      def create_code_lens_listener(uri, dispatcher)
+        CodeLens.new(uri, dispatcher)
       end
 
       sig do
@@ -42,11 +41,10 @@ module RubyLsp
           nesting: T::Array[String],
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
-          message_queue: Thread::Queue,
         ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
       end
-      def create_hover_listener(nesting, index, dispatcher, message_queue)
-        Hover.new(client, nesting, index, dispatcher, message_queue)
+      def create_hover_listener(nesting, index, dispatcher)
+        Hover.new(client, nesting, index, dispatcher)
       end
 
       sig { override.returns(String) }

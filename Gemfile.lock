@@ -106,7 +106,7 @@ PATH
       actionpack (>= 6.0)
       activerecord (>= 6.0)
       railties (>= 6.0)
-      ruby-lsp (>= 0.12.0, < 0.13.0)
+      ruby-lsp (>= 0.13.0, < 0.14.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
@@ -146,7 +146,6 @@ GEM
       net-smtp
     marcel (1.0.2)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.5)
     minitest (5.20.0)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
@@ -161,15 +160,20 @@ GEM
       net-protocol
     netrc (0.11.0)
     nio4r (2.5.9)
-    nokogiri (1.15.4)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.15.4-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.15.4-x64-mingw-ucrt)
+      racc (~> 1.4)
+    nokogiri (1.15.4-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.15.4-x86_64-linux)
       racc (~> 1.4)
     parallel (1.23.0)
     parser (3.2.2.4)
       ast (~> 2.4.1)
       racc
     prettier_print (1.2.1)
-    prism (0.17.1)
+    prism (0.18.0)
     psych (5.1.1.1)
       stringio
     puma (6.4.0)
@@ -192,8 +196,8 @@ GEM
       nokogiri (~> 1.14)
     rainbow (3.1.1)
     rake (13.1.0)
-    rbi (0.1.4)
-      prism (>= 0.17.1, < 0.18)
+    rbi (0.1.5)
+      prism (>= 0.18.0, < 0.19)
       sorbet-runtime (>= 0.5.9204)
     rdoc (6.6.0)
       psych (>= 4.0.0)
@@ -222,9 +226,9 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.7.5)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.12.3)
+    ruby-lsp (0.13.0)
       language_server-protocol (~> 3.17.0)
-      prism (>= 0.17.1, < 0.18)
+      prism (>= 0.18.0, < 0.19)
       sorbet-runtime (>= 0.5.5685)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
@@ -241,8 +245,10 @@ GEM
       sorbet-static-and-runtime (>= 0.5.10187)
       syntax_tree (>= 6.1.1)
       thor (>= 0.19.2)
-    sqlite3 (1.6.8)
-      mini_portile2 (~> 2.8.0)
+    sqlite3 (1.6.8-arm64-darwin)
+    sqlite3 (1.6.8-x64-mingw-ucrt)
+    sqlite3 (1.6.8-x86_64-darwin)
+    sqlite3 (1.6.8-x86_64-linux)
     stringio (3.0.9)
     syntax_tree (6.2.0)
       prettier_print (>= 1.2.0)
@@ -297,4 +303,4 @@ DEPENDENCIES
   tzinfo-data
 
 BUNDLED WITH
-   2.4.18
+   2.4.22
