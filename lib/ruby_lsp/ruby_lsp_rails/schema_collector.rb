@@ -5,7 +5,7 @@ module RubyLsp
   class SchemaCollector < Prism::Visitor
     extend T::Sig
 
-    sig { returns(T::Hash(String, Prism::Location)) }
+    sig { returns(T::Hash[String, Prism::Location]) }
     attr_reader :tables
 
     sig { void }
