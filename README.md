@@ -48,8 +48,9 @@ See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-de
 1. Open a test which inherits from `ActiveSupport::TestCase` or one of its descendants, such as `ActionDispatch::IntegrationTest`.
 2. Click on the "Run", "Run in Terminal" or "Debug" code lens which appears above the test class, or an individual test.
 
-Note: When using the Test Explorer view, if your code contains a statement to pause execution (e.g. `debugger`) it will
-cause the test runner to hang.
+> [!NOTE]
+> When using the Test Explorer view, if your code contains a statement to pause execution (e.g. `debugger`) it will
+> cause the test runner to hang.
 
 ## How It Works
 
@@ -60,8 +61,7 @@ This gem consists of two components that enable enhanced Rails functionality in 
 
 This is why the Rails server needs to be running for some features to work.
 
-> **Note**
->
+> [!NOTE]
 > There is no need to restart the Ruby LSP every time the Rails server is booted.
 > If the server is shut down, the extra features will temporarily disappear and reappear once the server is running again.
 
