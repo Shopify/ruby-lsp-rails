@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 757f4896417f86b58303e416f4040a2b434abdd6
+  revision: 6c0f5f65a7d14d08aad200ae2865b84b4cdaa8b0
   branch: main
   specs:
     actioncable (7.2.0.alpha)
@@ -39,6 +39,7 @@ GIT
       rack-test (>= 0.6.3)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
+      useragent (~> 0.16)
     actiontext (7.2.0.alpha)
       actionpack (= 7.2.0.alpha)
       activerecord (= 7.2.0.alpha)
@@ -114,7 +115,7 @@ GEM
   specs:
     ast (2.4.2)
     base64 (0.2.0)
-    bigdecimal (3.1.4)
+    bigdecimal (3.1.5)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
@@ -130,13 +131,13 @@ GEM
       activesupport (>= 6.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
-    io-console (0.6.0)
-    irb (1.9.0)
+    io-console (0.7.1)
+    irb (1.11.0)
       rdoc
       reline (>= 0.3.8)
     json (2.6.3)
     language_server-protocol (3.17.0.3)
-    loofah (2.21.4)
+    loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.8.1)
@@ -149,7 +150,7 @@ GEM
     minitest (5.20.0)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
-    net-imap (0.4.5)
+    net-imap (0.4.9)
       date
       net-protocol
     net-pop (0.1.2)
@@ -159,7 +160,7 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     netrc (0.11.0)
-    nio4r (2.5.9)
+    nio4r (2.7.0)
     nokogiri (1.16.0-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.0-x64-mingw-ucrt)
@@ -202,7 +203,7 @@ GEM
     rdoc (6.6.0)
       psych (>= 4.0.0)
     regexp_parser (2.8.2)
-    reline (0.4.0)
+    reline (0.4.1)
       io-console (~> 0.5)
     rexml (3.2.6)
     rubocop (1.57.2)
@@ -249,7 +250,7 @@ GEM
     sqlite3 (1.7.0-x64-mingw-ucrt)
     sqlite3 (1.7.0-x86_64-darwin)
     sqlite3 (1.7.0-x86_64-linux)
-    stringio (3.0.9)
+    stringio (3.1.0)
     syntax_tree (6.2.0)
       prettier_print (>= 1.2.0)
     tapioca (0.11.12)
@@ -268,6 +269,7 @@ GEM
     tzinfo-data (1.2023.3)
       tzinfo (>= 1.0.0)
     unicode-display_width (2.5.0)
+    useragent (0.16.10)
     webrick (1.8.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
@@ -280,7 +282,6 @@ GEM
 
 PLATFORMS
   arm64-darwin
-  x64-mingw32
   x64-mingw-ucrt
   x86_64-darwin
   x86_64-linux
