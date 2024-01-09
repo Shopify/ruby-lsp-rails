@@ -18,6 +18,9 @@ jobs:
             experimental: true
           - gemfile: "gemfiles/Gemfile-rails-main"
             experimental: true
+        exclude:
+          - os: "windows-latest"
+            ruby: "3.0"
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ !!matrix.experimental }}
     name: Ruby ${{ matrix.ruby }} on ${{ matrix.os }} with ${{matrix.gemfile}}
