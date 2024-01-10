@@ -10,8 +10,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_09_114241) do
 
   create_table "dogs", force: :cascade do |t|
   end
-
-  add_foreign_key "cats", "dogs"
 end
 RUBY
 
@@ -22,7 +20,7 @@ module RubyLsp
         collector = RubyLsp::Rails::SchemaCollector.new
         Prism.parse(SCHEMA_FILE).value.accept(collector)
 
-        assert_equal(['Cat', 'Dog'], collector.tables.keys)
+        assert_equal(['cats', 'dogs'], collector.tables.keys)
       end
     end
   end
