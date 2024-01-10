@@ -31,7 +31,7 @@ module RubyLsp
           first_argument = node.arguments&.arguments&.first
 
           if first_argument&.is_a?(Prism::StringNode)
-            @tables[first_argument.content] = node.location
+            @tables[first_argument.content.classify] = node.location
           end
         end
 

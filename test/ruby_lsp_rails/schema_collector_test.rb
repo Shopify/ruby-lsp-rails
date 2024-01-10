@@ -22,9 +22,7 @@ module RubyLsp
         collector = RubyLsp::Rails::SchemaCollector.new
         Prism.parse(SCHEMA_FILE).value.accept(collector)
 
-        assert_equal(collector.tables.keys, ['Cat', 'Dog'])
-      ensure
-        # T.must(queue).close
+        assert_equal(['Cat', 'Dog'], collector.tables.keys)
       end
     end
   end
