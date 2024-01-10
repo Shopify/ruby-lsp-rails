@@ -5,6 +5,7 @@ module RubyLsp
   module Rails
     class SchemaCollector < Prism::Visitor
       extend T::Sig
+      extend T::Generic
 
       sig { returns(T::Hash[String, Prism::Location]) }
       attr_reader :tables
@@ -16,17 +17,36 @@ module RubyLsp
         super
       end
 
+      sig { void }
+      def parse_schema
+        parse_result = Prism::parse_file(schema_path)
+        return unless parse_result.success?
+
+        parse_result.value.accept(self)
+      end
+
       sig { params(node: Prism::CallNode).void }
       def visit_call_node(node)
-        return if node.block.nil?
+        if node.message == 'create_table'
+          first_argument = node.arguments&.arguments&.first
 
-        node.block.body.child_nodes.each do |child_node|
-          next unless child_node.is_a?(Prism::CallNode)
-          next unless child_node.name == :create_table
-
-          table_name = child_node.arguments.child_nodes.first.content
-          @tables[table_name.classify] = child_node.location
+          if first_argument&.is_a?(Prism::StringNode)
+            @tables[first_argument.content] = node.location
+          end
         end
+
+        super
+      end
+
+      private
+
+      sig { returns(String) }
+      def schema_path
+        project_root = T.let(
+          Bundler.with_unbundled_env { Bundler.default_gemfile }.dirname,
+          Pathname,
+        )
+        project_root.join('db', 'schema.rb').to_s
       end
     end
   end

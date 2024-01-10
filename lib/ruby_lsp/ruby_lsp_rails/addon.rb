@@ -4,6 +4,7 @@
 require "ruby_lsp/addon"
 
 require_relative "rails_client"
+require_relative "schema_collector"
 require_relative "hover"
 require_relative "code_lens"
 
@@ -20,6 +21,7 @@ module RubyLsp
       sig { override.params(message_queue: Thread::Queue).void }
       def activate(message_queue)
         client.check_if_server_is_running!
+        schema_collector.parse_schema
       end
 
       sig { override.void }
@@ -44,12 +46,17 @@ module RubyLsp
         ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
       end
       def create_hover_listener(nesting, index, dispatcher)
-        Hover.new(client, nesting, index, dispatcher)
+        Hover.new(client, schema_collector, nesting, index, dispatcher)
       end
 
       sig { override.returns(String) }
       def name
         "Ruby LSP Rails"
+      end
+
+      sig { returns(SchemaCollector) }
+      def schema_collector
+        @schema_collector ||= T.let(SchemaCollector.new, T.nilable(SchemaCollector))
       end
     end
   end
