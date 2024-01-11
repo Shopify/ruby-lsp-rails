@@ -22,6 +22,8 @@ jobs:
           - os: "windows-latest"
             ruby: "3.0"
     runs-on: ${{ matrix.os }}
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
     continue-on-error: ${{ !!matrix.experimental }}
     name: Ruby ${{ matrix.ruby }} on ${{ matrix.os }} with ${{matrix.gemfile}}
     steps:
