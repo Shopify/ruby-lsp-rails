@@ -45,6 +45,14 @@ module RubyLsp
         RUBY
 
         assert_equal(<<~CONTENT, response.contents.value)
+          ```ruby
+          User
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
+
+
+
           [Schema](file://#{@client.root}/db/schema.rb)
 
           **id**: integer
