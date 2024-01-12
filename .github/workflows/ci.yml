@@ -21,6 +21,8 @@ jobs:
         exclude:
           - os: "windows-latest"
             ruby: "3.0"
+          - Gemfile: "gemfiles/Gemfile-rails-main" # needs Ruby 3.1
+            ruby: "3.0"
     runs-on: ${{ matrix.os }}
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
