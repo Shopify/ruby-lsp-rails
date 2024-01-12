@@ -11,32 +11,37 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         gemfile:
           - Gemfile
-          - Gemfile-rails-main
+          - gemfiles/Gemfile-rails-main
         ruby: ["3.0", "3.1", "3.2", "3.3", "head"]
         include:
           - ruby: "head"
             experimental: true
-          - gemfile: "Gemfile-rails-main"
+          - gemfile: "gemfiles/Gemfile-rails-main"
             experimental: true
         exclude:
           - os: "windows-latest"
             ruby: "3.0"
+          - Gemfile: "gemfiles/Gemfile-rails-main" # needs Ruby 3.1
+            ruby: "3.0"
     runs-on: ${{ matrix.os }}
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
     continue-on-error: ${{ !!matrix.experimental }}
     name: Ruby ${{ matrix.ruby }} on ${{ matrix.os }} with ${{matrix.gemfile}}
     steps:
       - uses: actions/checkout@v3
 
       - name: Remove Gemfile.lock
-        if: (matrix.ruby == 'head' ) || (matrix.os == 'windows-latest' && matrix.ruby == '3.1')
-        run: "rm ${{ matrix.gemfile }}.lock
+        if: (matrix.gemfile == 'Gemfile') && ((matrix.ruby == 'head' ) || (matrix.os == 'windows-latest' && matrix.ruby == '3.1'))
+        run: "rm ${{ matrix.gemfile }}.lock"
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          bundler: latest
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          cache-version: 6
+          cache-version: 7
 
       - name: Check if documentation is up to date
         run: bundle exec rake ruby_lsp:check_docs
