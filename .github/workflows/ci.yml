@@ -36,6 +36,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          bundler: latest
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
           cache-version: 7
