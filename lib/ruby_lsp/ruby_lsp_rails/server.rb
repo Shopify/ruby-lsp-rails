@@ -18,9 +18,10 @@ while running
 
   response_json = nil
   case request_method
-  when "shutdown"
-    # returning the column names just to illustrate we have access the Rails app
+  when "schema"
     response_json = { result: "ok", columns: User.column_names }.to_json
+  when "shutdown"
+    response_json = { result: "ok" }.to_json
 
     running = false
   end

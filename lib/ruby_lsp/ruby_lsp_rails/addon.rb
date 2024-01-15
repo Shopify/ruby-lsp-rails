@@ -29,7 +29,7 @@ module RubyLsp
 
       sig { override.void }
       def deactivate
-        make_request("shutdown")
+        send_request("shutdown")
 
         @stdin.close
         @stdout.close
