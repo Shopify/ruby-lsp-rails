@@ -21,7 +21,7 @@ module RubyLsp
       sig { override.params(message_queue: Thread::Queue).void }
       def activate(message_queue)
         client.check_if_server_is_running!
-        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3("bin/rails runner lib/ruby_lsp/ruby_lsp_rails/server.rb")
+        @stdin, @stdout, @stderr, @wait_thread = Open3.popen3("bin/rails runner #{__dir__}/server.rb")
 
         @stdin.binmode
         @stdout.binmode
