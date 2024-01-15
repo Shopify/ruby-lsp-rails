@@ -43,7 +43,6 @@ module RubyLsp
 
       def send_request(request, params = nil)
         hash = {
-          id: rand(100),
           method: request,
         }
 
