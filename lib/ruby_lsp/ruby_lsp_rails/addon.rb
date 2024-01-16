@@ -48,8 +48,7 @@ module RubyLsp
 
         hash[:params] = params if params
         json = hash.to_json
-        @stdin.write("Content-Length: #{json.length}\r\n\r\n")
-        @stdin.write(json)
+        @stdin.write("Content-Length: #{json.length}\r\n\r\n", json)
       end
 
       def read_response(request)
