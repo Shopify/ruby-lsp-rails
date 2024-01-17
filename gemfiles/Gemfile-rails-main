@@ -19,4 +19,3 @@ gem "sorbet-static-and-runtime", platforms: :ruby
 gem "tapioca", "~> 0.11", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails", github: "rails/rails", branch: "main"
-gem "tzinfo-data", platforms: :windows

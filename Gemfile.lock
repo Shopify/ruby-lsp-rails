@@ -291,7 +291,6 @@ DEPENDENCIES
   sorbet-static-and-runtime
   sqlite3
   tapioca (~> 0.11)
-  tzinfo-data
 
 BUNDLED WITH
    2.4.22
