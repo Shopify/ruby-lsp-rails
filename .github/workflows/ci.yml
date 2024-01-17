@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Remove Gemfile.lock
-        if: (matrix.gemfile == 'Gemfile') && ((matrix.ruby == 'head' ) || (matrix.os == 'windows-latest' && matrix.ruby == '3.1'))
+        if: (matrix.gemfile == 'Gemfile') && (matrix.ruby == 'head' || matrix.os == 'windows-latest')
         run: "rm ${{ matrix.gemfile }}.lock"
 
       - name: Set up Ruby
