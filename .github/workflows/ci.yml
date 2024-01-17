@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Remove Gemfile.lock
-        if: (matrix.gemfile == 'Gemfile') && ((matrix.ruby == 'head' ) || (matrix.os == 'windows-latest' && matrix.ruby == '3.1'))
+        if: (matrix.gemfile == 'Gemfile') && (matrix.ruby == 'head' || matrix.os == 'windows-latest')
         run: "rm ${{ matrix.gemfile }}.lock"
 
       - name: Set up Ruby
@@ -41,7 +41,7 @@ jobs:
           bundler: latest
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          cache-version: 7
+          cache-version: ${{ matrix.os }}-ruby-${{ matrix.ruby }}-0
 
       - name: Check if documentation is up to date
         run: bundle exec rake ruby_lsp:check_docs
