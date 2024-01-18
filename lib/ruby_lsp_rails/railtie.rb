@@ -12,15 +12,13 @@ module RubyLsp
 
       initializer "ruby_lsp_rails.setup" do |_app|
         config.after_initialize do |app|
-          unless config.ruby_lsp_rails.server == false
+          # If we start the app with `bin/rails console` then `Rails::Server` is not defined.
+          if defined?(::Rails::Server) && config.ruby_lsp_rails.server
             app.routes.prepend do
               T.bind(self, ActionDispatch::Routing::Mapper)
               mount(RackApp.new => RackApp::BASE_PATH)
             end
-          end
 
-          # If we start the app with `bin/rails console` then `Rails::Server` is not defined.
-          if defined?(::Rails::Server)
             ssl_enable, host, port = ::Rails::Server::Options.new.parse!(ARGV).values_at(:SSLEnable, :Host, :Port)
             app_uri = "#{ssl_enable ? "https" : "http"}://#{host}:#{port}"
             app_uri_path = ::Rails.root.join("tmp", "app_uri.txt")
