@@ -39,7 +39,7 @@ module RubyLsp
           end
 
           body = JSON.dump({
-            columns: const.columns.map { |column| [column.name, column.type] },
+            columns: const.columns.map { |column| { name: column.name, type: column.type, comment: column.comment } },
             schema_file: schema_file,
           })
 
