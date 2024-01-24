@@ -33,20 +33,6 @@ module RubyLsp
             assert_equal(model["comment"], column[:comment])
           end
         end
-        # assert_equal(
-        #   {
-        #     "schema_file" => "#{RailsClient.new.root}/db/schema.rb",
-        #     "columns" => [
-        #       { name: "id", type: "integer", comment: nil },
-        #       { name: "first_name", type: "string", comment: nil },
-        #       { name: "last_name", type: "string", comment: nil },
-        #       { name: "age", type: "integer", comment: nil },
-        #       { name: "created_at", type: "datetime", comment: nil },
-        #       { name: "updated_at", type: "datetime", comment: nil },
-        #     ],
-        #   },
-        #   JSON.parse(response.body),
-        # )
       end
 
       test "GET show returns not_found if model doesn't exist" do
