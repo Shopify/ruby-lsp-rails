@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "support/rails_document_client"
+require_relative "renderers/model"
 
 module RubyLsp
   module Rails
@@ -51,6 +52,7 @@ module RubyLsp
         name = T.must(entries.first).name
         content = +""
         column_info = generate_column_content(name)
+
         content << column_info if column_info
 
         urls = Support::RailsDocumentClient.generate_rails_document_urls(name)
@@ -90,11 +92,7 @@ module RubyLsp
         model = @client.model(name)
         return if model.nil?
 
-        schema_file = model[:schema_file]
-        content = +""
-        content << "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})\n\n" if schema_file
-        content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
-        content
+        RubyLsp::Rails::Renderer::Hover::Model.new("model", model, name).render
       end
 
       sig { params(name: String, location: Prism::Location).returns(T.nilable(Interface::Hover)) }

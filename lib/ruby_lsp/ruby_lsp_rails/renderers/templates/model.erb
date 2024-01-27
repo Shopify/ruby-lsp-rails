@@ -1,0 +1,11 @@
+Model: <%=name%>
+| | | |
+|:---|---:|---|
+<%model.dig(:associations).each_key do |key|%> <%model[:associations][key.to_sym].each do |association| %> <%="|#{key}: | |#{association}|"%><%end%>
+<%end%>
+---
+| Column | | Type | Comment | |
+|:------|------|:------|:------|------|
+<%model.dig(:columns).each do |column|%> <%="| #{column[:name]} | | #{column[:type]} | #{column[:comment].nil? ? "empty" : column[:comment]} | |\n"%><%end%>
+---
+<%= model.dig(:schema_file).nil? ? "\n" : "[Schema](#{URI::Generic.build(scheme: "file",path: model.dig(:schema_file))})"%>

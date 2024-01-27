@@ -24,13 +24,19 @@ module RubyLsp
       test "hook returns model column information" do
         expected_response = {
           schema_file: "#{@client.root}/db/schema.rb",
+          associations: {
+            has_one: ["Address"],
+            belongs_to: [],
+            has_many: [],
+          },
+          methods: ["test"],
           columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
+            { name: "id", type: "integer", comment: nil },
+            { name: "first_name", type: "string", comment: nil },
+            { name: "last_name", type: "string", comment: nil },
+            { name: "age", type: "integer", comment: nil },
+            { name: "created_at", type: "datetime", comment: nil },
+            { name: "updated_at", type: "datetime", comment: nil },
           ],
         }
 
@@ -39,46 +45,30 @@ module RubyLsp
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
+            has_one: address
           end
 
           User
         RUBY
 
-        assert_equal(<<~CONTENT, response.contents.value)
-          ```ruby
-          User
-          ```
-
-          **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-
-
-
-          [Schema](file://#{@client.root}/db/schema.rb)
-
-          **id**: integer
-
-          **first_name**: string
-
-          **last_name**: string
-
-          **age**: integer
-
-          **created_at**: datetime
-
-          **updated_at**: datetime
-        CONTENT
+        assert_equal(
+          response.contents.value,
+          RubyLsp::Rails::Renderer::Hover::Model.new("model", expected_response, "User").render,
+        )
       end
 
       test "return column information for namespaced models" do
         expected_response = {
           schema_file: "#{@client.root}/db/schema.rb",
+          associations: { has_one: ["Address"], has_many: [], belongs_to: [] },
+          methods: ["test"],
           columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
+            { name: "id", type: "integer", comment: nil },
+            { name: "first_name", type: "string", comment: nil },
+            { name: "last_name", type: "string", comment: nil },
+            { name: "age", type: "integer", comment: nil },
+            { name: "created_at", type: "datetime", comment: nil },
+            { name: "updated_at", type: "datetime", comment: nil },
           ],
         }
 
@@ -88,27 +78,17 @@ module RubyLsp
         response = hover_on_source(<<~RUBY, { line: 4, character: 6 })
           module Blog
             class User < ApplicationRecord
+              has_one :address
             end
           end
 
           Blog::User
         RUBY
 
-        assert_equal(<<~CONTENT, response.contents.value)
-          [Schema](file://#{@client.root}/db/schema.rb)
-
-          **id**: integer
-
-          **first_name**: string
-
-          **last_name**: string
-
-          **age**: integer
-
-          **created_at**: datetime
-
-          **updated_at**: datetime
-        CONTENT
+        assert_equal(
+          response.contents.value,
+          RubyLsp::Rails::Renderer::Hover::Model.new("model", expected_response, "Blog::User").render,
+        )
       end
 
       test "handles `db/structure.sql` instead of `db/schema.rb`" do
@@ -122,6 +102,7 @@ module RubyLsp
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
+            has_one :address
           end
 
           User
@@ -144,11 +125,14 @@ module RubyLsp
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
+            has_one :address
           end
 
           User
         RUBY
 
+        puts "here"
+        puts response.contents.value
         refute_match(/Schema/, response.contents.value)
       end
 

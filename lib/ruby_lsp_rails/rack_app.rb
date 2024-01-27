@@ -39,7 +39,17 @@ module RubyLsp
           end
 
           body = JSON.dump({
-            columns: const.columns.map { |column| { name: column.name, type: column.type, comment: column.comment } },
+            methods: const.instance_methods(false),
+            associations: {
+              has_one: const.reflect_on_all_associations(:has_one).map do |c|
+                         c.name.to_s.titleize
+                       end,
+              belongs_to: const.reflect_on_all_associations(:belongs_to).map { |c| c.name.to_s.titleize },
+              has_many: const.reflect_on_all_associations(:has_many).map { |c| c.name.to_s.titleize },
+            },
+            columns: const.columns.map do |column|
+                       { name: column.name, type: column.type, comment: column.comment }
+                     end,
             schema_file: schema_file,
           })
 

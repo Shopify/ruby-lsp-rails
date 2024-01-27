@@ -6,14 +6,17 @@ require "test_helper"
 module RubyLsp
   module Rails
     class RackAppTest < ActionDispatch::IntegrationTest
+      test "GET show returns schema information" do
+        get "/ruby_lsp_rails/models/User"
+        assert_response(:success)
+        body = JSON.parse(response.body)
+        assert_equal(body["schema_file"], "#{RailsClient.new.root}/db/schema.rb")
+      end
+
       test "GET show returns column information for existing models" do
         get "/ruby_lsp_rails/models/User"
         assert_response(:success)
-
         body = JSON.parse(response.body)
-
-        assert_equal(body["schema_file"], "#{RailsClient.new.root}/db/schema.rb")
-
         [
           { name: "id", type: "integer", comment: nil },
           { name: "first_name", type: "string", comment: nil },
