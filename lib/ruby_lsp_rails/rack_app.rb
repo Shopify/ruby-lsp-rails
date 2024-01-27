@@ -42,10 +42,23 @@ module RubyLsp
             methods: const.instance_methods(false),
             associations: {
               has_one: const.reflect_on_all_associations(:has_one).map do |c|
-                         c.name.to_s.titleize
+                         {
+                           name: c.name.to_s,
+                           file: Object.const_source_location(c.klass.to_s).first,
+                         }
                        end,
-              belongs_to: const.reflect_on_all_associations(:belongs_to).map { |c| c.name.to_s.titleize },
-              has_many: const.reflect_on_all_associations(:has_many).map { |c| c.name.to_s.titleize },
+              belongs_to: const.reflect_on_all_associations(:belongs_to).map do |c|
+                            {
+                              name: c.name.to_s,
+                              file: Object.const_source_location(c.klass.to_s).first,
+                            }
+                          end,
+              has_many: const.reflect_on_all_associations(:has_many).map do
+                          {
+                            name: c.name.to_s,
+                            file: Object.const_source_location(c.klass.to_s).first,
+                          }
+                        end,
             },
             columns: const.columns.map do |column|
                        { name: column.name, type: column.type, comment: column.comment }

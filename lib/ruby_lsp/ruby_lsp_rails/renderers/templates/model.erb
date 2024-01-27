@@ -1,7 +1,7 @@
 | | |
 |:---|:---|
 <%="|Model:".ljust(10," ").gsub(" ","&nbsp;")%>|***<%=name%>***|
-<%model.dig(:associations).each  do |k,v|%> <%v.each do |a|%><%="|#{k.to_s.concat(":").ljust(10," ").gsub(" ","&nbsp;").concat("&nbsp;"*5)}| [#{a}]() |\n"%><%end%><%end%>
+<%model.dig(:associations).each  do |k,v|%> <%v.each do |a|%><%="|#{k.to_s.concat(":").ljust(10," ").gsub(" ","&nbsp;").concat("&nbsp;"*5)}| [#{a.dig(:name)}](file://#{a.dig(:file)}) |\n"%><%end%><%end%>
 ---
 ---
 | Column | | Type | Comment | |
