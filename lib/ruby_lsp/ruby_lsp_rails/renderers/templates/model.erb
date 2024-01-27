@@ -1,8 +1,8 @@
-Model: <%=name%>
-| | | |
-|:---|---:|---|
-<%model.dig(:associations).each_key do |key|%> <%model[:associations][key.to_sym].each do |association| %> <%="|#{key}: | |#{association}|"%><%end%>
-<%end%>
+| | |
+|:---|:---|
+<%="|Model:".ljust(10," ").gsub(" ","&nbsp;")%>|***<%=name%>***|
+<%model.dig(:associations).each  do |k,v|%> <%v.each do |a|%><%="|#{k.to_s.concat(":").ljust(10," ").gsub(" ","&nbsp;").concat("&nbsp;"*5)}| [#{a}]() |\n"%><%end%><%end%>
+---
 ---
 | Column | | Type | Comment | |
 |:------|------|:------|:------|------|
