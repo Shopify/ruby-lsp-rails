@@ -25,11 +25,11 @@ module RubyLsp
         expected_response = {
           schema_file: "#{@client.root}/db/schema.rb",
           associations: {
-            has_one: ["Address"],
+            has_one: [],
             belongs_to: [],
             has_many: [],
           },
-          methods: ["test"],
+          methods: [],
           columns: [
             { name: "id", type: "integer", comment: nil },
             { name: "first_name", type: "string", comment: nil },
@@ -43,9 +43,11 @@ module RubyLsp
         stub_http_request("200", expected_response.to_json)
         @client.stubs(check_if_server_is_running!: true)
 
-        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+        response = hover_on_source(<<~RUBY, { line: 6, character: 0 })
+          # typed: true
+          # frozen_string_literal: true
+
           class User < ApplicationRecord
-            has_one: address
           end
 
           User
@@ -60,7 +62,7 @@ module RubyLsp
       test "return column information for namespaced models" do
         expected_response = {
           schema_file: "#{@client.root}/db/schema.rb",
-          associations: { has_one: ["Address"], has_many: [], belongs_to: [] },
+          associations: { has_one: [], has_many: [], belongs_to: [] },
           methods: ["test"],
           columns: [
             { name: "id", type: "integer", comment: nil },
@@ -78,7 +80,6 @@ module RubyLsp
         response = hover_on_source(<<~RUBY, { line: 4, character: 6 })
           module Blog
             class User < ApplicationRecord
-              has_one :address
             end
           end
 
@@ -95,14 +96,18 @@ module RubyLsp
         expected_response = {
           schema_file: "#{@client.root}/db/structure.sql",
           columns: [],
+          associations: { has_many: [], has_one: [], belongs_to: [] },
+          methods: [],
         }
 
         stub_http_request("200", expected_response.to_json)
         @client.stubs(check_if_server_is_running!: true)
 
-        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+        response = hover_on_source(<<~RUBY, { line: 6, character: 0 })
+          # typed: true
+          # frozen_string_literal: true
+
           class User < ApplicationRecord
-            has_one :address
           end
 
           User
@@ -118,21 +123,23 @@ module RubyLsp
         expected_response = {
           schema_file: nil,
           columns: [],
+          associations: { has_many: [], has_one: [], belongs_to: [] },
+          methods: [],
         }
 
         stub_http_request("200", expected_response.to_json)
         @client.stubs(check_if_server_is_running!: true)
 
-        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+        response = hover_on_source(<<~RUBY, { line: 6, character: 0 })
+          # typed: true
+          # frozen_string_literal: true
+
           class User < ApplicationRecord
-            has_one :address
           end
 
           User
         RUBY
 
-        puts "here"
-        puts response.contents.value
         refute_match(/Schema/, response.contents.value)
       end
 
