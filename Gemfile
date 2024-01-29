@@ -16,6 +16,6 @@ gem "rubocop-rake", "~> 0.6.0", require: false
 gem "rubocop-sorbet", "~> 0.7", require: false
 gem "rdoc", require: false
 gem "sorbet-static-and-runtime", platforms: :ruby
-gem "tapioca", "~> 0.11", require: false, platforms: :ruby
+gem "tapioca", "~> 0.12", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails"
