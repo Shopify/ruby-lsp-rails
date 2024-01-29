@@ -18,6 +18,11 @@ module RubyLsp
         @client ||= T.let(RailsClient.new, T.nilable(RailsClient))
       end
 
+      sig { returns(SchemaCollector) }
+      def schema_collector
+        @schema_collector ||= T.let(SchemaCollector.new(client.root), T.nilable(SchemaCollector))
+      end
+
       sig { override.params(message_queue: Thread::Queue).void }
       def activate(message_queue)
         client.check_if_server_is_running!
@@ -52,11 +57,6 @@ module RubyLsp
       sig { override.returns(String) }
       def name
         "Ruby LSP Rails"
-      end
-
-      sig { returns(SchemaCollector) }
-      def schema_collector
-        @schema_collector ||= T.let(SchemaCollector.new, T.nilable(SchemaCollector))
       end
     end
   end

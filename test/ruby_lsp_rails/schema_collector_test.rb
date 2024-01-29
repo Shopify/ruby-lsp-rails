@@ -17,7 +17,7 @@ module RubyLsp
   module Rails
     class SchemaCollectorTest < ActiveSupport::TestCase
       test "store locations of models by parsing create_table calls" do
-        collector = RubyLsp::Rails::SchemaCollector.new
+        collector = RubyLsp::Rails::SchemaCollector.new(Pathname.new('example_app'))
         Prism.parse(SCHEMA_FILE).value.accept(collector)
 
         assert_equal(['cats', 'dogs'], collector.tables.keys)
