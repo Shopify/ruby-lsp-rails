@@ -99,7 +99,7 @@ module RubyLsp
             "#{location.end_line},#{location.end_column}" if location
           schema_uri = URI::Generic.from_path(
             path: schema_file,
-            fragment: fragment
+            fragment: fragment,
           )
         end
         content = +""

@@ -20,7 +20,7 @@ module RubyLsp
               ["created_at", "datetime"],
               ["updated_at", "datetime"],
             ],
-            "schema_table" => "users"
+            "schema_table" => "users",
           },
           JSON.parse(response.body),
         )

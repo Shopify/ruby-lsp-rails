@@ -41,7 +41,7 @@ module RubyLsp
           body = JSON.dump({
             columns: const.columns.map { |column| [column.name, column.type] },
             schema_file: schema_file,
-            schema_table: const.table_name
+            schema_table: const.table_name,
           })
 
           [200, { "Content-Type" => "application/json" }, [body]]
