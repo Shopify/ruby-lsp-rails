@@ -39,6 +39,19 @@ module RubyLsp
         get "/ruby_lsp_rails/activate"
         assert_response(:success)
       end
+
+      test "middleware is inserted after Rails::Rack::Logger" do
+        logger_index = ::Rails.configuration.middleware.middlewares.index(::Rails::Rack::Logger)
+        lsp_index = ::Rails.configuration.middleware.middlewares.index(RackApp)
+
+        assert_operator(logger_index, :<, lsp_index)
+      end
+
+      test "middleware forwards non-lsp requests to rails app" do
+        assert_raises(ActionController::RoutingError) do
+          get "/unrecognized_application_route"
+        end
+      end
     end
   end
 end

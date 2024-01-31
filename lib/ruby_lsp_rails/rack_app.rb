@@ -8,10 +8,17 @@ module RubyLsp
 
       BASE_PATH = "/ruby_lsp_rails/"
 
+      sig { params(app: T.untyped).void }
+      def initialize(app)
+        @app = T.let(app, T.untyped)
+      end
+
       sig { params(env: T::Hash[T.untyped, T.untyped]).returns(T::Array[T.untyped]) }
       def call(env)
         request = ActionDispatch::Request.new(env)
         path = request.path
+
+        return @app.call(env) unless path.starts_with?(BASE_PATH)
 
         route, argument = path.delete_prefix(BASE_PATH).split("/")
 
