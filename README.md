@@ -9,6 +9,7 @@ Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for ex
 * Navigate to associations, validations, callbacks and test cases using your editor's "Go to Symbol" feature, or outline view.
 * Jump to the definition of callbacks using your editor's "Go to Definition" feature.
 * Jump to the declaration of a route.
+* Code Lens allowing fast-forwarding or rewinding of migrations.
 
 ## Installation
 
