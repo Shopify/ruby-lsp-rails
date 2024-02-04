@@ -31,7 +31,7 @@ module RubyLsp
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
 
-        if const && const < ActiveRecord::Base
+        if const && const < ActiveRecord::Base && !const.abstract_class?
           begin
             schema_file = ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
           rescue => e

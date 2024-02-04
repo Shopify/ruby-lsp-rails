@@ -35,6 +35,11 @@ module RubyLsp
         assert_response(:not_found)
       end
 
+      test "GET show returns not_found if class is an abstract model" do
+        get "/ruby_lsp_rails/models/ApplicationRecord"
+        assert_response(:not_found)
+      end
+
       test "GET activate returns success to display that server is running" do
         get "/ruby_lsp_rails/activate"
         assert_response(:success)
