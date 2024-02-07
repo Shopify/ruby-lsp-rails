@@ -36,8 +36,6 @@ end
 1. Start your Rails server
 1. Hover over an ActiveRecord model to see its details
 
-Nested models (e.g. `Admin::User`) are not yet supported.
-
 ### Documentation
 
 See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-depth details about the
