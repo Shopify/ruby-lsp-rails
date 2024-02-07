@@ -35,7 +35,7 @@ module RubyLsp
         }
 
         stub_http_request("200", expected_response.to_json)
-        @client.stubs(check_if_server_is_running!: true)
+        @client.stubs(:check_if_server_is_running!)
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
@@ -83,7 +83,7 @@ module RubyLsp
         }
 
         stub_http_request("200", expected_response.to_json)
-        @client.stubs(check_if_server_is_running!: true)
+        @client.stubs(:check_if_server_is_running!)
 
         response = hover_on_source(<<~RUBY, { line: 4, character: 6 })
           module Blog
@@ -118,7 +118,7 @@ module RubyLsp
         }
 
         stub_http_request("200", expected_response.to_json)
-        @client.stubs(check_if_server_is_running!: true)
+        @client.stubs(:check_if_server_is_running!)
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
@@ -140,7 +140,7 @@ module RubyLsp
         }
 
         stub_http_request("200", expected_response.to_json)
-        @client.stubs(check_if_server_is_running!: true)
+        @client.stubs(:check_if_server_is_running!)
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
