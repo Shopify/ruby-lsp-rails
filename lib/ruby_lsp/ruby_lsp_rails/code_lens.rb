@@ -42,12 +42,13 @@ module RubyLsp
       sig { override.returns(ResponseType) }
       attr_reader :_response
 
-      sig { params(uri: URI::Generic, dispatcher: Prism::Dispatcher).void }
-      def initialize(uri, dispatcher)
+      sig { params(client: RailsClient, uri: URI::Generic, dispatcher: Prism::Dispatcher).void }
+      def initialize(client, uri, dispatcher)
         @_response = T.let([], ResponseType)
         @path = T.let(uri.to_standardized_path, T.nilable(String))
         @group_id = T.let(1, Integer)
         @group_id_stack = T.let([], T::Array[Integer])
+        @client = client
 
         dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter, :on_class_node_leave)
 
@@ -96,9 +97,15 @@ module RubyLsp
       sig { params(node: Prism::ClassNode).void }
       def on_class_node_enter(node)
         class_name = node.constant_path.slice
+        superclass_name = node.superclass&.slice
+
         if class_name.end_with?("Test")
           command = "#{BASE_COMMAND} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
+        end
+
+        if class_name.end_with?("Controller") && superclass_name&.end_with?("Controller")
+          add_route_code_lenses_to_actions(node)
         end
 
         @group_id_stack.push(@group_id)
@@ -111,6 +118,49 @@ module RubyLsp
       end
 
       private
+
+      sig { params(node: Prism::ClassNode).void }
+      def add_route_code_lenses_to_actions(node)
+        public_method_nodes = T.must(node.body).child_nodes.take_while do |node|
+          !node.is_a?(Prism::CallNode) || ![:protected, :private].include?(node.name)
+        end
+        public_method_nodes.each do |public_method_node|
+          public_method_node = T.cast(public_method_node, Prism::DefNode)
+          add_route_code_lense_to_action(public_method_node, class_node: node)
+        end
+      end
+
+      sig { params(node: Prism::DefNode, class_node: Prism::ClassNode).void }
+      def add_route_code_lense_to_action(node, class_node:)
+        route = @client.route(
+          controller: class_node.constant_path.slice,
+          action: node.name.to_s,
+        )
+
+        if route
+          path = route[:path]
+          verb = route[:verb]
+          source_location = route[:source_location]
+
+          arguments = [
+            source_location,
+            {
+              start_line: node.location.start_line - 1,
+              start_column: node.location.start_column,
+              end_line: node.location.end_line - 1,
+              end_column: node.location.end_column,
+            },
+          ]
+
+          @_response << create_code_lens(
+            node,
+            title: [verb, path].join(" "),
+            command_name: "rubyLsp.openFile",
+            arguments: arguments,
+            data: { type: "file" },
+          )
+        end
+      end
 
       sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)

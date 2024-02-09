@@ -10,19 +10,52 @@ module RubyLsp
 
       extend T::Sig
 
+      SERVER_NOT_FOUND_ERRORS = T.let(
+        [
+          Errno::ECONNREFUSED,
+          Errno::EADDRNOTAVAIL,
+          Errno::ECONNRESET,
+          ServerAddressUnknown,
+        ],
+        T::Array[T.class_of(Exception)],
+      )
+
+      SERVER_TIMEOUT_ERRORS = T.let(
+        [
+          Net::ReadTimeout,
+          Net::OpenTimeout,
+        ],
+        T::Array[T.class_of(Exception)],
+      )
+
+      SERVER_UNAVAILABLE_ERRORS = T.let(
+        [
+          *SERVER_NOT_FOUND_ERRORS, *SERVER_TIMEOUT_ERRORS,
+        ],
+        T::Array[T.class_of(Exception)],
+      )
+
       SERVER_NOT_RUNNING_MESSAGE = "Rails server is not running. " \
         "To get Rails features in the editor, boot the Rails server"
 
-      sig { returns(Pathname) }
-      attr_reader :root
+      class << self
+        extend T::Sig
+
+        sig { returns(Pathname) }
+        def root
+          @root ||= T.let(
+            Bundler.with_unbundled_env { Bundler.default_gemfile }.dirname,
+            T.nilable(Pathname),
+          )
+        end
+
+        sig { params(root: Pathname).void }
+        attr_writer :root
+      end
 
       sig { void }
       def initialize
-        project_root = T.let(Bundler.with_unbundled_env { Bundler.default_gemfile }.dirname, Pathname)
-        dummy_path = project_root.join("test", "dummy")
-
-        @root = T.let(dummy_path.exist? ? dummy_path : project_root, Pathname)
-        app_uri_path = @root.join("tmp", "app_uri.txt")
+        app_uri_path = root.join("tmp", "app_uri.txt")
 
         if app_uri_path.exist?
           url = URI(app_uri_path.read.chomp)
@@ -42,23 +75,33 @@ module RubyLsp
         return unless response.code == "200"
 
         JSON.parse(response.body.chomp, symbolize_names: true)
-      rescue Errno::ECONNREFUSED,
-             Errno::EADDRNOTAVAIL,
-             Errno::ECONNRESET,
-             Net::ReadTimeout,
-             Net::OpenTimeout,
-             ServerAddressUnknown
+      rescue *SERVER_UNAVAILABLE_ERRORS
+        nil
+      end
+
+      sig { params(controller: String, action: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def route(controller:, action:)
+        response = request("route?controller=#{controller}&action=#{action}")
+        return unless response.code == "200"
+
+        JSON.parse(response.body.chomp, symbolize_names: true)
+      rescue *SERVER_UNAVAILABLE_ERRORS
         nil
       end
 
       sig { void }
       def check_if_server_is_running!
         request("activate", 0.2)
-      rescue Errno::ECONNREFUSED, Errno::EADDRNOTAVAIL, Errno::ECONNRESET, ServerAddressUnknown
+      rescue *SERVER_NOT_FOUND_ERRORS
         warn(SERVER_NOT_RUNNING_MESSAGE)
-      rescue Net::ReadTimeout, Net::OpenTimeout
+      rescue *SERVER_TIMEOUT_ERRORS
         # If the server is running, but the initial request is taking too long, we don't want to block the
         # initialization of the Ruby LSP
+      end
+
+      sig { returns(Pathname) }
+      def root
+        self.class.root
       end
 
       private

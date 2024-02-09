@@ -18,6 +18,9 @@ module ActiveSupport
   class TestCase
     include SyntaxTree::DSL
 
+    TEST_ROOT = T.let(Pathname(T.must(__dir__)), Pathname)
+    ROOT = TEST_ROOT.join("..")
+
     def stub_http_request(code, body)
       response = mock("response")
       response.expects(:is_a?).with(Net::HTTPResponse).returns(true)
@@ -27,12 +30,17 @@ module ActiveSupport
       Net::HTTP.any_instance.expects(:get).returns(response)
     end
 
-    def setup
+    setup do
       File.write("test/dummy/tmp/app_uri.txt", "http://localhost:3000")
+
+      @old_root = RubyLsp::Rails::RailsClient.root
+      RubyLsp::Rails::RailsClient.root = TEST_ROOT.join("dummy")
     end
 
-    def teardown
+    teardown do
       FileUtils.rm("test/dummy/tmp/app_uri.txt")
+
+      RubyLsp::Rails::RailsClient.root = @old_root
     end
   end
 end

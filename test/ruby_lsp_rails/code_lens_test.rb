@@ -7,6 +7,8 @@ module RubyLsp
   module Rails
     class CodeLensTest < ActiveSupport::TestCase
       setup do
+        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
+        @client = RailsClient.new
         @message_queue = Thread::Queue.new
       end
 
@@ -120,6 +122,28 @@ module RubyLsp
         assert_equal("bin/rails test /fake.rb:2", response[3].command.arguments[2])
         assert_match("Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
+      end
+
+      test "recognizes controller actions" do
+        expected_response = {
+          source_location: ["#{@client.root}/config/routes.rb", 3],
+          verb: "GET",
+          path: "/users(.:format)",
+        }
+
+        stub_http_request("200", expected_response.to_json)
+        @client.stubs(:check_if_server_is_running!)
+
+        response = generate_code_lens_for_source(<<~RUBY)
+          class MyController < ApplicationController
+            def my_action
+            end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_match("GET /users(.:format)", response[0].command.title)
+        assert_equal(["#{@client.root}/config/routes.rb", 3], response[0].command.arguments[0])
       end
 
       test "assigns the correct hierarchy to test structure" do

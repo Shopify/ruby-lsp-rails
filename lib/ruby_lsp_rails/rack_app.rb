@@ -20,12 +20,36 @@ module RubyLsp
           [200, { "Content-Type" => "application/json" }, []]
         when "models"
           resolve_database_info_from_model(argument)
+        when "route"
+          resolve_route_info(**request.query_parameters.symbolize_keys)
         else
           not_found
         end
       end
 
       private
+
+      sig { params(requirements: T::Hash[Symbol, String]).returns(T::Array[T.untyped]) }
+      def resolve_route_info(requirements)
+        if requirements[:controller]
+          requirements[:controller] = requirements.fetch(:controller).underscore.delete_suffix("_controller")
+        end
+        ## TODO: Upstream a better way to find route info from params.
+        route = ::Rails.application.routes.routes.find { |route| route.requirements == requirements }
+
+        if route&.source_location
+          file, _, line = route.source_location.rpartition(":")
+          body = JSON.dump({
+            source_location: [File.absolute_path(file), line],
+            verb: route.verb,
+            path: route.path.spec.to_s,
+          })
+
+          [200, { "Content-Type" => "application/json" }, [body]]
+        else
+          not_found
+        end
+      end
 
       sig { params(model_name: String).returns(T::Array[T.untyped]) }
       def resolve_database_info_from_model(model_name)

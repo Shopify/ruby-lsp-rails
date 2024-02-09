@@ -33,7 +33,7 @@ module RubyLsp
         ).returns(T.nilable(Listener[T::Array[Interface::CodeLens]]))
       end
       def create_code_lens_listener(uri, dispatcher)
-        CodeLens.new(uri, dispatcher)
+        CodeLens.new(client, uri, dispatcher)
       end
 
       sig do

@@ -29,7 +29,6 @@ module RubyLsp
       end
 
       test "model returns nil when requests timeout" do
-        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
         Net::HTTP.any_instance.expects(:get).raises(Net::ReadTimeout)
 
         assert_nil(RailsClient.new.model("User"))
@@ -46,7 +45,6 @@ module RubyLsp
       end
 
       test "check_if_server_is_running! warns if no server is found" do
-        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
         Net::HTTP.any_instance.expects(:get).raises(Errno::ECONNREFUSED)
 
         assert_output("", RailsClient::SERVER_NOT_RUNNING_MESSAGE + "\n") do
@@ -55,7 +53,6 @@ module RubyLsp
       end
 
       test "check_if_server_is_running! warns if connection fails" do
-        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
         Net::HTTP.any_instance.expects(:get).raises(Errno::EADDRNOTAVAIL)
 
         assert_output("", RailsClient::SERVER_NOT_RUNNING_MESSAGE + "\n") do
@@ -63,9 +60,30 @@ module RubyLsp
         end
       end
 
-      test "defaults path to localhost" do
-        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
+      test "route returns information for the requested route" do
+        expected_response = {
+          source_location: ["/app/config/routes.rb", 3],
+          verb: "GET",
+          path: "/users(.:format)",
+        }
 
+        stub_http_request("200", expected_response.to_json)
+        assert_equal(expected_response, RailsClient.new.route(controller: "UsersController", action: "index"))
+      end
+
+      test "route returns nil when failing to open TCP connections" do
+        Net::HTTP.any_instance.expects(:get).raises(Errno::EADDRNOTAVAIL)
+
+        assert_nil(RailsClient.new.route(controller: "UsersController", action: "index"))
+      end
+
+      test "route returns nil when requests timeout" do
+        Net::HTTP.any_instance.expects(:get).raises(Net::ReadTimeout)
+
+        assert_nil(RailsClient.new.route(controller: "UsersController", action: "index"))
+      end
+
+      test "defaults path to localhost" do
         client = RailsClient.new
         assert_equal("localhost", client.instance_variable_get(:@address))
         assert_equal(3000, client.instance_variable_get(:@port))
