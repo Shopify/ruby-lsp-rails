@@ -9,6 +9,7 @@ module RubyLsp
     # - Run tests in the VS Terminal
     # - Run tests in the VS Code Test Explorer
     # - Debug tests
+    # - Run migrations in the VS Terminal
     #
     # The
     # [code lens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
@@ -31,13 +32,23 @@ module RubyLsp
     # end
     # ````
     #
+    # # Example:
+    # ```ruby
+    # Run in terminal
+    # class AddFirstNameToUsers < ActiveRecord::Migration[7.1]
+    #   # ...
+    # end
+    # ````
+    #
     # The code lenses will be displayed above the class and above each test method.
     class CodeLens < ::RubyLsp::Listener
       extend T::Sig
       extend T::Generic
 
       ResponseType = type_member { { fixed: T::Array[::RubyLsp::Interface::CodeLens] } }
-      BASE_COMMAND = "bin/rails test"
+      MIGRATE_COMMAND = "bin/rails db:migrate"
+      TEST_COMMAND = "bin/rails test"
+      BASE_COMMAND = TEST_COMMAND # TODO: Deprecate?
 
       sig { override.returns(ResponseType) }
       attr_reader :_response
@@ -78,7 +89,7 @@ module RubyLsp
         return unless content && !content.empty?
 
         line_number = node.location.start_line
-        command = "#{BASE_COMMAND} #{@path}:#{line_number}"
+        command = "#{TEST_COMMAND} #{@path}:#{line_number}"
         add_test_code_lens(node, name: content, command: command, kind: :example)
       end
 
@@ -86,9 +97,10 @@ module RubyLsp
       sig { params(node: Prism::DefNode).void }
       def on_def_node_enter(node)
         method_name = node.name.to_s
+
         if method_name.start_with?("test_")
           line_number = node.location.start_line
-          command = "#{BASE_COMMAND} #{@path}:#{line_number}"
+          command = "#{TEST_COMMAND} #{@path}:#{line_number}"
           add_test_code_lens(node, name: method_name, command: command, kind: :example)
         end
       end
@@ -96,9 +108,16 @@ module RubyLsp
       sig { params(node: Prism::ClassNode).void }
       def on_class_node_enter(node)
         class_name = node.constant_path.slice
+        superclass_name = node.superclass&.slice
+
         if class_name.end_with?("Test")
-          command = "#{BASE_COMMAND} #{@path}"
+          command = "#{TEST_COMMAND} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
+        end
+
+        if superclass_name&.start_with?("ActiveRecord::Migration")
+          command = "#{MIGRATE_COMMAND} VERSION=#{migration_version}"
+          add_migrate_code_lens(node, name: class_name, command: command)
         end
 
         @group_id_stack.push(@group_id)
@@ -111,6 +130,34 @@ module RubyLsp
       end
 
       private
+
+      sig { returns(T.nilable(String)) }
+      def migration_version
+        File.basename(T.must(@path)).split("_").first
+      end
+
+      sig { params(node: Prism::Node, name: String, command: String).void }
+      def add_migrate_code_lens(node, name:, command:)
+        return unless @path
+
+        arguments = [
+          command,
+          {
+            start_line: node.location.start_line - 1,
+            start_column: node.location.start_column,
+            end_line: node.location.end_line - 1,
+            end_column: node.location.end_column,
+          },
+        ]
+
+        @_response << create_code_lens(
+          node,
+          title: "Run in terminal",
+          command_name: "rubyLsp.runMigrationInTerminal",
+          arguments: arguments,
+          data: { type: "migrate" },
+        )
+      end
 
       sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)

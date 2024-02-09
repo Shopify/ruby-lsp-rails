@@ -182,10 +182,24 @@ module RubyLsp
         assert_empty(data)
       end
 
+      test "recognizes migrations" do
+        response = generate_code_lens_for_source(<<~RUBY, file: "file://db/migrate/123456_add_first_name_to_users.rb")
+          class AddFirstNameToUsers < ActiveRecord::Migration[7.1]
+            def change
+              add_column(:users, :first_name, :string)
+            end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_match("Run in terminal", response[0].command.title)
+        assert_equal("bin/rails db:migrate VERSION=123456", response[0].command.arguments[0])
+      end
+
       private
 
-      def generate_code_lens_for_source(source)
-        uri = URI("file:///fake.rb")
+      def generate_code_lens_for_source(source, file: "file:///fake.rb")
+        uri = URI(file)
         store = RubyLsp::Store.new
         store.set(uri: uri, source: source, version: 1)
 
