@@ -227,14 +227,14 @@ GEM
       sorbet-runtime (>= 0.5.10782)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    sorbet (0.5.11226)
-      sorbet-static (= 0.5.11226)
-    sorbet-runtime (0.5.11226)
-    sorbet-static (0.5.11226-universal-darwin)
-    sorbet-static (0.5.11226-x86_64-linux)
-    sorbet-static-and-runtime (0.5.11226)
-      sorbet (= 0.5.11226)
-      sorbet-runtime (= 0.5.11226)
+    sorbet (0.5.11237)
+      sorbet-static (= 0.5.11237)
+    sorbet-runtime (0.5.11237)
+    sorbet-static (0.5.11237-universal-darwin)
+    sorbet-static (0.5.11237-x86_64-linux)
+    sorbet-static-and-runtime (0.5.11237)
+      sorbet (= 0.5.11237)
+      sorbet-runtime (= 0.5.11237)
     spoom (1.2.4)
       erubi (>= 1.10.0)
       sorbet-static-and-runtime (>= 0.5.10187)
@@ -292,4 +292,4 @@ DEPENDENCIES
   tapioca (~> 0.12)
 
 BUNDLED WITH
-   2.4.22
+   2.5.6
