@@ -28,16 +28,18 @@ module RubyLsp
       sig do
         params(
           client: RailsClient,
+          schema_collector: SchemaCollector,
           nesting: T::Array[String],
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, nesting, index, dispatcher)
+      def initialize(client, schema_collector, nesting, index, dispatcher)
         super(dispatcher)
 
         @_response = T.let(nil, ResponseType)
         @client = client
+        @schema_collector = schema_collector
         @nesting = nesting
         @index = index
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
@@ -91,8 +93,17 @@ module RubyLsp
         return if model.nil?
 
         schema_file = model[:schema_file]
+        if schema_file
+          location = @schema_collector.tables[model[:schema_table]]
+          fragment = "L#{location.start_line},#{location.start_column}-"\
+            "#{location.end_line},#{location.end_column}" if location
+          schema_uri = URI::Generic.from_path(
+            path: schema_file,
+            fragment: fragment,
+          )
+        end
         content = +""
-        content << "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})\n\n" if schema_file
+        content << "[Schema](#{schema_uri})\n\n" if schema_uri
         content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
         content
       end
