@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.2.9)
+    ruby-lsp-rails (0.2.10)
       actionpack (>= 6.0)
       activerecord (>= 6.0)
       railties (>= 6.0)
-      ruby-lsp (>= 0.13.0, < 0.14.0)
+      ruby-lsp (>= 0.13.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
