@@ -28,23 +28,25 @@ module RubyLsp
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
       sig do
         override.params(
+          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
           uri: URI::Generic,
           dispatcher: Prism::Dispatcher,
-        ).returns(T.nilable(Listener[T::Array[Interface::CodeLens]]))
+        ).void
       end
-      def create_code_lens_listener(uri, dispatcher)
-        CodeLens.new(uri, dispatcher)
+      def create_code_lens_listener(response_builder, uri, dispatcher)
+        CodeLens.new(response_builder, uri, dispatcher)
       end
 
       sig do
         override.params(
+          response_builder: ResponseBuilders::Hover,
           nesting: T::Array[String],
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
-        ).returns(T.nilable(Listener[T.nilable(Interface::Hover)]))
+        ).void
       end
-      def create_hover_listener(nesting, index, dispatcher)
-        Hover.new(client, nesting, index, dispatcher)
+      def create_hover_listener(response_builder, nesting, index, dispatcher)
+        Hover.new(client, response_builder, nesting, index, dispatcher)
       end
 
       sig { override.returns(String) }
