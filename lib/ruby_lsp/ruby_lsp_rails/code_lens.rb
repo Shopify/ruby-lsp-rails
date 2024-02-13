@@ -32,26 +32,26 @@ module RubyLsp
     # ````
     #
     # The code lenses will be displayed above the class and above each test method.
-    class CodeLens < ::RubyLsp::Listener
+    class CodeLens
       extend T::Sig
-      extend T::Generic
+      include Requests::Support::Common
 
-      ResponseType = type_member { { fixed: T::Array[::RubyLsp::Interface::CodeLens] } }
       BASE_COMMAND = "bin/rails test"
 
-      sig { override.returns(ResponseType) }
-      attr_reader :_response
-
-      sig { params(uri: URI::Generic, dispatcher: Prism::Dispatcher).void }
-      def initialize(uri, dispatcher)
-        @_response = T.let([], ResponseType)
+      sig do
+        params(
+          response_builder:  ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
+          uri: URI::Generic,
+          dispatcher: Prism::Dispatcher,
+        ).void
+      end
+      def initialize(response_builder, uri, dispatcher)
+        @response_builder = response_builder
         @path = T.let(uri.to_standardized_path, T.nilable(String))
         @group_id = T.let(1, Integer)
         @group_id_stack = T.let([], T::Array[Integer])
 
         dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter, :on_class_node_leave)
-
-        super(dispatcher)
       end
 
       sig { params(node: Prism::CallNode).void }
@@ -131,7 +131,7 @@ module RubyLsp
         grouping_data = { group_id: @group_id_stack.last, kind: kind }
         grouping_data[:id] = @group_id if kind == :group
 
-        @_response << create_code_lens(
+        @response_builder << create_code_lens(
           node,
           title: "Run",
           command_name: "rubyLsp.runTest",
@@ -139,7 +139,7 @@ module RubyLsp
           data: { type: "test", **grouping_data },
         )
 
-        @_response << create_code_lens(
+        @response_builder << create_code_lens(
           node,
           title: "Run In Terminal",
           command_name: "rubyLsp.runTestInTerminal",
@@ -147,7 +147,7 @@ module RubyLsp
           data: { type: "test_in_terminal", **grouping_data },
         )
 
-        @_response << create_code_lens(
+        @response_builder << create_code_lens(
           node,
           title: "Debug",
           command_name: "rubyLsp.debugTest",

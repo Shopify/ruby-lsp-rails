@@ -44,16 +44,14 @@ module RubyLsp
           User
         RUBY
 
-        assert_equal(<<~CONTENT, response.contents.value)
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
           ```ruby
           User
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-
-
-
           [Schema](file://#{@client.root}/db/schema.rb)
+
 
           **id**: integer
 
@@ -94,7 +92,7 @@ module RubyLsp
           Blog::User
         RUBY
 
-        assert_equal(<<~CONTENT, response.contents.value)
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
           [Schema](file://#{@client.root}/db/schema.rb)
 
           **id**: integer

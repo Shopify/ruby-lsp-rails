@@ -5,7 +5,7 @@ PATH
       actionpack (>= 6.0)
       activerecord (>= 6.0)
       railties (>= 6.0)
-      ruby-lsp (>= 0.13.0, < 0.14.0)
+      ruby-lsp (>= 0.14.0, < 0.15.0)
       sorbet-runtime (>= 0.5.9897)
 
 GEM
@@ -221,9 +221,9 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.7.6)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.13.4)
+    ruby-lsp (0.14.0)
       language_server-protocol (~> 3.17.0)
-      prism (>= 0.19.0, < 0.20)
+      prism (>= 0.19.0, < 0.22)
       sorbet-runtime (>= 0.5.10782)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)

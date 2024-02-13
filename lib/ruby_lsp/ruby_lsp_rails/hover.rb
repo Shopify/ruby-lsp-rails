@@ -16,28 +16,22 @@ module RubyLsp
     # User.all
     # # ^ hovering here will show information about the User model
     # ```
-    class Hover < ::RubyLsp::Listener
+    class Hover
       extend T::Sig
-      extend T::Generic
-
-      ResponseType = type_member { { fixed: T.nilable(::RubyLsp::Interface::Hover) } }
-
-      sig { override.returns(ResponseType) }
-      attr_reader :_response
+      include Requests::Support::Common
 
       sig do
         params(
           client: RailsClient,
+          response_builder: ResponseBuilders::Hover,
           nesting: T::Array[String],
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, nesting, index, dispatcher)
-        super(dispatcher)
-
-        @_response = T.let(nil, ResponseType)
+      def initialize(client, response_builder, nesting, index, dispatcher)
         @client = client
+        @response_builder = response_builder
         @nesting = nesting
         @index = index
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
@@ -49,16 +43,10 @@ module RubyLsp
         return unless entries
 
         name = T.must(entries.first).name
-        content = +""
-        column_info = generate_column_content(name)
-        content << column_info if column_info
 
-        urls = Support::RailsDocumentClient.generate_rails_document_urls(name)
-        content << urls.join("\n\n") unless urls.empty?
-        return if content.empty?
+        generate_column_content(name)
 
-        contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
-        @_response = RubyLsp::Interface::Hover.new(range: range_from_location(node.location), contents: contents)
+        generate_rails_document_link_hover(name, node.location)
       end
 
       sig { params(node: Prism::ConstantReadNode).void }
@@ -66,11 +54,7 @@ module RubyLsp
         entries = @index.resolve(node.name.to_s, @nesting)
         return unless entries
 
-        content = generate_column_content(T.must(entries.first).name)
-        return unless content
-
-        contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: content)
-        @_response = RubyLsp::Interface::Hover.new(range: range_from_location(node.location), contents: contents)
+        generate_column_content(T.must(entries.first).name)
       end
 
       sig { params(node: Prism::CallNode).void }
@@ -80,30 +64,37 @@ module RubyLsp
 
         return unless message_value && message_loc
 
-        @_response = generate_rails_document_link_hover(message_value, message_loc)
+        generate_rails_document_link_hover(message_value, message_loc)
       end
 
       private
 
-      sig { params(name: String).returns(T.nilable(String)) }
+      sig { params(name: String).void }
       def generate_column_content(name)
         model = @client.model(name)
         return if model.nil?
 
         schema_file = model[:schema_file]
-        content = +""
-        content << "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})\n\n" if schema_file
-        content << model[:columns].map { |name, type| "**#{name}**: #{type}\n" }.join("\n")
-        content
+
+        @response_builder.push(
+          "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})",
+          category: :links,
+        ) if schema_file
+
+        @response_builder.push(
+          model[:columns].map do |name, type|
+            "**#{name}**: #{type}\n"
+          end.join("\n"),
+          category: :documentation,
+        )
       end
 
-      sig { params(name: String, location: Prism::Location).returns(T.nilable(Interface::Hover)) }
+      sig { params(name: String, location: Prism::Location).void }
       def generate_rails_document_link_hover(name, location)
         urls = Support::RailsDocumentClient.generate_rails_document_urls(name)
         return if urls.empty?
 
-        contents = RubyLsp::Interface::MarkupContent.new(kind: "markdown", value: urls.join("\n\n"))
-        RubyLsp::Interface::Hover.new(range: range_from_location(location), contents: contents)
+        @response_builder.push(urls.join("\n\n"), category: :links)
       end
     end
   end
