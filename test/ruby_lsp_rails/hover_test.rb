@@ -7,8 +7,6 @@ module RubyLsp
   module Rails
     class HoverTest < ActiveSupport::TestCase
       setup do
-        File.write("#{Dir.pwd}/test/dummy/tmp/app_uri.txt", "http://localhost:3000")
-        @client = RailsClient.new
         @message_queue = Thread::Queue.new
 
         # Build the Rails documents index ahead of time
@@ -23,7 +21,7 @@ module RubyLsp
 
       test "hook returns model column information" do
         expected_response = {
-          schema_file: "#{@client.root}/db/schema.rb",
+          schema_file: "#{dummy_root}/db/schema.rb",
           columns: [
             ["id", "integer"],
             ["first_name", "string"],
@@ -34,8 +32,7 @@ module RubyLsp
           ],
         }
 
-        stub_http_request("200", expected_response.to_json)
-        @client.stubs(:check_if_server_is_running!)
+        RunnerClient.any_instance.stubs(model: expected_response)
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
@@ -50,7 +47,7 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](file://#{@client.root}/db/schema.rb)
+          [Schema](file://#{dummy_root}/db/schema.rb)
 
 
           **id**: integer
@@ -69,7 +66,7 @@ module RubyLsp
 
       test "return column information for namespaced models" do
         expected_response = {
-          schema_file: "#{@client.root}/db/schema.rb",
+          schema_file: "#{dummy_root}/db/schema.rb",
           columns: [
             ["id", "integer"],
             ["first_name", "string"],
@@ -80,8 +77,7 @@ module RubyLsp
           ],
         }
 
-        stub_http_request("200", expected_response.to_json)
-        @client.stubs(:check_if_server_is_running!)
+        RunnerClient.any_instance.stubs(model: expected_response)
 
         response = hover_on_source(<<~RUBY, { line: 4, character: 6 })
           module Blog
@@ -93,7 +89,7 @@ module RubyLsp
         RUBY
 
         assert_equal(<<~CONTENT.chomp, response.contents.value)
-          [Schema](file://#{@client.root}/db/schema.rb)
+          [Schema](file://#{dummy_root}/db/schema.rb)
 
           **id**: integer
 
@@ -111,12 +107,11 @@ module RubyLsp
 
       test "handles `db/structure.sql` instead of `db/schema.rb`" do
         expected_response = {
-          schema_file: "#{@client.root}/db/structure.sql",
+          schema_file: "#{dummy_root}/db/structure.sql",
           columns: [],
         }
 
-        stub_http_request("200", expected_response.to_json)
-        @client.stubs(:check_if_server_is_running!)
+        RunnerClient.any_instance.stubs(model: expected_response)
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
@@ -127,7 +122,7 @@ module RubyLsp
 
         assert_includes(
           response.contents.value,
-          "[Schema](file://#{@client.root}/db/structure.sql)",
+          "[Schema](file://#{dummy_root}/db/structure.sql)",
         )
       end
 
@@ -137,8 +132,7 @@ module RubyLsp
           columns: [],
         }
 
-        stub_http_request("200", expected_response.to_json)
-        @client.stubs(:check_if_server_is_running!)
+        RunnerClient.any_instance.stubs(model: expected_response)
 
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
@@ -212,6 +206,10 @@ module RubyLsp
 
         assert_nil(response.error)
         response.response
+      end
+
+      def dummy_root
+        File.expand_path("#{__dir__}/../../test/dummy")
       end
     end
   end

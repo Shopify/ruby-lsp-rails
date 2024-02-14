@@ -22,7 +22,7 @@ module RubyLsp
 
       sig do
         params(
-          client: RailsClient,
+          client: RunnerClient,
           response_builder: ResponseBuilders::Hover,
           nesting: T::Array[String],
           index: RubyIndexer::Index,

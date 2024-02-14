@@ -3,7 +3,7 @@
 
 require "ruby_lsp/addon"
 
-require_relative "rails_client"
+require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
 
@@ -12,18 +12,18 @@ module RubyLsp
     class Addon < ::RubyLsp::Addon
       extend T::Sig
 
-      sig { returns(RailsClient) }
+      sig { returns(RunnerClient) }
       def client
-        @client ||= T.let(RailsClient.new, T.nilable(RailsClient))
+        @client ||= T.let(RunnerClient.new, T.nilable(RunnerClient))
       end
 
       sig { override.params(message_queue: Thread::Queue).void }
-      def activate(message_queue)
-        client.check_if_server_is_running!
-      end
+      def activate(message_queue); end
 
       sig { override.void }
-      def deactivate; end
+      def deactivate
+        client.shutdown
+      end
 
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
       sig do
