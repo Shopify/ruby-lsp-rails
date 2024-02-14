@@ -10,19 +10,6 @@ module RubyLsp
         addon = Addon.new
         assert_equal("Ruby LSP Rails", addon.name)
       end
-
-      test "activate checks if Rails server is running" do
-        rails_client = stub("rails_client", check_if_server_is_running!: true)
-
-        RubyLsp::Rails::RailsClient.stubs(instance: rails_client)
-
-        addon = Addon.new
-        queue = Thread::Queue.new
-
-        capture_io { assert(addon.activate(queue)) }
-      ensure
-        T.must(queue).close
-      end
     end
   end
 end

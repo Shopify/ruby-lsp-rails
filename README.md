@@ -52,16 +52,15 @@ See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-de
 
 ## How It Works
 
-This gem consists of two components that enable enhanced Rails functionality in the editor:
+When Ruby LSP Rails starts, it spawns a `rails runner` instance which runs
+`[server.rb](https://github.com/Shopify/ruby-lsp-rails/blob/main/lib/ruby_lsp/ruby_lsp_rails/server.rb)`.
+The addon communicates with this process over a pipe (i.e. `stdin` and `stdout`) to fetch runtime information about the application.
 
-1. A Rack app that automatically exposes APIs when Rails server is running
-1. A Ruby LSP addon that connects to the exposed APIs to fetch runtime information from the Rails server
-
-This is why the Rails server needs to be running for some features to work.
+When extension is stopped (e.g. by quitting the editor), the server instance is shut down.
 
 > [!NOTE]
-> There is no need to restart the Ruby LSP every time the Rails server is booted.
-> If the server is shut down, the extra features will temporarily disappear and reappear once the server is running again.
+> Prior to v0.3, `ruby-lsp-rails` used a different approach which involved mounting a Rack application within the Rails app.
+> That approach was brittle and susceptible to the application's configuration, such as routing and middleware.
 
 ## Contributing
 
