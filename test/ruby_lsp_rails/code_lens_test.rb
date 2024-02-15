@@ -32,6 +32,24 @@ module RubyLsp
         assert_match("Debug", response[5].command.title)
       end
 
+      test "recognizes Rails Active Support test cases using minitest/spec" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          class Test < ActiveSupport::TestCase
+            it "an example" do
+              # test body
+            end
+          end
+        RUBY
+
+        # The first 3 responses are for the test class.
+        # The last 3 are for the test declaration.
+        assert_equal(6, response.size)
+        assert_match("Run", response[3].command.title)
+        assert_equal("bin/rails test /fake.rb:2", response[3].command.arguments[2])
+        assert_match("Run In Terminal", response[4].command.title)
+        assert_match("Debug", response[5].command.title)
+      end
+
       test "recognizes multiline escaped strings" do
         response = generate_code_lens_for_source(<<~RUBY)
           class Test < ActiveSupport::TestCase
