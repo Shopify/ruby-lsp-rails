@@ -15,19 +15,6 @@ group :development do
   gem "ruby-lsp-rails"
 end
 ```
-Some features rely on server introspection, and use a Rack server which is automatically mounted by using a Railtie.
-
-For applications with specialized routing requirements, such as custom sharding, this may not be compatible. It can
-be disabled with:
-
-```ruby
-# config/environments/development.rb
-Rails.application.configure do
-  # ...
-  config.ruby_lsp_rails.server = false
-  # ...
-end
-```
 
 ## Usage
 
@@ -53,7 +40,7 @@ See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-de
 ## How It Works
 
 When Ruby LSP Rails starts, it spawns a `rails runner` instance which runs
-`[server.rb](https://github.com/Shopify/ruby-lsp-rails/blob/main/lib/ruby_lsp/ruby_lsp_rails/server.rb)`.
+[`server.rb`](https://github.com/Shopify/ruby-lsp-rails/blob/main/lib/ruby_lsp/ruby_lsp_rails/server.rb).
 The addon communicates with this process over a pipe (i.e. `stdin` and `stdout`) to fetch runtime information about the application.
 
 When extension is stopped (e.g. by quitting the editor), the server instance is shut down.
