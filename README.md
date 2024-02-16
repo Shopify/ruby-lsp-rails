@@ -40,7 +40,7 @@ See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-de
 ## How It Works
 
 When Ruby LSP Rails starts, it spawns a `rails runner` instance which runs
-`[server.rb](https://github.com/Shopify/ruby-lsp-rails/blob/main/lib/ruby_lsp/ruby_lsp_rails/server.rb)`.
+[`server.rb`](https://github.com/Shopify/ruby-lsp-rails/blob/main/lib/ruby_lsp/ruby_lsp_rails/server.rb).
 The addon communicates with this process over a pipe (i.e. `stdin` and `stdout`) to fetch runtime information about the application.
 
 When extension is stopped (e.g. by quitting the editor), the server instance is shut down.
