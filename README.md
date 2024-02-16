@@ -15,19 +15,6 @@ group :development do
   gem "ruby-lsp-rails"
 end
 ```
-Some features rely on server introspection, and use a Rack server which is automatically mounted by using a Railtie.
-
-For applications with specialized routing requirements, such as custom sharding, this may not be compatible. It can
-be disabled with:
-
-```ruby
-# config/environments/development.rb
-Rails.application.configure do
-  # ...
-  config.ruby_lsp_rails.server = false
-  # ...
-end
-```
 
 ## Usage
 
