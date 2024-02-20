@@ -4,13 +4,22 @@
 require "json"
 require "open3"
 
-# NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe
-# from the client, so it will become full and eventually hang or crash.
-# Instead, return a response with an `error` key.
-
 module RubyLsp
   module Rails
     class RunnerClient
+      class << self
+        extend T::Sig
+
+        sig { returns(RunnerClient) }
+        def create_client
+          new
+        rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
+          warn("Ruby LSP Rails failed to initialize server: #{e.message}")
+          warn("Server dependent features will not be available")
+          NullClient.new
+        end
+      end
+
       extend T::Sig
 
       sig { void }
@@ -48,13 +57,18 @@ module RubyLsp
 
       private
 
-      sig { params(request: T.untyped, params: T.untyped).returns(T.untyped) }
+      sig do
+        params(
+          request: String,
+          params: T.nilable(T::Hash[Symbol, T.untyped]),
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
       def make_request(request, params = nil)
         send_message(request, params)
         read_response
       end
 
-      sig { params(request: T.untyped, params: T.untyped).void }
+      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
         message = { method: request }
         message[:params] = params if params
@@ -78,6 +92,36 @@ module RubyLsp
         end
 
         response.fetch(:result)
+      end
+    end
+
+    class NullClient < RunnerClient
+      extend T::Sig
+
+      sig { void }
+      def initialize # rubocop:disable Lint/MissingSuper
+      end
+
+      sig { override.void }
+      def shutdown
+        # no-op
+      end
+
+      sig { override.returns(T::Boolean) }
+      def stopped?
+        true
+      end
+
+      private
+
+      sig { override.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_message(request, params = nil)
+        # no-op
+      end
+
+      sig { override.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def read_response
+        # no-op
       end
     end
   end

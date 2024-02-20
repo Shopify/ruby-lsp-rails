@@ -36,6 +36,20 @@ module RubyLsp
       test "returns nil if the request returns a nil response" do
         assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
       end
+
+      test "failing to spawn server creates a null client" do
+        FileUtils.mv("bin/rails", "bin/rails_backup")
+
+        assert_output("", %r{No such file or directory - bin/rails}) do
+          client = RunnerClient.create_client
+
+          assert_instance_of(NullClient, client)
+          assert_nil(client.model("User"))
+          assert_predicate(client, :stopped?)
+        end
+      ensure
+        FileUtils.mv("bin/rails_backup", "bin/rails")
+      end
     end
   end
 end
