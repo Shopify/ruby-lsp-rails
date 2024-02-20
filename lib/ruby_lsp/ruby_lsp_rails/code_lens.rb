@@ -57,7 +57,7 @@ module RubyLsp
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
         message_value = node.message
-        return unless message_value == "test"
+        return unless message_value == "test" || message_value == "it"
 
         arguments = node.arguments&.arguments
         return unless arguments&.any?
