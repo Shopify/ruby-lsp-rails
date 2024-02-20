@@ -26,7 +26,7 @@ module RubyLsp
 
       extend T::Sig
 
-      sig { params(model_name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      sig { params(model_name: String).returns(T::Hash[Symbol, T.untyped]) }
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
         unless const && const < ActiveRecord::Base && !const.abstract_class?
@@ -35,14 +35,18 @@ module RubyLsp
           }
         end
 
-        schema_file = ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
-
-        {
+        info = {
           result: {
             columns: const.columns.map { |column| [column.name, column.type] },
-            schema_file: ::Rails.root + schema_file,
           },
         }
+
+        if ActiveRecord::Tasks::DatabaseTasks.respond_to?(:schema_dump_path)
+          info[:result][:schema_file] =
+            ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
+
+        end
+        info
       rescue => e
         {
           error: e.message,
