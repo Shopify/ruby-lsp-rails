@@ -29,7 +29,7 @@ module RubyLsp
       sig { params(model_name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
-        unless const && const < ActiveRecord::Base && !const.abstract_class?
+        unless const && defined?(ActiveRecord) && const < ActiveRecord::Base && !const.abstract_class?
           return {
             result: nil,
           }
