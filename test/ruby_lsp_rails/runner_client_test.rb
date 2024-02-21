@@ -31,6 +31,10 @@ module RubyLsp
         assert_equal(columns, response.fetch(:columns))
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
+
+      test "returns nil if the request returns a nil response" do
+        assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
+      end
     end
   end
 end
