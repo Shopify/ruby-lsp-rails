@@ -10,6 +10,7 @@ module RubyLsp
     class DocumentSymbol
       extend T::Sig
       include Requests::Support::Common
+      include ActiveSupportTestCaseHelper
 
       sig do
         params(
@@ -26,28 +27,9 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
-        message_value = node.message
-        return unless message_value == "test" || message_value == "it"
+        content = extract_test_case_name(node)
 
-        return unless node.arguments
-
-        arguments = node.arguments&.arguments
-        return unless arguments&.any?
-
-        first_argument = arguments.first
-
-        content = case first_argument
-        when Prism::InterpolatedStringNode
-          parts = first_argument.parts
-
-          if parts.all? { |part| part.is_a?(Prism::StringNode) }
-            T.cast(parts, T::Array[Prism::StringNode]).map(&:content).join
-          end
-        when Prism::StringNode
-          first_argument.content
-        end
-
-        return unless content && !content.empty?
+        return unless content
 
         @response_builder.last.children << RubyLsp::Interface::DocumentSymbol.new(
           name: content,
