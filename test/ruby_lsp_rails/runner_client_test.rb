@@ -8,7 +8,9 @@ module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        @client = T.let(RunnerClient.new, RunnerClient)
+        capture_io do
+          @client = T.let(RunnerClient.new, RunnerClient)
+        end
       end
 
       teardown do

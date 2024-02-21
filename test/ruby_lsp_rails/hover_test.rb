@@ -194,18 +194,22 @@ module RubyLsp
         executor.instance_variable_get(:@index).index_single(
           RubyIndexer::IndexablePath.new(nil, T.must(uri.to_standardized_path)), source
         )
-        response = executor.execute(
-          {
-            method: "textDocument/hover",
-            params: {
-              textDocument: { uri: uri },
-              position: position,
-            },
-          },
-        )
 
-        assert_nil(response.error)
-        response.response
+        response = T.let(nil, T.nilable(RubyLsp::Result))
+        capture_io do
+          response = executor.execute(
+            {
+              method: "textDocument/hover",
+              params: {
+                textDocument: { uri: uri },
+                position: position,
+              },
+            },
+          )
+        end
+
+        assert_nil(T.must(response).error)
+        T.must(response).response
       end
 
       def dummy_root
