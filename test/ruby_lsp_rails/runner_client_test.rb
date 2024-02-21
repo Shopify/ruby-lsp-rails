@@ -16,7 +16,8 @@ module RubyLsp
         assert_predicate @client, :stopped?
       end
 
-      # This is an integration test which starts the server. For the more fine-grained tests, see `server_test.rb`.
+      # These are integration tests which start the server. For the more fine-grained tests, see `server_test.rb`.
+
       test "#model returns information for the requested model" do
         # These columns are from the schema in the dummy app: test/dummy/db/schema.rb
         columns = [
