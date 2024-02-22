@@ -5,7 +5,7 @@ module RubyLsp
   module Rails
     # ![Document Symbol demo](../../document_symbol.gif)
     #
-    # The [document symbol](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_documentSymbol)
+    # The [document symbol](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol)
     # request allows users to navigate between ActiveSupport test cases with VS Code's "Go to Symbol" feature.
     class DocumentSymbol
       extend T::Sig
