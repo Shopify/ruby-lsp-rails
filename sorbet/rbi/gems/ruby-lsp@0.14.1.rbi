@@ -360,7 +360,7 @@ class RubyIndexer::Entry::Parameter
   #
   # @return [Symbol]
   #
-  # source://sorbet-runtime/0.5.11237lib/types/private/methods/_methods.rb#252
+  # source://sorbet-runtime/0.5.11262lib/types/private/methods/_methods.rb#257
   def decorated_name(*args, **_arg1, &blk); end
 
   # Name includes just the name of the parameter, excluding symbols like splats
@@ -514,11 +514,16 @@ class RubyIndexer::Index
   sig { params(name: ::String, nesting: T::Array[::String]).returns(T.nilable(T::Array[::RubyIndexer::Entry])) }
   def resolve(name, nesting); end
 
-  # Attempts to find a given method for a resolved fully qualified receiver name. Returns `nil` if the method does not
-  # exist on that receiver
+  # Attempts to find methods for a resolved fully qualified receiver name.
+  # Returns `nil` if the method does not exist on that receiver
   #
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#243
-  sig { params(method_name: ::String, receiver_name: ::String).returns(T.nilable(::RubyIndexer::Entry::Member)) }
+  sig do
+    params(
+      method_name: ::String,
+      receiver_name: ::String
+    ).returns(T.nilable(T::Array[::RubyIndexer::Entry::Member]))
+  end
   def resolve_method(method_name, receiver_name); end
 
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#79
@@ -1278,13 +1283,13 @@ class RubyLsp::Listeners::Completion
   end
   def initialize(response_builder, index, nesting, typechecker_enabled, dispatcher); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#105
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#108
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
   # Handle completion on namespaced constant references (e.g. `Foo::Bar`)
   #
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#62
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#64
   sig { params(node: ::Prism::ConstantPathNode).void }
   def on_constant_path_node_enter(node); end
 
@@ -1300,7 +1305,7 @@ class RubyLsp::Listeners::Completion
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#153
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#156
   sig do
     params(
       label: ::String,
@@ -1309,7 +1314,7 @@ class RubyLsp::Listeners::Completion
   end
   def build_completion(label, node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#176
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#179
   sig do
     params(
       real_name: ::String,
@@ -1321,7 +1326,7 @@ class RubyLsp::Listeners::Completion
   end
   def build_entry_completion(real_name, incomplete_name, node, entries, top_level); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#133
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#136
   sig do
     params(
       entry: ::RubyIndexer::Entry::Member,
@@ -1345,7 +1350,7 @@ class RubyLsp::Listeners::Completion
   # end
   # ```
   #
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#263
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#266
   sig { params(entry_name: ::String).returns(T::Boolean) }
   def top_level?(entry_name); end
 end
@@ -1375,21 +1380,21 @@ class RubyLsp::Listeners::Definition
   sig { params(node: ::Prism::ConstantPathNode).void }
   def on_constant_path_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#52
+  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#55
   sig { params(node: ::Prism::ConstantReadNode).void }
   def on_constant_read_node_enter(node); end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#124
+  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#132
   sig { params(value: ::String).void }
   def find_in_index(value); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#59
+  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#65
   sig { params(node: ::Prism::CallNode).void }
   def handle_method_definition(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#82
+  # source://ruby-lsp/lib/ruby_lsp/listeners/definition.rb#90
   sig { params(node: ::Prism::CallNode).void }
   def handle_require_definition(node); end
 end
@@ -1698,65 +1703,97 @@ class RubyLsp::Listeners::DocumentSymbol
   sig { params(response_builder: RubyLsp::ResponseBuilders::DocumentSymbol, dispatcher: ::Prism::Dispatcher).void }
   def initialize(response_builder, dispatcher); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#168
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#256
   sig { params(node: ::Prism::AliasMethodNode).void }
   def on_alias_method_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#73
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#81
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#41
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#49
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#51
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#59
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#158
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#246
   sig { params(node: ::Prism::ClassVariableWriteNode).void }
   def on_class_variable_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#82
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#150
+  sig { params(node: ::Prism::ConstantAndWriteNode).void }
+  def on_constant_and_write_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#160
+  sig { params(node: ::Prism::ConstantOperatorWriteNode).void }
+  def on_constant_operator_write_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#140
+  sig { params(node: ::Prism::ConstantOrWriteNode).void }
+  def on_constant_or_write_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#110
+  sig { params(node: ::Prism::ConstantPathAndWriteNode).void }
+  def on_constant_path_and_write_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#130
+  sig { params(node: ::Prism::ConstantPathOperatorWriteNode).void }
+  def on_constant_path_operator_write_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#120
+  sig { params(node: ::Prism::ConstantPathOrWriteNode).void }
+  def on_constant_path_or_write_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#180
+  sig { params(node: ::Prism::ConstantPathTargetNode).void }
+  def on_constant_path_target_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#90
   sig { params(node: ::Prism::ConstantPathWriteNode).void }
   def on_constant_path_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#92
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#170
+  sig { params(node: ::Prism::ConstantTargetNode).void }
+  def on_constant_target_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#100
   sig { params(node: ::Prism::ConstantWriteNode).void }
   def on_constant_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#117
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#205
   sig { params(node: ::Prism::DefNode).void }
   def on_def_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#102
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#190
   sig { params(node: ::Prism::DefNode).void }
   def on_def_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#148
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#236
   sig { params(node: ::Prism::InstanceVariableWriteNode).void }
   def on_instance_variable_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#107
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#195
   sig { params(node: ::Prism::ModuleNode).void }
   def on_module_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#143
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#231
   sig { params(node: ::Prism::ModuleNode).void }
   def on_module_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#56
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#64
   sig { params(node: ::Prism::SingletonClassNode).void }
   def on_singleton_class_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#68
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#76
   sig { params(node: ::Prism::SingletonClassNode).void }
   def on_singleton_class_node_leave(node); end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#193
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#281
   sig do
     params(
       name: ::String,
@@ -1767,11 +1804,11 @@ class RubyLsp::Listeners::DocumentSymbol
   end
   def create_document_symbol(name:, kind:, range_location:, selection_range_location:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#230
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#329
   sig { params(node: ::Prism::CallNode).void }
   def handle_alias_method(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#208
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#296
   sig { params(node: ::Prism::CallNode).void }
   def handle_attr_accessor(node); end
 end
@@ -1933,11 +1970,11 @@ class RubyLsp::Listeners::Hover
   end
   def initialize(response_builder, uri, nesting, index, dispatcher, typechecker_enabled); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#76
+  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#82
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#69
+  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#72
   sig { params(node: ::Prism::ConstantPathNode).void }
   def on_constant_path_node_enter(node); end
 
@@ -1945,17 +1982,17 @@ class RubyLsp::Listeners::Hover
   sig { params(node: ::Prism::ConstantReadNode).void }
   def on_constant_read_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#62
+  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#65
   sig { params(node: ::Prism::ConstantWriteNode).void }
   def on_constant_write_node_enter(node); end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#115
+  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#121
   sig { params(node: ::Prism::CallNode).void }
   def generate_gem_hover(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#100
+  # source://ruby-lsp/lib/ruby_lsp/listeners/hover.rb#106
   sig { params(name: ::String, location: ::Prism::Location).void }
   def generate_hover(name, location); end
 end
@@ -2378,12 +2415,12 @@ end
 #
 # The
 # [code lens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
-# request informs the editor of runnable commands such as tests
+# request informs the editor of runnable commands such as testing and debugging
 #
 # # Example
 #
 # ```ruby
-# # Run
+# # Run | Run in Terminal | Debug
 # class Test < Minitest::Test
 # end
 # ```
@@ -3109,6 +3146,14 @@ module RubyLsp::Requests::Support::Common
   end
   def categorized_markdown_from_index_entries(title, entries); end
 
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/common.rb#145
+  sig do
+    params(
+      node: T.any(::Prism::ConstantPathNode, ::Prism::ConstantPathTargetNode, ::Prism::ConstantReadNode)
+    ).returns(T.nilable(::String))
+  end
+  def constant_name(node); end
+
   # source://ruby-lsp/lib/ruby_lsp/requests/support/common.rb#58
   sig do
     params(
@@ -3427,7 +3472,7 @@ class RubyLsp::ResponseBuilders::DocumentSymbol < ::RubyLsp::ResponseBuilders::R
   # @param symbol [Interface::DocumentSymbol]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11237lib/types/private/methods/_methods.rb#252
+  # source://sorbet-runtime/0.5.11262lib/types/private/methods/_methods.rb#257
   def <<(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_lsp/response_builders/document_symbol.rb#47
@@ -3793,14 +3838,14 @@ class URI::Source < ::URI::File
   sig { params(v: T.nilable(::String)).returns(T::Boolean) }
   def check_host(v); end
 
-  # source://uri/0.13.0uri/generic.rb#243
+  # source://uri/0.12.0uri/generic.rb#243
   def gem_name; end
 
   # source://ruby-lsp/lib/ruby_lsp/requests/support/source_uri.rb#26
   sig { returns(T.nilable(::String)) }
   def gem_version; end
 
-  # source://uri/0.13.0uri/generic.rb#283
+  # source://uri/0.12.0uri/generic.rb#283
   def line_number; end
 
   # source://ruby-lsp/lib/ruby_lsp/requests/support/source_uri.rb#52
