@@ -14,7 +14,14 @@ module RubyLsp
 
       sig { returns(RunnerClient) }
       def client
-        @client ||= T.let(RunnerClient.create_client, T.nilable(RunnerClient))
+        @client ||= T.let(
+          if defined?(Rails)
+            RunnerClient.create_client
+          else
+            NullClient.new
+          end,
+          T.nilable(T.any(RunnerClient, NullClient)),
+        )
       end
 
       sig { override.params(message_queue: Thread::Queue).void }
