@@ -19,7 +19,6 @@ module RubyLsp
         ).void
       end
       def initialize(response_builder, dispatcher)
-        @_response = T.let(nil, NilClass)
         @response_builder = response_builder
 
         dispatcher.register(self, :on_call_node_enter)
