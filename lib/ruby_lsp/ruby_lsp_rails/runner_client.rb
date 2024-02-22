@@ -4,17 +4,38 @@
 require "json"
 require "open3"
 
-# NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe
-# from the client, so it will become full and eventually hang or crash.
-# Instead, return a response with an `error` key.
-
 module RubyLsp
   module Rails
     class RunnerClient
+      class << self
+        extend T::Sig
+
+        sig { returns(RunnerClient) }
+        def create_client
+          new
+        rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
+          warn("Ruby LSP Rails failed to initialize server: #{e.message}\n#{e.backtrace&.join("\n")}")
+          warn("Server dependent features will not be available")
+          NullClient.new
+        end
+      end
+
+      class InitializationError < StandardError; end
+      class IncompleteMessageError < StandardError; end
+
       extend T::Sig
 
       sig { void }
       def initialize
+        # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
+        # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
+        # set its own session ID
+        begin
+          Process.setsid
+        rescue Errno::EPERM
+          # If we can't set the session ID, continue
+        end
+
         stdin, stdout, stderr, wait_thread = Open3.popen3(
           "bin/rails",
           "runner",
@@ -27,11 +48,20 @@ module RubyLsp
         @wait_thread = T.let(wait_thread, Process::Waiter)
         @stdin.binmode # for Windows compatibility
         @stdout.binmode # for Windows compatibility
+
+        warn("Ruby LSP Rails booting server")
+        read_response
+        warn("Finished booting Ruby LSP Rails server")
+      rescue Errno::EPIPE, IncompleteMessageError
+        raise InitializationError, @stderr.read
       end
 
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def model(name)
         make_request("model", name: name)
+      rescue IncompleteMessageError
+        warn("Ruby LSP Rails failed to get model information: #{@stderr.read}")
+        nil
       end
 
       sig { void }
@@ -48,13 +78,18 @@ module RubyLsp
 
       private
 
-      sig { params(request: T.untyped, params: T.untyped).returns(T.untyped) }
+      sig do
+        params(
+          request: String,
+          params: T.nilable(T::Hash[Symbol, T.untyped]),
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
       def make_request(request, params = nil)
         send_message(request, params)
         read_response
       end
 
-      sig { params(request: T.untyped, params: T.untyped).void }
+      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
         message = { method: request }
         message[:params] = params if params
@@ -68,8 +103,9 @@ module RubyLsp
       sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
         headers = @stdout.gets("\r\n\r\n")
-        raw_response = @stdout.read(T.must(headers)[/Content-Length: (\d+)/i, 1].to_i)
+        raise IncompleteMessageError unless headers
 
+        raw_response = @stdout.read(headers[/Content-Length: (\d+)/i, 1].to_i)
         response = JSON.parse(T.must(raw_response), symbolize_names: true)
 
         if response[:error]
@@ -78,6 +114,36 @@ module RubyLsp
         end
 
         response.fetch(:result)
+      end
+    end
+
+    class NullClient < RunnerClient
+      extend T::Sig
+
+      sig { void }
+      def initialize # rubocop:disable Lint/MissingSuper
+      end
+
+      sig { override.void }
+      def shutdown
+        # no-op
+      end
+
+      sig { override.returns(T::Boolean) }
+      def stopped?
+        true
+      end
+
+      private
+
+      sig { override.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_message(request, params = nil)
+        # no-op
+      end
+
+      sig { override.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def read_response
+        # no-op
       end
     end
   end

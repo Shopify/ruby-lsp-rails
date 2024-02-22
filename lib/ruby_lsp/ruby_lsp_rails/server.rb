@@ -19,12 +19,62 @@ rescue
   nil
 end
 
+# NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
+# client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
+
 module RubyLsp
   module Rails
     class Server
       VOID = Object.new
 
       extend T::Sig
+
+      sig { void }
+      def initialize
+        $stdin.sync = true
+        $stdout.sync = true
+        @running = T.let(true, T::Boolean)
+      end
+
+      sig { void }
+      def start
+        initialize_result = { result: { message: "ok" } }.to_json
+        $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
+
+        while @running
+          headers = $stdin.gets("\r\n\r\n")
+          json = $stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
+
+          request = JSON.parse(json, symbolize_names: true)
+          response = execute(request.fetch(:method), request[:params])
+          next if response == VOID
+
+          json_response = response.to_json
+          $stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
+        end
+      end
+
+      sig do
+        params(
+          request: String,
+          params: T::Hash[Symbol, T.untyped],
+        ).returns(T.any(Object, T::Hash[Symbol, T.untyped]))
+      end
+      def execute(request, params = {})
+        case request
+        when "shutdown"
+          @running = false
+          VOID
+        when "model"
+          resolve_database_info_from_model(params.fetch(:name))
+        else
+          VOID
+        end
+      rescue => e
+        { error: e.full_message(highlight: false) }
+      end
+
+      private
 
       sig { params(model_name: String).returns(T::Hash[Symbol, T.untyped]) }
       def resolve_database_info_from_model(model_name)
@@ -48,41 +98,7 @@ module RubyLsp
         end
         info
       rescue => e
-        {
-          error: e.message,
-        }
-      end
-
-      sig { void }
-      def start
-        $stdin.sync = true
-        $stdout.sync = true
-
-        running = T.let(true, T::Boolean)
-
-        while running
-          headers = $stdin.gets("\r\n\r\n")
-          request = $stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
-
-          json = JSON.parse(request, symbolize_names: true)
-          request_method = json.fetch(:method)
-          params = json[:params]
-
-          response = case request_method
-          when "shutdown"
-            running = false
-            VOID
-          when "model"
-            resolve_database_info_from_model(params.fetch(:name))
-          else
-            VOID
-          end
-
-          next if response == VOID
-
-          json_response = response.to_json
-          $stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
-        end
+        { error: e.full_message(highlight: false) }
       end
     end
   end

@@ -14,11 +14,15 @@ module RubyLsp
 
       sig { returns(RunnerClient) }
       def client
-        @client ||= T.let(RunnerClient.new, T.nilable(RunnerClient))
+        @client ||= T.let(RunnerClient.create_client, T.nilable(RunnerClient))
       end
 
       sig { override.params(message_queue: Thread::Queue).void }
-      def activate(message_queue); end
+      def activate(message_queue)
+        # Eagerly initialize the client in a thread. This allows the indexing from the Ruby LSP to continue running even
+        # while we boot large Rails applications in the background
+        Thread.new { client }
+      end
 
       sig { override.void }
       def deactivate
