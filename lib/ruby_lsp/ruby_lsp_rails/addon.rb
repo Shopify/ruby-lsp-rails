@@ -20,7 +20,7 @@ module RubyLsp
           else
             NullClient.new
           end,
-          T.nilable(T.any(RunnerClient, NullClient)),
+          T.nilable(RunnerClient),
         )
       end
 
