@@ -195,21 +195,25 @@ module RubyLsp
           RubyIndexer::IndexablePath.new(nil, T.must(uri.to_standardized_path)), source
         )
 
-        response = T.let(nil, T.nilable(RubyLsp::Result))
-        capture_io do
-          response = executor.execute(
-            {
-              method: "textDocument/hover",
-              params: {
-                textDocument: { uri: uri },
-                position: position,
-              },
-            },
-          )
+        capture_subprocess_io do
+          RubyLsp::Executor.new(store, @message_queue).execute({
+            method: "initialized",
+            params: {},
+          })
         end
 
-        assert_nil(T.must(response).error)
-        T.must(response).response
+        response = executor.execute(
+          {
+            method: "textDocument/hover",
+            params: {
+              textDocument: { uri: uri },
+              position: position,
+            },
+          },
+        )
+
+        assert_nil(response.error)
+        response.response
       end
 
       def dummy_root

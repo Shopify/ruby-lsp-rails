@@ -14,21 +14,24 @@ module RubyLsp
     class Addon < ::RubyLsp::Addon
       extend T::Sig
 
-      sig { returns(RunnerClient) }
-      def client
-        @client ||= T.let(RunnerClient.create_client, T.nilable(RunnerClient))
+      sig { void }
+      def initialize
+        super
+
+        # We first initialize the client as a NullClient, so that we can start the server in a background thread. Until
+        # the real client is initialized, features that depend on it will not be blocked by using the NullClient
+        @client = T.let(NullClient.new, RunnerClient)
       end
 
       sig { override.params(message_queue: Thread::Queue).void }
       def activate(message_queue)
-        # Eagerly initialize the client in a thread. This allows the indexing from the Ruby LSP to continue running even
-        # while we boot large Rails applications in the background
-        Thread.new { client }
+        # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
+        Thread.new { @client = RunnerClient.create_client }
       end
 
       sig { override.void }
       def deactivate
-        client.shutdown
+        @client.shutdown
       end
 
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
@@ -52,7 +55,7 @@ module RubyLsp
         ).void
       end
       def create_hover_listener(response_builder, nesting, index, dispatcher)
-        Hover.new(client, response_builder, nesting, index, dispatcher)
+        Hover.new(@client, response_builder, nesting, index, dispatcher)
       end
 
       sig do
