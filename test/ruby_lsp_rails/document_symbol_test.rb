@@ -170,6 +170,13 @@ module RubyLsp
         store = RubyLsp::Store.new
         store.set(uri: uri, source: source, version: 1)
 
+        capture_subprocess_io do
+          RubyLsp::Executor.new(store, @message_queue).execute({
+            method: "initialized",
+            params: {},
+          })
+        end
+
         response = RubyLsp::Executor.new(store, @message_queue).execute({
           method: "textDocument/documentSymbol",
           params: { textDocument: { uri: uri }, position: { line: 0, character: 0 } },
