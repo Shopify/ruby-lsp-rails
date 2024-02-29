@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.3.1)
+    ruby-lsp-rails (0.3.2)
       actionpack (>= 6.0)
       activerecord (>= 6.0)
       railties (>= 6.0)
