@@ -31,6 +31,7 @@ module RubyLsp
         # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
         # set its own session ID
         begin
+          Process.setpgrp
           Process.setsid
         rescue Errno::EPERM
           # If we can't set the session ID, continue
@@ -52,6 +53,16 @@ module RubyLsp
         warn("Ruby LSP Rails booting server")
         read_response
         warn("Finished booting Ruby LSP Rails server")
+
+        unless ENV["RAILS_ENV"] == "test"
+          at_exit do
+            if @wait_thread.alive?
+              warn("Ruby LSP Rails is force killing the server")
+              sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
+              Process.kill(T.must(Signal.list["TERM"]), @wait_thread.pid)
+            end
+          end
+        end
       rescue Errno::EPIPE, IncompleteMessageError
         raise InitializationError, @stderr.read
       end
@@ -66,8 +77,9 @@ module RubyLsp
 
       sig { void }
       def shutdown
-        send_notification("shutdown")
-        Thread.pass while @wait_thread.alive?
+        warn("Ruby LSP Rails shutting down server")
+        send_message("shutdown")
+        sleep(0.5) # give the server a bit of time to shutdown
         [@stdin, @stdout, @stderr].each(&:close)
       end
 

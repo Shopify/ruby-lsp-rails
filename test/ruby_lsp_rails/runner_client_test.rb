@@ -8,13 +8,13 @@ module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        capture_io do
+        capture_subprocess_io do
           @client = T.let(RunnerClient.new, RunnerClient)
         end
       end
 
       teardown do
-        @client.shutdown
+        capture_subprocess_io { @client.shutdown }
         assert_predicate @client, :stopped?
       end
 
