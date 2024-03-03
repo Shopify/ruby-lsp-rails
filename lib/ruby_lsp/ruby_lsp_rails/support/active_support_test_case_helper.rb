@@ -11,8 +11,6 @@ module RubyLsp
         message_value = node.message
         return unless message_value == "test" || message_value == "it"
 
-        return unless node.arguments
-
         arguments = node.arguments&.arguments
         return unless arguments&.any?
 
