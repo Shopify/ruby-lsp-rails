@@ -76,6 +76,15 @@ module RubyLsp
       end
 
       sig { void }
+      def trigger_reload
+        warn("Reloading Rails application")
+        send_notification("reload")
+      rescue IncompleteMessageError
+        warn("Ruby LSP Rails failed to trigger reload")
+        nil
+      end
+
+      sig { void }
       def shutdown
         warn("Ruby LSP Rails shutting down server")
         send_message("shutdown")

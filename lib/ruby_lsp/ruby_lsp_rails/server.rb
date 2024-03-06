@@ -67,6 +67,9 @@ module RubyLsp
           VOID
         when "model"
           resolve_database_info_from_model(params.fetch(:name))
+        when "reload"
+          ::Rails.application.reloader.reload!
+          VOID
         else
           VOID
         end
