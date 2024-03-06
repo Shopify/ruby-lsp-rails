@@ -17,3 +17,11 @@ if defined?(DEBUGGER__)
   DEBUGGER__::CONFIG[:skip_path] =
     Array(DEBUGGER__::CONFIG[:skip_path]) + Gem.loaded_specs["sorbet-runtime"].full_require_paths
 end
+
+module ActiveSupport
+  class TestCase
+    def dummy_root
+      File.expand_path("#{__dir__}/dummy")
+    end
+  end
+end

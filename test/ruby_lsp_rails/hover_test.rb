@@ -215,10 +215,6 @@ module RubyLsp
         assert_nil(response.error)
         response.response
       end
-
-      def dummy_root
-        File.expand_path("#{__dir__}/../../test/dummy")
-      end
     end
   end
 end

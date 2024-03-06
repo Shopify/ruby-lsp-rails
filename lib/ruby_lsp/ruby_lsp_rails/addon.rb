@@ -68,6 +68,15 @@ module RubyLsp
         DocumentSymbol.new(response_builder, dispatcher)
       end
 
+      sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
+      def workspace_did_change_watched_files(changes)
+        if changes.any? do |change|
+             change[:uri].end_with?("db/schema.rb") || change[:uri].end_with?("structure.sql")
+           end
+          @client.trigger_reload
+        end
+      end
+
       sig { override.returns(String) }
       def name
         "Ruby LSP Rails"
