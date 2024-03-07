@@ -148,6 +148,8 @@ module RubyLsp
               selection_range: range_from_location(argument.location),
             )
           when Prism::CallNode
+            next unless argument.name == :new
+
             arg_receiver = argument.receiver
 
             name = arg_receiver.name if arg_receiver.is_a?(Prism::ConstantReadNode)
