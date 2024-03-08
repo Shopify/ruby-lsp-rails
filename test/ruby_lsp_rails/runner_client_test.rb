@@ -60,9 +60,10 @@ module RubyLsp
         end
         File.chmod(0o755, "bin/rails")
 
+        # The error message is slightly different on Ubuntu, so we need to allow for that
         assert_output(
           "",
-          %r{Ruby LSP Rails failed to initialize server: bin/rails: line 1: foo:( command)? not found},
+          %r{Ruby LSP Rails failed to initialize server: bin/rails: (line )?1: foo:( command)? not found},
         ) do
           client = RunnerClient.create_client
 
