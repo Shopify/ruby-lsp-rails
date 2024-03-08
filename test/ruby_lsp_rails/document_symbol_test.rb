@@ -287,6 +287,68 @@ module RubyLsp
         assert_empty(response[0].children)
       end
 
+      test "correctly handles validate method with all argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validate "foo_arg", :bar_arg, -> () {}, Foo::BazClass.new("blah"), FooClass, Foo::BarClass
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(6, response[0].children.size)
+        assert_equal("validate(foo_arg)", response[0].children[0].name)
+        assert_equal("validate(bar_arg)", response[0].children[1].name)
+        assert_equal("validate(<anonymous>)", response[0].children[2].name)
+        assert_equal("validate(Foo::BazClass)", response[0].children[3].name)
+        assert_equal("validate(FooClass)", response[0].children[4].name)
+        assert_equal("validate(Foo::BarClass)", response[0].children[5].name)
+      end
+
+      test "correctly handles validates method with Prism::StringNode and Prism::SymbolNode argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validates "foo_arg", :bar_arg
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("validates(foo_arg)", response[0].children[0].name)
+        assert_equal("validates(bar_arg)", response[0].children[1].name)
+      end
+
+      test "correctly handles validates_each method with Prism::StringNode and Prism::SymbolNode argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validates_each "foo_arg", :bar_arg do
+              puts "Foo"
+            end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("validates_each(foo_arg)", response[0].children[0].name)
+        assert_equal("validates_each(bar_arg)", response[0].children[1].name)
+      end
+
+      test "correctly handles validates_with method with Prism::ConstantReadNode and Prism::ConstantPathNode argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validates_with FooClass, Foo::BarClass
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("validates_with(FooClass)", response[0].children[0].name)
+        assert_equal("validates_with(Foo::BarClass)", response[0].children[1].name)
+      end
+
       private
 
       def generate_document_symbols_for_source(source)
