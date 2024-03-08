@@ -15,10 +15,10 @@ module RubyLsp
           if File.exist?("bin/rails")
             new
           else
-            warn(<<~MSG)
+            $stderr.puts(<<~MSG)
               Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}"
             MSG
-            warn("Server dependent features will not be available")
+            $stderr.puts("Server dependent features will not be available")
             NullClient.new
           end
         rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
