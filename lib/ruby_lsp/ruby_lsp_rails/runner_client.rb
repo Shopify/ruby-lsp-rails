@@ -12,7 +12,15 @@ module RubyLsp
 
         sig { returns(RunnerClient) }
         def create_client
-          new
+          if File.exist?("bin/rails")
+            new
+          else
+            $stderr.puts(<<~MSG)
+              Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}"
+            MSG
+            $stderr.puts("Server dependent features will not be available")
+            NullClient.new
+          end
         rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
           $stderr.puts("Ruby LSP Rails failed to initialize server: #{e.message}\n#{e.backtrace&.join("\n")}")
           $stderr.puts("Server dependent features will not be available")
