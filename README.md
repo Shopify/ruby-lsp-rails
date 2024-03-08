@@ -7,37 +7,26 @@ Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for ex
 
 ## Installation
 
-To install, add the following line to your application's Gemfile:
+If you haven't already done so, you'll need to first [set up Ruby LSP](https://github.com/Shopify/ruby-lsp#usage).
 
-```ruby
-# Gemfile
-group :development do
-  gem "ruby-lsp-rails"
-end
-```
+As of v0.3.0, Ruby LSP will automatically include the Ruby LSP Rails addon in its custom bundle when a Rails app is detected.
+There is no need to add the gem to your bundle.
 
-## Usage
+## Features
 
-### Hover to reveal ActiveRecord schema
+* Hover over an ActiveRecord model to reveal its schema.
+* Run or debug a test by clicking on the code lens which appears above the test class, or an individual test.
+* Navigate between ActiveSupport test cases with your editor's "Go to Symbol" feature.
 
-1. Start your Rails server
-1. Hover over an ActiveRecord model to see its details
-
-### Documentation
+## Documentation
 
 See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-depth details about the
 [supported features](https://shopify.github.io/ruby-lsp-rails/RubyLsp/Rails.html).
 
-### Running Tests
+## How Runtime Introspection Works
 
-1. Open a test which inherits from `ActiveSupport::TestCase` or one of its descendants, such as `ActionDispatch::IntegrationTest`.
-2. Click on the "Run", "Run in Terminal" or "Debug" code lens which appears above the test class, or an individual test.
-
-> [!NOTE]
-> When using the Test Explorer view, if your code contains a statement to pause execution (e.g. `debugger`) it will
-> cause the test runner to hang.
-
-## How It Works
+LSP tooling is typically based on static analysis, but `ruby-lsp-rails` actually communicates with your Rails app for
+some features.
 
 When Ruby LSP Rails starts, it spawns a `rails runner` instance which runs
 [`server.rb`](https://github.com/Shopify/ruby-lsp-rails/blob/main/lib/ruby_lsp/ruby_lsp_rails/server.rb).
@@ -46,7 +35,7 @@ The addon communicates with this process over a pipe (i.e. `stdin` and `stdout`)
 When extension is stopped (e.g. by quitting the editor), the server instance is shut down.
 
 > [!NOTE]
-> Prior to v0.3, `ruby-lsp-rails` used a different approach which involved mounting a Rack application within the Rails app.
+> Prior to v0.3.0, `ruby-lsp-rails` used a different approach which involved mounting a Rack application within the Rails app.
 > That approach was brittle and susceptible to the application's configuration, such as routing and middleware.
 
 ## Contributing

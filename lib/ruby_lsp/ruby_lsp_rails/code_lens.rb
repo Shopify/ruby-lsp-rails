@@ -12,7 +12,9 @@ module RubyLsp
     #
     # The
     # [code lens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
-    # request informs the editor of runnable commands such as tests
+    # request informs the editor of runnable commands such as tests.
+    # It's available for tests which inherit from `ActiveSupport::TestCase` or one of its descendants, such as
+    # `ActionDispatch::IntegrationTest`.
     #
     # # Example:
     #
@@ -32,6 +34,9 @@ module RubyLsp
     # ````
     #
     # The code lenses will be displayed above the class and above each test method.
+    #
+    # Note: When using the Test Explorer view, if your code contains a statement to pause execution (e.g. `debugger`) it
+    # will cause the test runner to hang.
     class CodeLens
       extend T::Sig
       include Requests::Support::Common
