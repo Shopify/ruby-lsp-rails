@@ -39,10 +39,31 @@ module RubyLsp
         assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
       end
 
-      test "failing to spawn server creates a null client" do
+      test "falls back to null client when bin/rails is not found" do
         FileUtils.mv("bin/rails", "bin/rails_backup")
 
-        assert_output("", %r{No such file or directory - bin/rails}) do
+        assert_output("", %r{Ruby LSP Rails failed to locate bin/rails in the current directory}) do
+          client = RunnerClient.create_client
+
+          assert_instance_of(NullClient, client)
+          assert_nil(client.model("User"))
+          assert_predicate(client, :stopped?)
+        end
+      ensure
+        FileUtils.mv("bin/rails_backup", "bin/rails")
+      end
+
+      test "failing to spawn server creates a null client" do
+        FileUtils.mv("bin/rails", "bin/rails_backup")
+        File.open("bin/rails", "w") do |f|
+          f.write("foo")
+        end
+        File.chmod(0o755, "bin/rails")
+
+        assert_output(
+          "",
+          %r{Ruby LSP Rails failed to initialize server: bin/rails: line 1: foo:( command)? not found},
+        ) do
           client = RunnerClient.create_client
 
           assert_instance_of(NullClient, client)
