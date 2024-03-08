@@ -35,6 +35,3 @@ Sorbet/StrictSigil:
   Exclude:
     - "**/*.rake"
     - "test/**/*.rb"
-
-Style/StderrPuts:
-  Enabled: true

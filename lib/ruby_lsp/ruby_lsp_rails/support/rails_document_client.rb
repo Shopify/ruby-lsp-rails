@@ -66,7 +66,7 @@ module RubyLsp
           private def build_search_index
             return unless RAILTIES_VERSION
 
-            warn("Fetching Rails Documents...")
+            $stderr.puts("Fetching Rails Documents...")
 
             response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/v#{RAILTIES_VERSION}/js/search_index.js"))
 
@@ -79,13 +79,13 @@ module RubyLsp
               response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/js/search_index.js"))
               response.body if response.is_a?(Net::HTTPSuccess)
             else
-              warn("Response failed: #{response.inspect}")
+              $stderr.puts("Response failed: #{response.inspect}")
               nil
             end
 
             process_search_index(body) if body
           rescue StandardError => e
-            warn("Exception occurred when fetching Rails document index: #{e.inspect}")
+            $stderr.puts("Exception occurred when fetching Rails document index: #{e.inspect}")
           end
 
           sig { params(js: String).returns(T::Hash[String, T::Array[T::Hash[Symbol, String]]]) }

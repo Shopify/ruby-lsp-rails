@@ -14,8 +14,8 @@ module RubyLsp
         def create_client
           new
         rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
-          warn("Ruby LSP Rails failed to initialize server: #{e.message}\n#{e.backtrace&.join("\n")}")
-          warn("Server dependent features will not be available")
+          $stderr.puts("Ruby LSP Rails failed to initialize server: #{e.message}\n#{e.backtrace&.join("\n")}")
+          $stderr.puts("Server dependent features will not be available")
           NullClient.new
         end
       end
@@ -50,14 +50,14 @@ module RubyLsp
         @stdin.binmode # for Windows compatibility
         @stdout.binmode # for Windows compatibility
 
-        warn("Ruby LSP Rails booting server")
+        $stderr.puts("Ruby LSP Rails booting server")
         read_response
-        warn("Finished booting Ruby LSP Rails server")
+        $stderr.puts("Finished booting Ruby LSP Rails server")
 
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
             if @wait_thread.alive?
-              warn("Ruby LSP Rails is force killing the server")
+              $stderr.puts("Ruby LSP Rails is force killing the server")
               sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
               Process.kill(T.must(Signal.list["TERM"]), @wait_thread.pid)
             end
@@ -71,22 +71,22 @@ module RubyLsp
       def model(name)
         make_request("model", name: name)
       rescue IncompleteMessageError
-        warn("Ruby LSP Rails failed to get model information: #{@stderr.read}")
+        $stderr.puts("Ruby LSP Rails failed to get model information: #{@stderr.read}")
         nil
       end
 
       sig { void }
       def trigger_reload
-        warn("Reloading Rails application")
+        $stderr.puts("Reloading Rails application")
         send_notification("reload")
       rescue IncompleteMessageError
-        warn("Ruby LSP Rails failed to trigger reload")
+        $stderr.puts("Ruby LSP Rails failed to trigger reload")
         nil
       end
 
       sig { void }
       def shutdown
-        warn("Ruby LSP Rails shutting down server")
+        $stderr.puts("Ruby LSP Rails shutting down server")
         send_message("shutdown")
         sleep(0.5) # give the server a bit of time to shutdown
         [@stdin, @stdout, @stderr].each(&:close)
@@ -130,7 +130,7 @@ module RubyLsp
         response = JSON.parse(T.must(raw_response), symbolize_names: true)
 
         if response[:error]
-          warn("Ruby LSP Rails error: " + response[:error])
+          $stderr.puts("Ruby LSP Rails error: " + response[:error])
           return
         end
 
