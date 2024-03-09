@@ -93,13 +93,14 @@ module RubyLsp
             )
           end
         end
-        @response_builder.push("---", category: :documentation)
-        @response_builder.push("---", category: :documentation)
 
-        # @response_builder.push(
-        # "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})",
-        # category: :links,
-        # ) if schema_file
+        @response_builder.push(
+          "|[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})|",
+          category: :documentation,
+        ) if schema_file
+
+
+        @response_builder.push("---", category: :documentation)
 
         @response_builder.push(
           model[:columns].map do |name, type|
