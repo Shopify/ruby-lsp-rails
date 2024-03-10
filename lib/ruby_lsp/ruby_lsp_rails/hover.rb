@@ -82,7 +82,7 @@ module RubyLsp
           "Model:".ljust(10, " ").gsub(" ", "&nbsp;") + "|***" + name + "***|",
           category: :documentation,
         )
-        model[:associations].each do |k, v|
+        model[:associations]&.each do |k, v|
           v.each do |a|
             @response_builder.push(
               "|#{k.to_s.concat(":").ljust(10, " ").gsub(
