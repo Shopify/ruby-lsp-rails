@@ -29,6 +29,7 @@ module RubyLsp
             ["age", "integer"],
             ["created_at", "datetime"],
             ["updated_at", "datetime"],
+            ["organization_id", "integer"],
           ],
         }
 
@@ -47,9 +48,13 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](file://#{dummy_root}/db/schema.rb)
 
 
+          | | |
+          |:---|:---|
+          Model:&nbsp;&nbsp;&nbsp;&nbsp;|***User***|
+          |[Schema](file:///Users/rcaudill/Code/ruby-lsp-rails/test/dummy/db/schema.rb)|
+          ---
           **id**: integer
 
           **first_name**: string
@@ -61,6 +66,86 @@ module RubyLsp
           **created_at**: datetime
 
           **updated_at**: datetime
+
+          **organization_id**: integer
+        CONTENT
+      end
+
+      test "hook returns model column information with associations" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["id", "integer"],
+            ["first_name", "string"],
+            ["last_name", "string"],
+            ["age", "integer"],
+            ["created_at", "datetime"],
+            ["updated_at", "datetime"],
+            ["organization_id", "integer"],
+          ],
+          associations: {
+            has_one: [
+              {
+                name: "address",
+                file: "#{dummy_root}/app/models/address.rb",
+              },
+            ],
+            belongs_to: [
+              {
+                name: "organization",
+                file: "#{dummy_root}/app/models/organization.rb",
+              },
+            ],
+            has_many: [
+              {
+                name: "widgets",
+                file: "#{dummy_root}/app/models/widget.rb",
+              },
+            ],
+            has_and_belongs_to_many: [],
+          },
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 5, character: 0 })
+          class User < ApplicationRecord
+            has_many :widgets
+            has_one :address
+            belongs_to :organization
+          end
+          User
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          User
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L1,1-5,4)
+
+
+          | | |
+          |:---|:---|
+          Model:&nbsp;&nbsp;&nbsp;&nbsp;|***User***|
+          |has_one:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [address](file://#{dummy_root}/app/models/address.rb) |
+          |belongs_to:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [organization](file://#{dummy_root}/app/models/organization.rb) |
+          |has_many:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [widgets](file://#{dummy_root}/app/models/widget.rb) |
+          |[Schema](file://#{dummy_root}/db/schema.rb)|
+          ---
+          **id**: integer
+
+          **first_name**: string
+
+          **last_name**: string
+
+          **age**: integer
+
+          **created_at**: datetime
+
+          **updated_at**: datetime
+
+          **organization_id**: integer
         CONTENT
       end
 
@@ -74,6 +159,7 @@ module RubyLsp
             ["age", "integer"],
             ["created_at", "datetime"],
             ["updated_at", "datetime"],
+            ["organization_id", "integer"],
           ],
         }
 
@@ -89,8 +175,11 @@ module RubyLsp
         RUBY
 
         assert_equal(<<~CONTENT.chomp, response.contents.value)
-          [Schema](file://#{dummy_root}/db/schema.rb)
-
+          | | |
+          |:---|:---|
+          Model:&nbsp;&nbsp;&nbsp;&nbsp;|***Blog::User***|
+          |[Schema](file://#{dummy_root}/db/schema.rb)|
+          ---
           **id**: integer
 
           **first_name**: string
@@ -102,6 +191,8 @@ module RubyLsp
           **created_at**: datetime
 
           **updated_at**: datetime
+
+          **organization_id**: integer
         CONTENT
       end
 
