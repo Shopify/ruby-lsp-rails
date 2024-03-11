@@ -76,10 +76,31 @@ module RubyLsp
 
         schema_file = model[:schema_file]
 
+        @response_builder.push("| | |", category: :documentation)
+        @response_builder.push("|:---|:---|", category: :documentation)
         @response_builder.push(
-          "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})",
-          category: :links,
+          "Model:".ljust(10, " ").gsub(" ", "&nbsp;") + "|***" + name + "***|",
+          category: :documentation,
+        )
+        model[:associations]&.each do |k, v|
+          v.each do |a|
+            @response_builder.push(
+              "|#{k.to_s.concat(":").ljust(10, " ").gsub(
+                " ",
+                "&nbsp;",
+              ).concat("&nbsp;" * 5)}| [#{a[:name]}](file://#{a[:file]}) |",
+              category: :documentation,
+            )
+          end
+        end
+
+        @response_builder.push(
+          "|[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})|",
+          category: :documentation,
         ) if schema_file
+
+
+        @response_builder.push("---", category: :documentation)
 
         @response_builder.push(
           model[:columns].map do |name, type|

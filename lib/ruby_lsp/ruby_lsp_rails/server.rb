@@ -90,6 +90,32 @@ module RubyLsp
 
         info = {
           result: {
+            associations: {
+              has_one: const.reflect_on_all_associations(:has_one).map do |c|
+                         {
+                           name: c.name.to_s,
+                           file: Object.const_source_location(c.klass.to_s).first,
+                         }
+                       end,
+              belongs_to: const.reflect_on_all_associations(:belongs_to).map do |c|
+                            {
+                              name: c.name.to_s,
+                              file: Object.const_source_location(c.klass.to_s).first,
+                            }
+                          end,
+              has_many: const.reflect_on_all_associations(:has_many).map do |c|
+                          {
+                            name: c.name.to_s,
+                            file: Object.const_source_location(c.klass.to_s).first,
+                          }
+                        end,
+              has_and_belongs_to_many: const.reflect_on_all_associations(:has_and_belongs_to_many).map do |c|
+                                         {
+                                           name: c.name.to_s,
+                                           file: Object.const_source_location(c.klass.to_s).first,
+                                         }
+                                       end,
+            },
             columns: const.columns.map { |column| [column.name, column.type] },
           },
         }
