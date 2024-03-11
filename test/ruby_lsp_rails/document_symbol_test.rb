@@ -163,7 +163,7 @@ module RubyLsp
         assert_equal("back to the same level", response[0].children[2].name)
       end
 
-      test "correctly handles model callbacks with multiple Prism::StringNode arguments" do
+      test "correctly handles model callbacks with multiple string arguments" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             before_save "foo_method", "bar_method", on: :update
@@ -192,7 +192,7 @@ module RubyLsp
         assert_equal("before_action(<anonymous>)", response[0].children[0].name)
       end
 
-      test "correctly handles job callback with Prism::SymbolNode argument" do
+      test "correctly handles job callback with symbol argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooJob < ApplicationJob
             before_perform :foo_method
@@ -205,7 +205,7 @@ module RubyLsp
         assert_equal("before_perform(foo_method)", response[0].children[0].name)
       end
 
-      test "correctly handles model callback with Prism::LambdaNode argument" do
+      test "correctly handles model callback with lambda argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             before_save -> () {}
@@ -218,7 +218,7 @@ module RubyLsp
         assert_equal("before_save(<anonymous>)", response[0].children[0].name)
       end
 
-      test "correctly handles job callbacks with Prism::CallNode argument" do
+      test "correctly handles job callbacks with method call argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooJob < ApplicationJob
             before_perform FooClass.new(foo_arg)
@@ -231,7 +231,7 @@ module RubyLsp
         assert_equal("before_perform(FooClass)", response[0].children[0].name)
       end
 
-      test "correctly handles controller callbacks with Prism::ConstantReadNode argument" do
+      test "correctly handles controller callbacks with constant argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooController < ApplicationController
             before_action FooClass
@@ -244,7 +244,7 @@ module RubyLsp
         assert_equal("before_action(FooClass)", response[0].children[0].name)
       end
 
-      test "correctly handles model callbacks with Prism::ConstantPathNode argument" do
+      test "correctly handles model callbacks with namespaced constant argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             before_save Foo::BarClass
@@ -285,6 +285,68 @@ module RubyLsp
         assert_equal(1, response.size)
         assert_equal("FooJob", response[0].name)
         assert_empty(response[0].children)
+      end
+
+      test "correctly handles validate method with all argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validate "foo_arg", :bar_arg, -> () {}, Foo::BazClass.new("blah"), FooClass, Foo::BarClass
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(6, response[0].children.size)
+        assert_equal("validate(foo_arg)", response[0].children[0].name)
+        assert_equal("validate(bar_arg)", response[0].children[1].name)
+        assert_equal("validate(<anonymous>)", response[0].children[2].name)
+        assert_equal("validate(Foo::BazClass)", response[0].children[3].name)
+        assert_equal("validate(FooClass)", response[0].children[4].name)
+        assert_equal("validate(Foo::BarClass)", response[0].children[5].name)
+      end
+
+      test "correctly handles validates method with string and symbol argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validates "foo_arg", :bar_arg
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("validates(foo_arg)", response[0].children[0].name)
+        assert_equal("validates(bar_arg)", response[0].children[1].name)
+      end
+
+      test "correctly handles validates_each method with string and symbol argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validates_each "foo_arg", :bar_arg do
+              puts "Foo"
+            end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("validates_each(foo_arg)", response[0].children[0].name)
+        assert_equal("validates_each(bar_arg)", response[0].children[1].name)
+      end
+
+      test "correctly handles validates_with method with constant and namespaced constant argument types" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validates_with FooClass, Foo::BarClass
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("validates_with(FooClass)", response[0].children[0].name)
+        assert_equal("validates_with(Foo::BarClass)", response[0].children[1].name)
       end
 
       private

@@ -93,25 +93,29 @@ module RubyLsp
           )
         end
 
-        extract_callbacks(node)
+        receiver = node.receiver
+        return if receiver && !receiver.is_a?(Prism::SelfNode)
+
+        message = node.message
+        case message
+        when *CALLBACKS, "validate"
+          handle_all_arg_types(node, T.must(message))
+        when "validates", "validates!", "validates_each"
+          handle_symbol_and_string_arg_types(node, T.must(message))
+        when "validates_with"
+          handle_class_arg_types(node, T.must(message))
+        end
       end
 
       private
 
-      sig { params(node: Prism::CallNode).void }
-      def extract_callbacks(node)
-        receiver = node.receiver
-        return if receiver && !receiver.is_a?(Prism::SelfNode)
-
-        message_value = node.message
-
-        return unless CALLBACKS.include?(message_value)
-
+      sig { params(node: Prism::CallNode, message: String).void }
+      def handle_all_arg_types(node, message)
         block = node.block
 
         if block
           append_document_symbol(
-            name: "#{message_value}(<anonymous>)",
+            name: "#{message}(<anonymous>)",
             range: range_from_location(node.location),
             selection_range: range_from_location(block.location),
           )
@@ -128,7 +132,7 @@ module RubyLsp
             next unless name
 
             append_document_symbol(
-              name: "#{message_value}(#{name})",
+              name: "#{message}(#{name})",
               range: range_from_location(argument.location),
               selection_range: range_from_location(T.must(argument.value_loc)),
             )
@@ -137,17 +141,19 @@ module RubyLsp
             next if name.empty?
 
             append_document_symbol(
-              name: "#{message_value}(#{name})",
+              name: "#{message}(#{name})",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.content_loc),
             )
           when Prism::LambdaNode
             append_document_symbol(
-              name: "#{message_value}(<anonymous>)",
+              name: "#{message}(<anonymous>)",
               range: range_from_location(node.location),
               selection_range: range_from_location(argument.location),
             )
           when Prism::CallNode
+            next unless argument.name == :new
+
             arg_receiver = argument.receiver
 
             name = arg_receiver.name if arg_receiver.is_a?(Prism::ConstantReadNode)
@@ -155,25 +161,65 @@ module RubyLsp
             next unless name
 
             append_document_symbol(
-              name: "#{message_value}(#{name})",
+              name: "#{message}(#{name})",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.location),
             )
-          when Prism::ConstantReadNode
-            name = argument.name
-            next if name.empty?
-
-            append_document_symbol(
-              name: "#{message_value}(#{name})",
-              range: range_from_location(argument.location),
-              selection_range: range_from_location(argument.location),
-            )
-          when Prism::ConstantPathNode
+          when Prism::ConstantReadNode, Prism::ConstantPathNode
             name = argument.full_name
             next if name.empty?
 
             append_document_symbol(
-              name: "#{message_value}(#{name})",
+              name: "#{message}(#{name})",
+              range: range_from_location(argument.location),
+              selection_range: range_from_location(argument.location),
+            )
+          end
+        end
+      end
+
+      sig { params(node: Prism::CallNode, message: String).void }
+      def handle_symbol_and_string_arg_types(node, message)
+        arguments = node.arguments&.arguments
+        return unless arguments&.any?
+
+        arguments.each do |argument|
+          case argument
+          when Prism::SymbolNode
+            name = argument.value
+            next unless name
+
+            append_document_symbol(
+              name: "#{message}(#{name})",
+              range: range_from_location(argument.location),
+              selection_range: range_from_location(T.must(argument.value_loc)),
+            )
+          when Prism::StringNode
+            name = argument.content
+            next if name.empty?
+
+            append_document_symbol(
+              name: "#{message}(#{name})",
+              range: range_from_location(argument.location),
+              selection_range: range_from_location(argument.content_loc),
+            )
+          end
+        end
+      end
+
+      sig { params(node: Prism::CallNode, message: String).void }
+      def handle_class_arg_types(node, message)
+        arguments = node.arguments&.arguments
+        return unless arguments&.any?
+
+        arguments.each do |argument|
+          case argument
+          when Prism::ConstantReadNode, Prism::ConstantPathNode
+            name = argument.full_name
+            next if name.empty?
+
+            append_document_symbol(
+              name: "#{message}(#{name})",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.location),
             )
