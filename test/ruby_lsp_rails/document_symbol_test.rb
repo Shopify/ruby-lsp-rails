@@ -163,7 +163,7 @@ module RubyLsp
         assert_equal("back to the same level", response[0].children[2].name)
       end
 
-      test "correctly handles model callbacks with multiple Prism::StringNode arguments" do
+      test "correctly handles model callbacks with multiple string arguments" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             before_save "foo_method", "bar_method", on: :update
@@ -192,7 +192,7 @@ module RubyLsp
         assert_equal("before_action(<anonymous>)", response[0].children[0].name)
       end
 
-      test "correctly handles job callback with Prism::SymbolNode argument" do
+      test "correctly handles job callback with symbol argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooJob < ApplicationJob
             before_perform :foo_method
@@ -205,7 +205,7 @@ module RubyLsp
         assert_equal("before_perform(foo_method)", response[0].children[0].name)
       end
 
-      test "correctly handles model callback with Prism::LambdaNode argument" do
+      test "correctly handles model callback with lambda argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             before_save -> () {}
@@ -218,7 +218,7 @@ module RubyLsp
         assert_equal("before_save(<anonymous>)", response[0].children[0].name)
       end
 
-      test "correctly handles job callbacks with Prism::CallNode argument" do
+      test "correctly handles job callbacks with method call argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooJob < ApplicationJob
             before_perform FooClass.new(foo_arg)
@@ -231,7 +231,7 @@ module RubyLsp
         assert_equal("before_perform(FooClass)", response[0].children[0].name)
       end
 
-      test "correctly handles controller callbacks with Prism::ConstantReadNode argument" do
+      test "correctly handles controller callbacks with constant argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooController < ApplicationController
             before_action FooClass
@@ -244,7 +244,7 @@ module RubyLsp
         assert_equal("before_action(FooClass)", response[0].children[0].name)
       end
 
-      test "correctly handles model callbacks with Prism::ConstantPathNode argument" do
+      test "correctly handles model callbacks with namespaced constant argument" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             before_save Foo::BarClass
@@ -305,7 +305,7 @@ module RubyLsp
         assert_equal("validate(Foo::BarClass)", response[0].children[5].name)
       end
 
-      test "correctly handles validates method with Prism::StringNode and Prism::SymbolNode argument types" do
+      test "correctly handles validates method with string and symbol argument types" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             validates "foo_arg", :bar_arg
@@ -319,7 +319,7 @@ module RubyLsp
         assert_equal("validates(bar_arg)", response[0].children[1].name)
       end
 
-      test "correctly handles validates_each method with Prism::StringNode and Prism::SymbolNode argument types" do
+      test "correctly handles validates_each method with string and symbol argument types" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             validates_each "foo_arg", :bar_arg do
@@ -335,7 +335,7 @@ module RubyLsp
         assert_equal("validates_each(bar_arg)", response[0].children[1].name)
       end
 
-      test "correctly handles validates_with method with Prism::ConstantReadNode and Prism::ConstantPathNode argument types" do
+      test "correctly handles validates_with method with constant and namespaced constant argument types" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
             validates_with FooClass, Foo::BarClass
