@@ -16,7 +16,7 @@ There is no need to add the gem to your bundle.
 
 * Hover over an ActiveRecord model to reveal its schema.
 * Run or debug a test by clicking on the code lens which appears above the test class, or an individual test.
-* Navigate between ActiveSupport test cases with your editor's "Go to Symbol" feature.
+* Navigate to validations, callbacks and test cases using your editor's "Go to Symbol" feature, or outline view.
 
 ## Documentation
 
