@@ -57,16 +57,16 @@ module RubyLsp
       sig do
         params(
           request: String,
-          params: T::Hash[Symbol, T.untyped],
+          params: T.nilable(T::Hash[Symbol, T.untyped]),
         ).returns(T.any(Object, T::Hash[Symbol, T.untyped]))
       end
-      def execute(request, params = {})
+      def execute(request, params)
         case request
         when "shutdown"
           @running = false
           VOID
         when "model"
-          resolve_database_info_from_model(params.fetch(:name))
+          resolve_database_info_from_model(T.must(params).fetch(:name))
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
