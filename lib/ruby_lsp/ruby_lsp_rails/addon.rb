@@ -8,6 +8,7 @@ require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
 require_relative "document_symbol"
+require_relative "definition"
 
 module RubyLsp
   module Rails
@@ -66,6 +67,19 @@ module RubyLsp
       end
       def create_document_symbol_listener(response_builder, dispatcher)
         DocumentSymbol.new(response_builder, dispatcher)
+      end
+
+      sig do
+        override.params(
+          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
+          uri: URI::Generic,
+          nesting: T::Array[String],
+          index: RubyIndexer::Index,
+          dispatcher: Prism::Dispatcher,
+        ).void
+      end
+      def create_definition_listener(response_builder, uri, nesting, index, dispatcher)
+        Definition.new(response_builder, nesting, index, dispatcher)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
