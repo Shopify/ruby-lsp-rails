@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/Shopify/rdoc.git
+  revision: dbabc13c8ceea0375bf01c6652ca3c5175230c5b
+  branch: create_snapper_generator
+  specs:
+    rdoc (6.6.2)
+      psych (>= 4.0.0)
+
 PATH
   remote: .
   specs:
@@ -193,8 +201,6 @@ GEM
     rbi (0.1.9)
       prism (>= 0.18.0, < 0.25)
       sorbet-runtime (>= 0.5.9204)
-    rdoc (6.6.2)
-      psych (>= 4.0.0)
     regexp_parser (2.9.0)
     reline (0.4.3)
       io-console (~> 0.5)
@@ -281,7 +287,7 @@ DEPENDENCIES
   psych (~> 5.1)
   puma
   rails
-  rdoc
+  rdoc!
   rubocop-minitest (~> 0.35.0)
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.15)
