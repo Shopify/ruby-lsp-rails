@@ -4,4 +4,5 @@
 class User < ApplicationRecord
   before_create :foo_arg, -> () {}
   validates :name, presence: true
+  has_one :profile
 end

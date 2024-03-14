@@ -6,7 +6,8 @@ module RubyLsp
     # ![Document Symbol demo](../../document_symbol.gif)
     #
     # The [document symbol](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol)
-    # request allows users to navigate between ActiveSupport test cases with VS Code's "Go to Symbol" feature.
+    # request allows users to navigate between associations, validations, callbacks and ActiveSupport test cases with
+    # VS Code's "Go to Symbol" feature.
     class DocumentSymbol
       extend T::Sig
       include Requests::Support::Common
@@ -100,7 +101,7 @@ module RubyLsp
         case message
         when *CALLBACKS, "validate"
           handle_all_arg_types(node, T.must(message))
-        when "validates", "validates!", "validates_each"
+        when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many", "has_and_belongs_to_many"
           handle_symbol_and_string_arg_types(node, T.must(message))
         when "validates_with"
           handle_class_arg_types(node, T.must(message))
