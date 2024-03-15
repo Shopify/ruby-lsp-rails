@@ -4,6 +4,7 @@
 require "ruby_lsp/addon"
 
 require_relative "support/active_support_test_case_helper"
+require_relative "support/callbacks"
 require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
