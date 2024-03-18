@@ -157,8 +157,7 @@ module RubyLsp
 
             arg_receiver = argument.receiver
 
-            name = arg_receiver.name if arg_receiver.is_a?(Prism::ConstantReadNode)
-            name = arg_receiver.full_name if arg_receiver.is_a?(Prism::ConstantPathNode)
+            name = arg_receiver.full_name if arg_receiver.is_a?(Prism::ConstantReadNode) || arg_receiver.is_a?(Prism::ConstantPathNode)
             next unless name
 
             append_document_symbol(
