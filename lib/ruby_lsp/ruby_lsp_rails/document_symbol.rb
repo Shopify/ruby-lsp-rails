@@ -116,7 +116,7 @@ module RubyLsp
 
         if block
           append_document_symbol(
-            name: "#{message}(<anonymous>)",
+            name: "#{message} <anonymous>",
             range: range_from_location(node.location),
             selection_range: range_from_location(block.location),
           )
@@ -133,7 +133,7 @@ module RubyLsp
             next unless name
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} :#{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(T.must(argument.value_loc)),
             )
@@ -142,13 +142,13 @@ module RubyLsp
             next if name.empty?
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} :#{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.content_loc),
             )
           when Prism::LambdaNode
             append_document_symbol(
-              name: "#{message}(<anonymous>)",
+              name: "#{message} <anonymous>",
               range: range_from_location(node.location),
               selection_range: range_from_location(argument.location),
             )
@@ -157,12 +157,12 @@ module RubyLsp
 
             arg_receiver = argument.receiver
 
-            name = arg_receiver.name if arg_receiver.is_a?(Prism::ConstantReadNode)
-            name = arg_receiver.full_name if arg_receiver.is_a?(Prism::ConstantPathNode)
+            name = arg_receiver.full_name if arg_receiver.is_a?(Prism::ConstantReadNode) ||
+              arg_receiver.is_a?(Prism::ConstantPathNode)
             next unless name
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} #{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.location),
             )
@@ -171,7 +171,7 @@ module RubyLsp
             next if name.empty?
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} #{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.location),
             )
@@ -191,7 +191,7 @@ module RubyLsp
             next unless name
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} :#{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(T.must(argument.value_loc)),
             )
@@ -200,7 +200,7 @@ module RubyLsp
             next if name.empty?
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} :#{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.content_loc),
             )
@@ -220,7 +220,7 @@ module RubyLsp
             next if name.empty?
 
             append_document_symbol(
-              name: "#{message}(#{name})",
+              name: "#{message} #{name}",
               range: range_from_location(argument.location),
               selection_range: range_from_location(argument.location),
             )
