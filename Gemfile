@@ -13,7 +13,7 @@ gem "mocha"
 gem "rubocop-shopify", "~> 2.15", require: false
 gem "rubocop-minitest", "~> 0.35.0", require: false
 gem "rubocop-rake", "~> 0.6.0", require: false
-gem "rubocop-sorbet", "~> 0.7", require: false
+gem "rubocop-sorbet", "~> 0.8", require: false
 gem "rdoc", require: false, github: "Shopify/rdoc", branch: "create_snapper_generator"
 gem "sorbet-static-and-runtime", platforms: :ruby
 gem "tapioca", "~> 0.12", require: false, platforms: :ruby
