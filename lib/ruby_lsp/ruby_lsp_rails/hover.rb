@@ -95,8 +95,8 @@ module RubyLsp
         schema_file = model[:schema_file]
         if schema_file
           location = @schema_collector.tables[model[:schema_table]]
-          fragment = "L#{location.start_line},#{location.start_column}-"\
-            "#{location.end_line},#{location.end_column}" if location
+          fragment = "L#{location.start_line - 1},#{location.start_column}-"\
+            "#{location.end_line - 1},#{location.end_column}" if location
           schema_uri = URI::Generic.from_path(
             path: schema_file,
             fragment: fragment,
