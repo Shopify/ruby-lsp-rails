@@ -161,10 +161,6 @@ module RubyLsp
             name = arg_receiver.full_name if arg_receiver.is_a?(Prism::ConstantPathNode)
             next unless name
 
-            unless arg_receiver.is_a?(Prism::ConstantReadNode) || arg_receiver.is_a?(Prism::ConstantPathNode)
-              name = ":#{name}"
-            end
-
             append_document_symbol(
               name: "#{message} #{name}",
               range: range_from_location(argument.location),
