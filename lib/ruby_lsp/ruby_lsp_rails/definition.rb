@@ -10,23 +10,16 @@ module RubyLsp
     # definition of the symbol under the cursor.
     #
     # Currently supported targets:
-    # - Classes
-    # - Modules
-    # - Constants
-    # - Require paths
-    # - Methods invoked on self only
+    # - Callbacks
     #
     # # Example
     #
     # ```ruby
-    # require "some_gem/file" # <- Request go to definition on this string will take you to the file
-    # Product.new # <- Request go to definition on this class name will take you to its declaration.
+    # before_action :foo # <- Go to definition on this symbol will jump to the method if it is defined in the same class
     # ```
     class Definition
       extend T::Sig
       include Requests::Support::Common
-      include ActiveSupportTestCaseHelper
-      include Support::Callbacks
 
       sig do
         params(
@@ -50,7 +43,7 @@ module RubyLsp
 
         message = node.message
 
-        return unless message && CALLBACKS.include?(message)
+        return unless message && Support::Callbacks::ALL.include?(message)
 
         arguments = node.arguments&.arguments
         return unless arguments&.any?

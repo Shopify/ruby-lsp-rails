@@ -12,7 +12,6 @@ module RubyLsp
       extend T::Sig
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
-      include Support::Callbacks
 
       sig do
         params(
@@ -43,7 +42,7 @@ module RubyLsp
 
         message = node.message
         case message
-        when *CALLBACKS, "validate"
+        when *Support::Callbacks::ALL, "validate"
           handle_all_arg_types(node, T.must(message))
         when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many", "has_and_belongs_to_many"
           handle_symbol_and_string_arg_types(node, T.must(message))

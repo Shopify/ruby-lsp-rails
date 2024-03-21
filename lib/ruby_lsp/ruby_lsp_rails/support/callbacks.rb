@@ -5,7 +5,7 @@ module RubyLsp
   module Rails
     module Support
       module Callbacks
-        MODEL_CALLBACKS = T.let(
+        MODELS = T.let(
           [
             "before_validation",
             "after_validation",
@@ -30,7 +30,7 @@ module RubyLsp
           T::Array[String],
         )
 
-        CONTROLLER_CALLBACKS = T.let(
+        CONTROLLERS = T.let(
           [
             "after_action",
             "append_after_action",
@@ -48,7 +48,7 @@ module RubyLsp
           T::Array[String],
         )
 
-        JOB_CALLBACKS = T.let(
+        JOBS = T.let(
           [
             "after_enqueue",
             "after_perform",
@@ -60,7 +60,7 @@ module RubyLsp
           T::Array[String],
         )
 
-        CALLBACKS = T.let((MODEL_CALLBACKS + CONTROLLER_CALLBACKS + JOB_CALLBACKS).freeze, T::Array[String])
+        ALL = T.let((MODELS + CONTROLLERS + JOBS).freeze, T::Array[String])
       end
     end
   end

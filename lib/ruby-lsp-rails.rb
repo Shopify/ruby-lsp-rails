@@ -10,6 +10,7 @@ module RubyLsp
   # - [Hover](rdoc-ref:RubyLsp::Rails::Hover)
   # - [CodeLens](rdoc-ref:RubyLsp::Rails::CodeLens)
   # - [DocumentSymbol](rdoc-ref:RubyLsp::Rails::DocumentSymbol)
+  # - [Definition](rdoc-ref:RubyLsp::Rails::Definition)
   module Rails
   end
 end

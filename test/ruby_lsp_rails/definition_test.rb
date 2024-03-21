@@ -8,11 +8,6 @@ module RubyLsp
     class DefinitionTest < ActiveSupport::TestCase
       setup do
         @message_queue = Thread::Queue.new
-
-        # Build the Rails documents index ahead of time
-        capture_io do
-          Support::RailsDocumentClient.send(:search_index)
-        end
       end
 
       def teardown
