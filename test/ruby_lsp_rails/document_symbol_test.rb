@@ -367,25 +367,15 @@ module RubyLsp
       private
 
       def generate_document_symbols_for_source(source)
-        uri = URI("file:///fake.rb")
-        store = RubyLsp::Store.new
-        store.set(uri: uri, source: source, version: 1)
+        with_server(source) do |server, uri|
+          server.process_message(
+            id: 1,
+            method: "textDocument/documentSymbol",
+            params: { textDocument: { uri: uri }, position: { line: 0, character: 0 } },
+          )
 
-        capture_subprocess_io do
-          RubyLsp::Executor.new(store, @message_queue).execute({
-            method: "initialized",
-            params: {},
-          })
+          server.pop_response.response
         end
-
-        response = RubyLsp::Executor.new(store, @message_queue).execute({
-          method: "textDocument/documentSymbol",
-          params: { textDocument: { uri: uri }, position: { line: 0, character: 0 } },
-        })
-
-        assert_nil(response.error)
-
-        response.response
       end
     end
   end

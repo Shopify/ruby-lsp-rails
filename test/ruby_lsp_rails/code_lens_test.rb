@@ -203,25 +203,18 @@ module RubyLsp
       private
 
       def generate_code_lens_for_source(source)
-        uri = URI("file:///fake.rb")
-        store = RubyLsp::Store.new
-        store.set(uri: uri, source: source, version: 1)
+        with_server(source) do |server, uri|
+          server.process_message(
+            id: 1,
+            method: "textDocument/codeLens",
+            params: { textDocument: { uri: uri }, position: { line: 0, character: 0 } },
+          )
 
-        capture_subprocess_io do
-          RubyLsp::Executor.new(store, @message_queue).execute({
-            method: "initialized",
-            params: {},
-          })
+          result = server.pop_response
+
+          assert_instance_of(RubyLsp::Result, result)
+          result.response
         end
-
-        response = RubyLsp::Executor.new(store, @message_queue).execute({
-          method: "textDocument/codeLens",
-          params: { textDocument: { uri: uri }, position: { line: 0, character: 0 } },
-        })
-
-        assert_nil(response.error)
-
-        response.response
       end
     end
   end
