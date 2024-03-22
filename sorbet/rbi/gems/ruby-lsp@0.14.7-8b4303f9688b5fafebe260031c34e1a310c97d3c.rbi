@@ -25,11 +25,11 @@ class RubyIndexer::Collector
 
   private
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#267
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#269
   sig { params(node: ::Prism::ClassNode).void }
   def add_class_entry(node); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#227
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#229
   sig do
     params(
       node: T.any(::Prism::ConstantAndWriteNode, ::Prism::ConstantOperatorWriteNode, ::Prism::ConstantOrWriteNode, ::Prism::ConstantPathAndWriteNode, ::Prism::ConstantPathOperatorWriteNode, ::Prism::ConstantPathOrWriteNode, ::Prism::ConstantPathTargetNode, ::Prism::ConstantPathWriteNode, ::Prism::ConstantTargetNode, ::Prism::ConstantWriteNode),
@@ -39,19 +39,19 @@ class RubyIndexer::Collector
   end
   def add_constant(node, name, value = T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#252
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#254
   sig { params(node: ::Prism::ModuleNode).void }
   def add_module_entry(node); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#296
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#298
   sig { params(node: ::Prism::Node).returns(T::Array[::String]) }
   def collect_comments(node); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#322
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#324
   sig { params(name: ::String).returns(::String) }
   def fully_qualify_name(name); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#331
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#333
   sig { params(node: ::Prism::CallNode, reader: T::Boolean, writer: T::Boolean).void }
   def handle_attribute(node, reader:, writer:); end
 
@@ -79,15 +79,19 @@ class RubyIndexer::Collector
   sig { params(node: ::Prism::ConstantWriteNode).void }
   def handle_constant_write_node(node); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#159
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#161
   sig { params(node: ::Prism::DefNode).void }
   def handle_def_node(node); end
+
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#357
+  sig { params(node: ::Prism::CallNode).void }
+  def handle_include(node); end
 
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#77
   sig { params(node: ::Prism::MultiWriteNode).void }
   def handle_multi_write_node(node); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#185
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#187
   sig { params(node: ::Prism::CallNode).void }
   def handle_private_constant(node); end
 end
@@ -169,41 +173,41 @@ class RubyIndexer::Entry
   def visibility=(_arg0); end
 end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#178
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#194
 class RubyIndexer::Entry::Accessor < ::RubyIndexer::Entry::Member
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#182
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#198
   sig { override.returns(T::Array[::RubyIndexer::Entry::Parameter]) }
   def parameters; end
 end
 
 # Alias represents a resolved alias, which points to an existing constant target
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#345
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#361
 class RubyIndexer::Entry::Alias < ::RubyIndexer::Entry
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#352
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#368
   sig { params(target: ::String, unresolved_alias: ::RubyIndexer::Entry::UnresolvedAlias).void }
   def initialize(target, unresolved_alias); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#349
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#365
   sig { returns(::String) }
   def target; end
 end
 
 # A block method parameter, e.g. `def foo(&block)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#142
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#158
 class RubyIndexer::Entry::BlockParameter < ::RubyIndexer::Entry::Parameter
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#146
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#162
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#143
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#159
 RubyIndexer::Entry::BlockParameter::DEFAULT_NAME = T.let(T.unsafe(nil), Symbol)
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#52
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#68
 class RubyIndexer::Entry::Class < ::RubyIndexer::Entry::Namespace
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#69
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#85
   sig do
     params(
       name: ::String,
@@ -218,45 +222,45 @@ class RubyIndexer::Entry::Class < ::RubyIndexer::Entry::Namespace
   # The unresolved name of the parent class. This may return `nil`, which indicates the lack of an explicit parent
   # and therefore ::Object is the correct parent class
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#58
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#74
   sig { returns(T.nilable(::String)) }
   def parent_class; end
 end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#75
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#91
 class RubyIndexer::Entry::Constant < ::RubyIndexer::Entry; end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#304
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#320
 class RubyIndexer::Entry::InstanceMethod < ::RubyIndexer::Entry::Method; end
 
 # An required keyword method parameter, e.g. `def foo(a:)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#106
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#122
 class RubyIndexer::Entry::KeywordParameter < ::RubyIndexer::Entry::Parameter
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#108
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#124
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
 # A keyword rest method parameter, e.g. `def foo(**a)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#132
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#148
 class RubyIndexer::Entry::KeywordRestParameter < ::RubyIndexer::Entry::Parameter
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#136
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#152
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#133
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#149
 RubyIndexer::Entry::KeywordRestParameter::DEFAULT_NAME = T.let(T.unsafe(nil), Symbol)
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#151
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#167
 class RubyIndexer::Entry::Member < ::RubyIndexer::Entry
   abstract!
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#169
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#185
   sig do
     params(
       name: ::String,
@@ -268,24 +272,24 @@ class RubyIndexer::Entry::Member < ::RubyIndexer::Entry
   end
   def initialize(name, file_path, location, comments, owner); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#158
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#174
   sig { returns(T.nilable(::RubyIndexer::Entry::Namespace)) }
   def owner; end
 
   # @abstract
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#175
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#191
   sig { abstract.returns(T::Array[::RubyIndexer::Entry::Parameter]) }
   def parameters; end
 end
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#189
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#205
 class RubyIndexer::Entry::Method < ::RubyIndexer::Entry::Member
   abstract!
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#208
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#224
   sig do
     params(
       name: ::String,
@@ -298,13 +302,13 @@ class RubyIndexer::Entry::Method < ::RubyIndexer::Entry::Member
   end
   def initialize(name, file_path, location, comments, parameters_node, owner); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#196
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#212
   sig { override.returns(T::Array[::RubyIndexer::Entry::Parameter]) }
   def parameters; end
 
   private
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#217
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#233
   sig do
     params(
       parameters_node: T.nilable(::Prism::ParametersNode)
@@ -312,12 +316,12 @@ class RubyIndexer::Entry::Method < ::RubyIndexer::Entry::Member
   end
   def list_params(parameters_node); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#276
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#292
   sig { params(node: T.nilable(::Prism::Node)).returns(T.nilable(::Symbol)) }
   def parameter_name(node); end
 end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#49
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#65
 class RubyIndexer::Entry::Module < ::RubyIndexer::Entry::Namespace; end
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
@@ -326,32 +330,45 @@ class RubyIndexer::Entry::Module < ::RubyIndexer::Entry::Namespace; end
 class RubyIndexer::Entry::Namespace < ::RubyIndexer::Entry
   abstract!
 
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#54
+  sig { params(name: ::String, file_path: ::String, location: ::Prism::Location, comments: T::Array[::String]).void }
+  def initialize(name, file_path, location, comments); end
+
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#44
+  sig { returns(T::Array[::String]) }
+  def included_modules; end
+
+  # @return [Array<String>]
+  #
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#44
+  def included_modules=(_arg0); end
+
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#60
   sig { returns(::String) }
   def short_name; end
 end
 
 # An optional keyword method parameter, e.g. `def foo(a: 123)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#114
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#130
 class RubyIndexer::Entry::OptionalKeywordParameter < ::RubyIndexer::Entry::Parameter
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#116
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#132
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
 # An optional method parameter, e.g. `def foo(a = 123)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#102
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#118
 class RubyIndexer::Entry::OptionalParameter < ::RubyIndexer::Entry::Parameter; end
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#78
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#94
 class RubyIndexer::Entry::Parameter
   abstract!
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#92
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#108
   sig { params(name: ::Symbol).void }
   def initialize(name:); end
 
@@ -360,34 +377,34 @@ class RubyIndexer::Entry::Parameter
   #
   # @return [Symbol]
   #
-  # source://sorbet-runtime/0.5.11262lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
   def decorated_name(*args, **_arg1, &blk); end
 
   # Name includes just the name of the parameter, excluding symbols like splats
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#86
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#102
   sig { returns(::Symbol) }
   def name; end
 end
 
 # A required method parameter, e.g. `def foo(a)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#98
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#114
 class RubyIndexer::Entry::RequiredParameter < ::RubyIndexer::Entry::Parameter; end
 
 # A rest method parameter, e.g. `def foo(*a)`
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#122
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#138
 class RubyIndexer::Entry::RestParameter < ::RubyIndexer::Entry::Parameter
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#126
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#142
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#123
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#139
 RubyIndexer::Entry::RestParameter::DEFAULT_NAME = T.let(T.unsafe(nil), Symbol)
 
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#301
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#317
 class RubyIndexer::Entry::SingletonMethod < ::RubyIndexer::Entry::Method; end
 
 # An UnresolvedAlias points to a constant alias with a right hand side that has not yet been resolved. For
@@ -401,9 +418,9 @@ class RubyIndexer::Entry::SingletonMethod < ::RubyIndexer::Entry::Method; end
 # target in [rdoc-ref:Index#resolve]. If the right hand side contains a constant that doesn't exist, then it's not
 # possible to resolve the alias and it will remain an UnresolvedAlias until the right hand side constant exists
 #
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#317
+# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#333
 class RubyIndexer::Entry::UnresolvedAlias < ::RubyIndexer::Entry
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#336
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#352
   sig do
     params(
       target: ::String,
@@ -416,11 +433,11 @@ class RubyIndexer::Entry::UnresolvedAlias < ::RubyIndexer::Entry
   end
   def initialize(target, nesting, name, file_path, location, comments); end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#324
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#340
   sig { returns(T::Array[::String]) }
   def nesting; end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#321
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#337
   sig { returns(::String) }
   def target; end
 end
@@ -454,7 +471,7 @@ class RubyIndexer::Index
   # `Something::Else`, then we first discover `Something::Else::Baz`. But `Something::Else::Baz` might contain other
   # aliases, so we have to invoke `follow_aliased_namespace` again to check until we only return a real name
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#209
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#210
   sig { params(name: ::String).returns(::String) }
   def follow_aliased_namespace(name); end
 
@@ -517,7 +534,7 @@ class RubyIndexer::Index
   # Attempts to find methods for a resolved fully qualified receiver name.
   # Returns `nil` if the method does not exist on that receiver
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#243
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#244
   sig do
     params(
       method_name: ::String,
@@ -535,7 +552,7 @@ class RubyIndexer::Index
   # Attempts to resolve an UnresolvedAlias into a resolved Alias. If the unresolved alias is pointing to a constant
   # that doesn't exist, then we return the same UnresolvedAlias
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#262
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/index.rb#263
   sig do
     params(
       entry: ::RubyIndexer::Entry::UnresolvedAlias
@@ -718,7 +735,7 @@ module RubyLsp; end
 class RubyLsp::Addon
   abstract!
 
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#66
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#78
   sig { void }
   def initialize; end
 
@@ -727,21 +744,21 @@ class RubyLsp::Addon
   #
   # @abstract
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#97
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#109
   sig { abstract.params(message_queue: ::Thread::Queue).void }
   def activate(message_queue); end
 
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#71
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#83
   sig { params(error: ::StandardError).returns(T.self_type) }
   def add_error(error); end
 
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#90
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#102
   sig { returns(::String) }
   def backtraces; end
 
   # Creates a new CodeLens listener. This method is invoked on every CodeLens request
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#116
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#128
   sig do
     overridable
       .params(
@@ -752,9 +769,24 @@ class RubyLsp::Addon
   end
   def create_code_lens_listener(response_builder, uri, dispatcher); end
 
+  # Creates a new Completion listener. This method is invoked on every Completion request
+  #
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#180
+  sig do
+    overridable
+      .params(
+        response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[::LanguageServer::Protocol::Interface::CompletionItem],
+        index: ::RubyIndexer::Index,
+        nesting: T::Array[::String],
+        dispatcher: ::Prism::Dispatcher,
+        uri: ::URI::Generic
+      ).void
+  end
+  def create_completion_listener(response_builder, index, nesting, dispatcher, uri); end
+
   # Creates a new Definition listener. This method is invoked on every Definition request
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#156
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#168
   sig do
     overridable
       .params(
@@ -769,7 +801,7 @@ class RubyLsp::Addon
 
   # Creates a new DocumentSymbol listener. This method is invoked on every DocumentSymbol request
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#136
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#148
   sig do
     overridable
       .params(
@@ -781,7 +813,7 @@ class RubyLsp::Addon
 
   # Creates a new Hover listener. This method is invoked on every Hover request
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#127
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#139
   sig do
     overridable
       .params(
@@ -793,7 +825,7 @@ class RubyLsp::Addon
   end
   def create_hover_listener(response_builder, nesting, index, dispatcher); end
 
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#144
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#156
   sig do
     overridable
       .params(
@@ -808,15 +840,15 @@ class RubyLsp::Addon
   #
   # @abstract
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#102
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#114
   sig { abstract.void }
   def deactivate; end
 
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#77
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#89
   sig { returns(T::Boolean) }
   def error?; end
 
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#82
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#94
   sig { returns(::String) }
   def formatted_errors; end
 
@@ -824,77 +856,146 @@ class RubyLsp::Addon
   #
   # @abstract
   #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#106
+  # source://ruby-lsp/lib/ruby_lsp/addon.rb#118
   sig { abstract.returns(::String) }
   def name; end
 
   class << self
-    # source://ruby-lsp/lib/ruby_lsp/addon.rb#39
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#43
+    sig { returns(T::Array[T.class_of(RubyLsp::Addon)]) }
+    def addon_classes; end
+
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#37
     sig { returns(T::Array[::RubyLsp::Addon]) }
     def addons; end
 
+    # @return [Array<Addon>]
+    #
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#37
+    def addons=(_arg0); end
+
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#40
+    sig { returns(T::Array[::RubyLsp::Addon]) }
+    def file_watcher_addons; end
+
+    # @return [Array<Addon>]
+    #
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#40
+    def file_watcher_addons=(_arg0); end
+
     # Automatically track and instantiate addon classes
     #
-    # source://ruby-lsp/lib/ruby_lsp/addon.rb#33
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#47
     sig { params(child_class: T.class_of(RubyLsp::Addon)).void }
     def inherited(child_class); end
 
     # Discovers and loads all addons. Returns the list of activated addons
     #
-    # source://ruby-lsp/lib/ruby_lsp/addon.rb#45
+    # source://ruby-lsp/lib/ruby_lsp/addon.rb#54
     sig { params(message_queue: ::Thread::Queue).returns(T::Array[::RubyLsp::Addon]) }
     def load_addons(message_queue); end
   end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#7
+# Used to indicate that a request shouldn't return a response
+#
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#12
 RubyLsp::BUNDLE_PATH = T.let(T.unsafe(nil), String)
 
-# source://ruby-lsp/lib/ruby_lsp/server.rb#7
+# @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
+#
+# source://ruby-lsp/lib/ruby_lsp/base_server.rb#5
+class RubyLsp::BaseServer
+  abstract!
+
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#12
+  sig { params(test_mode: T::Boolean).void }
+  def initialize(test_mode: T.unsafe(nil)); end
+
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#111
+  sig { returns(::Thread) }
+  def new_worker; end
+
+  # This method is only intended to be used in tests! Pops the latest response that would be sent to the client
+  #
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#100
+  sig { returns(T.untyped) }
+  def pop_response; end
+
+  # @abstract
+  #
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#105
+  sig { abstract.params(message: T::Hash[::Symbol, T.untyped]).void }
+  def process_message(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#86
+  sig { void }
+  def run_shutdown; end
+
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#142
+  sig { params(id: ::Integer).void }
+  def send_empty_response(id); end
+
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#131
+  sig { params(message: T.any(::RubyLsp::Error, ::RubyLsp::Notification, ::RubyLsp::Request, ::RubyLsp::Result)).void }
+  def send_message(message); end
+
+  # @abstract
+  #
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#108
+  sig { abstract.void }
+  def shutdown; end
+
+  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#37
+  sig { void }
+  def start; end
+end
+
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#7
 RubyLsp::Constant = LanguageServer::Protocol::Constant
 
-# source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#7
+# source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#7
 class RubyLsp::DependencyDetector
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#21
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#21
   sig { void }
   def initialize; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#74
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#81
   sig { returns(T::Array[::String]) }
   def dependencies; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#28
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#28
   sig { returns(::String) }
   def detect_formatter; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#40
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#40
   sig { returns(::String) }
   def detect_test_library; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#63
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#63
   sig { returns(T::Boolean) }
   def detect_typechecker; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#12
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#12
   sig { returns(::String) }
   def detected_formatter; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#15
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#15
   sig { returns(::String) }
   def detected_test_library; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#58
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#58
   sig { params(gem_pattern: ::Regexp).returns(T::Boolean) }
   def direct_dependency?(gem_pattern); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#87
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#94
   sig { returns(T::Array[::String]) }
   def gemspec_dependencies; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#18
+  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#18
   sig { returns(T::Boolean) }
   def typechecker; end
 
@@ -1042,163 +1143,26 @@ RubyLsp::Document::Scanner::LINE_BREAK = T.let(T.unsafe(nil), Integer)
 # source://ruby-lsp/lib/ruby_lsp/document.rb#193
 RubyLsp::Document::Scanner::SURROGATE_PAIR_START = T.let(T.unsafe(nil), Integer)
 
-# This class dispatches a request execution to the right request class. No IO should happen anywhere here!
-#
-# source://ruby-lsp/lib/ruby_lsp/executor.rb#8
-class RubyLsp::Executor
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#12
-  sig { params(store: ::RubyLsp::Store, message_queue: ::Thread::Queue).void }
-  def initialize(store, message_queue); end
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#90
+class RubyLsp::Error
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#97
+  sig { params(id: ::Integer, code: ::Integer, message: ::String, data: T.nilable(T::Hash[::Symbol, T.untyped])).void }
+  def initialize(id:, code:, message:, data: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#21
-  sig { params(request: T::Hash[::Symbol, T.untyped]).returns(::RubyLsp::Result) }
-  def execute(request); end
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#94
+  sig { returns(::String) }
+  def message; end
 
-  private
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#455
-  sig { params(id: ::String, title: ::String, percentage: ::Integer).void }
-  def begin_progress(id, title, percentage: T.unsafe(nil)); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#634
-  sig { void }
-  def check_formatter_is_available; end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#391
-  sig do
-    params(
-      uri: ::URI::Generic,
-      range: T::Hash[::Symbol, T.untyped],
-      context: T::Hash[::Symbol, T.untyped]
-    ).returns(T.nilable(T::Array[::LanguageServer::Protocol::Interface::CodeAction]))
-  end
-  def code_action(uri, range, context); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#398
-  sig { params(params: T::Hash[::Symbol, T.untyped]).returns(::LanguageServer::Protocol::Interface::CodeAction) }
-  def code_action_resolve(params); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#428
-  sig do
-    params(
-      uri: ::URI::Generic
-    ).returns(T.nilable(::LanguageServer::Protocol::Interface::FullDocumentDiagnosticReport))
-  end
-  def diagnostic(uri); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#232
-  sig { params(changes: T::Array[{uri: ::String, type: ::Integer}]).returns(::Object) }
-  def did_change_watched_files(changes); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#495
-  sig { params(id: ::String).void }
-  def end_progress(id); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#361
-  sig { params(uri: ::URI::Generic).returns(T.nilable(T::Array[::LanguageServer::Protocol::Interface::TextEdit])) }
-  def formatting(uri); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#511
-  sig { params(options: T::Hash[::Symbol, T.untyped]).returns(T::Hash[::Symbol, T.untyped]) }
-  def initialize_request(options); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#380
-  sig do
-    params(
-      uri: ::URI::Generic,
-      position: T::Hash[::Symbol, T.untyped],
-      character: ::String
-    ).returns(T::Array[::LanguageServer::Protocol::Interface::TextEdit])
-  end
-  def on_type_formatting(uri, position, character); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#273
-  sig { void }
-  def perform_initial_indexing; end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#478
-  sig { params(id: ::String, percentage: ::Integer).void }
-  def progress(id, percentage); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#38
-  sig { params(request: T::Hash[::Symbol, T.untyped]).returns(T.untyped) }
-  def run(request); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#341
-  sig do
-    params(
-      uri: ::URI::Generic,
-      positions: T::Array[T::Hash[::Symbol, T.untyped]]
-    ).returns(T.nilable(T::Array[T.nilable(::RubyLsp::Requests::Support::SelectionRange)]))
-  end
-  def selection_range(uri, positions); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#442
-  sig do
-    params(
-      uri: ::URI::Generic,
-      range: T::Hash[::Symbol, T.untyped]
-    ).returns(::LanguageServer::Protocol::Interface::SemanticTokens)
-  end
-  def semantic_tokens_range(uri, range); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#311
-  sig { params(uri: ::URI::Generic, range: T.nilable(T::Hash[::Symbol, T.untyped])).returns({ast: ::String}) }
-  def show_syntax_tree(uri, range); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#318
-  sig do
-    params(
-      uri: ::URI::Generic,
-      content_changes: T::Array[T::Hash[::Symbol, T.untyped]],
-      version: ::Integer
-    ).returns(::Object)
-  end
-  def text_document_did_change(uri, content_changes, version); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#330
-  sig { params(uri: ::URI::Generic).returns(::Object) }
-  def text_document_did_close(uri); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#324
-  sig { params(uri: ::URI::Generic, text: ::String, version: ::Integer).returns(::Object) }
-  def text_document_did_open(uri, text, version); end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#257
-  sig { returns(T::Array[T::Hash[::Symbol, T.untyped]]) }
-  def workspace_dependencies; end
-
-  # source://ruby-lsp/lib/ruby_lsp/executor.rb#306
-  sig { params(query: T.nilable(::String)).returns(T::Array[::LanguageServer::Protocol::Interface::WorkspaceSymbol]) }
-  def workspace_symbol(query); end
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#105
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def to_hash; end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#15
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#20
 RubyLsp::GEMFILE_NAME = T.let(T.unsafe(nil), String)
 
-# source://ruby-lsp/lib/ruby_lsp/server.rb#6
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#6
 RubyLsp::Interface = LanguageServer::Protocol::Interface
-
-# A request that will sit in the queue until it's executed
-#
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#65
-class RubyLsp::Job
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#75
-  sig { params(request: T::Hash[::Symbol, T.untyped], cancelled: T::Boolean).void }
-  def initialize(request:, cancelled:); end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#81
-  sig { void }
-  def cancel; end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#72
-  sig { returns(T::Boolean) }
-  def cancelled; end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#69
-  sig { returns(T::Hash[::Symbol, T.untyped]) }
-  def request; end
-end
 
 # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#5
 module RubyLsp::Listeners; end
@@ -1207,7 +1171,7 @@ module RubyLsp::Listeners; end
 class RubyLsp::Listeners::CodeLens
   include ::RubyLsp::Requests::Support::Common
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#33
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#34
   sig do
     params(
       response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[::LanguageServer::Protocol::Interface::CodeLens],
@@ -1217,39 +1181,53 @@ class RubyLsp::Listeners::CodeLens
   end
   def initialize(response_builder, uri, dispatcher); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#99
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#116
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#129
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#146
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#54
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#57
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#73
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#76
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#80
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#83
   sig { params(node: ::Prism::DefNode).void }
   def on_def_node_enter(node); end
 
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#102
+  sig { params(node: ::Prism::ModuleNode).void }
+  def on_module_node_enter(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#111
+  sig { params(node: ::Prism::ModuleNode).void }
+  def on_module_node_leave(node); end
+
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#207
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#251
   sig { params(node: ::Prism::CallNode, kind: ::Symbol).void }
   def add_spec_code_lens(node, kind:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#140
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#157
   sig { params(node: ::Prism::Node, name: ::String, command: ::String, kind: ::Symbol).void }
   def add_test_code_lens(node, name:, command:, kind:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#185
-  sig { params(group_name: ::String, method_name: T.nilable(::String)).returns(::String) }
-  def generate_test_command(group_name:, method_name: T.unsafe(nil)); end
+  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#208
+  sig do
+    params(
+      group_stack: T::Array[::String],
+      spec_name: T.nilable(::String),
+      method_name: T.nilable(::String)
+    ).returns(::String)
+  end
+  def generate_test_command(group_stack: T.unsafe(nil), spec_name: T.unsafe(nil), method_name: T.unsafe(nil)); end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#21
@@ -1261,6 +1239,9 @@ RubyLsp::Listeners::CodeLens::BASE_COMMAND = T.let(T.unsafe(nil), String)
 # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#23
 RubyLsp::Listeners::CodeLens::DESCRIBE_KEYWORD = T.let(T.unsafe(nil), Symbol)
 
+# source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#25
+RubyLsp::Listeners::CodeLens::DYNAMIC_REFERENCE_MARKER = T.let(T.unsafe(nil), String)
+
 # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#24
 RubyLsp::Listeners::CodeLens::IT_KEYWORD = T.let(T.unsafe(nil), Symbol)
 
@@ -1271,41 +1252,38 @@ RubyLsp::Listeners::CodeLens::SUPPORTED_TEST_LIBRARIES = T.let(T.unsafe(nil), Ar
 class RubyLsp::Listeners::Completion
   include ::RubyLsp::Requests::Support::Common
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#19
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#20
   sig do
     params(
       response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[::LanguageServer::Protocol::Interface::CompletionItem],
       index: ::RubyIndexer::Index,
       nesting: T::Array[::String],
       typechecker_enabled: T::Boolean,
-      dispatcher: ::Prism::Dispatcher
+      dispatcher: ::Prism::Dispatcher,
+      uri: ::URI::Generic
     ).void
   end
-  def initialize(response_builder, index, nesting, typechecker_enabled, dispatcher); end
+  def initialize(response_builder, index, nesting, typechecker_enabled, dispatcher, uri); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#108
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#102
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
   # Handle completion on namespaced constant references (e.g. `Foo::Bar`)
   #
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#64
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#58
   sig { params(node: ::Prism::ConstantPathNode).void }
   def on_constant_path_node_enter(node); end
 
   # Handle completion on regular constant references (e.g. `Bar`)
   #
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#43
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#37
   sig { params(node: ::Prism::ConstantReadNode).void }
   def on_constant_read_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#35
-  sig { params(node: ::Prism::StringNode).void }
-  def on_string_node_enter(node); end
-
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#156
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#202
   sig do
     params(
       label: ::String,
@@ -1314,7 +1292,7 @@ class RubyLsp::Listeners::Completion
   end
   def build_completion(label, node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#179
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#225
   sig do
     params(
       real_name: ::String,
@@ -1326,7 +1304,7 @@ class RubyLsp::Listeners::Completion
   end
   def build_entry_completion(real_name, incomplete_name, node, entries, top_level); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#136
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#182
   sig do
     params(
       entry: ::RubyIndexer::Entry::Member,
@@ -1334,6 +1312,18 @@ class RubyLsp::Listeners::Completion
     ).returns(::LanguageServer::Protocol::Interface::CompletionItem)
   end
   def build_method_completion(entry, node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#119
+  sig { params(node: ::Prism::CallNode).void }
+  def complete_require(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#133
+  sig { params(node: ::Prism::CallNode).void }
+  def complete_require_relative(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#162
+  sig { params(node: ::Prism::CallNode, name: ::String).void }
+  def complete_self_receiver_method(node, name); end
 
   # Check if there are any conflicting names for `entry_name`, which would require us to use a top level reference.
   # For example:
@@ -1350,7 +1340,7 @@ class RubyLsp::Listeners::Completion
   # end
   # ```
   #
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#266
+  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#312
   sig { params(entry_name: ::String).returns(T::Boolean) }
   def top_level?(entry_name); end
 end
@@ -1699,101 +1689,111 @@ RubyLsp::Listeners::DocumentLink::GEM_TO_VERSION_MAP = T.let(T.unsafe(nil), Hash
 class RubyLsp::Listeners::DocumentSymbol
   include ::RubyLsp::Requests::Support::Common
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#18
-  sig { params(response_builder: RubyLsp::ResponseBuilders::DocumentSymbol, dispatcher: ::Prism::Dispatcher).void }
-  def initialize(response_builder, dispatcher); end
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#19
+  sig do
+    params(
+      response_builder: RubyLsp::ResponseBuilders::DocumentSymbol,
+      uri: ::URI::Generic,
+      dispatcher: ::Prism::Dispatcher
+    ).void
+  end
+  def initialize(response_builder, uri, dispatcher); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#256
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#273
   sig { params(node: ::Prism::AliasMethodNode).void }
   def on_alias_method_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#81
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#84
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#49
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#98
+  sig { params(node: ::Prism::CallNode).void }
+  def on_call_node_leave(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#52
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#59
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#62
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#246
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#263
   sig { params(node: ::Prism::ClassVariableWriteNode).void }
   def on_class_variable_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#150
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#167
   sig { params(node: ::Prism::ConstantAndWriteNode).void }
   def on_constant_and_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#160
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#177
   sig { params(node: ::Prism::ConstantOperatorWriteNode).void }
   def on_constant_operator_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#140
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#157
   sig { params(node: ::Prism::ConstantOrWriteNode).void }
   def on_constant_or_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#110
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#127
   sig { params(node: ::Prism::ConstantPathAndWriteNode).void }
   def on_constant_path_and_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#130
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#147
   sig { params(node: ::Prism::ConstantPathOperatorWriteNode).void }
   def on_constant_path_operator_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#120
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#137
   sig { params(node: ::Prism::ConstantPathOrWriteNode).void }
   def on_constant_path_or_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#180
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#197
   sig { params(node: ::Prism::ConstantPathTargetNode).void }
   def on_constant_path_target_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#90
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#107
   sig { params(node: ::Prism::ConstantPathWriteNode).void }
   def on_constant_path_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#170
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#187
   sig { params(node: ::Prism::ConstantTargetNode).void }
   def on_constant_target_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#100
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#117
   sig { params(node: ::Prism::ConstantWriteNode).void }
   def on_constant_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#205
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#222
   sig { params(node: ::Prism::DefNode).void }
   def on_def_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#190
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#207
   sig { params(node: ::Prism::DefNode).void }
   def on_def_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#236
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#253
   sig { params(node: ::Prism::InstanceVariableWriteNode).void }
   def on_instance_variable_write_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#195
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#212
   sig { params(node: ::Prism::ModuleNode).void }
   def on_module_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#231
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#248
   sig { params(node: ::Prism::ModuleNode).void }
   def on_module_node_leave(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#64
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#67
   sig { params(node: ::Prism::SingletonClassNode).void }
   def on_singleton_class_node_enter(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#76
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#79
   sig { params(node: ::Prism::SingletonClassNode).void }
   def on_singleton_class_node_leave(node); end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#281
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#298
   sig do
     params(
       name: ::String,
@@ -1804,13 +1804,25 @@ class RubyLsp::Listeners::DocumentSymbol
   end
   def create_document_symbol(name:, kind:, range_location:, selection_range_location:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#329
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#347
   sig { params(node: ::Prism::CallNode).void }
   def handle_alias_method(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#296
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#314
   sig { params(node: ::Prism::CallNode).void }
   def handle_attr_accessor(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#380
+  sig { params(node: ::Prism::CallNode).void }
+  def handle_rake_namespace(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#406
+  sig { params(node: ::Prism::CallNode).void }
+  def handle_rake_task(node); end
+
+  # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#441
+  sig { returns(T::Boolean) }
+  def rake?; end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#10
@@ -2213,25 +2225,41 @@ end
 #
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#25
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#30
 class RubyLsp::Message
   abstract!
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#38
-  sig { params(message: ::String, params: ::Object).void }
-  def initialize(message:, params:); end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#32
-  sig { returns(::String) }
-  def message; end
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#43
+  sig { params(method: ::String, params: ::Object).void }
+  def initialize(method:, params:); end
 
   # source://ruby-lsp/lib/ruby_lsp/utils.rb#35
+  sig { returns(::String) }
+  def method; end
+
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#38
   sig { returns(::Object) }
   def params; end
+
+  # @abstract
+  #
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#49
+  sig { abstract.returns(T::Hash[::Symbol, T.untyped]) }
+  def to_hash; end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#44
-class RubyLsp::Notification < ::RubyLsp::Message; end
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#52
+class RubyLsp::Notification < ::RubyLsp::Message
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#70
+  sig { override.returns(T::Hash[::Symbol, T.untyped]) }
+  def to_hash; end
+
+  class << self
+    # source://ruby-lsp/lib/ruby_lsp/utils.rb#56
+    sig { params(message: ::String).returns(::RubyLsp::Notification) }
+    def window_show_error(message); end
+  end
+end
 
 # source://ruby-lsp/lib/ruby_lsp/parameter_scope.rb#5
 class RubyLsp::ParameterScope
@@ -2256,27 +2284,35 @@ class RubyLsp::ParameterScope
   def type_for(name); end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#45
-class RubyLsp::Request < ::RubyLsp::Message; end
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#75
+class RubyLsp::Request < ::RubyLsp::Message
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#79
+  sig { params(id: ::Integer, method: ::String, params: ::Object).void }
+  def initialize(id:, method:, params:); end
+
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#85
+  sig { override.returns(T::Hash[::Symbol, T.untyped]) }
+  def to_hash; end
+end
 
 # A request configuration, to turn on/off features
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#87
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#137
 class RubyLsp::RequestConfig
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#94
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#144
   sig { params(configuration: T::Hash[::Symbol, T::Boolean]).void }
   def initialize(configuration); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#91
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#141
   sig { returns(T::Hash[::Symbol, T::Boolean]) }
   def configuration; end
 
   # @return [Hash{Symbol => Boolean}]
   #
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#91
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#141
   def configuration=(_arg0); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#99
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#149
   sig { params(feature: ::Symbol).returns(T.nilable(T::Boolean)) }
   def enabled?(feature); end
 end
@@ -2476,7 +2512,7 @@ class RubyLsp::Requests::Completion < ::RubyLsp::Requests::Request
   end
   def initialize(document, index, position, typechecker_enabled, dispatcher); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/completion.rb#101
+  # source://ruby-lsp/lib/ruby_lsp/requests/completion.rb#92
   sig { override.returns(T::Array[::LanguageServer::Protocol::Interface::CompletionItem]) }
   def perform; end
 
@@ -2521,7 +2557,7 @@ class RubyLsp::Requests::Definition < ::RubyLsp::Requests::Request
   end
   def initialize(document, index, position, dispatcher, typechecker_enabled); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/definition.rb#65
+  # source://ruby-lsp/lib/ruby_lsp/requests/definition.rb#71
   sig { override.returns(T::Array[::LanguageServer::Protocol::Interface::Location]) }
   def perform; end
 end
@@ -2552,9 +2588,13 @@ class RubyLsp::Requests::Diagnostics < ::RubyLsp::Requests::Request
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/diagnostics.rb#55
-  sig { returns(T.nilable(T::Array[::LanguageServer::Protocol::Interface::Diagnostic])) }
+  # source://ruby-lsp/lib/ruby_lsp/requests/diagnostics.rb#87
+  sig { returns(T::Array[::LanguageServer::Protocol::Interface::Diagnostic]) }
   def syntax_error_diagnostics; end
+
+  # source://ruby-lsp/lib/ruby_lsp/requests/diagnostics.rb#64
+  sig { returns(T::Array[::LanguageServer::Protocol::Interface::Diagnostic]) }
+  def syntax_warning_diagnostics; end
 
   class << self
     # source://ruby-lsp/lib/ruby_lsp/requests/diagnostics.rb#28
@@ -2658,8 +2698,8 @@ end
 # source://ruby-lsp/lib/ruby_lsp/requests/document_symbol.rb#31
 class RubyLsp::Requests::DocumentSymbol < ::RubyLsp::Requests::Request
   # source://ruby-lsp/lib/ruby_lsp/requests/document_symbol.rb#49
-  sig { params(dispatcher: ::Prism::Dispatcher).void }
-  def initialize(dispatcher); end
+  sig { params(uri: ::URI::Generic, dispatcher: ::Prism::Dispatcher).void }
+  def initialize(uri, dispatcher); end
 
   # source://ruby-lsp/lib/ruby_lsp/requests/document_symbol.rb#60
   sig { override.returns(T::Array[::LanguageServer::Protocol::Interface::DocumentSymbol]) }
@@ -2786,7 +2826,7 @@ class RubyLsp::Requests::Hover < ::RubyLsp::Requests::Request
   end
   def initialize(document, index, position, dispatcher, typechecker_enabled); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/hover.rb#70
+  # source://ruby-lsp/lib/ruby_lsp/requests/hover.rb#74
   sig { override.returns(ResponseType) }
   def perform; end
 
@@ -2944,6 +2984,35 @@ class RubyLsp::Requests::Request
   # source://ruby-lsp/lib/ruby_lsp/requests/request.rb#14
   sig { abstract.returns(T.anything) }
   def perform; end
+
+  private
+
+  # Checks if a location covers a position
+  #
+  # source://ruby-lsp/lib/ruby_lsp/requests/request.rb#20
+  sig { params(location: ::Prism::Location, position: T.untyped).returns(T::Boolean) }
+  def cover?(location, position); end
+
+  # Based on a constant node target, a constant path node parent and a position, this method will find the exact
+  # portion of the constant path that matches the requested position, for higher precision in hover and
+  # definition. For example:
+  #
+  # ```ruby
+  # Foo::Bar::Baz
+  #  #        ^ Going to definition here should go to Foo::Bar::Baz
+  #  #   ^ Going to definition here should go to Foo::Bar
+  # #^ Going to definition here should go to Foo
+  # ```
+  #
+  # source://ruby-lsp/lib/ruby_lsp/requests/request.rb#53
+  sig do
+    params(
+      target: ::Prism::Node,
+      parent: ::Prism::Node,
+      position: T::Hash[::Symbol, ::Integer]
+    ).returns(::Prism::Node)
+  end
+  def determine_target(target, parent, position); end
 end
 
 # ![Selection ranges demo](../../selection_ranges.gif)
@@ -3175,6 +3244,10 @@ module RubyLsp::Requests::Support::Common
   end
   def markdown_from_index_entries(title, entries); end
 
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/common.rb#152
+  sig { params(node: T.any(::Prism::ClassNode, ::Prism::ModuleNode)).returns(T.nilable(::String)) }
+  def namespace_constant_name(node); end
+
   # source://ruby-lsp/lib/ruby_lsp/requests/support/common.rb#73
   sig { params(file_path: ::String).returns(T.nilable(T::Boolean)) }
   def not_in_dependencies?(file_path); end
@@ -3209,14 +3282,14 @@ module RubyLsp::Requests::Support::FormatterRunner
   def run(uri, document); end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#19
+# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#23
 class RubyLsp::Requests::Support::InternalRuboCopError < ::StandardError
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#29
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#33
   sig { params(rubocop_error: T.any(::RuboCop::ErrorWithAnalyzedFileLocation, ::StandardError)).void }
   def initialize(rubocop_error); end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#22
+# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#26
 RubyLsp::Requests::Support::InternalRuboCopError::MESSAGE = T.let(T.unsafe(nil), String)
 
 # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#7
@@ -3238,35 +3311,35 @@ class RubyLsp::Requests::Support::RuboCopDiagnostic
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#87
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#90
   sig { returns(::LanguageServer::Protocol::Interface::CodeAction) }
   def autocorrect_action; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#81
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#84
   sig { returns(T.nilable(::LanguageServer::Protocol::Interface::CodeDescription)) }
   def code_description; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#120
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#123
   sig { returns(::LanguageServer::Protocol::Interface::CodeAction) }
   def disable_line_action; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#162
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#165
   sig { params(line: ::String).returns(::Integer) }
   def length_of_line(line); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#139
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#142
   sig { returns(T::Array[::LanguageServer::Protocol::Interface::TextEdit]) }
   def line_disable_comment; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#69
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#72
   sig { returns(::String) }
   def message; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#107
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#110
   sig { returns(T::Array[::LanguageServer::Protocol::Interface::TextEdit]) }
   def offense_replacements; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#76
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#79
   sig { returns(T.nilable(::Integer)) }
   def severity; end
 end
@@ -3322,47 +3395,47 @@ class RubyLsp::Requests::Support::RuboCopFormattingRunner
   end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#41
+# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#45
 class RubyLsp::Requests::Support::RuboCopRunner < ::RuboCop::Runner
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#68
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#72
   sig { params(args: ::String).void }
   def initialize(*args); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#100
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#108
   sig { returns(::String) }
   def formatted_source; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#47
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#51
   sig { returns(T::Array[::RuboCop::Cop::Offense]) }
   def offenses; end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#82
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#86
   sig { params(path: ::String, contents: ::String).void }
   def run(path, contents); end
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#126
+  # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#134
   sig { params(_file: ::String, offenses: T::Array[::RuboCop::Cop::Offense]).void }
   def file_finished(_file, offenses); end
 
   class << self
-    # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#108
+    # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#116
     sig { params(cop_name: ::String).returns(T.nilable(T.class_of(RuboCop::Cop::Base))) }
     def find_cop_by_name(cop_name); end
 
     private
 
-    # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#115
+    # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#123
     sig { returns(T::Hash[::String, [T.class_of(RuboCop::Cop::Base)]]) }
     def cop_registry; end
   end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#44
+# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#48
 class RubyLsp::Requests::Support::RuboCopRunner::ConfigurationError < ::StandardError; end
 
-# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#49
+# source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_runner.rb#53
 RubyLsp::Requests::Support::RuboCopRunner::DEFAULT_ARGS = T.let(T.unsafe(nil), Array)
 
 # source://ruby-lsp/lib/ruby_lsp/requests/support/selection_range.rb#7
@@ -3472,7 +3545,7 @@ class RubyLsp::ResponseBuilders::DocumentSymbol < ::RubyLsp::ResponseBuilders::R
   # @param symbol [Interface::DocumentSymbol]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11262lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
   def <<(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_lsp/response_builders/document_symbol.rb#47
@@ -3658,19 +3731,19 @@ end
 
 # The final result of running a request before its IO is finalized
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#48
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#118
 class RubyLsp::Result
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#58
-  sig { params(response: T.untyped, error: T.nilable(::Exception)).void }
-  def initialize(response:, error: T.unsafe(nil)); end
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#125
+  sig { params(id: ::Integer, response: T.untyped).void }
+  def initialize(id:, response:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#55
-  sig { returns(T.nilable(::Exception)) }
-  def error; end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#52
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#122
   sig { returns(T.untyped) }
   def response; end
+
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#131
+  sig { returns(T::Hash[::Symbol, T.untyped]) }
+  def to_hash; end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/ruby_document.rb#5
@@ -3680,27 +3753,169 @@ class RubyLsp::RubyDocument < ::RubyLsp::Document
   def parse; end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/server.rb#11
-class RubyLsp::Server
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#15
-  sig { void }
-  def initialize; end
+# source://ruby-lsp/lib/ruby_lsp/server.rb#5
+class RubyLsp::Server < ::RubyLsp::BaseServer
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#13
+  sig { params(test_mode: T::Boolean).void }
+  def initialize(test_mode: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#60
-  sig { void }
-  def start; end
+  # The instance of the index for this server. Only exposed for tests
+  #
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#10
+  sig { returns(::RubyIndexer::Index) }
+  def index; end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#19
+  sig { override.params(message: T::Hash[::Symbol, T.untyped]).void }
+  def process_message(message); end
 
   private
 
-  # Finalize a Queue::Result. All IO operations should happen here to avoid any issues with cancelling requests
-  #
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#145
-  sig { params(result: ::RubyLsp::Result, request: T::Hash[::Symbol, T.untyped]).void }
-  def finalize_request(result, request); end
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#670
+  sig { params(id: ::String, title: ::String, percentage: ::Integer).void }
+  def begin_progress(id, title, percentage: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#120
-  sig { returns(::Thread) }
-  def new_worker; end
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#731
+  sig { void }
+  def check_formatter_is_available; end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#458
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def code_action_resolve(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#713
+  sig { params(id: ::String).void }
+  def end_progress(id); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#643
+  sig { void }
+  def perform_initial_indexing; end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#694
+  sig { params(id: ::String, percentage: ::Integer).void }
+  def progress(id, percentage); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#298
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def run_combined_requests(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#92
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def run_initialize(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#219
+  sig { void }
+  def run_initialized; end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#638
+  sig { override.void }
+  def shutdown; end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#441
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_code_action(message); end
+
+  # @param message [Hash{Symbol => T.untyped}]
+  # @return [void]
+  #
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
+  def text_document_code_lens(*args, **_arg1, &blk); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#507
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_completion(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#547
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_definition(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#481
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_diagnostic(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#267
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_did_change(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#253
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_did_close(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#244
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_did_open(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#383
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_document_highlight(message); end
+
+  # @param message [Hash{Symbol => T.untyped}]
+  # @return [void]
+  #
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
+  def text_document_document_link(*args, **_arg1, &blk); end
+
+  # @param message [Hash{Symbol => T.untyped}]
+  # @return [void]
+  #
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
+  def text_document_document_symbol(*args, **_arg1, &blk); end
+
+  # @param message [Hash{Symbol => T.untyped}]
+  # @return [void]
+  #
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
+  def text_document_folding_range(*args, **_arg1, &blk); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#356
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_formatting(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#410
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_hover(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#430
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_inlay_hint(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#393
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_on_type_formatting(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#277
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_selection_range(message); end
+
+  # @param message [Hash{Symbol => T.untyped}]
+  # @return [void]
+  #
+  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
+  def text_document_semantic_tokens_full(*args, **_arg1, &blk); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#339
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_semantic_tokens_range(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#603
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_show_syntax_tree(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#527
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def text_document_signature_help(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#615
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def workspace_dependencies(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#567
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def workspace_did_change_watched_files(message); end
+
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#593
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def workspace_symbol(message); end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/store.rb#5
@@ -3808,16 +4023,11 @@ class RubyLsp::Store
   def workspace_uri=(_arg0); end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/server.rb#8
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#8
 RubyLsp::Transport = LanguageServer::Protocol::Transport
 
 # source://ruby-lsp/lib/ruby-lsp.rb#5
 RubyLsp::VERSION = T.let(T.unsafe(nil), String)
-
-# Used to indicate that a request shouldn't return a response
-#
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#6
-RubyLsp::VOID = T.let(T.unsafe(nil), Object)
 
 # source://ruby-lsp/lib/core_ext/uri.rb#4
 module URI

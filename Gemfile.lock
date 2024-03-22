@@ -6,6 +6,16 @@ GIT
     rdoc (6.6.3.1)
       psych (>= 4.0.0)
 
+GIT
+  remote: https://github.com/Shopify/ruby-lsp.git
+  revision: 8b4303f9688b5fafebe260031c34e1a310c97d3c
+  branch: main
+  specs:
+    ruby-lsp (0.14.7)
+      language_server-protocol (~> 3.17.0)
+      prism (>= 0.22.0, < 0.25)
+      sorbet-runtime (>= 0.5.10782)
+
 PATH
   remote: .
   specs:
@@ -227,10 +237,6 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.8.0)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.14.6)
-      language_server-protocol (~> 3.17.0)
-      prism (>= 0.22.0, < 0.25)
-      sorbet-runtime (>= 0.5.10782)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sorbet (0.5.11294)
@@ -292,6 +298,7 @@ DEPENDENCIES
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.15)
   rubocop-sorbet (~> 0.8)
+  ruby-lsp!
   ruby-lsp-rails!
   sorbet-static-and-runtime
   sqlite3
