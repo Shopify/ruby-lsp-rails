@@ -186,34 +186,15 @@ module RubyLsp
       private
 
       def hover_on_source(source, position)
-        uri = URI("file:///fake.rb")
-        store = RubyLsp::Store.new
-        store.set(uri: uri, source: source, version: 1)
-
-        executor = RubyLsp::Executor.new(store, @message_queue)
-        executor.instance_variable_get(:@index).index_single(
-          RubyIndexer::IndexablePath.new(nil, T.must(uri.to_standardized_path)), source
-        )
-
-        capture_subprocess_io do
-          RubyLsp::Executor.new(store, @message_queue).execute({
-            method: "initialized",
-            params: {},
-          })
-        end
-
-        response = executor.execute(
-          {
+        with_server(source) do |server, uri|
+          server.process_message(
+            id: 1,
             method: "textDocument/hover",
-            params: {
-              textDocument: { uri: uri },
-              position: position,
-            },
-          },
-        )
+            params: { textDocument: { uri: uri }, position: position },
+          )
 
-        assert_nil(response.error)
-        response.response
+          server.pop_response.response
+        end
       end
     end
   end

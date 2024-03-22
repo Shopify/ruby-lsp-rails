@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/Shopify/ruby-lsp.git
-  revision: 8b4303f9688b5fafebe260031c34e1a310c97d3c
+  revision: 662ba62a629e84b893e02952e7561112ce6cb752
   branch: main
   specs:
     ruby-lsp (0.14.7)
@@ -23,7 +23,7 @@ PATH
       actionpack (>= 6.0)
       activerecord (>= 6.0)
       railties (>= 6.0)
-      ruby-lsp (>= 0.14.2, < 0.15.0)
+      ruby-lsp
       sorbet-runtime (>= 0.5.9897)
 
 GEM

@@ -20,8 +20,44 @@ end
 
 module ActiveSupport
   class TestCase
+    extend T::Sig
+
     def dummy_root
       File.expand_path("#{__dir__}/dummy")
+    end
+
+    # TODO: share with ruby-lsp?
+    sig do
+      type_parameters(:T)
+        .params(
+          source: T.nilable(String),
+          uri: URI::Generic,
+          block: T.proc.params(server: RubyLsp::Server, uri: URI::Generic).returns(T.type_parameter(:T)),
+        ).returns(T.type_parameter(:T))
+    end
+    def with_server(source = nil, uri = URI("file:///fake.rb"), &block)
+      server = ::RubyLsp::Server.new(test_mode: true)
+      server.process_message({ method: "initialized" })
+
+      if source
+        server.process_message({
+          id: 1,
+          method: "textDocument/didOpen",
+          params: {
+            textDocument: {
+              uri: uri,
+              text: source,
+              version: 1,
+            },
+          },
+        })
+      end
+
+      index = server.index
+      index.index_single(RubyIndexer::IndexablePath.new(nil, T.must(uri.to_standardized_path)), source)
+      block.call(server, uri)
+    ensure
+      T.must(server).run_shutdown
     end
   end
 end
