@@ -8,6 +8,7 @@ require_relative "support/callbacks"
 require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
+require_relative "completion"
 require_relative "document_symbol"
 require_relative "definition"
 
@@ -94,7 +95,7 @@ module RubyLsp
         ).returns(Object)
       end
       def create_completion_listener(response_builder, index, nesting, dispatcher, uri)
-        Completion.new(response_builder, index, nesting, dispatcher, uri)
+        Completion.new(@client, response_builder, index, nesting, dispatcher, uri)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }

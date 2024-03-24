@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class Completion < ActiveSupport::TestCase
+    class CompletionTest < ActiveSupport::TestCase
       setup do
         @message_queue = Thread::Queue.new
       end
@@ -14,7 +14,7 @@ module RubyLsp
         T.must(@message_queue).close
       end
 
-      test "recognizes model callback with multiple symbol arguments" do
+      test "..." do
         response = generate_completions_for_source(<<~RUBY, { line: 3, character: 15 })
           # typed: false
 
@@ -23,7 +23,7 @@ module RubyLsp
           end
         RUBY
 
-        assert_equal(1, response.size)
+        assert_equal(2, response.size)
 
         # assert_equal("file:///fake.rb", response[0].uri)
         # assert_equal(5, response[0].range.start.line)

@@ -92,6 +92,13 @@ module RubyLsp
         nil
       end
 
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def routes
+        result = make_request("routes")
+        $stderr.puts("Ruby LSP Rails got routes information: #{result}")
+        { result: result }
+      end
+
       sig { void }
       def shutdown
         $stderr.puts("Ruby LSP Rails shutting down server")
