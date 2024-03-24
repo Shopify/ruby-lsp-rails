@@ -12,6 +12,7 @@ require "rails/test_help"
 require "mocha/minitest"
 require "ruby_lsp/internal"
 require "ruby_lsp/ruby_lsp_rails/addon"
+require "spoom/backtrace_filter/minitest"
 
 if defined?(DEBUGGER__)
   DEBUGGER__::CONFIG[:skip_path] =

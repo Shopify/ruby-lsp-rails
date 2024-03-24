@@ -84,6 +84,19 @@ module RubyLsp
         Definition.new(response_builder, nesting, index, dispatcher)
       end
 
+      sig do
+        override.params(
+          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
+          index: RubyIndexer::Index,
+          nesting: T::Array[String],
+          dispatcher: Prism::Dispatcher,
+          uri: URI::Generic,
+        ).returns(Object)
+      end
+      def create_completion_listener(response_builder, index, nesting, dispatcher, uri)
+        Completion.new(response_builder, index, nesting, dispatcher, uri)
+      end
+
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
       def workspace_did_change_watched_files(changes)
         if changes.any? do |change|
