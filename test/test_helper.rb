@@ -18,6 +18,13 @@ if defined?(DEBUGGER__)
     Array(DEBUGGER__::CONFIG[:skip_path]) + Gem.loaded_specs["sorbet-runtime"].full_require_paths
 end
 
+begin
+  require "spoom/backtrace_filter/minitest"
+  Minitest.backtrace_filter = Spoom::BacktraceFilter::Minitest.new
+rescue LoadError
+  # Tapioca (and thus Spoom) is not available on Windows
+end
+
 module ActiveSupport
   class TestCase
     def dummy_root
