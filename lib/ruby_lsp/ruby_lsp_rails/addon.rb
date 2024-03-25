@@ -27,7 +27,7 @@ module RubyLsp
 
       sig { override.params(message_queue: Thread::Queue).void }
       def activate(message_queue)
-        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
+        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}") unless ENV["RAILS_ENV"] == "test"
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new { @client = RunnerClient.create_client }
       end
