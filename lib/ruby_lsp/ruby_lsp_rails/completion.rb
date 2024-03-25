@@ -31,6 +31,9 @@ module RubyLsp
         dispatcher.register(self, :on_call_node_enter)
       end
 
+      # TODO: limit this to controllers/helpers?
+
+      # TODO: why on_call_node_enter?
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
         @client.routes.fetch(:result).each do |helper_name|
