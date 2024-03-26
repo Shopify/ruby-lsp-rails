@@ -67,6 +67,8 @@ module RubyLsp
           VOID
         when "model"
           resolve_database_info_from_model(T.must(params).fetch(:name))
+        when "routes"
+          routes
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
@@ -102,6 +104,13 @@ module RubyLsp
         info
       rescue => e
         { error: e.full_message(highlight: false) }
+      end
+
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def routes
+        {
+          result: ::Rails.application.routes.named_routes.helper_names,
+        }
       end
     end
   end
