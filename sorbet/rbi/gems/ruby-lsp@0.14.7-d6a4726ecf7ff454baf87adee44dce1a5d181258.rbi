@@ -4019,9 +4019,9 @@ class RubyLsp::Store
   def workspace_uri=(_arg0); end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/test_case.rb#7
-module RubyLsp::TestCase
-  # source://ruby-lsp/lib/ruby_lsp/test_case.rb#18
+# source://ruby-lsp/lib/ruby_lsp/test_helper.rb#7
+module RubyLsp::TestHelper
+  # source://ruby-lsp/lib/ruby_lsp/test_helper.rb#18
   sig do
     type_parameters(:T)
       .params(

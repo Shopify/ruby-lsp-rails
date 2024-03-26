@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/Shopify/ruby-lsp.git
-  revision: d6edc59db73f7c8933b564e02e2e2aec1bfd605e
+  revision: d6a4726ecf7ff454baf87adee44dce1a5d181258
   branch: andyw8/extract-ruby-lsp-test-case
   specs:
     ruby-lsp (0.14.7)
