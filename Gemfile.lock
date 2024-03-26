@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/Shopify/ruby-lsp.git
-  revision: 662ba62a629e84b893e02952e7561112ce6cb752
-  branch: main
+  revision: d6edc59db73f7c8933b564e02e2e2aec1bfd605e
+  branch: andyw8/extract-ruby-lsp-test-case
   specs:
     ruby-lsp (0.14.7)
       language_server-protocol (~> 3.17.0)

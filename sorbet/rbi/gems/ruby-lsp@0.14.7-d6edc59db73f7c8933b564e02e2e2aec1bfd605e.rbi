@@ -105,31 +105,27 @@ class RubyIndexer::Configuration
   sig { void }
   def initialize; end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#61
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#148
+  sig { params(config: T::Hash[::String, T.untyped]).void }
+  def apply_config(config); end
+
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#47
   sig { returns(T::Array[::RubyIndexer::IndexablePath]) }
   def indexables; end
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#47
-  sig { void }
-  def load_config; end
-
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#157
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#143
   sig { returns(::Regexp) }
   def magic_comment_regex; end
 
   private
 
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#179
-  sig { params(config: T::Hash[::String, T.untyped]).void }
-  def apply_config(config); end
-
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#188
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#176
   sig { returns(T::Array[::String]) }
   def initial_excluded_gems; end
 
   # @raise [ArgumentError]
   #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#164
+  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/configuration.rb#161
   sig { params(config: T::Hash[::String, T.untyped]).void }
   def validate_config!(config); end
 end
@@ -3771,31 +3767,31 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#670
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#692
   sig { params(id: ::String, title: ::String, percentage: ::Integer).void }
   def begin_progress(id, title, percentage: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#731
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#753
   sig { void }
   def check_formatter_is_available; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#458
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#480
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def code_action_resolve(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#713
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#735
   sig { params(id: ::String).void }
   def end_progress(id); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#643
-  sig { void }
-  def perform_initial_indexing; end
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#665
+  sig { params(config_hash: T::Hash[::String, T.untyped]).void }
+  def perform_initial_indexing(config_hash); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#694
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#716
   sig { params(id: ::String, percentage: ::Integer).void }
   def progress(id, percentage); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#298
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#320
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def run_combined_requests(message); end
 
@@ -3807,11 +3803,11 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   sig { void }
   def run_initialized; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#638
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#660
   sig { override.void }
   def shutdown; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#441
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#463
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_code_action(message); end
 
@@ -3821,31 +3817,31 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
   def text_document_code_lens(*args, **_arg1, &blk); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#507
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#529
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_completion(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#547
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#569
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_definition(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#481
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#503
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_diagnostic(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#267
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#289
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_did_change(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#253
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#275
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_did_close(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#244
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#266
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_did_open(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#383
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#405
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_document_highlight(message); end
 
@@ -3867,23 +3863,23 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
   def text_document_folding_range(*args, **_arg1, &blk); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#356
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#378
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_formatting(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#410
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#432
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_hover(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#430
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#452
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_inlay_hint(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#393
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#415
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_on_type_formatting(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#277
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#299
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_selection_range(message); end
 
@@ -3893,27 +3889,27 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
   def text_document_semantic_tokens_full(*args, **_arg1, &blk); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#339
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#361
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_semantic_tokens_range(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#603
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#625
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_show_syntax_tree(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#527
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#549
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_signature_help(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#615
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#637
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_dependencies(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#567
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#589
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_did_change_watched_files(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#593
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#615
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_symbol(message); end
 end
@@ -4021,6 +4017,20 @@ class RubyLsp::Store
   #
   # source://ruby-lsp/lib/ruby_lsp/store.rb#21
   def workspace_uri=(_arg0); end
+end
+
+# source://ruby-lsp/lib/ruby_lsp/test_case.rb#7
+module RubyLsp::TestCase
+  # source://ruby-lsp/lib/ruby_lsp/test_case.rb#18
+  sig do
+    type_parameters(:T)
+      .params(
+        source: T.nilable(::String),
+        uri: ::URI::Generic,
+        block: T.proc.params(server: ::RubyLsp::Server, uri: ::URI::Generic).returns(T.type_parameter(:T))
+      ).returns(T.type_parameter(:T))
+  end
+  def with_server(source = T.unsafe(nil), uri = T.unsafe(nil), &block); end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#8

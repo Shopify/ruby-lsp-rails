@@ -19,4 +19,4 @@ gem "sorbet-static-and-runtime", platforms: :ruby
 gem "tapioca", "~> 0.12", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails"
-gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "main" # temporary until release
+gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "andyw8/extract-ruby-lsp-test-case" # temporary until release
