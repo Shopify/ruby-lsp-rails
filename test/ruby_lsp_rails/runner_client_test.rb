@@ -74,6 +74,22 @@ module RubyLsp
       ensure
         FileUtils.mv("bin/rails_backup", "bin/rails")
       end
+
+      test "is resilient to extra output being printed during boot" do
+        content = File.read("test/dummy/config/application.rb")
+        FileUtils.mv("test/dummy/config/application.rb", "test/dummy/config/application.rb.bak")
+        junk = %{\nputs "1\r\n\r\nhello"}
+        File.write("test/dummy/config/application.rb", content + junk)
+
+        capture_subprocess_io do
+          client = RunnerClient.create_client
+
+          response = T.must(client.model("User"))
+          assert(response.key?(:columns))
+        end
+      ensure
+        FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
+      end
     end
   end
 end
