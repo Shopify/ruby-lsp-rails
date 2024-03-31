@@ -26,9 +26,10 @@ module RubyLsp
         @client = T.let(NullClient.new, RunnerClient)
       end
 
-      sig { override.params(message_queue: Thread::Queue).void }
-      def activate(message_queue)
-        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
+      sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
+      def activate(global_state, message_queue)
+        @global_state = T.let(global_state, T.nilable(RubyLsp::GlobalState))
+        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}") unless ENV["RAILS_ENV"] == "test"
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new { @client = RunnerClient.create_client }
       end
@@ -54,11 +55,11 @@ module RubyLsp
         override.params(
           response_builder: ResponseBuilders::Hover,
           nesting: T::Array[String],
-          index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_hover_listener(response_builder, nesting, index, dispatcher)
+      def create_hover_listener(response_builder, nesting, dispatcher)
+        index = T.must(@global_state).index
         Hover.new(@client, response_builder, nesting, index, dispatcher)
       end
 
@@ -77,11 +78,11 @@ module RubyLsp
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
           uri: URI::Generic,
           nesting: T::Array[String],
-          index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_definition_listener(response_builder, uri, nesting, index, dispatcher)
+      def create_definition_listener(response_builder, uri, nesting, dispatcher)
+        index = T.must(@global_state).index
         Definition.new(response_builder, nesting, index, dispatcher)
       end
 
