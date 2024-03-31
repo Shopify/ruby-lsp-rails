@@ -25,23 +25,11 @@ class RubyIndexer::Collector
 
   private
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#269
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#267
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#271
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::ClassNode).void }
   def add_class_entry(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#229
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#227
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#231
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       node: T.any(::Prism::ConstantAndWriteNode, ::Prism::ConstantOperatorWriteNode, ::Prism::ConstantOrWriteNode, ::Prism::ConstantPathAndWriteNode, ::Prism::ConstantPathOperatorWriteNode, ::Prism::ConstantPathOrWriteNode, ::Prism::ConstantPathTargetNode, ::Prism::ConstantPathWriteNode, ::Prism::ConstantTargetNode, ::Prism::ConstantWriteNode),
@@ -51,43 +39,19 @@ class RubyIndexer::Collector
   end
   def add_constant(node, name, value = T.unsafe(nil)); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#254
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#252
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#256
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::ModuleNode).void }
   def add_module_entry(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#298
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#296
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#300
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::Node).returns(T::Array[::String]) }
   def collect_comments(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#324
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#322
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#326
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(name: ::String).returns(::String) }
   def fully_qualify_name(name); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#333
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#331
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#335
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::CallNode, reader: T::Boolean, writer: T::Boolean).void }
   def handle_attribute(node, reader:, writer:); end
 
@@ -115,23 +79,10 @@ class RubyIndexer::Collector
   sig { params(node: ::Prism::ConstantWriteNode).void }
   def handle_constant_write_node(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#161
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#159
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#163
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::DefNode).void }
   def handle_def_node(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#357
-  sig { params(node: ::Prism::CallNode).void }
-  def handle_include(node); end
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#359
   sig { params(node: ::Prism::CallNode).void }
   def handle_include(node); end
@@ -140,22 +91,15 @@ class RubyIndexer::Collector
   sig { params(node: ::Prism::CallNode, operation: ::Symbol).void }
   def handle_module_operation(node, operation); end
 
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#77
   sig { params(node: ::Prism::MultiWriteNode).void }
   def handle_multi_write_node(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#187
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#185
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#364
   sig { params(node: ::Prism::CallNode).void }
   def handle_prepend(node); end
 
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/collector.rb#189
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::CallNode).void }
   def handle_private_constant(node); end
 end
@@ -233,101 +177,41 @@ class RubyIndexer::Entry
   def visibility=(_arg0); end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#194
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#178
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#198
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Accessor < ::RubyIndexer::Entry::Member
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#198
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#182
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#202
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(T::Array[::RubyIndexer::Entry::Parameter]) }
   def parameters; end
 end
 
 # Alias represents a resolved alias, which points to an existing constant target
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#361
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#345
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#365
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Alias < ::RubyIndexer::Entry
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#368
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#352
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#372
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(target: ::String, unresolved_alias: ::RubyIndexer::Entry::UnresolvedAlias).void }
   def initialize(target, unresolved_alias); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#365
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#349
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#369
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(::String) }
   def target; end
 end
 
 # A block method parameter, e.g. `def foo(&block)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#158
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#142
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#162
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::BlockParameter < ::RubyIndexer::Entry::Parameter
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#162
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#146
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#166
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#159
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#143
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#163
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 RubyIndexer::Entry::BlockParameter::DEFAULT_NAME = T.let(T.unsafe(nil), Symbol)
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#68
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#52
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#72
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Class < ::RubyIndexer::Entry::Namespace
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#85
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#69
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#89
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       name: ::String,
@@ -342,105 +226,45 @@ class RubyIndexer::Entry::Class < ::RubyIndexer::Entry::Namespace
   # The unresolved name of the parent class. This may return `nil`, which indicates the lack of an explicit parent
   # and therefore ::Object is the correct parent class
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#74
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#58
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#78
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(T.nilable(::String)) }
   def parent_class; end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#91
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#75
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#95
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Constant < ::RubyIndexer::Entry; end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#320
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#304
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#324
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::InstanceMethod < ::RubyIndexer::Entry::Method; end
 
 # An required keyword method parameter, e.g. `def foo(a:)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#122
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#106
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#126
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::KeywordParameter < ::RubyIndexer::Entry::Parameter
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#124
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#108
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#128
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
 # A keyword rest method parameter, e.g. `def foo(**a)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#148
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#132
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#152
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::KeywordRestParameter < ::RubyIndexer::Entry::Parameter
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#152
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#136
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#156
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#149
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#133
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#153
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 RubyIndexer::Entry::KeywordRestParameter::DEFAULT_NAME = T.let(T.unsafe(nil), Symbol)
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#167
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#151
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#171
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Member < ::RubyIndexer::Entry
   abstract!
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#185
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#169
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#189
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       name: ::String,
@@ -452,48 +276,24 @@ class RubyIndexer::Entry::Member < ::RubyIndexer::Entry
   end
   def initialize(name, file_path, location, comments, owner); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#174
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#158
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#178
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(T.nilable(::RubyIndexer::Entry::Namespace)) }
   def owner; end
 
   # @abstract
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#191
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#175
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#195
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { abstract.returns(T::Array[::RubyIndexer::Entry::Parameter]) }
   def parameters; end
 end
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#205
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#189
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#209
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Method < ::RubyIndexer::Entry::Member
   abstract!
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#224
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#208
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#228
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       name: ::String,
@@ -506,25 +306,13 @@ class RubyIndexer::Entry::Method < ::RubyIndexer::Entry::Member
   end
   def initialize(name, file_path, location, comments, parameters_node, owner); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#212
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#196
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#216
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(T::Array[::RubyIndexer::Entry::Parameter]) }
   def parameters; end
 
   private
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#233
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#217
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#237
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       parameters_node: T.nilable(::Prism::ParametersNode)
@@ -532,24 +320,12 @@ class RubyIndexer::Entry::Method < ::RubyIndexer::Entry::Member
   end
   def list_params(parameters_node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#292
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#276
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#296
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: T.nilable(::Prism::Node)).returns(T.nilable(::Symbol)) }
   def parameter_name(node); end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#65
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#49
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#69
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Module < ::RubyIndexer::Entry::Namespace; end
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
@@ -558,31 +334,11 @@ class RubyIndexer::Entry::Module < ::RubyIndexer::Entry::Namespace; end
 class RubyIndexer::Entry::Namespace < ::RubyIndexer::Entry
   abstract!
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#54
-  sig { params(name: ::String, file_path: ::String, location: ::Prism::Location, comments: T::Array[::String]).void }
-  def initialize(name, file_path, location, comments); end
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#57
   sig { params(name: ::String, file_path: ::String, location: ::Prism::Location, comments: T::Array[::String]).void }
   def initialize(name, file_path, location, comments); end
 
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#44
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  sig { returns(T::Array[::String]) }
-  def included_modules; end
-
-  # @return [Array<String>]
-  #
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#44
-  def included_modules=(_arg0); end
-
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#60
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-========
   sig { returns(T::Array[::String]) }
   def included_modules; end
 
@@ -601,62 +357,31 @@ class RubyIndexer::Entry::Namespace < ::RubyIndexer::Entry
   def prepended_modules=(_arg0); end
 
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#64
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(::String) }
   def short_name; end
 end
 
 # An optional keyword method parameter, e.g. `def foo(a: 123)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#130
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#114
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#134
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::OptionalKeywordParameter < ::RubyIndexer::Entry::Parameter
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#132
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#116
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#136
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
 # An optional method parameter, e.g. `def foo(a = 123)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#118
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#102
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#122
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::OptionalParameter < ::RubyIndexer::Entry::Parameter; end
 
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#94
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#78
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#98
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::Parameter
   abstract!
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#108
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#92
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#112
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(name: ::Symbol).void }
   def initialize(name:); end
 
@@ -665,76 +390,34 @@ class RubyIndexer::Entry::Parameter
   #
   # @return [Symbol]
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://sorbet-runtime/0.5.11262lib/types/private/methods/_methods.rb#257
-========
   # source://sorbet-runtime/0.5.11305lib/types/private/methods/_methods.rb#257
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   def decorated_name(*args, **_arg1, &blk); end
 
   # Name includes just the name of the parameter, excluding symbols like splats
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#102
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#86
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#106
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(::Symbol) }
   def name; end
 end
 
 # A required method parameter, e.g. `def foo(a)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#114
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#98
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#118
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::RequiredParameter < ::RubyIndexer::Entry::Parameter; end
 
 # A rest method parameter, e.g. `def foo(*a)`
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#138
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#122
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#142
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::RestParameter < ::RubyIndexer::Entry::Parameter
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#142
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#126
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#146
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(::Symbol) }
   def decorated_name; end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#139
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#123
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#143
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 RubyIndexer::Entry::RestParameter::DEFAULT_NAME = T.let(T.unsafe(nil), Symbol)
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#317
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#301
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#321
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::SingletonMethod < ::RubyIndexer::Entry::Method; end
 
 # An UnresolvedAlias points to a constant alias with a right hand side that has not yet been resolved. For
@@ -748,21 +431,9 @@ class RubyIndexer::Entry::SingletonMethod < ::RubyIndexer::Entry::Method; end
 # target in [rdoc-ref:Index#resolve]. If the right hand side contains a constant that doesn't exist, then it's not
 # possible to resolve the alias and it will remain an UnresolvedAlias until the right hand side constant exists
 #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#333
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#317
-========
 # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#337
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 class RubyIndexer::Entry::UnresolvedAlias < ::RubyIndexer::Entry
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#352
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#336
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#356
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       target: ::String,
@@ -775,23 +446,11 @@ class RubyIndexer::Entry::UnresolvedAlias < ::RubyIndexer::Entry
   end
   def initialize(target, nesting, name, file_path, location, comments); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#340
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#324
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#344
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(T::Array[::String]) }
   def nesting; end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#337
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#321
-========
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#341
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { returns(::String) }
   def target; end
 end
@@ -1098,19 +757,9 @@ class RubyLsp::Addon
   #
   # @abstract
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#109
-  sig { abstract.params(message_queue: ::Thread::Queue).void }
-  def activate(message_queue); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#97
-  sig { abstract.params(message_queue: ::Thread::Queue).void }
-  def activate(message_queue); end
-========
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#109
   sig { abstract.params(global_state: ::RubyLsp::GlobalState, outgoing_queue: ::Thread::Queue).void }
   def activate(global_state, outgoing_queue); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#83
   sig { params(error: ::StandardError).returns(T.self_type) }
@@ -1133,24 +782,6 @@ class RubyLsp::Addon
   end
   def create_code_lens_listener(response_builder, uri, dispatcher); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # Creates a new Completion listener. This method is invoked on every Completion request
-  #
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#180
-  sig do
-    overridable
-      .params(
-        response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[::LanguageServer::Protocol::Interface::CompletionItem],
-        index: ::RubyIndexer::Index,
-        nesting: T::Array[::String],
-        dispatcher: ::Prism::Dispatcher,
-        uri: ::URI::Generic
-      ).void
-  end
-  def create_completion_listener(response_builder, index, nesting, dispatcher, uri); end
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-========
   # Creates a new Completion listener. This method is invoked on every Completion request
   #
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#177
@@ -1165,16 +796,9 @@ class RubyLsp::Addon
   end
   def create_completion_listener(response_builder, nesting, dispatcher, uri); end
 
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   # Creates a new Definition listener. This method is invoked on every Definition request
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#168
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#156
-========
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#166
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     overridable
       .params(
@@ -1188,13 +812,7 @@ class RubyLsp::Addon
 
   # Creates a new DocumentSymbol listener. This method is invoked on every DocumentSymbol request
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#148
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#136
-========
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#147
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     overridable
       .params(
@@ -1206,13 +824,7 @@ class RubyLsp::Addon
 
   # Creates a new Hover listener. This method is invoked on every Hover request
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#139
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#127
-========
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#138
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     overridable
       .params(
@@ -1223,13 +835,7 @@ class RubyLsp::Addon
   end
   def create_hover_listener(response_builder, nesting, dispatcher); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#156
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/addon.rb#144
-========
   # source://ruby-lsp/lib/ruby_lsp/addon.rb#155
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     overridable
       .params(
@@ -1295,15 +901,6 @@ class RubyLsp::Addon
 
     # Discovers and loads all addons. Returns the list of activated addons
     #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-    # source://ruby-lsp/lib/ruby_lsp/addon.rb#54
-    sig { params(message_queue: ::Thread::Queue).returns(T::Array[::RubyLsp::Addon]) }
-    def load_addons(message_queue); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-    # source://ruby-lsp/lib/ruby_lsp/addon.rb#45
-    sig { params(message_queue: ::Thread::Queue).returns(T::Array[::RubyLsp::Addon]) }
-    def load_addons(message_queue); end
-========
     # source://ruby-lsp/lib/ruby_lsp/addon.rb#54
     sig do
       params(
@@ -1312,72 +909,9 @@ class RubyLsp::Addon
       ).returns(T::Array[::RubyLsp::Addon])
     end
     def load_addons(global_state, outgoing_queue); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# Used to indicate that a request shouldn't return a response
-#
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#12
-RubyLsp::BUNDLE_PATH = T.let(T.unsafe(nil), String)
-
-# @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
-#
-# source://ruby-lsp/lib/ruby_lsp/base_server.rb#5
-class RubyLsp::BaseServer
-  abstract!
-
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#12
-  sig { params(test_mode: T::Boolean).void }
-  def initialize(test_mode: T.unsafe(nil)); end
-
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#111
-  sig { returns(::Thread) }
-  def new_worker; end
-
-  # This method is only intended to be used in tests! Pops the latest response that would be sent to the client
-  #
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#100
-  sig { returns(T.untyped) }
-  def pop_response; end
-
-  # @abstract
-  #
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#105
-  sig { abstract.params(message: T::Hash[::Symbol, T.untyped]).void }
-  def process_message(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#86
-  sig { void }
-  def run_shutdown; end
-
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#142
-  sig { params(id: ::Integer).void }
-  def send_empty_response(id); end
-
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#131
-  sig { params(message: T.any(::RubyLsp::Error, ::RubyLsp::Notification, ::RubyLsp::Request, ::RubyLsp::Result)).void }
-  def send_message(message); end
-
-  # @abstract
-  #
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#108
-  sig { abstract.void }
-  def shutdown; end
-
-  # source://ruby-lsp/lib/ruby_lsp/base_server.rb#37
-  sig { void }
-  def start; end
-end
-
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#7
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#7
-RubyLsp::BUNDLE_PATH = T.let(T.unsafe(nil), String)
-
-# source://ruby-lsp/lib/ruby_lsp/server.rb#7
-========
 # Used to indicate that a request shouldn't return a response
 #
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#12
@@ -1433,119 +967,8 @@ class RubyLsp::BaseServer
 end
 
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#7
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 RubyLsp::Constant = LanguageServer::Protocol::Constant
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#7
-class RubyLsp::DependencyDetector
-  include ::Singleton
-  extend ::Singleton::SingletonClassMethods
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#21
-  sig { void }
-  def initialize; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#81
-  sig { returns(T::Array[::String]) }
-  def dependencies; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#28
-  sig { returns(::String) }
-  def detect_formatter; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#40
-  sig { returns(::String) }
-  def detect_test_library; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#63
-  sig { returns(T::Boolean) }
-  def detect_typechecker; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#12
-  sig { returns(::String) }
-  def detected_formatter; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#15
-  sig { returns(::String) }
-  def detected_test_library; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#58
-  sig { params(gem_pattern: ::Regexp).returns(T::Boolean) }
-  def direct_dependency?(gem_pattern); end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#94
-  sig { returns(T::Array[::String]) }
-  def gemspec_dependencies; end
-
-  # source://ruby-lsp/lib/ruby_lsp/dependency_detector.rb#18
-  sig { returns(T::Boolean) }
-  def typechecker; end
-
-  class << self
-    private
-
-    def allocate; end
-    def new(*_arg0); end
-  end
-end
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#7
-class RubyLsp::DependencyDetector
-  include ::Singleton
-  extend ::Singleton::SingletonClassMethods
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#21
-  sig { void }
-  def initialize; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#74
-  sig { returns(T::Array[::String]) }
-  def dependencies; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#28
-  sig { returns(::String) }
-  def detect_formatter; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#40
-  sig { returns(::String) }
-  def detect_test_library; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#63
-  sig { returns(T::Boolean) }
-  def detect_typechecker; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#12
-  sig { returns(::String) }
-  def detected_formatter; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#15
-  sig { returns(::String) }
-  def detected_test_library; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#58
-  sig { params(gem_pattern: ::Regexp).returns(T::Boolean) }
-  def direct_dependency?(gem_pattern); end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#87
-  sig { returns(T::Array[::String]) }
-  def gemspec_dependencies; end
-
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/dependency_detector.rb#18
-  sig { returns(T::Boolean) }
-  def typechecker; end
-
-  class << self
-    private
-
-    def allocate; end
-    def new(*_arg0); end
-  end
-end
-
-========
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 # @abstract It cannot be directly instantiated. Subclasses must implement the `abstract` methods below.
 #
 # source://ruby-lsp/lib/ruby_lsp/document.rb#5
@@ -1696,36 +1119,6 @@ end
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#20
 RubyLsp::GEMFILE_NAME = T.let(T.unsafe(nil), String)
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#6
-RubyLsp::Interface = LanguageServer::Protocol::Interface
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_lsp/server.rb#6
-RubyLsp::Interface = LanguageServer::Protocol::Interface
-
-# A request that will sit in the queue until it's executed
-#
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#65
-class RubyLsp::Job
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#75
-  sig { params(request: T::Hash[::Symbol, T.untyped], cancelled: T::Boolean).void }
-  def initialize(request:, cancelled:); end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#81
-  sig { void }
-  def cancel; end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#72
-  sig { returns(T::Boolean) }
-  def cancelled; end
-
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#69
-  sig { returns(T::Hash[::Symbol, T.untyped]) }
-  def request; end
-end
-
-========
 # source://ruby-lsp/lib/ruby_lsp/global_state.rb#5
 class RubyLsp::GlobalState
   # source://ruby-lsp/lib/ruby_lsp/global_state.rb#21
@@ -1789,7 +1182,6 @@ end
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#6
 RubyLsp::Interface = LanguageServer::Protocol::Interface
 
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 # source://ruby-lsp/lib/ruby_lsp/listeners/document_symbol.rb#5
 module RubyLsp::Listeners; end
 
@@ -1797,13 +1189,7 @@ module RubyLsp::Listeners; end
 class RubyLsp::Listeners::CodeLens
   include ::RubyLsp::Requests::Support::Common
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#34
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#33
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#35
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[::LanguageServer::Protocol::Interface::CodeLens],
@@ -1814,67 +1200,26 @@ class RubyLsp::Listeners::CodeLens
   end
   def initialize(response_builder, global_state, uri, dispatcher); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#116
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#99
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#118
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#146
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#129
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#148
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_leave(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#57
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#54
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#59
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_enter(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#76
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#73
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#78
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::ClassNode).void }
   def on_class_node_leave(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#83
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#80
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#85
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::DefNode).void }
   def on_def_node_enter(node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#102
-  sig { params(node: ::Prism::ModuleNode).void }
-  def on_module_node_enter(node); end
-
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#111
-  sig { params(node: ::Prism::ModuleNode).void }
-  def on_module_node_leave(node); end
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#104
   sig { params(node: ::Prism::ModuleNode).void }
   def on_module_node_enter(node); end
@@ -1883,44 +1228,16 @@ class RubyLsp::Listeners::CodeLens
   sig { params(node: ::Prism::ModuleNode).void }
   def on_module_node_leave(node); end
 
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   private
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#251
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#207
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#253
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::CallNode, kind: ::Symbol).void }
   def add_spec_code_lens(node, kind:); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#157
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#140
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#159
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::Node, name: ::String, command: ::String, kind: ::Symbol).void }
   def add_test_code_lens(node, name:, command:, kind:); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#208
-  sig do
-    params(
-      group_stack: T::Array[::String],
-      spec_name: T.nilable(::String),
-      method_name: T.nilable(::String)
-    ).returns(::String)
-  end
-  def generate_test_command(group_stack: T.unsafe(nil), spec_name: T.unsafe(nil), method_name: T.unsafe(nil)); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#185
-  sig { params(group_name: ::String, method_name: T.nilable(::String)).returns(::String) }
-  def generate_test_command(group_name:, method_name: T.unsafe(nil)); end
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#210
   sig do
     params(
@@ -1930,7 +1247,6 @@ class RubyLsp::Listeners::CodeLens
     ).returns(::String)
   end
   def generate_test_command(group_stack: T.unsafe(nil), spec_name: T.unsafe(nil), method_name: T.unsafe(nil)); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 end
 
 # source://ruby-lsp/lib/ruby_lsp/listeners/code_lens.rb#21
@@ -1966,57 +1282,27 @@ class RubyLsp::Listeners::Completion
       uri: ::URI::Generic
     ).void
   end
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  def initialize(response_builder, index, nesting, typechecker_enabled, dispatcher, uri); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  def initialize(response_builder, index, nesting, typechecker_enabled, dispatcher); end
-========
   def initialize(response_builder, global_state, nesting, typechecker_enabled, dispatcher, uri); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#102
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#108
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#106
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::CallNode).void }
   def on_call_node_enter(node); end
 
   # Handle completion on namespaced constant references (e.g. `Foo::Bar`)
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#58
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#64
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#59
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::ConstantPathNode).void }
   def on_constant_path_node_enter(node); end
 
   # Handle completion on regular constant references (e.g. `Bar`)
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#37
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#43
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#38
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(node: ::Prism::ConstantReadNode).void }
   def on_constant_read_node_enter(node); end
 
   private
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#202
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#156
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#208
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       label: ::String,
@@ -2025,13 +1311,7 @@ class RubyLsp::Listeners::Completion
   end
   def build_completion(label, node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#225
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#179
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#231
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       real_name: ::String,
@@ -2043,13 +1323,7 @@ class RubyLsp::Listeners::Completion
   end
   def build_entry_completion(real_name, incomplete_name, node, entries, top_level); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#182
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#136
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#188
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig do
     params(
       entry: ::RubyIndexer::Entry::Member,
@@ -2058,21 +1332,6 @@ class RubyLsp::Listeners::Completion
   end
   def build_method_completion(entry, node); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#119
-  sig { params(node: ::Prism::CallNode).void }
-  def complete_require(node); end
-
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#133
-  sig { params(node: ::Prism::CallNode).void }
-  def complete_require_relative(node); end
-
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#162
-  sig { params(node: ::Prism::CallNode, name: ::String).void }
-  def complete_self_receiver_method(node, name); end
-
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#123
   sig { params(node: ::Prism::CallNode).void }
   def complete_require(node); end
@@ -2085,7 +1344,6 @@ class RubyLsp::Listeners::Completion
   sig { params(node: ::Prism::CallNode, name: ::String).void }
   def complete_self_receiver_method(node, name); end
 
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   # Check if there are any conflicting names for `entry_name`, which would require us to use a top level reference.
   # For example:
   #
@@ -2101,13 +1359,7 @@ class RubyLsp::Listeners::Completion
   # end
   # ```
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#312
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#266
-========
   # source://ruby-lsp/lib/ruby_lsp/listeners/completion.rb#311
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { params(entry_name: ::String).returns(T::Boolean) }
   def top_level?(entry_name); end
 end
@@ -3281,13 +2533,7 @@ class RubyLsp::Requests::Completion < ::RubyLsp::Requests::Request
   end
   def initialize(document, global_state, position, typechecker_enabled, dispatcher); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/requests/completion.rb#92
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/requests/completion.rb#101
-========
   # source://ruby-lsp/lib/ruby_lsp/requests/completion.rb#99
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(T::Array[::LanguageServer::Protocol::Interface::CompletionItem]) }
   def perform; end
 
@@ -3370,13 +2616,7 @@ class RubyLsp::Requests::Definition < ::RubyLsp::Requests::Request
   end
   def initialize(document, global_state, position, dispatcher, typechecker_enabled); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/requests/definition.rb#71
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/requests/definition.rb#65
-========
   # source://ruby-lsp/lib/ruby_lsp/requests/definition.rb#78
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   sig { override.returns(T::Array[::LanguageServer::Protocol::Interface::Location]) }
   def perform; end
 end
@@ -4070,10 +3310,6 @@ module RubyLsp::Requests::Support::Common
   sig { params(node: T.any(::Prism::ClassNode, ::Prism::ModuleNode)).returns(T.nilable(::String)) }
   def namespace_constant_name(node); end
 
-  # source://ruby-lsp/lib/ruby_lsp/requests/support/common.rb#152
-  sig { params(node: T.any(::Prism::ClassNode, ::Prism::ModuleNode)).returns(T.nilable(::String)) }
-  def namespace_constant_name(node); end
-
   # source://ruby-lsp/lib/ruby_lsp/requests/support/common.rb#73
   sig { params(file_path: ::String).returns(T.nilable(T::Boolean)) }
   def not_in_dependencies?(file_path); end
@@ -4371,13 +3607,7 @@ class RubyLsp::ResponseBuilders::DocumentSymbol < ::RubyLsp::ResponseBuilders::R
   # @param symbol [Interface::DocumentSymbol]
   # @return [void]
   #
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://sorbet-runtime/0.5.11262lib/types/private/methods/_methods.rb#257
-========
   # source://sorbet-runtime/0.5.11305lib/types/private/methods/_methods.rb#257
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
   def <<(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_lsp/response_builders/document_symbol.rb#47
@@ -4591,21 +3821,6 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   sig { params(test_mode: T::Boolean).void }
   def initialize(test_mode: T.unsafe(nil)); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # The instance of the index for this server. Only exposed for tests
-  #
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#10
-  sig { returns(::RubyIndexer::Index) }
-  def index; end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#19
-  sig { override.params(message: T::Hash[::Symbol, T.untyped]).void }
-  def process_message(message); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#60
-  sig { void }
-  def start; end
-========
   # Only for testing
   #
   # source://ruby-lsp/lib/ruby_lsp/server.rb#10
@@ -4619,173 +3834,13 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://ruby-lsp/lib/ruby_lsp/server.rb#19
   sig { override.params(message: T::Hash[::Symbol, T.untyped]).void }
   def process_message(message); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 
   private
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#670
-  sig { params(id: ::String, title: ::String, percentage: ::Integer).void }
-  def begin_progress(id, title, percentage: T.unsafe(nil)); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # Finalize a Queue::Result. All IO operations should happen here to avoid any issues with cancelling requests
-  #
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#145
-  sig { params(result: ::RubyLsp::Result, request: T::Hash[::Symbol, T.untyped]).void }
-  def finalize_request(result, request); end
-========
   # source://ruby-lsp/lib/ruby_lsp/server.rb#710
   sig { params(id: ::String, title: ::String, percentage: ::Integer).void }
   def begin_progress(id, title, percentage: T.unsafe(nil)); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#731
-  sig { void }
-  def check_formatter_is_available; end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#458
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def code_action_resolve(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#713
-  sig { params(id: ::String).void }
-  def end_progress(id); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#643
-  sig { void }
-  def perform_initial_indexing; end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#694
-  sig { params(id: ::String, percentage: ::Integer).void }
-  def progress(id, percentage); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#298
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def run_combined_requests(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#92
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def run_initialize(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#219
-  sig { void }
-  def run_initialized; end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#638
-  sig { override.void }
-  def shutdown; end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#441
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_code_action(message); end
-
-  # @param message [Hash{Symbol => T.untyped}]
-  # @return [void]
-  #
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-  def text_document_code_lens(*args, **_arg1, &blk); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#507
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_completion(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#547
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_definition(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#481
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_diagnostic(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#267
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_did_change(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#253
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_did_close(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#244
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_did_open(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#383
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_document_highlight(message); end
-
-  # @param message [Hash{Symbol => T.untyped}]
-  # @return [void]
-  #
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-  def text_document_document_link(*args, **_arg1, &blk); end
-
-  # @param message [Hash{Symbol => T.untyped}]
-  # @return [void]
-  #
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-  def text_document_document_symbol(*args, **_arg1, &blk); end
-
-  # @param message [Hash{Symbol => T.untyped}]
-  # @return [void]
-  #
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-  def text_document_folding_range(*args, **_arg1, &blk); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#356
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_formatting(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#410
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_hover(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#430
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_inlay_hint(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#393
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_on_type_formatting(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#277
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_selection_range(message); end
-
-  # @param message [Hash{Symbol => T.untyped}]
-  # @return [void]
-  #
-  # source://sorbet-runtime/0.5.11294lib/types/private/methods/_methods.rb#257
-  def text_document_semantic_tokens_full(*args, **_arg1, &blk); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#339
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_semantic_tokens_range(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#603
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_show_syntax_tree(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#527
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def text_document_signature_help(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#615
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def workspace_dependencies(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#567
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def workspace_did_change_watched_files(message); end
-
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#593
-  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
-  def workspace_symbol(message); end
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#120
-  sig { returns(::Thread) }
-  def new_worker; end
-========
   # source://ruby-lsp/lib/ruby_lsp/server.rb#771
   sig { void }
   def check_formatter_is_available; end
@@ -4935,7 +3990,6 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://ruby-lsp/lib/ruby_lsp/server.rb#630
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_symbol(message); end
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 end
 
 # source://ruby-lsp/lib/ruby_lsp/store.rb#5
@@ -5025,11 +4079,6 @@ class RubyLsp::Store
   def supports_progress=(_arg0); end
 end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/ruby-lsp@0.14.7-8b4303f9688b5fafebe260031c34e1a310c97d3c.rbi
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#8
-|||||||| 4311f87:sorbet/rbi/gems/ruby-lsp@0.14.1.rbi
-# source://ruby-lsp/lib/ruby_lsp/server.rb#8
-========
 # source://ruby-lsp/lib/ruby_lsp/test_helper.rb#7
 module RubyLsp::TestHelper
   # source://ruby-lsp/lib/ruby_lsp/test_helper.rb#20
@@ -5047,7 +4096,6 @@ module RubyLsp::TestHelper
 end
 
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#8
->>>>>>>> andyw8/update-for-ruby-lsp-refactor:sorbet/rbi/gems/ruby-lsp@0.15.1-d33df8ae28d537f93b7fbfaff6e12ddb2598caaa.rbi
 RubyLsp::Transport = LanguageServer::Protocol::Transport
 
 # source://ruby-lsp/lib/ruby-lsp.rb#5
