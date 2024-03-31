@@ -41,7 +41,7 @@ module RubyLsp
       private
 
       def generate_completions_for_source(source, position)
-        with_server(source) do |server, uri|
+        with_server(source, stub_no_typechecker: true) do |server, uri|
           server.process_message(
             id: 1,
             method: "textDocument/completion",
