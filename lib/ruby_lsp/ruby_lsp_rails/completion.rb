@@ -14,16 +14,14 @@ module RubyLsp
         params(
           client: RunnerClient,
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
-          index: RubyIndexer::Index,
           nesting: T::Array[String],
           dispatcher: Prism::Dispatcher,
           uri: URI::Generic,
         ).void
       end
-      def initialize(client, response_builder, index, nesting, dispatcher, uri)
+      def initialize(client, response_builder, nesting, dispatcher, uri)
         @client = client
         @response_builder = response_builder
-        @index = index
         @nesting = nesting
         @uri = uri
         $stderr.puts "Completion initialized"

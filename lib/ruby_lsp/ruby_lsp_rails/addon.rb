@@ -89,14 +89,13 @@ module RubyLsp
       sig do
         override.params(
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
-          index: RubyIndexer::Index,
           nesting: T::Array[String],
           dispatcher: Prism::Dispatcher,
           uri: URI::Generic,
         ).returns(Object)
       end
-      def create_completion_listener(response_builder, index, nesting, dispatcher, uri)
-        Completion.new(@client, response_builder, index, nesting, dispatcher, uri)
+      def create_completion_listener(response_builder, nesting, dispatcher, uri)
+        Completion.new(@client, response_builder, nesting, dispatcher, uri)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
