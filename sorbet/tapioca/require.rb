@@ -5,8 +5,6 @@
 
 require "rails/all"
 require "ruby_lsp/internal"
-require "syntax_tree"
-require "syntax_tree/dsl"
 require "minitest/unit"
 require "mocha/minitest"
 require "spoom/backtrace_filter/minitest"
