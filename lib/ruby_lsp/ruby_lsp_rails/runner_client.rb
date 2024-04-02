@@ -61,7 +61,7 @@ module RubyLsp
         @stdin.binmode # for Windows compatibility
         @stdout.binmode # for Windows compatibility
 
-        $stderr.puts("Ruby LSP Rails booting server")
+        $stderr.puts("Ruby LSP Rails booting server") unless ENV["RAILS_ENV"] == "test"
         count = 0
 
         begin
@@ -72,7 +72,7 @@ module RubyLsp
           retry if count < MAX_RETRIES
         end
 
-        $stderr.puts("Finished booting Ruby LSP Rails server")
+        $stderr.puts("Finished booting Ruby LSP Rails server") unless ENV["RAILS_ENV"] == "test"
 
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
@@ -97,7 +97,7 @@ module RubyLsp
 
       sig { void }
       def trigger_reload
-        $stderr.puts("Reloading Rails application")
+        $stderr.puts("Reloading Rails application") unless ENV["RAILS_ENV"] == "test"
         send_notification("reload")
       rescue IncompleteMessageError
         $stderr.puts("Ruby LSP Rails failed to trigger reload")
