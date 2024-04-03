@@ -58,8 +58,7 @@ module RubyLsp
         ).void
       end
       def create_hover_listener(response_builder, nesting, dispatcher)
-        index = T.must(@global_state).index
-        Hover.new(@client, response_builder, nesting, index, dispatcher)
+        Hover.new(@client, response_builder, nesting, T.must(@global_state), dispatcher)
       end
 
       sig do

@@ -25,21 +25,21 @@ module RubyLsp
           client: RunnerClient,
           response_builder: ResponseBuilders::Hover,
           nesting: T::Array[String],
-          index: RubyIndexer::Index,
+          global_state: GlobalState,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, response_builder, nesting, index, dispatcher)
+      def initialize(client, response_builder, nesting, global_state, dispatcher)
         @client = client
         @response_builder = response_builder
         @nesting = nesting
-        @index = index
+        @global_state = global_state
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
       end
 
       sig { params(node: Prism::ConstantPathNode).void }
       def on_constant_path_node_enter(node)
-        entries = @index.resolve(node.slice, @nesting)
+        entries = @global_state.index.resolve(node.slice, @nesting)
         return unless entries
 
         name = T.must(entries.first).name
@@ -51,7 +51,7 @@ module RubyLsp
 
       sig { params(node: Prism::ConstantReadNode).void }
       def on_constant_read_node_enter(node)
-        entries = @index.resolve(node.name.to_s, @nesting)
+        entries = @global_state.index.resolve(node.name.to_s, @nesting)
         return unless entries
 
         generate_column_content(T.must(entries.first).name)
