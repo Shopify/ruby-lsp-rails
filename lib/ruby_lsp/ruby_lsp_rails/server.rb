@@ -91,6 +91,7 @@ module RubyLsp
         info = {
           result: {
             columns: const.columns.map { |column| [column.name, column.type] },
+            primary_keys: Array(const.primary_key),
           },
         }
 

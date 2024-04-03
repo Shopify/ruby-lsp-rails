@@ -30,6 +30,7 @@ module RubyLsp
             ["created_at", "datetime"],
             ["updated_at", "datetime"],
           ],
+          primary_keys: ["id"],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -50,7 +51,7 @@ module RubyLsp
           [Schema](file://#{dummy_root}/db/schema.rb)
 
 
-          **id**: integer
+          **id**: integer (PK)
 
           **first_name**: string
 
@@ -75,6 +76,7 @@ module RubyLsp
             ["created_at", "datetime"],
             ["updated_at", "datetime"],
           ],
+          primary_keys: ["id"],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -91,7 +93,7 @@ module RubyLsp
         assert_equal(<<~CONTENT.chomp, response.contents.value)
           [Schema](file://#{dummy_root}/db/schema.rb)
 
-          **id**: integer
+          **id**: integer (PK)
 
           **first_name**: string
 
@@ -105,10 +107,54 @@ module RubyLsp
         CONTENT
       end
 
+      test "returns column information for models with composite primary keys" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["order_id", "integer"],
+            ["product_id", "integer"],
+            ["note", "string"],
+            ["created_at", "datetime"],
+            ["updated_at", "datetime"],
+          ],
+          primary_keys: ["order_id", "product_id"],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class CompositePrimaryKey < ApplicationRecord
+          end
+
+          CompositePrimaryKey
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          CompositePrimaryKey
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
+          [Schema](file://#{dummy_root}/db/schema.rb)
+
+
+          **order_id**: integer (PK)
+
+          **product_id**: integer (PK)
+
+          **note**: string
+
+          **created_at**: datetime
+
+          **updated_at**: datetime
+        CONTENT
+      end
+
       test "handles `db/structure.sql` instead of `db/schema.rb`" do
         expected_response = {
           schema_file: "#{dummy_root}/db/structure.sql",
           columns: [],
+          primary_keys: [],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -130,6 +176,7 @@ module RubyLsp
         expected_response = {
           schema_file: nil,
           columns: [],
+          primary_keys: [],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
