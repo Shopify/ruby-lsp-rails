@@ -33,13 +33,13 @@ module RubyLsp
         @client = client
         @response_builder = response_builder
         @nesting = nesting
-        @global_state = global_state
+        @index = T.let(global_state.index, RubyIndexer::Index)
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
       end
 
       sig { params(node: Prism::ConstantPathNode).void }
       def on_constant_path_node_enter(node)
-        entries = @global_state.index.resolve(node.slice, @nesting)
+        entries = @index.resolve(node.slice, @nesting)
         return unless entries
 
         name = T.must(entries.first).name
@@ -51,7 +51,7 @@ module RubyLsp
 
       sig { params(node: Prism::ConstantReadNode).void }
       def on_constant_read_node_enter(node)
-        entries = @global_state.index.resolve(node.name.to_s, @nesting)
+        entries = @index.resolve(node.name.to_s, @nesting)
         return unless entries
 
         generate_column_content(T.must(entries.first).name)
