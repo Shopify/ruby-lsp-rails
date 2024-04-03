@@ -30,6 +30,9 @@ module RubyLsp
 
       class InitializationError < StandardError; end
       class IncompleteMessageError < StandardError; end
+      class EmptyMessageError < StandardError; end
+
+      MAX_RETRIES = 5
 
       extend T::Sig
 
@@ -58,9 +61,18 @@ module RubyLsp
         @stdin.binmode # for Windows compatibility
         @stdout.binmode # for Windows compatibility
 
-        $stderr.puts("Ruby LSP Rails booting server") unless ENV["RAILS_ENV"] == "test"
-        read_response
-        $stderr.puts("Finished booting Ruby LSP Rails server") unless ENV["RAILS_ENV"] == "test"
+        $stderr.puts("Ruby LSP Rails booting server")
+        count = 0
+
+        begin
+          count += 1
+          read_response
+        rescue EmptyMessageError
+          $stderr.puts("Ruby LSP Rails is retrying initialize (#{count})")
+          retry if count < MAX_RETRIES
+        end
+
+        $stderr.puts("Finished booting Ruby LSP Rails server")
 
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
@@ -141,7 +153,10 @@ module RubyLsp
         headers = @stdout.gets("\r\n\r\n")
         raise IncompleteMessageError unless headers
 
-        raw_response = @stdout.read(headers[/Content-Length: (\d+)/i, 1].to_i)
+        content_length = headers[/Content-Length: (\d+)/i, 1].to_i
+        raise EmptyMessageError if content_length.zero?
+
+        raw_response = @stdout.read(content_length)
         response = JSON.parse(T.must(raw_response), symbolize_names: true)
 
         if response[:error]

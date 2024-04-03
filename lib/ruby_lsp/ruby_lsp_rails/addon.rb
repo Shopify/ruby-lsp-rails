@@ -29,7 +29,7 @@ module RubyLsp
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = T.let(global_state, T.nilable(RubyLsp::GlobalState))
-        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}") unless ENV["RAILS_ENV"] == "test"
+        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new { @client = RunnerClient.create_client }
       end
@@ -59,8 +59,7 @@ module RubyLsp
         ).void
       end
       def create_hover_listener(response_builder, nesting, dispatcher)
-        index = T.must(@global_state).index
-        Hover.new(@client, response_builder, nesting, index, dispatcher)
+        Hover.new(@client, response_builder, nesting, T.must(@global_state), dispatcher)
       end
 
       sig do
