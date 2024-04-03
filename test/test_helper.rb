@@ -3,7 +3,6 @@
 
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
-ENV["RUBY_LSP_ENV"] = "test"
 
 require_relative "../test/dummy/config/environment"
 ActiveRecord::Migrator.migrations_paths = [File.expand_path("../test/dummy/db/migrate", __dir__)]
