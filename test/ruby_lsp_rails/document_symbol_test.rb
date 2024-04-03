@@ -6,14 +6,6 @@ require "test_helper"
 module RubyLsp
   module Rails
     class DocumentSymbolTest < ActiveSupport::TestCase
-      setup do
-        @message_queue = Thread::Queue.new
-      end
-
-      def teardown
-        T.must(@message_queue).close
-      end
-
       test "recognizes Rails Active Support test cases" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class Test < ActiveSupport::TestCase

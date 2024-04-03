@@ -6,14 +6,6 @@ require "test_helper"
 module RubyLsp
   module Rails
     class DefinitionTest < ActiveSupport::TestCase
-      setup do
-        @message_queue = Thread::Queue.new
-      end
-
-      def teardown
-        T.must(@message_queue).close
-      end
-
       test "recognizes model callback with multiple symbol arguments" do
         response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 10 })
           # typed: false

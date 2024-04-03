@@ -7,16 +7,10 @@ module RubyLsp
   module Rails
     class HoverTest < ActiveSupport::TestCase
       setup do
-        @message_queue = Thread::Queue.new
-
         # Build the Rails documents index ahead of time
         capture_io do
           Support::RailsDocumentClient.send(:search_index)
         end
-      end
-
-      teardown do
-        @message_queue.close
       end
 
       test "hook returns model column information" do
