@@ -14,6 +14,19 @@ module RubyLsp
         T.must(@message_queue).close
       end
 
+      test "does not create code lenses if rails is not the test library" do
+        RubyLsp::GlobalState.any_instance.stubs(:test_library).returns("rspec")
+        response = generate_code_lens_for_source(<<~RUBY)
+          RSpec.describe "an example" do
+            it "an example" do
+              # test body
+            end
+          end
+        RUBY
+
+        assert_empty(response)
+      end
+
       test "recognizes Rails Active Support test cases" do
         response = generate_code_lens_for_source(<<~RUBY)
           class Test < ActiveSupport::TestCase
