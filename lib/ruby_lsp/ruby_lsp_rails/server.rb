@@ -109,7 +109,9 @@ module RubyLsp
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def routes
         {
-          result: ::Rails.application.routes.named_routes.helper_names,
+          result: {
+            routes: ::Rails.application.routes.named_routes.helper_names,
+          },
         }
       end
     end

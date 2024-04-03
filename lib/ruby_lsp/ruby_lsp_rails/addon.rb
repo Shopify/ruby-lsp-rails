@@ -94,7 +94,7 @@ module RubyLsp
         ).returns(Object)
       end
       def create_completion_listener(response_builder, nesting, dispatcher, uri)
-        Completion.new(@client, response_builder, nesting, dispatcher, uri)
+        Completion.new(@client, response_builder, dispatcher)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }

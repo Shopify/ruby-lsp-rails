@@ -104,11 +104,10 @@ module RubyLsp
         nil
       end
 
-      sig { returns(T::Hash[Symbol, T.untyped]) }
+      sig { returns(T::Array[String]) }
       def routes
         result = make_request("routes")
-        $stderr.puts("Ruby LSP Rails got routes information: #{result}")
-        { result: result }
+        T.must(result).fetch(:routes)
       end
 
       sig { void }

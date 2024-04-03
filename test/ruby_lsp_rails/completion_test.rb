@@ -22,26 +22,30 @@ module RubyLsp
             redirect_to u
           end
         RUBY
-
-        assert_equal(2, response.size)
-
-        # assert_equal("file:///fake.rb", response[0].uri)
-        # assert_equal(5, response[0].range.start.line)
-        # assert_equal(2, response[0].range.start.character)
-        # assert_equal(5, response[0].range.end.line)
-        # assert_equal(14, response[0].range.end.character)
-
-        # assert_equal("file:///fake.rb", response[1].uri)
-        # assert_equal(6, response[1].range.start.line)
-        # assert_equal(2, response[1].range.start.character)
-        # assert_equal(6, response[1].range.end.line)
-        # assert_equal(14, response[1].range.end.character)
+        assert_equal(
+          [
+            "edit_user_path",
+            "edit_user_url",
+            "new_user_path",
+            "new_user_url",
+            "user_path",
+            "user_url",
+            "users_path",
+            "users_url",
+          ],
+          response.map(&:label).sort,
+        )
       end
 
       private
 
       def generate_completions_for_source(source, position)
         with_server(source, stub_no_typechecker: true) do |server, uri|
+          # We need to wait for Rails to boot
+          while RubyLsp::Addon.addons.first.instance_variable_get(:@client).instance_of?(RubyLsp::Rails::NullClient)
+            Thread.pass
+          end
+
           server.process_message(
             id: 1,
             method: "textDocument/completion",

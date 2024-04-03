@@ -14,17 +14,12 @@ module RubyLsp
         params(
           client: RunnerClient,
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
-          nesting: T::Array[String],
           dispatcher: Prism::Dispatcher,
-          uri: URI::Generic,
         ).void
       end
-      def initialize(client, response_builder, nesting, dispatcher, uri)
+      def initialize(client, response_builder, dispatcher)
         @client = client
         @response_builder = response_builder
-        @nesting = nesting
-        @uri = uri
-        $stderr.puts "Completion initialized"
 
         dispatcher.register(self, :on_call_node_enter)
       end
@@ -34,9 +29,11 @@ module RubyLsp
       # TODO: why on_call_node_enter?
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
-        @client.routes.fetch(:result).each do |helper_name|
-          label_details = Interface::CompletionItemLabelDetails.new(description: "Route")
-          @response_builder << Interface::CompletionItem.new(label: helper_name, label_details: label_details)
+        @client.routes.each do |helper_name|
+          # label_details = Interface::CompletionItemLabelDetails.new(description: "Route")
+          @response_builder << Interface::CompletionItem.new(
+            label: helper_name, detail: "Route", kind: Constant::CompletionItemKind::METHOD,
+          )
         end
       end
     end
