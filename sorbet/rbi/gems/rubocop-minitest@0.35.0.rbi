@@ -273,11 +273,16 @@ RuboCop::Cop::Minitest::AssertInstanceOf::RESTRICT_ON_SEND = T.let(T.unsafe(nil)
 #   assert(object.kind_of?(Class))
 #   assert(object.kind_of?(Class), 'message')
 #
+#   # bad
+#   # `is_a?` is an alias for `kind_of?`
+#   assert(object.is_a?(Class))
+#   assert(object.is_a?(Class), 'message')
+#
 #   # good
 #   assert_kind_of(Class, object)
 #   assert_kind_of(Class, object, 'message')
 #
-# source://rubocop-minitest/lib/rubocop/cop/minitest/assert_kind_of.rb#18
+# source://rubocop-minitest/lib/rubocop/cop/minitest/assert_kind_of.rb#23
 class RuboCop::Cop::Minitest::AssertKindOf < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::ArgumentRangeHelper
@@ -935,6 +940,40 @@ end
 
 # source://rubocop-minitest/lib/rubocop/cop/minitest/empty_line_before_assertion_methods.rb#24
 RuboCop::Cop::Minitest::EmptyLineBeforeAssertionMethods::MSG = T.let(T.unsafe(nil), String)
+
+# Enforces tests are not focused.
+#
+# @example
+#   # bad
+#   focus test 'foo' do
+#   end
+#
+#   # bad
+#   focus
+#   test 'foo' do
+#   end
+#
+#   # good
+#   test 'foo' do
+#   end
+#
+# source://rubocop-minitest/lib/rubocop/cop/minitest/focus.rb#22
+class RuboCop::Cop::Minitest::Focus < ::RuboCop::Cop::Base
+  include ::RuboCop::Cop::RangeHelp
+  extend ::RuboCop::Cop::AutoCorrector
+
+  # source://rubocop-minitest/lib/rubocop/cop/minitest/focus.rb#29
+  def focused?(param0 = T.unsafe(nil)); end
+
+  # source://rubocop-minitest/lib/rubocop/cop/minitest/focus.rb#33
+  def on_send(node); end
+end
+
+# source://rubocop-minitest/lib/rubocop/cop/minitest/focus.rb#26
+RuboCop::Cop::Minitest::Focus::MSG = T.let(T.unsafe(nil), String)
+
+# source://rubocop-minitest/lib/rubocop/cop/minitest/focus.rb#27
+RuboCop::Cop::Minitest::Focus::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
 # Checks for deprecated global expectations
 # and autocorrects them to use expect format.
@@ -1743,11 +1782,16 @@ RuboCop::Cop::Minitest::RefuteInstanceOf::RESTRICT_ON_SEND = T.let(T.unsafe(nil)
 #   refute(object.kind_of?(Class))
 #   refute(object.kind_of?(Class), 'message')
 #
+#   # bad
+#   # `is_a?` is an alias for `kind_of?`
+#   refute(object.is_of?(Class))
+#   refute(object.is_of?(Class), 'message')
+#
 #   # good
 #   refute_kind_of(Class, object)
 #   refute_kind_of(Class, object, 'message')
 #
-# source://rubocop-minitest/lib/rubocop/cop/minitest/refute_kind_of.rb#18
+# source://rubocop-minitest/lib/rubocop/cop/minitest/refute_kind_of.rb#23
 class RuboCop::Cop::Minitest::RefuteKindOf < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   include ::RuboCop::Cop::ArgumentRangeHelper
