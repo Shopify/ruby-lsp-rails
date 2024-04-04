@@ -6,12 +6,17 @@ require "test_helper"
 module RubyLsp
   module Rails
     class CodeLensTest < ActiveSupport::TestCase
-      setup do
-        @message_queue = Thread::Queue.new
-      end
+      test "does not create code lenses if rails is not the test library" do
+        RubyLsp::GlobalState.any_instance.stubs(:test_library).returns("rspec")
+        response = generate_code_lens_for_source(<<~RUBY)
+          RSpec.describe "an example" do
+            it "an example" do
+              # test body
+            end
+          end
+        RUBY
 
-      def teardown
-        T.must(@message_queue).close
+        assert_empty(response)
       end
 
       test "recognizes Rails Active Support test cases" do

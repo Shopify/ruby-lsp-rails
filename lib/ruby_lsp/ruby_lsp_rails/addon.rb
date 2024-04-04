@@ -48,6 +48,8 @@ module RubyLsp
         ).void
       end
       def create_code_lens_listener(response_builder, uri, dispatcher)
+        return unless T.must(@global_state).test_library == "rails"
+
         CodeLens.new(response_builder, uri, dispatcher)
       end
 

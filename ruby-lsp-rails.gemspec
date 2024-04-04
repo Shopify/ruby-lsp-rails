@@ -20,12 +20,9 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.0.0"
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    Dir["{app,config,db,lib}/**/*", "LICENSE.txt", "Rakefile", "README.md"]
+    Dir["lib/**/*", "LICENSE.txt", "Rakefile", "README.md"]
   end
 
-  spec.add_dependency("actionpack", ">= 6.0")
-  spec.add_dependency("activerecord", ">= 6.0")
-  spec.add_dependency("railties", ">= 6.0")
   spec.add_dependency("ruby-lsp", ">= 0.16.0", "< 0.17.0")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9897")
 end
