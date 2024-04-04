@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.3.3)
+    ruby-lsp-rails (0.3.4)
       actionpack (>= 6.0)
       activerecord (>= 6.0)
       railties (>= 6.0)
