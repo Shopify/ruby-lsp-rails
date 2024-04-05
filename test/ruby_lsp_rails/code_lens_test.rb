@@ -205,6 +205,60 @@ module RubyLsp
         assert_empty(data)
       end
 
+      test "recognizes nested class structure correctly" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          module Foo
+            class Bar
+              class Test < ActiveSupport::TestCase
+                test "an example" do
+                  # test body
+                end
+              end
+            end
+
+            class AnotherTest < ActiveSupport::TestCase
+              test "an example" do
+                # test body
+              end
+            end
+          end
+        RUBY
+
+        data = response.map(&:data)
+
+        # Code lenses for `Test`
+        explorer, terminal, debug = data.shift(3)
+        assert_nil(explorer[:group_id])
+        assert_nil(terminal[:group_id])
+        assert_nil(debug[:group_id])
+        assert_equal(1, explorer[:id])
+        assert_equal(1, terminal[:id])
+        assert_equal(1, debug[:id])
+
+        # Code lenses for `an example`
+        explorer, terminal, debug = data.shift(3)
+        assert_equal(1, explorer[:group_id])
+        assert_equal(1, terminal[:group_id])
+        assert_equal(1, debug[:group_id])
+
+        # Code lenses for `AnotherTest`
+        explorer, terminal, debug = data.shift(3)
+        assert_nil(explorer[:group_id])
+        assert_nil(terminal[:group_id])
+        assert_nil(debug[:group_id])
+        assert_equal(2, explorer[:id])
+        assert_equal(2, terminal[:id])
+        assert_equal(2, debug[:id])
+
+        # Code lenses for `an example`
+        explorer, terminal, debug = data.shift(3)
+        assert_equal(2, explorer[:group_id])
+        assert_equal(2, terminal[:group_id])
+        assert_equal(2, debug[:group_id])
+
+        assert_empty(data)
+      end
+
       private
 
       def generate_code_lens_for_source(source)
