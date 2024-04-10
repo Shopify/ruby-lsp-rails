@@ -83,7 +83,8 @@ module RubyLsp
 
         @response_builder.push(
           model[:columns].map do |name, type|
-            "**#{name}**: #{type}\n"
+            primary_key_suffix = " (PK)" if model[:primary_keys].include?(name)
+            "**#{name}**: #{type}#{primary_key_suffix}\n"
           end.join("\n"),
           category: :documentation,
         )
