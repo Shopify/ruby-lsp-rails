@@ -88,15 +88,17 @@ module RubyLsp
         if class_name.end_with?("Test")
           command = "#{BASE_COMMAND} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
+          @group_id_stack.push(@group_id)
+          @group_id += 1
         end
-
-        @group_id_stack.push(@group_id)
-        @group_id += 1
       end
 
       sig { params(node: Prism::ClassNode).void }
       def on_class_node_leave(node)
-        @group_id_stack.pop
+        class_name = node.constant_path.slice
+        if class_name.end_with?("Test")
+          @group_id_stack.pop
+        end
       end
 
       private
