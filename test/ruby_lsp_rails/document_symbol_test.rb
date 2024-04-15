@@ -155,6 +155,19 @@ module RubyLsp
         assert_equal("back to the same level", response[0].children[2].name)
       end
 
+      test "correctly handles attr_readonly" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            attr_readonly :foo
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(1, response[0].children.size)
+        assert_equal("attr_readonly :foo", response[0].children[0].name)
+      end
+
       test "correctly handles model callbacks with multiple string arguments" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
