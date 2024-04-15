@@ -24,6 +24,19 @@ class ServerTest < ActiveSupport::TestCase
     assert_nil(response.fetch(:result))
   end
 
+  test "doesn't fail if the class overrides `<`" do
+    class TestClassWithOverwrittenLessThan
+      class << self
+        def <(other)
+          raise
+        end
+      end
+    end
+
+    response = @server.execute("model", { name: "TestClassWithOverwrittenLessThan" })
+    assert_nil(response.fetch(:result))
+  end
+
   test "handles older Rails version which don't have `schema_dump_path`" do
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :old_schema_dump_path, :schema_dump_path)
     ActiveRecord::Tasks::DatabaseTasks.undef_method(:schema_dump_path)
