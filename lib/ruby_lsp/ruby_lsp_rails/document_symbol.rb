@@ -44,7 +44,8 @@ module RubyLsp
         case message
         when *Support::Callbacks::ALL, "validate"
           handle_all_arg_types(node, T.must(message))
-        when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many", "has_and_belongs_to_many"
+        when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many",
+          "has_and_belongs_to_many", "attr_readonly"
           handle_symbol_and_string_arg_types(node, T.must(message))
         when "validates_with"
           handle_class_arg_types(node, T.must(message))
