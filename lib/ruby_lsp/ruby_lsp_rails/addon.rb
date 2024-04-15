@@ -8,6 +8,7 @@ require_relative "support/callbacks"
 require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
+require_relative "completion"
 require_relative "document_symbol"
 require_relative "definition"
 
@@ -84,6 +85,18 @@ module RubyLsp
       def create_definition_listener(response_builder, uri, nesting, dispatcher)
         index = T.must(@global_state).index
         Definition.new(response_builder, nesting, index, dispatcher)
+      end
+
+      sig do
+        override.params(
+          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
+          nesting: T::Array[String],
+          dispatcher: Prism::Dispatcher,
+          uri: URI::Generic,
+        ).returns(Object)
+      end
+      def create_completion_listener(response_builder, nesting, dispatcher, uri)
+        Completion.new(@client, response_builder, dispatcher, uri)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }

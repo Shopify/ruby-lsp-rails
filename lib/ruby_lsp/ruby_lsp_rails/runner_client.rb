@@ -97,11 +97,17 @@ module RubyLsp
 
       sig { void }
       def trigger_reload
-        $stderr.puts("Reloading Rails application")
+        $stderr.puts("Reloading Rails application") unless ENV["RAILS_ENV"] == "test"
         send_notification("reload")
       rescue IncompleteMessageError
         $stderr.puts("Ruby LSP Rails failed to trigger reload")
         nil
+      end
+
+      sig { returns(T::Array[String]) }
+      def routes
+        result = make_request("routes")
+        T.must(result).fetch(:routes)
       end
 
       sig { void }
