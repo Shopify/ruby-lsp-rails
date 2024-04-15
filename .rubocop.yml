@@ -26,6 +26,7 @@ Sorbet/TrueSigil:
   Exclude:
     - "**/*.rake"
     - "lib/**/*.rb"
+    - "test/dummy/**/*.rb"
 
 Sorbet/StrictSigil:
   Enabled: true

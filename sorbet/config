@@ -2,4 +2,4 @@
 .
 --ignore=tmp/
 --ignore=vendor/
---ignore=test/dummy/db
+--ignore=test/dummy
