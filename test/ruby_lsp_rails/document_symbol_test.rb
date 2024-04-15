@@ -168,6 +168,20 @@ module RubyLsp
         assert_equal("attr_readonly :foo", response[0].children[0].name)
       end
 
+      test "correctly handles scope" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            scope :foo, ->{ where(a: 1).order(:b) }
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("scope :foo", response[0].children[0].name)
+        assert_equal("scope <anonymous>", response[0].children[1].name)
+      end
+
       test "correctly handles model callbacks with multiple string arguments" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord

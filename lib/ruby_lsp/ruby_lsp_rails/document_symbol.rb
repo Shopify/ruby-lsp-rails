@@ -42,7 +42,7 @@ module RubyLsp
 
         message = node.message
         case message
-        when *Support::Callbacks::ALL, "validate"
+        when *Support::Callbacks::ALL, "validate", "scope"
           handle_all_arg_types(node, T.must(message))
         when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many",
           "has_and_belongs_to_many", "attr_readonly"
