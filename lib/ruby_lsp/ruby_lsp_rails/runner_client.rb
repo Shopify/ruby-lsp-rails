@@ -48,7 +48,14 @@ module RubyLsp
           # If we can't set the session ID, continue
         end
 
-        stdin, stdout, stderr, wait_thread = Open3.popen3(
+        env = {}
+        if ENV["BUNDLE_GEMFILE"]
+          env = { "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"] }
+        end
+
+        # TODO: fix signature
+        stdin, stdout, stderr, wait_thread = T.unsafe(Open3).popen3(
+          env,
           "bin/rails",
           "runner",
           "#{__dir__}/server.rb",
