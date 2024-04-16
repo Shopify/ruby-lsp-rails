@@ -5183,9 +5183,6 @@ RuboCop::AST::NodePattern::Sets::SET_CLASS_MODULE_STRUCT = T.let(T.unsafe(nil), 
 RuboCop::AST::NodePattern::Sets::SET_CLONE_DUP_FREEZE = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
-RuboCop::AST::NodePattern::Sets::SET_CONSTANTIZE_CONSTANTS_CONST_GET = T.let(T.unsafe(nil), Set)
-
-# source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
 RuboCop::AST::NodePattern::Sets::SET_COUNT_LENGTH_SIZE = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
@@ -5240,6 +5237,9 @@ RuboCop::AST::NodePattern::Sets::SET_GETHOSTBYADDR_GETHOSTBYNAME = T.let(T.unsaf
 RuboCop::AST::NodePattern::Sets::SET_GSUB_GSUB = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
+RuboCop::AST::NodePattern::Sets::SET_IF_UNLESS = T.let(T.unsafe(nil), Set)
+
+# source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
 RuboCop::AST::NodePattern::Sets::SET_INCLUDE_EXTEND_PREPEND = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
@@ -5253,6 +5253,9 @@ RuboCop::AST::NodePattern::Sets::SET_KEYS_VALUES = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
 RuboCop::AST::NodePattern::Sets::SET_KEY_HAS_KEY_FETCH_ETC = T.let(T.unsafe(nil), Set)
+
+# source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
+RuboCop::AST::NodePattern::Sets::SET_LAMBDA_PROC = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
 RuboCop::AST::NodePattern::Sets::SET_LAST_FIRST = T.let(T.unsafe(nil), Set)
@@ -5388,6 +5391,9 @@ RuboCop::AST::NodePattern::Sets::SET__FETCH = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
 RuboCop::AST::NodePattern::Sets::SET__GLOB = T.let(T.unsafe(nil), Set)
+
+# source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
+RuboCop::AST::NodePattern::Sets::SET__PUSH_APPEND = T.let(T.unsafe(nil), Set)
 
 # source://rubocop-ast/lib/rubocop/ast/node_pattern/sets.rb#10
 RuboCop::AST::NodePattern::Sets::SET___ = T.let(T.unsafe(nil), Set)
