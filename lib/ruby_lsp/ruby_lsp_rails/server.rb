@@ -82,7 +82,7 @@ module RubyLsp
       sig { params(model_name: String).returns(T::Hash[Symbol, T.untyped]) }
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
-        unless const && defined?(ActiveRecord) && const < ActiveRecord::Base && !const.abstract_class?
+        unless active_record_model?(const)
           return {
             result: nil,
           }
@@ -103,6 +103,16 @@ module RubyLsp
         info
       rescue => e
         { error: e.full_message(highlight: false) }
+      end
+
+      sig { params(const: T.untyped).returns(T::Boolean) }
+      def active_record_model?(const)
+        !!(
+          const &&
+            defined?(ActiveRecord) &&
+            ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
+          !const.abstract_class?
+        )
       end
     end
   end
