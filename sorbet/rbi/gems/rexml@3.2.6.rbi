@@ -3562,6 +3562,112 @@ class REXML::Instruction < ::REXML::Child
   def write(writer, indent = T.unsafe(nil), transitive = T.unsafe(nil), ie_hack = T.unsafe(nil)); end
 end
 
+# source://rexml/lib/rexml/light/node.rb#5
+module REXML::Light; end
+
+# Represents a tagged XML element.  Elements are characterized by
+# having children, attributes, and names, and can themselves be
+# children.
+#
+# source://rexml/lib/rexml/light/node.rb#9
+class REXML::Light::Node
+  # Create a new element.
+  #
+  # @return [Node] a new instance of Node
+  #
+  # source://rexml/lib/rexml/light/node.rb#13
+  def initialize(node = T.unsafe(nil)); end
+
+  # Append a child to this element, optionally under a provided namespace.
+  # The namespace argument is ignored if the element argument is an Element
+  # object.  Otherwise, the element argument is a string, the namespace (if
+  # provided) is the namespace the element is created in.
+  #
+  # source://rexml/lib/rexml/light/node.rb#114
+  def <<(element); end
+
+  # source://rexml/lib/rexml/light/node.rb#90
+  def =~(path); end
+
+  # source://rexml/lib/rexml/light/node.rb#78
+  def [](reference, ns = T.unsafe(nil)); end
+
+  # Doesn't handle namespaces yet
+  #
+  # source://rexml/lib/rexml/light/node.rb#95
+  def []=(reference, ns, value = T.unsafe(nil)); end
+
+  # source://rexml/lib/rexml/light/node.rb#143
+  def children; end
+
+  # source://rexml/lib/rexml/light/node.rb#36
+  def each; end
+
+  # @return [Boolean]
+  #
+  # source://rexml/lib/rexml/light/node.rb#139
+  def has_name?(name, namespace = T.unsafe(nil)); end
+
+  # source://rexml/lib/rexml/light/node.rb#54
+  def local_name; end
+
+  # source://rexml/lib/rexml/light/node.rb#59
+  def local_name=(name_str); end
+
+  # source://rexml/lib/rexml/light/node.rb#40
+  def name; end
+
+  # source://rexml/lib/rexml/light/node.rb#44
+  def name=(name_str, ns = T.unsafe(nil)); end
+
+  # source://rexml/lib/rexml/light/node.rb#67
+  def namespace(prefix = T.unsafe(nil)); end
+
+  # source://rexml/lib/rexml/light/node.rb#71
+  def namespace=(namespace); end
+
+  # source://rexml/lib/rexml/light/node.rb#125
+  def node_type; end
+
+  # source://rexml/lib/rexml/light/node.rb#147
+  def parent; end
+
+  # source://rexml/lib/rexml/light/node.rb#50
+  def parent=(node); end
+
+  # source://rexml/lib/rexml/light/node.rb#63
+  def prefix(namespace = T.unsafe(nil)); end
+
+  # source://rexml/lib/rexml/light/node.rb#134
+  def root; end
+
+  # source://rexml/lib/rexml/light/node.rb#28
+  def size; end
+
+  # source://rexml/lib/rexml/light/node.rb#129
+  def text=(foo); end
+
+  # source://rexml/lib/rexml/light/node.rb#151
+  def to_s; end
+
+  private
+
+  # source://rexml/lib/rexml/light/node.rb#164
+  def namespace_of(node, prefix = T.unsafe(nil)); end
+
+  # source://rexml/lib/rexml/light/node.rb#157
+  def namesplit; end
+
+  # source://rexml/lib/rexml/light/node.rb#176
+  def prefix_of(node, namespace = T.unsafe(nil)); end
+end
+
+# source://rexml/lib/rexml/light/node.rb#10
+REXML::Light::Node::NAMESPLIT = T.let(T.unsafe(nil), Regexp)
+
+# source://rexml/lib/rexml/light/node.rb#11
+REXML::Light::Node::PARENTS = T.let(T.unsafe(nil), Array)
+
 # Adds named attributes to an object.
 #
 # source://rexml/lib/rexml/namespace.rb#7

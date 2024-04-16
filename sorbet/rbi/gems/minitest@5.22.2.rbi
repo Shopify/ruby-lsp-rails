@@ -1341,6 +1341,18 @@ class Minitest::Test < ::Minitest::Runnable
   include ::Mocha::API
   extend ::Minitest::Guard
 
+  # source://webmock/3.23.0lib/webmock/minitest.rb#29
+  def assert_request_not_requested(*args); end
+
+  # source://webmock/3.23.0lib/webmock/minitest.rb#29
+  def assert_request_not_requested_with_assertions_count(*args); end
+
+  # source://webmock/3.23.0lib/webmock/minitest.rb#29
+  def assert_request_requested(*args); end
+
+  # source://webmock/3.23.0lib/webmock/minitest.rb#29
+  def assert_request_requested_with_assertions_count(*args); end
+
   # LifecycleHooks
   #
   # source://minitest/lib/minitest/test.rb#190
@@ -1363,8 +1375,25 @@ class Minitest::Test < ::Minitest::Runnable
   # source://minitest/lib/minitest/test.rb#200
   def sanitize_exception(e); end
 
+  # source://webmock/3.23.0lib/webmock/minitest.rb#21
+  def teardown; end
+
+  # source://webmock/3.23.0lib/webmock/minitest.rb#21
+  def teardown_with_webmock; end
+
+  # source://minitest/lib/minitest/test.rb#178
+  def teardown_without_webmock; end
+
   # source://minitest/lib/minitest/test.rb#232
   def with_info_handler(&block); end
+
+  private
+
+  # source://webmock/3.23.0lib/webmock/api.rb#95
+  def assert_request_not_requested_without_assertions_count(request, options = T.unsafe(nil)); end
+
+  # source://webmock/3.23.0lib/webmock/api.rb#86
+  def assert_request_requested_without_assertions_count(request, options = T.unsafe(nil)); end
 
   class << self
     # Call this at the top of your tests when you absolutely
