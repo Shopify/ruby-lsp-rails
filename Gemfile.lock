@@ -299,7 +299,7 @@ DEPENDENCIES
   rubocop-sorbet (~> 0.8)
   ruby-lsp-rails!
   sorbet-static-and-runtime
-  sqlite3
+  sqlite3 (< 2)
   tapioca (~> 0.13)
   webmock
 
