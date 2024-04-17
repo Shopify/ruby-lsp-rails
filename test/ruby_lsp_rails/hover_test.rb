@@ -12,7 +12,7 @@ module RubyLsp
           .with(
             headers: {
               "Host" => "api.rubyonrails.org",
-              "User-Agent" => "Ruby",
+              "User-Agent" => %r{^ruby-lsp-rails\/.*$},
             },
           )
           .to_return(status: 200, body: body, headers: {})
