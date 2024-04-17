@@ -35,6 +35,8 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
+        return if @namespace_stack.empty?
+
         content = extract_test_case_name(node)
 
         if content
@@ -44,8 +46,6 @@ module RubyLsp
             range: range_from_node(node),
           )
         end
-
-        return if @namespace_stack.empty?
 
         receiver = node.receiver
         return if receiver && !receiver.is_a?(Prism::SelfNode)
