@@ -68,7 +68,10 @@ module RubyLsp
 
             $stderr.puts("Fetching search index for Rails documentation")
 
-            response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/v#{RAILTIES_VERSION}/js/search_index.js"))
+            response = Net::HTTP.get_response(
+              URI("#{RAILS_DOC_HOST}/v#{RAILTIES_VERSION}/js/search_index.js"),
+              { "User-Agent" => "ruby-lsp-rails/#{RubyLsp::Rails::VERSION}" },
+            )
 
             body = case response
             when Net::HTTPSuccess
