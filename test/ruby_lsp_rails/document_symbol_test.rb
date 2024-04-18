@@ -168,6 +168,52 @@ module RubyLsp
         assert_equal("attr_readonly :foo", response[0].children[0].name)
       end
 
+      test "correctly handles scope in a class" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            scope :bar, ->{ where(b: 2).order(:c) }
+            scope :foo, ->{ where(a: 1).order(:b) }
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("scope :bar", response[0].children[0].name)
+        assert_equal("scope :foo", response[0].children[1].name)
+      end
+
+      test "correctly handles scope in a concern" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          module Scopable
+            extend ActiveSupport::Concern
+
+            included do
+              scope :bar, ->{ where(b: 2).order(:c) }
+              scope :foo, ->{ where(a: 1).order(:b) }
+            end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("Scopable", response[0].name)
+        assert_equal(2, response[0].children.size)
+        assert_equal("scope :bar", response[0].children[0].name)
+        assert_equal("scope :foo", response[0].children[1].name)
+      end
+
+      test "ignores scope in a routes file" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          Rails.application.routes.draw do
+            scope '/admin' do
+              resources :users
+            end
+          end
+        RUBY
+
+        assert_equal(0, response.size)
+      end
+
       test "correctly handles model callbacks with multiple string arguments" do
         response = generate_document_symbols_for_source(<<~RUBY)
           class FooModel < ApplicationRecord
