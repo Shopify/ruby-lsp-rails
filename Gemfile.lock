@@ -249,9 +249,9 @@ GEM
       prism (>= 0.19.0)
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
-    sqlite3 (1.7.3-arm64-darwin)
-    sqlite3 (1.7.3-x86_64-darwin)
-    sqlite3 (1.7.3-x86_64-linux)
+    sqlite3 (2.0.1-arm64-darwin)
+    sqlite3 (2.0.1-x86_64-darwin)
+    sqlite3 (2.0.1-x86_64-linux-gnu)
     stringio (3.1.0)
     tapioca (0.13.3)
       bundler (>= 2.2.25)
@@ -299,7 +299,7 @@ DEPENDENCIES
   rubocop-sorbet (~> 0.8)
   ruby-lsp-rails!
   sorbet-static-and-runtime
-  sqlite3 (< 2)
+  sqlite3 (< 3)
   tapioca (~> 0.13)
   webmock
 
