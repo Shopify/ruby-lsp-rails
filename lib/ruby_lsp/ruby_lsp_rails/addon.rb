@@ -31,6 +31,7 @@ module RubyLsp
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new { @client = RunnerClient.create_client }
+        register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
       end
 
       sig { override.void }
@@ -93,6 +94,32 @@ module RubyLsp
            end
           @client.trigger_reload
         end
+      end
+
+      sig { params(global_state: GlobalState, message_queue: Thread::Queue).void }
+      def register_additional_file_watchers(global_state:, message_queue:)
+        return unless global_state.supports_watching_files
+
+        message_queue << Request.new(
+          id: "ruby-lsp-rails-file-watcher",
+          method: "client/registerCapability",
+          params: Interface::RegistrationParams.new(
+            registrations: [
+              Interface::Registration.new(
+                id: "workspace/didChangeWatchedFilesRails",
+                method: "workspace/didChangeWatchedFiles",
+                register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
+                  watchers: [
+                    Interface::FileSystemWatcher.new(
+                      glob_pattern: "**/*structure.sql",
+                      kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
       end
 
       sig { override.returns(String) }
