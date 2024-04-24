@@ -13,6 +13,7 @@ require "mocha/minitest"
 require "ruby_lsp/internal"
 require "ruby_lsp/test_helper"
 require "ruby_lsp/ruby_lsp_rails/addon"
+require "webmock/minitest"
 
 if defined?(DEBUGGER__)
   DEBUGGER__::CONFIG[:skip_path] =

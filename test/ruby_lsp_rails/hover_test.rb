@@ -7,6 +7,16 @@ module RubyLsp
   module Rails
     class HoverTest < ActiveSupport::TestCase
       setup do
+        body = File.read("#{__dir__}/../../test/fixtures/search_index.js")
+        stub_request(:get, %r{https://api\.rubyonrails\.org/v.*/js/search_index\.js})
+          .with(
+            headers: {
+              "Host" => "api.rubyonrails.org",
+              "User-Agent" => %r{^ruby-lsp-rails\/.*$},
+            },
+          )
+          .to_return(status: 200, body: body, headers: {})
+
         # Build the Rails documents index ahead of time
         capture_io do
           Support::RailsDocumentClient.send(:search_index)

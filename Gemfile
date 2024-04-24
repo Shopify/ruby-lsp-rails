@@ -7,7 +7,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gemspec
 
 gem "puma"
-gem "sqlite3"
+gem "sqlite3", "< 2"
 gem "debug", ">= 1.7.0"
 gem "mocha"
 gem "rubocop-shopify", "~> 2.15", require: false
@@ -19,3 +19,4 @@ gem "sorbet-static-and-runtime", platforms: :ruby
 gem "tapioca", "~> 0.13", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails"
+gem "webmock"

@@ -66,18 +66,25 @@ module RubyLsp
           private def build_search_index
             return unless RAILTIES_VERSION
 
-            $stderr.puts("Fetching Rails Documents...")
+            $stderr.puts("Fetching search index for Rails documentation")
 
-            response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/v#{RAILTIES_VERSION}/js/search_index.js"))
+            response = Net::HTTP.get_response(
+              URI("#{RAILS_DOC_HOST}/v#{RAILTIES_VERSION}/js/search_index.js"),
+              { "User-Agent" => "ruby-lsp-rails/#{RubyLsp::Rails::VERSION}" },
+            )
 
             body = case response
             when Net::HTTPSuccess
+              $stderr.puts("Finished fetching search index for Rails documentation")
               response.body
             when Net::HTTPRedirection
               # If the version's doc is not found, e.g. Rails main, it'll be redirected
               # In this case, we just fetch the latest doc
               response = Net::HTTP.get_response(URI("#{RAILS_DOC_HOST}/js/search_index.js"))
-              response.body if response.is_a?(Net::HTTPSuccess)
+              if response.is_a?(Net::HTTPSuccess)
+                $stderr.puts("Finished fetching search index for Rails documentation")
+                response.body
+              end
             else
               $stderr.puts("Response failed: #{response.inspect}")
               nil

@@ -21,12 +21,22 @@ module RubyLsp
       end
       def initialize(response_builder, dispatcher)
         @response_builder = response_builder
+        @namespace_stack = T.let([], T::Array[String])
 
-        dispatcher.register(self, :on_call_node_enter)
+        dispatcher.register(
+          self,
+          :on_call_node_enter,
+          :on_class_node_enter,
+          :on_class_node_leave,
+          :on_module_node_enter,
+          :on_module_node_leave,
+        )
       end
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
+        return if @namespace_stack.empty?
+
         content = extract_test_case_name(node)
 
         if content
@@ -45,14 +55,44 @@ module RubyLsp
         when *Support::Callbacks::ALL, "validate"
           handle_all_arg_types(node, T.must(message))
         when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many",
-          "has_and_belongs_to_many", "attr_readonly"
+          "has_and_belongs_to_many", "attr_readonly", "scope"
           handle_symbol_and_string_arg_types(node, T.must(message))
         when "validates_with"
           handle_class_arg_types(node, T.must(message))
         end
       end
 
+      sig { params(node: Prism::ClassNode).void }
+      def on_class_node_enter(node)
+        add_to_namespace_stack(node)
+      end
+
+      sig { params(node: Prism::ClassNode).void }
+      def on_class_node_leave(node)
+        remove_from_namespace_stack(node)
+      end
+
+      sig { params(node: Prism::ModuleNode).void }
+      def on_module_node_enter(node)
+        add_to_namespace_stack(node)
+      end
+
+      sig { params(node: Prism::ModuleNode).void }
+      def on_module_node_leave(node)
+        remove_from_namespace_stack(node)
+      end
+
       private
+
+      sig { params(node: T.any(Prism::ClassNode, Prism::ModuleNode)).void }
+      def add_to_namespace_stack(node)
+        @namespace_stack << node.constant_path.slice
+      end
+
+      sig { params(node: T.any(Prism::ClassNode, Prism::ModuleNode)).void }
+      def remove_from_namespace_stack(node)
+        @namespace_stack.delete(node.constant_path.slice)
+      end
 
       sig { params(node: Prism::CallNode, message: String).void }
       def handle_all_arg_types(node, message)
