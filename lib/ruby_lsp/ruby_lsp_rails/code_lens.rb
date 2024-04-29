@@ -42,8 +42,6 @@ module RubyLsp
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
 
-      BASE_COMMAND = "bin/rails test"
-
       sig do
         params(
           response_builder:  ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
@@ -67,7 +65,7 @@ module RubyLsp
         return unless content
 
         line_number = node.location.start_line
-        command = "#{BASE_COMMAND} #{@path}:#{line_number}"
+        command = "#{test_command} #{@path}:#{line_number}"
         add_test_code_lens(node, name: content, command: command, kind: :example)
       end
 
@@ -77,7 +75,7 @@ module RubyLsp
         method_name = node.name.to_s
         if method_name.start_with?("test_")
           line_number = node.location.start_line
-          command = "#{BASE_COMMAND} #{@path}:#{line_number}"
+          command = "#{test_command} #{@path}:#{line_number}"
           add_test_code_lens(node, name: method_name, command: command, kind: :example)
         end
       end
@@ -86,7 +84,7 @@ module RubyLsp
       def on_class_node_enter(node)
         class_name = node.constant_path.slice
         if class_name.end_with?("Test")
-          command = "#{BASE_COMMAND} #{@path}"
+          command = "#{test_command} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
           @group_id_stack.push(@group_id)
           @group_id += 1
@@ -102,6 +100,15 @@ module RubyLsp
       end
 
       private
+
+      sig { returns(String) }
+      def test_command
+        if Gem.win_platform?
+          "ruby bin/rails test"
+        else
+          "bin/rails test"
+        end
+      end
 
       sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)
