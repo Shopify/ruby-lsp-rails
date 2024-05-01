@@ -263,6 +263,16 @@ module RubyLsp
         assert_empty(data)
       end
 
+      test "prefixes the binstub call with `ruby` on Windows" do
+        Gem.stubs(:win_platform?).returns(true)
+        response = generate_code_lens_for_source(<<~RUBY)
+          class Test < ActiveSupport::TestCase
+          end
+        RUBY
+
+        assert_equal("ruby bin/rails test /fake.rb", response[0].command.arguments[2])
+      end
+
       private
 
       def generate_code_lens_for_source(source)

@@ -80,10 +80,52 @@ module RubyLsp
         assert_equal(14, response[1].range.end.character)
       end
 
+      test "provides the definition of a route" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 0 })
+          users_path
+        RUBY
+
+        assert_equal(1, response.size)
+        dummy_root = File.expand_path("../dummy", __dir__)
+        assert_equal("file://#{dummy_root}/config/routes.rb", response[0].uri)
+        assert_equal(3, response[0].range.start.line)
+        assert_equal(3, response[0].range.end.line)
+      end
+
+      test "handles incomplete routes" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 0 })
+          _path
+        RUBY
+
+        assert_empty(response)
+      end
+
+      test "provides the definition of a custom route" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 0 })
+          archive_users_path
+        RUBY
+
+        assert_equal(1, response.size)
+        dummy_root = File.expand_path("../dummy", __dir__)
+        assert_equal("file://#{dummy_root}/config/routes.rb", response[0].uri)
+        assert_equal(4, response[0].range.start.line)
+        assert_equal(4, response[0].range.end.line)
+      end
+
+      test "ignored non-existing routes" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 0 })
+          invalid_path
+        RUBY
+
+        assert_empty(response)
+      end
+
       private
 
       def generate_definitions_for_source(source, position)
         with_server(source) do |server, uri|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@client).is_a?(NullClient)
+
           server.process_message(
             id: 1,
             method: "textDocument/definition",

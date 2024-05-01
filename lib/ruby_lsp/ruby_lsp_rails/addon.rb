@@ -85,7 +85,7 @@ module RubyLsp
       end
       def create_definition_listener(response_builder, uri, nesting, dispatcher)
         index = T.must(@global_state).index
-        Definition.new(response_builder, nesting, index, dispatcher)
+        Definition.new(@client, response_builder, nesting, index, dispatcher)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }

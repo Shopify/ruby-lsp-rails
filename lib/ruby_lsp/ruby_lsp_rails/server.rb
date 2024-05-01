@@ -1,23 +1,7 @@
-# typed: strict
+# typed: false
 # frozen_string_literal: true
 
-require "sorbet-runtime"
 require "json"
-
-begin
-  T::Configuration.default_checked_level = :never
-  # Suppresses call validation errors
-  T::Configuration.call_validation_error_handler = ->(*) {}
-  # Suppresses errors caused by T.cast, T.let, T.must, etc.
-  T::Configuration.inline_type_error_handler = ->(*) {}
-  # Suppresses errors caused by incorrect parameter ordering
-  T::Configuration.sig_validation_error_handler = ->(*) {}
-rescue
-  # Need this rescue so that if another gem has
-  # already set the checked level by the time we
-  # get to it, we don't fail outright.
-  nil
-end
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
@@ -27,16 +11,12 @@ module RubyLsp
     class Server
       VOID = Object.new
 
-      extend T::Sig
-
-      sig { void }
       def initialize
         $stdin.sync = true
         $stdout.sync = true
-        @running = T.let(true, T::Boolean)
+        @running = true
       end
 
-      sig { void }
       def start
         initialize_result = { result: { message: "ok" } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
@@ -54,22 +34,18 @@ module RubyLsp
         end
       end
 
-      sig do
-        params(
-          request: String,
-          params: T.nilable(T::Hash[Symbol, T.untyped]),
-        ).returns(T.any(Object, T::Hash[Symbol, T.untyped]))
-      end
       def execute(request, params)
         case request
         when "shutdown"
           @running = false
           VOID
         when "model"
-          resolve_database_info_from_model(T.must(params).fetch(:name))
+          resolve_database_info_from_model(params.fetch(:name))
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
+        when "route_location"
+          route_location(params.fetch(:name))
         else
           VOID
         end
@@ -79,7 +55,34 @@ module RubyLsp
 
       private
 
-      sig { params(model_name: String).returns(T::Hash[Symbol, T.untyped]) }
+      # Older versions of Rails don't support `route_source_locations`.
+      # We also check that it's enabled.
+      if ActionDispatch::Routing::Mapper.respond_to?(:route_source_locations) &&
+          ActionDispatch::Routing::Mapper.route_source_locations
+        def route_location(name)
+          match_data = name.match(/^(.+)(_path|_url)$/)
+          return { result: nil } unless match_data
+
+          key = match_data[1]
+
+          # A token could match the _path or _url pattern, but not be an actual route.
+          route = ::Rails.application.routes.named_routes.get(key)
+          return { result: nil } unless route&.source_location
+
+          {
+            result: {
+              location: ::Rails.root.join(route.source_location).to_s,
+            },
+          }
+        rescue => e
+          { error: e.full_message(highlight: false) }
+        end
+      else
+        def route_location(name)
+          { result: nil }
+        end
+      end
+
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
         unless active_record_model?(const)
@@ -105,7 +108,6 @@ module RubyLsp
         { error: e.full_message(highlight: false) }
       end
 
-      sig { params(const: T.untyped).returns(T::Boolean) }
       def active_record_model?(const)
         !!(
           const &&

@@ -48,12 +48,10 @@ module RubyLsp
           # If we can't set the session ID, continue
         end
 
-        stdin, stdout, stderr, wait_thread = Open3.popen3(
-          "bin/rails",
-          "runner",
-          "#{__dir__}/server.rb",
-          "start",
-        )
+        stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
+          Open3.popen3("bin/rails", "runner", "#{__dir__}/server.rb", "start")
+        end
+
         @stdin = T.let(stdin, IO)
         @stdout = T.let(stdout, IO)
         @stderr = T.let(stderr, IO)
@@ -92,6 +90,14 @@ module RubyLsp
         make_request("model", name: name)
       rescue IncompleteMessageError
         $stderr.puts("Ruby LSP Rails failed to get model information: #{@stderr.read}")
+        nil
+      end
+
+      sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def route_location(name)
+        make_request("route_location", name: name)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to get route location: #{@stderr.read}")
         nil
       end
 
