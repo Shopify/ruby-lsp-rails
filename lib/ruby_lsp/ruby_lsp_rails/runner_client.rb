@@ -48,12 +48,14 @@ module RubyLsp
           # If we can't set the session ID, continue
         end
 
-        stdin, stdout, stderr, wait_thread = Open3.popen3(
-          "bin/rails",
-          "runner",
-          "#{__dir__}/server.rb",
-          "start",
-        )
+        stdin, stdout, stderr, wait_thread = Bundler.with_unbundled_env do
+          Open3.popen3(
+            "bin/rails",
+            "runner",
+            "#{__dir__}/server.rb",
+            "start",
+          )
+        end
         @stdin = T.let(stdin, IO)
         @stdout = T.let(stdout, IO)
         @stderr = T.let(stderr, IO)
