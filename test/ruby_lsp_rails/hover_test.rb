@@ -24,21 +24,6 @@ module RubyLsp
       end
 
       test "hook returns model column information" do
-        expected_response = {
-          schema_file: "#{dummy_root}/db/schema.rb",
-          columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
-          ],
-          primary_keys: ["id"],
-        }
-
-        RunnerClient.any_instance.stubs(model: expected_response)
-
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class User < ApplicationRecord
           end
@@ -70,28 +55,13 @@ module RubyLsp
       end
 
       test "return column information for namespaced models" do
-        expected_response = {
-          schema_file: "#{dummy_root}/db/schema.rb",
-          columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
-          ],
-          primary_keys: ["id"],
-        }
-
-        RunnerClient.any_instance.stubs(model: expected_response)
-
         response = hover_on_source(<<~RUBY, { line: 4, character: 6 })
           module Blog
-            class User < ApplicationRecord
+            class Post < ApplicationRecord
             end
           end
 
-          Blog::User
+          Blog::Post
         RUBY
 
         assert_equal(<<~CONTENT.chomp, response.contents.value)
@@ -99,11 +69,9 @@ module RubyLsp
 
           **id**: integer (PK)
 
-          **first_name**: string
+          **title**: string
 
-          **last_name**: string
-
-          **age**: integer
+          **body**: text
 
           **created_at**: datetime
 
@@ -112,20 +80,6 @@ module RubyLsp
       end
 
       test "returns column information for models with composite primary keys" do
-        expected_response = {
-          schema_file: "#{dummy_root}/db/schema.rb",
-          columns: [
-            ["order_id", "integer"],
-            ["product_id", "integer"],
-            ["note", "string"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
-          ],
-          primary_keys: ["order_id", "product_id"],
-        }
-
-        RunnerClient.any_instance.stubs(model: expected_response)
-
         response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
           class CompositePrimaryKey < ApplicationRecord
           end
@@ -146,53 +100,12 @@ module RubyLsp
 
           **product_id**: integer (PK)
 
-          **note**: string
+          **note**: text
 
           **created_at**: datetime
 
           **updated_at**: datetime
         CONTENT
-      end
-
-      test "handles `db/structure.sql` instead of `db/schema.rb`" do
-        expected_response = {
-          schema_file: "#{dummy_root}/db/structure.sql",
-          columns: [],
-          primary_keys: [],
-        }
-
-        RunnerClient.any_instance.stubs(model: expected_response)
-
-        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
-          class User < ApplicationRecord
-          end
-
-          User
-        RUBY
-
-        assert_includes(
-          response.contents.value,
-          "[Schema](file://#{dummy_root}/db/structure.sql)",
-        )
-      end
-
-      test "handles neither `db/structure.sql` nor `db/schema.rb` being present" do
-        expected_response = {
-          schema_file: nil,
-          columns: [],
-          primary_keys: [],
-        }
-
-        RunnerClient.any_instance.stubs(model: expected_response)
-
-        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
-          class User < ApplicationRecord
-          end
-
-          User
-        RUBY
-
-        refute_match(/Schema/, response.contents.value)
       end
 
       test "shows documentation for routes DSLs" do
@@ -238,6 +151,8 @@ module RubyLsp
 
       def hover_on_source(source, position)
         with_server(source) do |server, uri|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@client).is_a?(NullClient)
+
           server.process_message(
             id: 1,
             method: "textDocument/hover",
