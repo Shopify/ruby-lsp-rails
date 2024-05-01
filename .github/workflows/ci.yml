@@ -54,5 +54,8 @@ jobs:
       - name: Lint Ruby files
         run: bin/rubocop
 
+      - name: Lint Ruby files
+        run: bin/rubocop
+
       - name: Run tests
-        run: bin/rails db:setup && bin/rails db:migrate && bin/rails test
+        run: bundle exec rails db:setup && bundle exec rails db:migrate && bundle exec rails test

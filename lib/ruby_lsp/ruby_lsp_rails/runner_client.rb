@@ -46,10 +46,13 @@ module RubyLsp
           Process.setsid
         rescue Errno::EPERM
           # If we can't set the session ID, continue
+        rescue NotImplementedError
+          # setpgrp() may be unimplemented on some platform
+          # https://github.com/Shopify/ruby-lsp-rails/issues/348
         end
 
         stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
-          Open3.popen3("bin/rails", "runner", "#{__dir__}/server.rb", "start")
+          Open3.popen3("bundle", "exec", "rails", "runner", "#{__dir__}/server.rb", "start")
         end
 
         @stdin = T.let(stdin, IO)

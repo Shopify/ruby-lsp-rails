@@ -301,6 +301,8 @@ DEPENDENCIES
   sorbet-static-and-runtime
   sqlite3 (< 2)
   tapioca (~> 0.13)
+  tzinfo
+  tzinfo-data
   webmock
 
 BUNDLED WITH

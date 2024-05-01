@@ -52,7 +52,7 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](file://#{dummy_root}/db/schema.rb)
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
 
           **id**: integer (PK)
@@ -95,7 +95,7 @@ module RubyLsp
         RUBY
 
         assert_equal(<<~CONTENT.chomp, response.contents.value)
-          [Schema](file://#{dummy_root}/db/schema.rb)
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
           **id**: integer (PK)
 
@@ -139,7 +139,7 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](file://#{dummy_root}/db/schema.rb)
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
 
           **order_id**: integer (PK)
@@ -172,7 +172,7 @@ module RubyLsp
 
         assert_includes(
           response.contents.value,
-          "[Schema](file://#{dummy_root}/db/structure.sql)",
+          "[Schema](#{URI::Generic.from_path(path: dummy_root + "/db/structure.sql")})",
         )
       end
 
