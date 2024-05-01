@@ -44,6 +44,8 @@ module RubyLsp
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
+        when "route_location"
+          route_location(params.fetch(:name))
         else
           VOID
         end
@@ -52,6 +54,34 @@ module RubyLsp
       end
 
       private
+
+      # Older versions of Rails don't support `route_source_locations`.
+      # We also check that it's enabled.
+      if ActionDispatch::Routing::Mapper.respond_to?(:route_source_locations) &&
+          ActionDispatch::Routing::Mapper.route_source_locations
+        def route_location(name)
+          match_data = name.match(/^(.+)(_path|_url)$/)
+          return { result: nil } unless match_data
+
+          key = match_data[1]
+
+          # A token could match the _path or _url pattern, but not be an actual route.
+          route = ::Rails.application.routes.named_routes.get(key)
+          return { result: nil } unless route&.source_location
+
+          {
+            result: {
+              location: ::Rails.root.join(route.source_location).to_s,
+            },
+          }
+        rescue => e
+          { error: e.full_message(highlight: false) }
+        end
+      else
+        def route_location(name)
+          { result: nil }
+        end
+      end
 
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)

@@ -11,25 +11,35 @@ module RubyLsp
     #
     # Currently supported targets:
     # - Callbacks
+    # - Named routes (e.g. `users_path`)
     #
     # # Example
     #
     # ```ruby
     # before_action :foo # <- Go to definition on this symbol will jump to the method if it is defined in the same class
     # ```
+    #
+    # Notes for named routes:
+    # - It is available only in Rails 7.1 or newer.
+    # - Route may be defined across multiple files, e.g. using `draw`, rather than in `routes.rb`.
+    # - Routes won't be found if not defined for the Rails development environment.
+    # - If using `constraints`, the route can only be found if the constraints are met.
+    # - Changes to routes won't be picked up until the server is restarted.
     class Definition
       extend T::Sig
       include Requests::Support::Common
 
       sig do
         params(
+          client: RunnerClient,
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
           nesting: T::Array[String],
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(response_builder, nesting, index, dispatcher)
+      def initialize(client, response_builder, nesting, index, dispatcher)
+        @client = client
         @response_builder = response_builder
         @nesting = nesting
         @index = index
@@ -43,8 +53,19 @@ module RubyLsp
 
         message = node.message
 
-        return unless message && Support::Callbacks::ALL.include?(message)
+        return unless message
 
+        if Support::Callbacks::ALL.include?(message)
+          handle_callback(node)
+        elsif message.end_with?("_path") || message.end_with?("_url")
+          handle_route(node)
+        end
+      end
+
+      private
+
+      sig { params(node: Prism::CallNode).void }
+      def handle_callback(node)
         arguments = node.arguments&.arguments
         return unless arguments&.any?
 
@@ -62,7 +83,21 @@ module RubyLsp
         end
       end
 
-      private
+      sig { params(node: Prism::CallNode).void }
+      def handle_route(node)
+        result = @client.route_location(T.must(node.message))
+        return unless result
+
+        file_path, line = result.fetch(:location).split(":")
+
+        @response_builder << Interface::Location.new(
+          uri: URI::Generic.from_path(path: file_path).to_s,
+          range: Interface::Range.new(
+            start: Interface::Position.new(line: Integer(line) - 1, character: 0),
+            end: Interface::Position.new(line: Integer(line) - 1, character: 0),
+          ),
+        )
+      end
 
       sig { params(name: String).void }
       def collect_definitions(name)

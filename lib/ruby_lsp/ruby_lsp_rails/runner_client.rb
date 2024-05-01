@@ -93,6 +93,14 @@ module RubyLsp
         nil
       end
 
+      sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def route_location(name)
+        make_request("route_location", name: name)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to get route location: #{@stderr.read}")
+        nil
+      end
+
       sig { void }
       def trigger_reload
         $stderr.puts("Reloading Rails application")
