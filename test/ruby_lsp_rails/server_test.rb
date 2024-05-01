@@ -45,4 +45,15 @@ class ServerTest < ActiveSupport::TestCase
   ensure
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :schema_dump_path, :old_schema_dump_path)
   end
+
+  test "route location returns the location for a valid route" do
+    response = @server.execute("route_location", { name: "user_path" })
+    location = response[:result][:location]
+    assert_match %r{test/dummy/config/routes.rb:4$}, location
+  end
+
+  test "route location returns nil for invalid routes" do
+    response = @server.execute("route_location", { name: "invalid_path" })
+    assert_nil response[:result]
+  end
 end
