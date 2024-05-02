@@ -65,26 +65,36 @@ module RubyLsp
         $stderr.puts("Ruby LSP Rails booting server")
         count = 0
 
+        $stderr.puts("BEFORE")
         begin
+          $stderr.puts("count: #{count}")
           count += 1
           read_response
         rescue EmptyMessageError
+          $stderr.puts("RESCUEh")
           $stderr.puts("Ruby LSP Rails is retrying initialize (#{count})")
           retry if count < MAX_RETRIES
         end
+        $stderr.puts("AFTER")
 
         $stderr.puts("Finished booting Ruby LSP Rails server")
 
         unless ENV["RAILS_ENV"] == "test"
+          $stderr.puts("BEFORE AT_EXIT")
           at_exit do
+            $stderr.puts("IN AT_EXIT")
             if @wait_thread.alive?
+              $stderr.puts("IN ALIVE")
               $stderr.puts("Ruby LSP Rails is force killing the server")
               sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
+              $stderr.puts("KILL")
               Process.kill(T.must(Signal.list["TERM"]), @wait_thread.pid)
             end
           end
+          $stderr.puts("AFTER AT_EXIT")
         end
       rescue Errno::EPIPE, IncompleteMessageError
+        $stderr.puts("RESCUE2")
         raise InitializationError, @stderr.read
       end
 
