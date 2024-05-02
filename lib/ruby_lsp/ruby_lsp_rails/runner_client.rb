@@ -162,14 +162,20 @@ module RubyLsp
 
       sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
+        $stderr.puts("Reading response...")
         headers = @stdout.gets("\r\n\r\n")
+        $stderr.puts("Got response.")
         raise IncompleteMessageError unless headers
 
+        $stderr.puts("Got response 1")
         content_length = headers[/Content-Length: (\d+)/i, 1].to_i
         raise EmptyMessageError if content_length.zero?
 
+        $stderr.puts("Got response 2")
         raw_response = @stdout.read(content_length)
         response = JSON.parse(T.must(raw_response), symbolize_names: true)
+
+        $stderr.puts("Got response 3")
 
         if response[:error]
           $stderr.puts("Ruby LSP Rails error: " + response[:error])
