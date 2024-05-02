@@ -12,7 +12,17 @@ For general information about developing, refer to the to the [documentation](ht
 
 The repo includes a dummy Rails app in `test/dummy`. If you're developing a feature, you can add new code to it for testing.
 
-To test with a real Rails application, you can add a Gemfile entry for `ruby-lsp-rails` and point it to your branch.
+To test with a real Rails application, you can add a Gemfile entry for `ruby-lsp-rails` and point it to your local checkout:
+
+```ruby
+gem "ruby-lsp-rails", path: "../ruby-lsp-rails"
+```
+
+Or to a branch in your fork:
+
+```ruby
+gem "ruby-lsp-rails", github: "USERNAME/ruby-lsp-rails", branch: "your_branch"
+```
 
 ### Running the test suite
 
