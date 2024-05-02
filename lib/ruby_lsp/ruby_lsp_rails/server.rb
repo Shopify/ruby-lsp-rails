@@ -14,6 +14,8 @@ module RubyLsp
       def initialize
         $stdin.sync = true
         $stdout.sync = true
+        $stdin.binmode
+        $stdout.binmode
         @running = true
       end
 

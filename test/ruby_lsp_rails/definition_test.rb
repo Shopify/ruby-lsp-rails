@@ -87,7 +87,10 @@ module RubyLsp
 
         assert_equal(1, response.size)
         dummy_root = File.expand_path("../dummy", __dir__)
-        assert_equal("file://#{dummy_root}/config/routes.rb", response[0].uri)
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "config", "routes.rb")).to_s,
+          response[0].uri,
+        )
         assert_equal(3, response[0].range.start.line)
         assert_equal(3, response[0].range.end.line)
       end
@@ -107,7 +110,10 @@ module RubyLsp
 
         assert_equal(1, response.size)
         dummy_root = File.expand_path("../dummy", __dir__)
-        assert_equal("file://#{dummy_root}/config/routes.rb", response[0].uri)
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "config", "routes.rb")).to_s,
+          response[0].uri,
+        )
         assert_equal(4, response[0].range.start.line)
         assert_equal(4, response[0].range.end.line)
       end
@@ -132,7 +138,9 @@ module RubyLsp
             params: { textDocument: { uri: uri }, position: position },
           )
 
-          server.pop_response.response
+          result = server.pop_response
+          assert_instance_of(RubyLsp::Result, result)
+          result.response
         end
       end
     end
