@@ -76,12 +76,12 @@ module RubyLsp
         junk = %{\nputs "1\r\n\r\nhello"}
         File.write("test/dummy/config/application.rb", content + junk)
 
-        capture_subprocess_io do
-          client = RunnerClient.create_client
+        # capture_subprocess_io do
+        client = RunnerClient.create_client
 
-          response = T.must(client.model("User"))
-          assert(response.key?(:columns))
-        end
+        response = T.must(client.model("User"))
+        assert(response.key?(:columns))
+        # end
       ensure
         FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
