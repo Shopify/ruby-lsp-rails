@@ -42,8 +42,8 @@ jobs:
           bundler-cache: true
           cache-version: 7
 
-      - name: Check if documentation is up to date
-        run: bundle exec rake ruby_lsp:check_docs
+      - name: Run tests
+        run: bundle exec rails db:setup && bundle exec rails db:migrate && bundle exec rails test
 
       - name: Typecheck
         if: matrix.os != 'windows-latest'
@@ -52,8 +52,5 @@ jobs:
       - name: Lint Ruby files
         run: bin/rubocop
 
-      - name: Lint Ruby files
-        run: bin/rubocop
-
-      - name: Run tests
-        run: bundle exec rails db:setup && bundle exec rails db:migrate && bundle exec rails test
+      - name: Check if documentation is up to date
+        run: bundle exec rake ruby_lsp:check_docs
