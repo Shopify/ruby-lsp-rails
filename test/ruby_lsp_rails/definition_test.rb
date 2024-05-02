@@ -3,6 +3,9 @@
 
 require "test_helper"
 
+# tests are hanging in CI. https://github.com/Shopify/ruby-lsp-rails/issues/364
+return if Gem.win_platform?
+
 module RubyLsp
   module Rails
     class DefinitionTest < ActiveSupport::TestCase
