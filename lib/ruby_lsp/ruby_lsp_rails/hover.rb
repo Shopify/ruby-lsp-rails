@@ -77,7 +77,7 @@ module RubyLsp
         schema_file = model[:schema_file]
 
         @response_builder.push(
-          "[Schema](#{URI::Generic.build(scheme: "file", path: schema_file)})",
+          "[Schema](#{URI::Generic.from_path(path: schema_file)})",
           category: :links,
         ) if schema_file
 

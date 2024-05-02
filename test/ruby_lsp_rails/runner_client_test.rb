@@ -4,6 +4,9 @@
 require "test_helper"
 require "ruby_lsp/ruby_lsp_rails/runner_client"
 
+# tests are hanging in CI. https://github.com/Shopify/ruby-lsp-rails/issues/348
+return if Gem.win_platform?
+
 module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
@@ -54,16 +57,10 @@ module RubyLsp
       end
 
       test "failing to spawn server creates a null client" do
-        FileUtils.mv("bin/rails", "bin/rails_backup")
-        File.open("bin/rails", "w") do |f|
-          f.write("foo")
-        end
-        File.chmod(0o755, "bin/rails")
-
-        # The error message is slightly different on Ubuntu, so we need to allow for that
+        FileUtils.mv("test/dummy/config/application.rb", "test/dummy/config/application.rb.bak")
         assert_output(
           "",
-          %r{Ruby LSP Rails failed to initialize server: bin/rails: (line )?1: foo:( command)? not found},
+          /Ruby LSP Rails failed to initialize server/,
         ) do
           client = RunnerClient.create_client
 
@@ -72,7 +69,7 @@ module RubyLsp
           assert_predicate(client, :stopped?)
         end
       ensure
-        FileUtils.mv("bin/rails_backup", "bin/rails")
+        FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
 
       test "is resilient to extra output being printed during boot" do

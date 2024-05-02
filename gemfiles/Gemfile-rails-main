@@ -20,3 +20,8 @@ gem "tapioca", "~> 0.11", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails", github: "rails/rails", branch: "main"
 gem "webmock"
+
+platforms :mingw, :x64_mingw, :mswin, :jruby do
+  gem "tzinfo"
+  gem "tzinfo-data"
+end
