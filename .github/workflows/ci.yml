@@ -44,9 +44,18 @@ jobs:
 
       - name: Run tests
         run: bundle exec rails db:setup && bundle exec rails db:migrate && bundle exec rails test
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler: latest
+          bundler-cache: true
 
       - name: Typecheck
-        if: matrix.os != 'windows-latest'
         run: bundle exec srb tc
 
       - name: Lint Ruby files
