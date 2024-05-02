@@ -88,7 +88,11 @@ module RubyLsp
         result = @client.route_location(T.must(node.message))
         return unless result
 
-        file_path, line = result.fetch(:location).split(":")
+        *file_parts, line = result.fetch(:location).split(":")
+
+        # On Windows, file paths will look something like `C:/path/to/file.rb:123`. Only the last colon is the line
+        # number and all other parts compose the file path
+        file_path = file_parts.join(":")
 
         @response_builder << Interface::Location.new(
           uri: URI::Generic.from_path(path: file_path).to_s,

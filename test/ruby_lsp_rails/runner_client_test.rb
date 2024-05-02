@@ -4,21 +4,19 @@
 require "test_helper"
 require "ruby_lsp/ruby_lsp_rails/runner_client"
 
-# tests are hanging in CI. https://github.com/Shopify/ruby-lsp-rails/issues/348
-return if Gem.win_platform?
-
 module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        capture_subprocess_io do
-          @client = T.let(RunnerClient.new, RunnerClient)
-        end
+        @client = T.let(RunnerClient.new, RunnerClient)
       end
 
       teardown do
-        capture_subprocess_io { @client.shutdown }
-        assert_predicate @client, :stopped?
+        @client.shutdown
+
+        # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
+        # which makes this assertion flaky
+        assert_predicate(@client, :stopped?) unless Gem.win_platform?
       end
 
       # These are integration tests which start the server. For the more fine-grained tests, see `server_test.rb`.

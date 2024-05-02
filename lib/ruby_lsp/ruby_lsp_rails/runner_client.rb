@@ -80,7 +80,9 @@ module RubyLsp
             if @wait_thread.alive?
               $stderr.puts("Ruby LSP Rails is force killing the server")
               sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
-              Process.kill(T.must(Signal.list["TERM"]), @wait_thread.pid)
+
+              # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
+              Process.kill(T.must(Signal.list["KILL"]), @wait_thread.pid)
             end
           end
         end
