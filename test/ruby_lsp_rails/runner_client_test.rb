@@ -4,9 +4,6 @@
 require "test_helper"
 require "ruby_lsp/ruby_lsp_rails/runner_client"
 
-# tests are hanging in CI. https://github.com/Shopify/ruby-lsp-rails/issues/348
-return if Gem.win_platform?
-
 module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
