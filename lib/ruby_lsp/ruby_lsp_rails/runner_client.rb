@@ -162,6 +162,7 @@ module RubyLsp
 
       sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
+        $stdout.flush
         $stderr.puts("Reading response...")
         headers = @stdout.gets("\r\n\r\n")
         $stderr.puts("Got response.")
