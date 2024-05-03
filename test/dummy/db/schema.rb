@@ -10,11 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_03_145625) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_03_153021) do
   create_table "composite_primary_keys", primary_key: ["order_id", "product_id"], force: :cascade do |t|
     t.integer "order_id"
     t.integer "product_id"
     t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "organization_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_memberships_on_organization_id"
+    t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "organizations", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -34,4 +49,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_03_145625) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "memberships", "organizations"
+  add_foreign_key "memberships", "users"
 end
