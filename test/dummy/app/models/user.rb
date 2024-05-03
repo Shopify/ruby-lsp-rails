@@ -2,7 +2,7 @@
 
 class User < ApplicationRecord
   before_create :foo, -> () {}
-  validates :name, presence: true
+  validates :first_name, presence: true
   has_one :profile
   scope :adult, -> { where(age: 18..) }
 
