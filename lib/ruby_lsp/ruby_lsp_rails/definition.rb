@@ -10,6 +10,7 @@ module RubyLsp
     # definition of the symbol under the cursor.
     #
     # Currently supported targets:
+    #
     # - Callbacks
     # - Named routes (e.g. `users_path`)
     #
@@ -20,6 +21,7 @@ module RubyLsp
     # ```
     #
     # Notes for named routes:
+    #
     # - It is available only in Rails 7.1 or newer.
     # - Route may be defined across multiple files, e.g. using `draw`, rather than in `routes.rb`.
     # - Routes won't be found if not defined for the Rails development environment.
