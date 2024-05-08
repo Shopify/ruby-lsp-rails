@@ -47,25 +47,37 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association returns the location of the target class of a has_many association" do
-    response = @server.execute("association_target_location", { model_name: "Organization", association_name: :memberships, association_type: :has_many })
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Organization", association_name: :memberships, association_type: :has_many },
+    )
     location = response[:result][:location]
     assert_match %r{test/dummy/app/models/membership.rb:3$}, location
   end
 
   test "resolve association returns the location of the target class of a belongs_to association" do
-    response = @server.execute("association_target_location", { model_name: "Membership", association_name: :organization, association_type: :belongs_to })
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Membership", association_name: :organization, association_type: :belongs_to },
+    )
     location = response[:result][:location]
     assert_match %r{test/dummy/app/models/organization.rb:3$}, location
   end
 
   test "resolve association returns the location of the target class of a has_one association" do
-    response = @server.execute("association_target_location", { model_name: "User", association_name: :profile, association_type: :has_one })
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "User", association_name: :profile, association_type: :has_one },
+    )
     location = response[:result][:location]
     assert_match %r{test/dummy/app/models/profile.rb:3$}, location
   end
 
   test "resolve association returns the location of the target class of a has_and_belongs_to_many association" do
-    response = @server.execute("association_target_location", { model_name: "Profile", association_name: :labels, association_type: :has_and_belongs_to_many })
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Profile", association_name: :labels, association_type: :has_and_belongs_to_many },
+    )
     location = response[:result][:location]
     assert_match %r{test/dummy/app/models/label.rb:3$}, location
   end
