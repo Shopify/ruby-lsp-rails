@@ -33,7 +33,7 @@ module RubyLsp
         assert_equal(14, response[1].range.end.character)
       end
 
-      test "recognizes model associations" do
+      test "recognizes has_many model associations" do
         response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
           # typed: false
 
@@ -46,6 +46,25 @@ module RubyLsp
 
         assert_equal(
           URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "membership.rb")).to_s,
+          response[0].uri,
+        )
+        assert_equal(2, response[0].range.start.line)
+        assert_equal(2, response[0].range.end.line)
+      end
+
+      test "recognizes belongs_to model associations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+          # typed: false
+
+          class Membership < ActiveRecord::Base
+            belongs_to :organization
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "organization.rb")).to_s,
           response[0].uri,
         )
         assert_equal(2, response[0].range.start.line)

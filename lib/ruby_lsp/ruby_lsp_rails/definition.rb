@@ -91,7 +91,11 @@ module RubyLsp
       def handle_association(node)
         association_name = T.cast(T.must(node.arguments).arguments.first, Prism::SymbolNode).unescaped
 
-        result = @client.association_target_location(model_name: "Organization", association_name:, association_type: node.name.to_s)
+        result = if node.name.to_s == "has_many"
+          @client.association_target_location(model_name: "Organization", association_name:, association_type: node.name.to_s)
+        else
+          @client.association_target_location(model_name: "Membership", association_name:, association_type: node.name.to_s)
+        end
 
         return unless result
 

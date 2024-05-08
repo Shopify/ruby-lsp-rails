@@ -32,7 +32,8 @@ module RubyLsp
 
         ASSOCIATIONS = T.let(
           [
-            "has_many"
+            "has_many",
+            "belongs_to"
           ],
           T::Array[String]
         )
