@@ -45,8 +45,19 @@ module RubyLsp
         @response_builder = response_builder
         @nesting = nesting
         @index = index
+        @current_class = T.let(nil, T.nilable(String))
 
-        dispatcher.register(self, :on_call_node_enter)
+        dispatcher.register(self, :on_class_node_enter, :on_class_node_leave, :on_call_node_enter)
+      end
+
+      sig { params(node: Prism::ClassNode).void }
+      def on_class_node_enter(node)
+        binding.break
+      end
+
+      sig { params(node: Prism::ClassNode).void }
+      def on_class_node_leave(node)
+        @current_class = nil
       end
 
       sig { params(node: Prism::CallNode).void }

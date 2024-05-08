@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "json"
-require "debug"
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
