@@ -58,6 +58,12 @@ class ServerTest < ActiveSupport::TestCase
     assert_match %r{test/dummy/app/models/organization.rb:3$}, location
   end
 
+  test "resolve association returns the location of the target class of a has_one association" do
+    response = @server.execute("association_target_location", { model_name: "User", association_name: :profile, association_type: :has_one })
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/profile.rb:3$}, location
+  end
+
   test "route location returns the location for a valid route" do
     response = @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]

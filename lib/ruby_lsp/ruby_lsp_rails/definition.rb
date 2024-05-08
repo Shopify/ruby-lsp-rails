@@ -93,6 +93,8 @@ module RubyLsp
 
         result = if node.name.to_s == "has_many"
           @client.association_target_location(model_name: "Organization", association_name:, association_type: node.name.to_s)
+        elsif node.name.to_s == "has_one"
+          @client.association_target_location(model_name: "User", association_name:, association_type: node.name.to_s)
         else
           @client.association_target_location(model_name: "Membership", association_name:, association_type: node.name.to_s)
         end

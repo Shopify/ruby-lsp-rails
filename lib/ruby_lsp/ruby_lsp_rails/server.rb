@@ -126,6 +126,8 @@ module RubyLsp
           ActiveRecord::Associations::Builder::HasMany.build(const, params[:association_name].intern, nil, {}).klass
         when :belongs_to
           ActiveRecord::Associations::Builder::BelongsTo.build(const, params[:association_name].intern, nil, {}).klass
+        when :has_one
+          ActiveRecord::Associations::Builder::HasOne.build(const, params[:association_name].intern, nil, {}).klass
         else
           return { error: "Unsupported association type #{params[:association_type]}" }
         end
