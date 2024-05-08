@@ -57,7 +57,7 @@ module RubyLsp
 
         return unless message
 
-        if Support::Callbacks::ASSOCIATIONS.include?(message)
+        if Support::Associations::ALL.include?(message)
           handle_association(node)
         elsif Support::Callbacks::ALL.include?(message)
           handle_callback(node)
