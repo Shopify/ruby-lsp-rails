@@ -30,6 +30,13 @@ module RubyLsp
           T::Array[String],
         )
 
+        ASSOCIATIONS = T.let(
+          [
+            "has_many"
+          ],
+          T::Array[String]
+        )
+
         CONTROLLERS = T.let(
           [
             "after_action",

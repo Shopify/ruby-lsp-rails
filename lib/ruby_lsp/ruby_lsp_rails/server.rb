@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "debug"
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
@@ -43,6 +44,8 @@ module RubyLsp
           VOID
         when "model"
           resolve_database_info_from_model(params.fetch(:name))
+        when "association_target_location"
+          resolve_association_target(params)
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
@@ -108,6 +111,30 @@ module RubyLsp
         info
       rescue => e
         { error: e.full_message(highlight: false) }
+      end
+
+      def resolve_association_target(params)
+        const = ActiveSupport::Inflector.safe_constantize(params[:model_name])
+        unless active_record_model?(const)
+          return {
+            result: nil,
+          }
+        end
+
+        association_klass = case params[:association_type].intern
+        when :has_many
+          ActiveRecord::Associations::Builder::HasMany.build(const, params[:association_name].intern, nil, {}).klass
+        else
+          return { error: "Unsupported association type #{params[:association_type]}" }
+        end
+
+        source_location = Object.const_source_location(association_klass.to_s)
+
+        {
+          result: {
+            location: source_location.first + ":" + source_location.second.to_s,
+          },
+        }
       end
 
       def active_record_model?(const)

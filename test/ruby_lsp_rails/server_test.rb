@@ -46,6 +46,12 @@ class ServerTest < ActiveSupport::TestCase
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :schema_dump_path, :old_schema_dump_path)
   end
 
+  test "resolve association returns the location of the target class of a has_many association" do
+    response = @server.execute("association_target_location", { model_name: "Organization", association_name: :memberships, association_type: :has_many })
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/membership.rb:3$}, location
+  end
+
   test "route location returns the location for a valid route" do
     response = @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]

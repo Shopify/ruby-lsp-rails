@@ -57,7 +57,9 @@ module RubyLsp
 
         return unless message
 
-        if Support::Callbacks::ALL.include?(message)
+        if Support::Callbacks::ASSOCIATIONS.include?(message)
+          handle_association(node)
+        elsif Support::Callbacks::ALL.include?(message)
           handle_callback(node)
         elsif message.end_with?("_path") || message.end_with?("_url")
           handle_route(node)
@@ -83,6 +85,29 @@ module RubyLsp
 
           collect_definitions(name)
         end
+      end
+
+      sig { params(node: Prism::CallNode).void }
+      def handle_association(node)
+        association_name = T.cast(T.must(node.arguments).arguments.first, Prism::SymbolNode).unescaped
+
+        result = @client.association_target_location(model_name: "Organization", association_name:, association_type: node.name.to_s)
+
+        return unless result
+
+        *file_parts, line = result.fetch(:location).split(":")
+
+        # On Windows, file paths will look something like `C:/path/to/file.rb:123`. Only the last colon is the line
+        # number and all other parts compose the file path
+        file_path = file_parts.join(":")
+
+        @response_builder << Interface::Location.new(
+          uri: URI::Generic.from_path(path: file_path).to_s,
+          range: Interface::Range.new(
+            start: Interface::Position.new(line: Integer(line) - 1, character: 0),
+            end: Interface::Position.new(line: Integer(line) - 1, character: 0),
+          ),
+        )
       end
 
       sig { params(node: Prism::CallNode).void }
