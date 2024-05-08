@@ -95,6 +95,8 @@ module RubyLsp
           @client.association_target_location(model_name: "Organization", association_name:, association_type: node.name.to_s)
         elsif node.name.to_s == "has_one"
           @client.association_target_location(model_name: "User", association_name:, association_type: node.name.to_s)
+        elsif node.name.to_s == "has_and_belongs_to_many"
+          @client.association_target_location(model_name: "Profile", association_name:, association_type: node.name.to_s)
         else
           @client.association_target_location(model_name: "Membership", association_name:, association_type: node.name.to_s)
         end
