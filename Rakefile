@@ -30,4 +30,4 @@ end
 
 RubyLsp::CheckDocs.new(FileList["#{__dir__}/lib/ruby_lsp/**/*.rb"], FileList["#{__dir__}/misc/**/*.gif"])
 
-task default: :test
+task default: [:"db:setup", :test]
