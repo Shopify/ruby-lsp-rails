@@ -26,8 +26,14 @@ gem "ruby-lsp-rails", github: "USERNAME/ruby-lsp-rails", branch: "your_branch"
 
 ### Running the test suite
 
-The test suite can be executed by running
+To set up the database for the dummy Rails app, and run the full test suite:
 
 ```shell
-bin/rails test
+bundle exec rake
+```
+
+Tests are written as `ActiveSupport::TestCase` tests, so an individual test can be run with:
+
+```shell
+bin/rails test test/my_test.rb
 ```
