@@ -20,6 +20,10 @@ module RubyLsp
       end
 
       def start
+        # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
+        routes_reloader = ::Rails.application.routes_reloader
+        routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
+
         initialize_result = { result: { message: "ok" } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
 
