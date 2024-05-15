@@ -288,12 +288,29 @@ module RubyLsp
         assert_match("#{ruby} bin/rails db:migrate VERSION=123456", response[0].command.arguments[0])
       end
 
+      test "recognizes controller actions" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          class UsersController < ApplicationController
+            def index
+            end
+          end
+        RUBY
+        path, line = response[0].command.arguments.first
+
+        assert_equal(1, response.size)
+        assert_match("GET /users(.:format)", response[0].command.title)
+        assert_equal("4", line)
+        assert_match("config/routes.rb", path)
+      end
+
       private
 
       attr_reader :ruby
 
       def generate_code_lens_for_source(source, file: "/fake.rb")
         with_server(source, URI(file)) do |server, uri|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@client).is_a?(NullClient)
+
           server.process_message(
             id: 1,
             method: "textDocument/codeLens",

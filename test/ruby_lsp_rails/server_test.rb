@@ -122,4 +122,16 @@ class ServerTest < ActiveSupport::TestCase
     response = @server.execute("route_location", { name: "invalid_path" })
     assert_nil response[:result]
   end
+
+  test "route info" do
+    response = @server.execute("route_info", { controller: "UsersController", action: "index" })
+
+    result = response[:result]
+
+    source_location_path, source_location_line = result[:source_location]
+    assert_equal "4", source_location_line
+    assert source_location_path.end_with?("config/routes.rb")
+    assert_equal "GET", result[:verb]
+    assert_equal "/users(.:format)", result[:path]
+  end
 end
