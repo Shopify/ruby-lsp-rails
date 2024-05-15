@@ -122,6 +122,14 @@ module RubyLsp
         nil
       end
 
+      sig { params(controller: String, action: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def route(controller:, action:)
+        make_request("route_info", controller: controller, action: action)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to get route information: #{@stderr.read}")
+        nil
+      end
+
       sig { void }
       def trigger_reload
         $stderr.puts("Reloading Rails application")
