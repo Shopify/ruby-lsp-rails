@@ -59,8 +59,6 @@ module RubyLsp
           ].freeze,
           T::Array[String],
         )
-
-        ALL = T.let((MODELS + CONTROLLERS + JOBS).freeze, T::Array[String])
       end
     end
   end
