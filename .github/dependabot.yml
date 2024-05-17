@@ -4,6 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 100
     reviewers:
       - "Shopify/ruby-dev-exp"
     labels:
