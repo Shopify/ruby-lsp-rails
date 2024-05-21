@@ -50,16 +50,6 @@ module RubyLsp
         dispatcher.register(self, :on_class_node_enter, :on_class_node_leave, :on_call_node_enter)
       end
 
-      sig { params(node: Prism::ClassNode).void }
-      def on_class_node_enter(node)
-        binding.break
-      end
-
-      sig { params(node: Prism::ClassNode).void }
-      def on_class_node_leave(node)
-        @current_class = nil
-      end
-
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
         return unless self_receiver?(node)
@@ -102,31 +92,11 @@ module RubyLsp
       def handle_association(node)
         association_name = T.cast(T.must(node.arguments).arguments.first, Prism::SymbolNode).unescaped
 
-        result = if node.name.to_s == "has_many"
-          @client.association_target_location(
-            model_name: "Organization",
-            association_name: association_name,
-            association_type: node.name.to_s,
-          )
-        elsif node.name.to_s == "has_one"
-          @client.association_target_location(
-            model_name: "User",
-            association_name: association_name,
-            association_type: node.name.to_s,
-          )
-        elsif node.name.to_s == "has_and_belongs_to_many"
-          @client.association_target_location(
-            model_name: "Profile",
-            association_name: association_name,
-            association_type: node.name.to_s,
-          )
-        else
-          @client.association_target_location(
-            model_name: "Membership",
-            association_name: association_name,
-            association_type: node.name.to_s,
-          )
-        end
+        result = @client.association_target_location(
+          model_name: @nesting.join("::"),
+          association_name: association_name,
+          association_type: node.name.to_s,
+        )
 
         return unless result
 
