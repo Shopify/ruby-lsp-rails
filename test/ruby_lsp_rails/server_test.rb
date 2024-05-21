@@ -82,6 +82,22 @@ class ServerTest < ActiveSupport::TestCase
     assert_match %r{test/dummy/app/models/label.rb:3$}, location
   end
 
+  test "resolve association handles invalid model name" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "NotHere", association_name: :labels, association_type: :belongs_to },
+    )
+    assert_nil(response.fetch(:result))
+  end
+
+  test "resolve association handles invalid association name" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Membership", association_name: :labels, association_type: :belongs_to },
+    )
+    assert_equal("Missing model class Labels for the Membership#labels association. You can specify a different model class with the :class_name option.", response.dig(:result, :error))
+  end
+
   test "route location returns the location for a valid route" do
     response = @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]

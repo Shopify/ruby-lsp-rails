@@ -140,6 +140,12 @@ module RubyLsp
             location: source_location.first + ":" + source_location.second.to_s,
           },
         }
+      rescue NameError => e
+        {
+          result: {
+            error: e.message
+          },
+        }
       end
 
       def active_record_model?(const)
