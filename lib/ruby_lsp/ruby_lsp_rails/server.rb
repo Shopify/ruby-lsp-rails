@@ -143,7 +143,7 @@ module RubyLsp
       rescue NameError => e
         {
           result: {
-            error: e.message
+            error: e.message,
           },
         }
       end
