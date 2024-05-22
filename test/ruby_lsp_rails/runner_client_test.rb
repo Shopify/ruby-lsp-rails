@@ -30,6 +30,7 @@ module RubyLsp
           ["age", "integer"],
           ["created_at", "datetime"],
           ["updated_at", "datetime"],
+          ["country_id", "integer"],
         ]
         response = T.must(@client.model("User"))
         assert_equal(columns, response.fetch(:columns))
