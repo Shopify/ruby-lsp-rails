@@ -109,6 +109,25 @@ module RubyLsp
         assert_equal(2, response[0].range.end.line)
       end
 
+      test "handles class_name argument for associations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+          # typed: false
+
+          class User < ActiveRecord::Base
+            has_one :location, class_name: "Country"
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "country.rb")).to_s,
+          response[0].uri,
+        )
+        assert_equal(2, response[0].range.start.line)
+        assert_equal(2, response[0].range.end.line)
+      end
+
       test "recognizes controller callback with string argument" do
         response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 10 })
           # typed: false

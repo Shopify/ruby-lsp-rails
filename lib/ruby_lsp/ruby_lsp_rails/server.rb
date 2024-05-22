@@ -120,18 +120,7 @@ module RubyLsp
           }
         end
 
-        association_klass = case params[:association_type].intern
-        when :has_many
-          ActiveRecord::Associations::Builder::HasMany.build(const, params[:association_name].intern, nil, {}).klass
-        when :belongs_to
-          ActiveRecord::Associations::Builder::BelongsTo.build(const, params[:association_name].intern, nil, {}).klass
-        when :has_one
-          ActiveRecord::Associations::Builder::HasOne.build(const, params[:association_name].intern, nil, {}).klass
-        when :has_and_belongs_to_many
-          ActiveRecord::Reflection::HasAndBelongsToManyReflection.new(params[:association_name], nil, {}, const).klass
-        else
-          return { error: "Unsupported association type #{params[:association_type]}" }
-        end
+        association_klass = const.reflect_on_association(params[:association_name].intern).klass
 
         source_location = Object.const_source_location(association_klass.to_s)
 

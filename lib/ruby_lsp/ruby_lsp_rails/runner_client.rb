@@ -102,15 +102,13 @@ module RubyLsp
         params(
           model_name: String,
           association_name: String,
-          association_type: String,
         ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
       end
-      def association_target_location(model_name:, association_name:, association_type:)
+      def association_target_location(model_name:, association_name:)
         make_request(
           "association_target_location",
           model_name: model_name,
           association_name: association_name,
-          association_type: association_type,
         )
       rescue => e
         $stderr.puts("Ruby LSP Rails failed with #{e.message}: #{@stderr.read}")

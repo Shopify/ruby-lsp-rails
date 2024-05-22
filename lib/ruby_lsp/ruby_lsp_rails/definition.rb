@@ -95,10 +95,9 @@ module RubyLsp
         result = @client.association_target_location(
           model_name: @nesting.join("::"),
           association_name: association_name,
-          association_type: node.name.to_s,
         )
 
-        return unless result
+        return unless result&.key?(:location)
 
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
