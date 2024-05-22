@@ -95,7 +95,7 @@ class ServerTest < ActiveSupport::TestCase
       "association_target_location",
       { model_name: "Membership", association_name: :labels },
     )
-    assert(response.dig(:result, :error))
+    assert_nil(response.fetch(:result))
   end
 
   test "resolve association handles class_name option" do

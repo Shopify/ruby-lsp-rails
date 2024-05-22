@@ -129,11 +129,9 @@ module RubyLsp
             location: source_location.first + ":" + source_location.second.to_s,
           },
         }
-      rescue NameError => e
+      rescue NameError
         {
-          result: {
-            error: e.message,
-          },
+          result: nil,
         }
       end
 

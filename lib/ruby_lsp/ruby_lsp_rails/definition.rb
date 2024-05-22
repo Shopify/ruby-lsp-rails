@@ -45,7 +45,6 @@ module RubyLsp
         @response_builder = response_builder
         @nesting = nesting
         @index = index
-        @current_class = T.let(nil, T.nilable(String))
 
         dispatcher.register(self, :on_call_node_enter)
       end
