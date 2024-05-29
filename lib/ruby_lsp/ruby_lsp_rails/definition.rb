@@ -89,14 +89,18 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def handle_association(node)
-        association_name = T.cast(T.must(node.arguments).arguments.first, Prism::SymbolNode).unescaped
+        first_argument = node.arguments&.arguments&.first
+        return unless first_argument.is_a?(Prism::SymbolNode)
+        
+        
+        association_name = first_argument.unescaped
 
         result = @client.association_target_location(
           model_name: @nesting.join("::"),
           association_name: association_name,
         )
 
-        return unless result&.key?(:location)
+        return unless result
 
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
