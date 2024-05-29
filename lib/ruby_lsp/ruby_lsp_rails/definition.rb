@@ -91,8 +91,7 @@ module RubyLsp
       def handle_association(node)
         first_argument = node.arguments&.arguments&.first
         return unless first_argument.is_a?(Prism::SymbolNode)
-        
-        
+
         association_name = first_argument.unescaped
 
         result = @client.association_target_location(
