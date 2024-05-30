@@ -98,6 +98,22 @@ module RubyLsp
         nil
       end
 
+      sig do
+        params(
+          model_name: String,
+          association_name: String,
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
+      def association_target_location(model_name:, association_name:)
+        make_request(
+          "association_target_location",
+          model_name: model_name,
+          association_name: association_name,
+        )
+      rescue => e
+        $stderr.puts("Ruby LSP Rails failed with #{e.message}: #{@stderr.read}")
+      end
+
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def route_location(name)
         make_request("route_location", name: name)

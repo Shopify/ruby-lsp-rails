@@ -47,6 +47,8 @@ module RubyLsp
           VOID
         when "model"
           resolve_database_info_from_model(params.fetch(:name))
+        when "association_target_location"
+          resolve_association_target(params)
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
@@ -112,6 +114,29 @@ module RubyLsp
         info
       rescue => e
         { error: e.full_message(highlight: false) }
+      end
+
+      def resolve_association_target(params)
+        const = ActiveSupport::Inflector.safe_constantize(params[:model_name])
+        unless active_record_model?(const)
+          return {
+            result: nil,
+          }
+        end
+
+        association_klass = const.reflect_on_association(params[:association_name].intern).klass
+
+        source_location = Object.const_source_location(association_klass.to_s)
+
+        {
+          result: {
+            location: source_location.first + ":" + source_location.second.to_s,
+          },
+        }
+      rescue NameError
+        {
+          result: nil,
+        }
       end
 
       def active_record_model?(const)

@@ -46,6 +46,67 @@ class ServerTest < ActiveSupport::TestCase
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :schema_dump_path, :old_schema_dump_path)
   end
 
+  test "resolve association returns the location of the target class of a has_many association" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Organization", association_name: :memberships },
+    )
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/membership.rb:3$}, location
+  end
+
+  test "resolve association returns the location of the target class of a belongs_to association" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Membership", association_name: :organization },
+    )
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/organization.rb:3$}, location
+  end
+
+  test "resolve association returns the location of the target class of a has_one association" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "User", association_name: :profile },
+    )
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/profile.rb:3$}, location
+  end
+
+  test "resolve association returns the location of the target class of a has_and_belongs_to_many association" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Profile", association_name: :labels },
+    )
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/label.rb:3$}, location
+  end
+
+  test "resolve association handles invalid model name" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "NotHere", association_name: :labels },
+    )
+    assert_nil(response.fetch(:result))
+  end
+
+  test "resolve association handles invalid association name" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "Membership", association_name: :labels },
+    )
+    assert_nil(response.fetch(:result))
+  end
+
+  test "resolve association handles class_name option" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "User", association_name: :location },
+    )
+    location = response[:result][:location]
+    assert_match %r{test/dummy/app/models/country.rb:3$}, location
+  end
+
   test "route location returns the location for a valid route" do
     response = @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]

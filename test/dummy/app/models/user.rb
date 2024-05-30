@@ -5,6 +5,7 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   has_one :profile
   scope :adult, -> { where(age: 18..) }
+  has_one :location, class_name: "Country"
 
   attr_readonly :last_name
 

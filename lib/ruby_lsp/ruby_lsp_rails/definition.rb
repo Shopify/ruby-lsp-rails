@@ -57,7 +57,9 @@ module RubyLsp
 
         return unless message
 
-        if Support::Callbacks::ALL.include?(message)
+        if Support::Associations::ALL.include?(message)
+          handle_association(node)
+        elsif Support::Callbacks::ALL.include?(message)
           handle_callback(node)
         elsif message.end_with?("_path") || message.end_with?("_url")
           handle_route(node)
@@ -86,23 +88,28 @@ module RubyLsp
       end
 
       sig { params(node: Prism::CallNode).void }
+      def handle_association(node)
+        first_argument = node.arguments&.arguments&.first
+        return unless first_argument.is_a?(Prism::SymbolNode)
+
+        association_name = first_argument.unescaped
+
+        result = @client.association_target_location(
+          model_name: @nesting.join("::"),
+          association_name: association_name,
+        )
+
+        return unless result
+
+        @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
+      end
+
+      sig { params(node: Prism::CallNode).void }
       def handle_route(node)
         result = @client.route_location(T.must(node.message))
         return unless result
 
-        *file_parts, line = result.fetch(:location).split(":")
-
-        # On Windows, file paths will look something like `C:/path/to/file.rb:123`. Only the last colon is the line
-        # number and all other parts compose the file path
-        file_path = file_parts.join(":")
-
-        @response_builder << Interface::Location.new(
-          uri: URI::Generic.from_path(path: file_path).to_s,
-          range: Interface::Range.new(
-            start: Interface::Position.new(line: Integer(line) - 1, character: 0),
-            end: Interface::Position.new(line: Integer(line) - 1, character: 0),
-          ),
-        )
+        @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
       sig { params(name: String).void }
