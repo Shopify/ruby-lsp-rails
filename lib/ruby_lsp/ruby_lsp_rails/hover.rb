@@ -24,15 +24,15 @@ module RubyLsp
         params(
           client: RunnerClient,
           response_builder: ResponseBuilders::Hover,
-          nesting: T::Array[String],
+          node_context: NodeContext,
           global_state: GlobalState,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, response_builder, nesting, global_state, dispatcher)
+      def initialize(client, response_builder, node_context, global_state, dispatcher)
         @client = client
         @response_builder = response_builder
-        @nesting = nesting
+        @nesting = T.let(node_context.nesting, T::Array[String])
         @index = T.let(global_state.index, RubyIndexer::Index)
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
       end
