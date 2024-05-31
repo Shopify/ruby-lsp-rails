@@ -23,6 +23,6 @@ Gem::Specification.new do |spec|
     Dir["lib/**/*", "LICENSE.txt", "Rakefile", "README.md"]
   end
 
-  spec.add_dependency("ruby-lsp", ">= 0.16.5", "< 0.17.0")
+  spec.add_dependency("ruby-lsp", ">= 0.17.0", "< 0.18.0")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9897")
 end

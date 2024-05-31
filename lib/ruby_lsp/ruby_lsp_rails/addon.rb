@@ -59,12 +59,12 @@ module RubyLsp
       sig do
         override.params(
           response_builder: ResponseBuilders::Hover,
-          nesting: T::Array[String],
+          node_context: NodeContext,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_hover_listener(response_builder, nesting, dispatcher)
-        Hover.new(@client, response_builder, nesting, T.must(@global_state), dispatcher)
+      def create_hover_listener(response_builder, node_context, dispatcher)
+        Hover.new(@client, response_builder, node_context, T.must(@global_state), dispatcher)
       end
 
       sig do
@@ -81,13 +81,13 @@ module RubyLsp
         override.params(
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
           uri: URI::Generic,
-          nesting: T::Array[String],
+          node_context: NodeContext,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_definition_listener(response_builder, uri, nesting, dispatcher)
+      def create_definition_listener(response_builder, uri, node_context, dispatcher)
         index = T.must(@global_state).index
-        Definition.new(@client, response_builder, nesting, index, dispatcher)
+        Definition.new(@client, response_builder, node_context, index, dispatcher)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }

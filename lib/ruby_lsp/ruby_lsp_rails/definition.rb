@@ -35,15 +35,15 @@ module RubyLsp
         params(
           client: RunnerClient,
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
-          nesting: T::Array[String],
+          node_context: NodeContext,
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, response_builder, nesting, index, dispatcher)
+      def initialize(client, response_builder, node_context, index, dispatcher)
         @client = client
         @response_builder = response_builder
-        @nesting = nesting
+        @nesting = T.let(node_context.nesting, T::Array[String])
         @index = index
 
         dispatcher.register(self, :on_call_node_enter)
