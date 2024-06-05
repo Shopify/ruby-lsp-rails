@@ -43,14 +43,26 @@ module RubyLsp
       def initialize(client, response_builder, node_context, index, dispatcher)
         @client = client
         @response_builder = response_builder
+        @node_context = node_context
         @nesting = T.let(node_context.nesting, T::Array[String])
         @index = index
 
-        dispatcher.register(self, :on_call_node_enter)
+        dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
       end
 
-      sig { params(node: Prism::CallNode).void }
-      def on_call_node_enter(node)
+      sig { params(node: Prism::SymbolNode).void }
+      def on_symbol_node_enter(node)
+        handle_dsl(node) if @node_context.call_node
+      end
+
+      sig { params(node: Prism::StringNode).void }
+      def on_string_node_enter(node)
+        handle_dsl(node) if @node_context.call_node
+      end
+
+      sig { params(node: T.any(Prism::SymbolNode, Prism::StringNode)).void }
+      def handle_dsl(node)
+        node = T.must(@node_context.call_node)
         return unless self_receiver?(node)
 
         message = node.message
@@ -61,7 +73,18 @@ module RubyLsp
           handle_association(node)
         elsif Support::Callbacks::ALL.include?(message)
           handle_callback(node)
-        elsif message.end_with?("_path") || message.end_with?("_url")
+        end
+      end
+
+      sig { params(node: Prism::CallNode).void }
+      def on_call_node_enter(node)
+        return unless self_receiver?(node)
+
+        message = node.message
+
+        return unless message
+
+        if message.end_with?("_path") || message.end_with?("_url")
           handle_route(node)
         end
       end

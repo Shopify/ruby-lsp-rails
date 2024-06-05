@@ -7,7 +7,7 @@ module RubyLsp
   module Rails
     class DefinitionTest < ActiveSupport::TestCase
       test "recognizes model callback with multiple symbol arguments" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 10 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 18 })
           # typed: false
 
           class TestModel
@@ -34,7 +34,7 @@ module RubyLsp
       end
 
       test "recognizes has_many model associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 14 })
           # typed: false
 
           class Organization < ActiveRecord::Base
@@ -53,7 +53,7 @@ module RubyLsp
       end
 
       test "recognizes belongs_to model associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 14 })
           # typed: false
 
           class Membership < ActiveRecord::Base
@@ -72,7 +72,7 @@ module RubyLsp
       end
 
       test "recognizes has_one model associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 11 })
           # typed: false
 
           class User < ActiveRecord::Base
@@ -91,7 +91,7 @@ module RubyLsp
       end
 
       test "recognizes has_and_belongs_to_many model associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 27 })
           # typed: false
 
           class Profile < ActiveRecord::Base
@@ -110,7 +110,7 @@ module RubyLsp
       end
 
       test "handles class_name argument for associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 4 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 11 })
           # typed: false
 
           class User < ActiveRecord::Base
@@ -129,7 +129,7 @@ module RubyLsp
       end
 
       test "recognizes controller callback with string argument" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 10 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 17 })
           # typed: false
 
           class TestController
@@ -149,7 +149,7 @@ module RubyLsp
       end
 
       test "recognizes job callback with string and symbol arguments" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 10 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 18 })
           # typed: false
 
           class TestJob
