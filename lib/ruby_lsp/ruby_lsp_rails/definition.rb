@@ -52,17 +52,18 @@ module RubyLsp
 
       sig { params(node: Prism::SymbolNode).void }
       def on_symbol_node_enter(node)
-        handle_dsl(node) if @node_context.call_node
+        handle_possible_dsl(node)
       end
 
       sig { params(node: Prism::StringNode).void }
       def on_string_node_enter(node)
-        handle_dsl(node) if @node_context.call_node
+        handle_possible_dsl(node)
       end
 
       sig { params(node: T.any(Prism::SymbolNode, Prism::StringNode)).void }
-      def handle_dsl(node)
-        node = T.must(@node_context.call_node)
+      def handle_possible_dsl(node)
+        node = @node_context.call_node
+        return unless node
         return unless self_receiver?(node)
 
         message = node.message
