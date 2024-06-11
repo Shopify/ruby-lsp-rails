@@ -95,6 +95,8 @@ module RubyLsp
            end
           @client.trigger_reload
         end
+
+        @client.tapioca_dsl([])
       end
 
       sig { params(global_state: GlobalState, message_queue: Thread::Queue).void }
