@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "tapioca/internal"
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
@@ -14,8 +15,10 @@ module RubyLsp
       def initialize
         $stdin.sync = true
         $stdout.sync = true
+        $stderr.sync = true
         $stdin.binmode
         $stdout.binmode
+        $stderr.binmode
         @running = true
       end
 
@@ -56,6 +59,20 @@ module RubyLsp
           route_location(params.fetch(:name))
         when "route_info"
           resolve_route_info(params)
+        when "tapioca_dsl"
+          # Check if Tapioca is available
+          constant_names = params.fetch(:constant_names)
+          constants = constant_names.map do |const|
+            ActiveSupport::Inflector.safe_constantize(const)
+          end
+
+          spawn do
+            # do the generation
+          end
+
+          # File.write("hello.txt", constants.inspect)
+
+          VOID
         else
           VOID
         end
