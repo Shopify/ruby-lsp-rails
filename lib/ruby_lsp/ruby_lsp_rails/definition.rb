@@ -55,11 +55,6 @@ module RubyLsp
         handle_possible_dsl(node)
       end
 
-      sig { params(node: Prism::StringNode).void }
-      def on_string_node_enter(node)
-        handle_possible_dsl(node)
-      end
-
       sig { params(node: T.any(Prism::SymbolNode, Prism::StringNode)).void }
       def handle_possible_dsl(node)
         node = @node_context.call_node
