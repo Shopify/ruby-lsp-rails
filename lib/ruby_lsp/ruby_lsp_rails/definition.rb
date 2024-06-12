@@ -50,11 +50,6 @@ module RubyLsp
         dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
       end
 
-      sig { params(node: Prism::SymbolNode).void }
-      def on_symbol_node_enter(node)
-        handle_possible_dsl(node)
-      end
-
       sig { params(node: Prism::StringNode).void }
       def on_string_node_enter(node)
         handle_possible_dsl(node)
