@@ -101,7 +101,21 @@ module RubyLsp
           @client.trigger_reload
         end
 
-        @client.tapioca_dsl([])
+        # TODO: Compare sending path vs constants from the index
+        index = T.must(@global_state).index
+        files_to_entries = index.instance_variable_get("@files_to_entries")
+        constants = changes.map do |change|
+          path = change[:uri].gsub("file://", "")
+          entries = files_to_entries[path]
+          return unless entries
+          entries.map do |entry|
+            next unless RubyIndexer::Entry::Namespace === entry
+
+            entry.name
+          end
+        end.flatten.compact
+
+        @client.tapioca_dsl(constants) if constants.any?
       end
 
       sig { params(global_state: GlobalState, message_queue: Thread::Queue).void }

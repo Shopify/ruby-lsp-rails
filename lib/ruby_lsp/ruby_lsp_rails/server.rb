@@ -60,17 +60,33 @@ module RubyLsp
         when "route_info"
           resolve_route_info(params)
         when "tapioca_dsl"
-          # Check if Tapioca is available
-          constant_names = params.fetch(:constant_names)
-          constants = constant_names.map do |const|
-            ActiveSupport::Inflector.safe_constantize(const)
-          end
+          VOID unless defined?(Tapioca)
 
-          spawn do
-            # do the generation
-          end
+          constants = params.fetch(:constants)
+          # constants = constant_names.map do |const|
+          #   ActiveSupport::Inflector.safe_constantize(const)
+          # end
 
-          # File.write("hello.txt", constants.inspect)
+          # spawn do
+            File.delete("out.txt")
+            File.open("out.txt", "w") do |f|
+              $stdout = f
+              $stderr = f
+              puts "Constants: #{constants}"
+
+              command = ::Tapioca::Commands::DslGenerate.new(
+                requested_constants: constants,
+                tapioca_path: ::Tapioca::TAPIOCA_DIR,
+                requested_paths: [],
+                outpath: Pathname.new(::Tapioca::DEFAULT_DSL_DIR),
+                file_header: true,
+                exclude: [],
+                only: [],
+              )
+
+              command.generate_without_booting
+            end
+          # end
 
           VOID
         else

@@ -51,7 +51,6 @@ module RubyLsp
 
       sig { params(node: Prism::ConstantReadNode).void }
       def on_constant_read_node_enter(node)
-        @client.tapioca_dsl(["User"])
         entries = @index.resolve(node.name.to_s, @nesting)
         return unless entries
 
