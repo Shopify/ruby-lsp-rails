@@ -103,9 +103,8 @@ module RubyLsp
 
       sig { params(constants: T::Array[String]).void }
       def tapioca_dsl(constants)
-        $stderr.puts("Tapioca_dsl from client")
-        send_notification("tapioca_dsl", constant_names: constants)
-        # $stderr.puts(@stderr.read)
+        $stderr.puts("RunnerClient#tapioca_dsl: #{constants}")
+        send_notification("tapioca_dsl", constants: constants)
       rescue IncompleteMessageError
         $stderr.puts("Ruby LSP failed to get constant information: #{@stderr.read}")
         nil
