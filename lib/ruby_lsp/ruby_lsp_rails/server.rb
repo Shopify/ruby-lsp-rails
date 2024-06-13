@@ -143,6 +143,7 @@ module RubyLsp
         !!(
           const &&
             defined?(ActiveRecord) &&
+            const.is_a?(Class) &&
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
           !const.abstract_class?
         )

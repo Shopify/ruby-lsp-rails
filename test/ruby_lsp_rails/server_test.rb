@@ -24,6 +24,11 @@ class ServerTest < ActiveSupport::TestCase
     assert_nil(response.fetch(:result))
   end
 
+  test "returns nil if constant is not a class" do
+    response = @server.execute("model", { name: "RUBY_VERSION" })
+    assert_nil(response.fetch(:result))
+  end
+
   test "doesn't fail if the class overrides `<`" do
     class TestClassWithOverwrittenLessThan
       class << self
