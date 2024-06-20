@@ -8,14 +8,15 @@ module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        capture_subprocess_io do
-          @client = T.let(RunnerClient.new, RunnerClient)
-        end
+        @client = T.let(RunnerClient.new, RunnerClient)
       end
 
       teardown do
-        capture_subprocess_io { @client.shutdown }
-        assert_predicate @client, :stopped?
+        @client.shutdown
+
+        # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
+        # which makes this assertion flaky
+        assert_predicate(@client, :stopped?) unless Gem.win_platform?
       end
 
       # These are integration tests which start the server. For the more fine-grained tests, see `server_test.rb`.
@@ -29,6 +30,7 @@ module RubyLsp
           ["age", "integer"],
           ["created_at", "datetime"],
           ["updated_at", "datetime"],
+          ["country_id", "integer"],
         ]
         response = T.must(@client.model("User"))
         assert_equal(columns, response.fetch(:columns))
@@ -54,16 +56,10 @@ module RubyLsp
       end
 
       test "failing to spawn server creates a null client" do
-        FileUtils.mv("bin/rails", "bin/rails_backup")
-        File.open("bin/rails", "w") do |f|
-          f.write("foo")
-        end
-        File.chmod(0o755, "bin/rails")
-
-        # The error message is slightly different on Ubuntu, so we need to allow for that
+        FileUtils.mv("test/dummy/config/application.rb", "test/dummy/config/application.rb.bak")
         assert_output(
           "",
-          %r{Ruby LSP Rails failed to initialize server: bin/rails: (line )?1: foo:( command)? not found},
+          /Ruby LSP Rails failed to initialize server/,
         ) do
           client = RunnerClient.create_client
 
@@ -72,7 +68,7 @@ module RubyLsp
           assert_predicate(client, :stopped?)
         end
       ensure
-        FileUtils.mv("bin/rails_backup", "bin/rails")
+        FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
 
       test "is resilient to extra output being printed during boot" do

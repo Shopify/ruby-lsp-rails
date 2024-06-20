@@ -37,7 +37,7 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](file://#{dummy_root}/db/schema.rb)
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
 
           **id**: integer (PK)
@@ -65,7 +65,7 @@ module RubyLsp
         RUBY
 
         assert_equal(<<~CONTENT.chomp, response.contents.value)
-          [Schema](file://#{dummy_root}/db/schema.rb)
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
           **id**: integer (PK)
 
@@ -93,7 +93,7 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](file://#{dummy_root}/db/schema.rb)
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
 
           **order_id**: integer (PK)
@@ -106,6 +106,47 @@ module RubyLsp
 
           **updated_at**: datetime
         CONTENT
+      end
+
+      test "handles `db/structure.sql` instead of `db/schema.rb`" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/structure.sql",
+          columns: [],
+          primary_keys: [],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_includes(
+          response.contents.value,
+          "[Schema](#{URI::Generic.from_path(path: dummy_root + "/db/structure.sql")})",
+        )
+      end
+
+      test "handles neither `db/structure.sql` nor `db/schema.rb` being present" do
+        expected_response = {
+          schema_file: nil,
+          columns: [],
+          primary_keys: [],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        refute_match(/Schema/, response.contents.value)
       end
 
       test "shows documentation for routes DSLs" do

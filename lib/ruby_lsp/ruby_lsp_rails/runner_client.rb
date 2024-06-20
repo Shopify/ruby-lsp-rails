@@ -46,10 +46,13 @@ module RubyLsp
           Process.setsid
         rescue Errno::EPERM
           # If we can't set the session ID, continue
+        rescue NotImplementedError
+          # setpgrp() may be unimplemented on some platform
+          # https://github.com/Shopify/ruby-lsp-rails/issues/348
         end
 
         stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
-          Open3.popen3("bin/rails", "runner", "#{__dir__}/server.rb", "start")
+          Open3.popen3("bundle", "exec", "rails", "runner", "#{__dir__}/server.rb", "start")
         end
 
         @stdin = T.let(stdin, IO)
@@ -77,7 +80,9 @@ module RubyLsp
             if @wait_thread.alive?
               $stderr.puts("Ruby LSP Rails is force killing the server")
               sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
-              Process.kill(T.must(Signal.list["TERM"]), @wait_thread.pid)
+
+              # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
+              Process.kill(T.must(Signal.list["KILL"]), @wait_thread.pid)
             end
           end
         end
@@ -91,6 +96,22 @@ module RubyLsp
       rescue IncompleteMessageError
         $stderr.puts("Ruby LSP Rails failed to get model information: #{@stderr.read}")
         nil
+      end
+
+      sig do
+        params(
+          model_name: String,
+          association_name: String,
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
+      def association_target_location(model_name:, association_name:)
+        make_request(
+          "association_target_location",
+          model_name: model_name,
+          association_name: association_name,
+        )
+      rescue => e
+        $stderr.puts("Ruby LSP Rails failed with #{e.message}: #{@stderr.read}")
       end
 
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }

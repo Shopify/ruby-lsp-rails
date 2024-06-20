@@ -10,6 +10,7 @@ module RubyLsp
     # definition of the symbol under the cursor.
     #
     # Currently supported targets:
+    #
     # - Callbacks
     # - Named routes (e.g. `users_path`)
     #
@@ -20,6 +21,7 @@ module RubyLsp
     # ```
     #
     # Notes for named routes:
+    #
     # - It is available only in Rails 7.1 or newer.
     # - Route may be defined across multiple files, e.g. using `draw`, rather than in `routes.rb`.
     # - Routes won't be found if not defined for the Rails development environment.
@@ -33,18 +35,46 @@ module RubyLsp
         params(
           client: RunnerClient,
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
-          nesting: T::Array[String],
+          node_context: NodeContext,
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, response_builder, nesting, index, dispatcher)
+      def initialize(client, response_builder, node_context, index, dispatcher)
         @client = client
         @response_builder = response_builder
-        @nesting = nesting
+        @node_context = node_context
+        @nesting = T.let(node_context.nesting, T::Array[String])
         @index = index
 
-        dispatcher.register(self, :on_call_node_enter)
+        dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
+      end
+
+      sig { params(node: Prism::SymbolNode).void }
+      def on_symbol_node_enter(node)
+        handle_possible_dsl(node)
+      end
+
+      sig { params(node: Prism::StringNode).void }
+      def on_string_node_enter(node)
+        handle_possible_dsl(node)
+      end
+
+      sig { params(node: T.any(Prism::SymbolNode, Prism::StringNode)).void }
+      def handle_possible_dsl(node)
+        node = @node_context.call_node
+        return unless node
+        return unless self_receiver?(node)
+
+        message = node.message
+
+        return unless message
+
+        if Support::Associations::ALL.include?(message)
+          handle_association(node)
+        elsif Support::Callbacks::ALL.include?(message)
+          handle_callback(node)
+        end
       end
 
       sig { params(node: Prism::CallNode).void }
@@ -55,9 +85,7 @@ module RubyLsp
 
         return unless message
 
-        if Support::Callbacks::ALL.include?(message)
-          handle_callback(node)
-        elsif message.end_with?("_path") || message.end_with?("_url")
+        if message.end_with?("_path") || message.end_with?("_url")
           handle_route(node)
         end
       end
@@ -84,19 +112,28 @@ module RubyLsp
       end
 
       sig { params(node: Prism::CallNode).void }
+      def handle_association(node)
+        first_argument = node.arguments&.arguments&.first
+        return unless first_argument.is_a?(Prism::SymbolNode)
+
+        association_name = first_argument.unescaped
+
+        result = @client.association_target_location(
+          model_name: @nesting.join("::"),
+          association_name: association_name,
+        )
+
+        return unless result
+
+        @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
+      end
+
+      sig { params(node: Prism::CallNode).void }
       def handle_route(node)
         result = @client.route_location(T.must(node.message))
         return unless result
 
-        file_path, line = result.fetch(:location).split(":")
-
-        @response_builder << Interface::Location.new(
-          uri: URI::Generic.from_path(path: file_path).to_s,
-          range: Interface::Range.new(
-            start: Interface::Position.new(line: Integer(line) - 1, character: 0),
-            end: Interface::Position.new(line: Integer(line) - 1, character: 0),
-          ),
-        )
+        @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
       sig { params(name: String).void }

@@ -36,7 +36,7 @@ module RubyLsp
         # The last 3 are for the test declaration.
         assert_equal(6, response.size)
         assert_match("Run", response[3].command.title)
-        assert_equal("bin/rails test /fake.rb:2", response[3].command.arguments[2])
+        assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
         assert_match("Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
@@ -54,7 +54,7 @@ module RubyLsp
         # The last 3 are for the test declaration.
         assert_equal(6, response.size)
         assert_match("Run", response[3].command.title)
-        assert_equal("bin/rails test /fake.rb:2", response[3].command.arguments[2])
+        assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
         assert_match("Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
@@ -73,7 +73,7 @@ module RubyLsp
         # The last 3 are for the test declaration.
         assert_equal(6, response.size)
         assert_match("Run", response[3].command.title)
-        assert_equal("bin/rails test /fake.rb:2", response[3].command.arguments[2])
+        assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
         assert_match("Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
@@ -144,7 +144,7 @@ module RubyLsp
         # The last 3 are for the test class.
         assert_equal(6, response.size)
         assert_match("Run", response[3].command.title)
-        assert_equal("bin/rails test /fake.rb:2", response[3].command.arguments[2])
+        assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
         assert_match("Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end

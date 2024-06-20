@@ -14,10 +14,16 @@ module RubyLsp
       def initialize
         $stdin.sync = true
         $stdout.sync = true
+        $stdin.binmode
+        $stdout.binmode
         @running = true
       end
 
       def start
+        # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
+        routes_reloader = ::Rails.application.routes_reloader
+        routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
+
         initialize_result = { result: { message: "ok" } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
 
@@ -41,6 +47,8 @@ module RubyLsp
           VOID
         when "model"
           resolve_database_info_from_model(params.fetch(:name))
+        when "association_target_location"
+          resolve_association_target(params)
         when "reload"
           ::Rails.application.reloader.reload!
           VOID
@@ -108,10 +116,34 @@ module RubyLsp
         { error: e.full_message(highlight: false) }
       end
 
+      def resolve_association_target(params)
+        const = ActiveSupport::Inflector.safe_constantize(params[:model_name])
+        unless active_record_model?(const)
+          return {
+            result: nil,
+          }
+        end
+
+        association_klass = const.reflect_on_association(params[:association_name].intern).klass
+
+        source_location = Object.const_source_location(association_klass.to_s)
+
+        {
+          result: {
+            location: source_location.first + ":" + source_location.second.to_s,
+          },
+        }
+      rescue NameError
+        {
+          result: nil,
+        }
+      end
+
       def active_record_model?(const)
         !!(
           const &&
             defined?(ActiveRecord) &&
+            const.is_a?(Class) &&
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
           !const.abstract_class?
         )

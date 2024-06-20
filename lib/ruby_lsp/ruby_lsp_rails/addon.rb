@@ -5,7 +5,9 @@ require "ruby_lsp/addon"
 
 require_relative "../../ruby_lsp_rails/version"
 require_relative "support/active_support_test_case_helper"
+require_relative "support/associations"
 require_relative "support/callbacks"
+require_relative "support/location_builder"
 require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
@@ -32,6 +34,7 @@ module RubyLsp
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new { @client = RunnerClient.create_client }
+        register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
       end
 
       sig { override.void }
@@ -56,12 +59,12 @@ module RubyLsp
       sig do
         override.params(
           response_builder: ResponseBuilders::Hover,
-          nesting: T::Array[String],
+          node_context: NodeContext,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_hover_listener(response_builder, nesting, dispatcher)
-        Hover.new(@client, response_builder, nesting, T.must(@global_state), dispatcher)
+      def create_hover_listener(response_builder, node_context, dispatcher)
+        Hover.new(@client, response_builder, node_context, T.must(@global_state), dispatcher)
       end
 
       sig do
@@ -78,13 +81,13 @@ module RubyLsp
         override.params(
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
           uri: URI::Generic,
-          nesting: T::Array[String],
+          node_context: NodeContext,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_definition_listener(response_builder, uri, nesting, dispatcher)
+      def create_definition_listener(response_builder, uri, node_context, dispatcher)
         index = T.must(@global_state).index
-        Definition.new(@client, response_builder, nesting, index, dispatcher)
+        Definition.new(@client, response_builder, node_context, index, dispatcher)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
@@ -94,6 +97,32 @@ module RubyLsp
            end
           @client.trigger_reload
         end
+      end
+
+      sig { params(global_state: GlobalState, message_queue: Thread::Queue).void }
+      def register_additional_file_watchers(global_state:, message_queue:)
+        return unless global_state.supports_watching_files
+
+        message_queue << Request.new(
+          id: "ruby-lsp-rails-file-watcher",
+          method: "client/registerCapability",
+          params: Interface::RegistrationParams.new(
+            registrations: [
+              Interface::Registration.new(
+                id: "workspace/didChangeWatchedFilesRails",
+                method: "workspace/didChangeWatchedFiles",
+                register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
+                  watchers: [
+                    Interface::FileSystemWatcher.new(
+                      glob_pattern: "**/*structure.sql",
+                      kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
       end
 
       sig { override.returns(String) }

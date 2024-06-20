@@ -1,3 +1,5 @@
+[![Ruby DX Slack](https://img.shields.io/badge/Slack-Ruby%20DX-success?logo=slack)](https://join.slack.com/t/ruby-dx/shared_invite/zt-2c8zjlir6-uUDJl8oIwcen_FS_aA~b6Q)
+
 # Ruby LSP Rails
 
 Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for extra Rails editor features, such as:
@@ -37,9 +39,7 @@ When extension is stopped (e.g. by quitting the editor), the server instance is 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Shopify/ruby-lsp-rails. This project is
-intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the
-[Contributor Covenant](https://github.com/Shopify/ruby-lsp-rails/blob/main/CODE_OF_CONDUCT.md) code of conduct.
+See [CONTRIBUTING.md](https://github.com/Shopify/ruby-lsp-rails/blob/main/CONTRIBUTING.md)
 
 ## License
 

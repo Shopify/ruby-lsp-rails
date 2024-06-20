@@ -12,15 +12,10 @@ jobs:
         gemfile:
           - Gemfile
           - gemfiles/Gemfile-rails-main
-        ruby: ["3.0", "3.1", "3.2", "3.3"]
+        ruby: ["3.1", "3.2", "3.3"]
         include:
           - gemfile: "gemfiles/Gemfile-rails-main"
             experimental: true
-        exclude:
-          - os: "windows-latest"
-            ruby: "3.0"
-          - Gemfile: "gemfiles/Gemfile-rails-main" # needs Ruby 3.1
-            ruby: "3.0"
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     env:
@@ -42,15 +37,24 @@ jobs:
           bundler-cache: true
           cache-version: 7
 
-      - name: Check if documentation is up to date
-        run: bundle exec rake ruby_lsp:check_docs
+      - name: Run tests
+        run: bundle exec rake
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler: latest
+          bundler-cache: true
 
       - name: Typecheck
-        if: matrix.os != 'windows-latest'
         run: bundle exec srb tc
 
       - name: Lint Ruby files
         run: bin/rubocop
 
-      - name: Run tests
-        run: bin/rails db:setup && bin/rails db:migrate && bin/rails test
+      - name: Check if documentation is up to date
+        run: bundle exec rake ruby_lsp:check_docs
