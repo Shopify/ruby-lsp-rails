@@ -16,6 +16,10 @@ module RubyLsp
             "around_create",
             "after_create",
             "after_commit",
+            "after_create_commit", # alias for after_commit
+            "after_update_commit", # alias for after_commit
+            "after_destroy_commit", # alias for after_commit
+            "after_save_commit", # alias for after_commit
             "after_rollback",
             "before_update",
             "around_update",
