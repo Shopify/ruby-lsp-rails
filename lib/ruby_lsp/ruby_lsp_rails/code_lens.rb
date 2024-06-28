@@ -10,6 +10,7 @@ module RubyLsp
     # - Run tests in the VS Terminal
     # - Run tests in the VS Code Test Explorer
     # - Debug tests
+    # - Run migrations in the VS Terminal
     #
     # The
     # [code lens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
@@ -31,6 +32,14 @@ module RubyLsp
     #   test "outputs goodbye" do # <- Will show code lenses above for running or debugging this test
     #     # ...
     #   end
+    # end
+    # ````
+    #
+    # # Example:
+    # ```ruby
+    # Run
+    # class AddFirstNameToUsers < ActiveRecord::Migration[7.1]
+    #   # ...
     # end
     # ````
     #
@@ -74,6 +83,7 @@ module RubyLsp
       sig { params(node: Prism::DefNode).void }
       def on_def_node_enter(node)
         method_name = node.name.to_s
+
         if method_name.start_with?("test_")
           line_number = node.location.start_line
           command = "#{test_command} #{@path}:#{line_number}"
@@ -84,11 +94,18 @@ module RubyLsp
       sig { params(node: Prism::ClassNode).void }
       def on_class_node_enter(node)
         class_name = node.constant_path.slice
+        superclass_name = node.superclass&.slice
+
         if class_name.end_with?("Test")
           command = "#{test_command} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
           @group_id_stack.push(@group_id)
           @group_id += 1
+        end
+
+        if superclass_name&.start_with?("ActiveRecord::Migration")
+          command = "#{migrate_command} VERSION=#{migration_version}"
+          add_migrate_code_lens(node, name: class_name, command: command)
         end
       end
 
@@ -104,11 +121,30 @@ module RubyLsp
 
       sig { returns(String) }
       def test_command
-        if Gem.win_platform?
-          "ruby bin/rails test"
-        else
-          "bin/rails test"
-        end
+        "#{RbConfig.ruby} bin/rails test"
+      end
+
+      sig { returns(String) }
+      def migrate_command
+        "#{RbConfig.ruby} bin/rails db:migrate"
+      end
+
+      sig { returns(T.nilable(String)) }
+      def migration_version
+        File.basename(T.must(@path)).split("_").first
+      end
+
+      sig { params(node: Prism::Node, name: String, command: String).void }
+      def add_migrate_code_lens(node, name:, command:)
+        return unless @path
+
+        @response_builder << create_code_lens(
+          node,
+          title: "Run",
+          command_name: "rubyLsp.runTask",
+          arguments: [command],
+          data: { type: "migrate" },
+        )
       end
 
       sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
