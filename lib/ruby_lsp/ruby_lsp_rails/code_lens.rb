@@ -5,11 +5,21 @@ module RubyLsp
   module Rails
     # ![CodeLens demo](../../code_lens.gif)
     #
-    # This feature adds several CodeLens features for Rails applications using Active Support test cases:
+    # This feature adds Code Lens features for Rails applications.
+    #
+    # For Active Support test cases:
     #
     # - Run tests in the VS Terminal
     # - Run tests in the VS Code Test Explorer
     # - Debug tests
+    #
+    # For Rails controllers:
+    #
+    # - See the path corresponding to an action
+    # - Click on the action's Code Lens to jump to its declaration in the routes.
+    #
+    # Note: This depends on a support for the `rubyLsp.openFile` command.
+    # For the VS Code extension this is built-in, but for other editors this may require some custom configuration.
     #
     # The
     # [code lens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
@@ -17,7 +27,9 @@ module RubyLsp
     # It's available for tests which inherit from `ActiveSupport::TestCase` or one of its descendants, such as
     # `ActionDispatch::IntegrationTest`.
     #
-    # # Example:
+    # A code lens can be _unresolved_, meaning no command is associated with it.
+    #
+    # # Examples:
     #
     # For the following code, Code Lenses will be added above the class definition above each test method.
     #
@@ -32,12 +44,26 @@ module RubyLsp
     #     # ...
     #   end
     # end
-    # ````
+    # ```
     #
     # The code lenses will be displayed above the class and above each test method.
     #
     # Note: When using the Test Explorer view, if your code contains a statement to pause execution (e.g. `debugger`) it
     # will cause the test runner to hang.
+    #
+    # For the following code, assuming the routing contains `resources :users`, a Code Lens will be seen above each
+    # action.
+    #
+    # ```ruby
+    # class UsersController < ApplicationController
+    #   GET /users(.:format)
+    #   def index # <- Will show code lens above for the path
+    #   end
+    # end
+    # ```
+    #
+    # Note: Complex routing configurations may not be supported.
+    #
     class CodeLens
       extend T::Sig
       include Requests::Support::Common
@@ -45,12 +71,14 @@ module RubyLsp
 
       sig do
         params(
+          client: RunnerClient,
           response_builder:  ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
           uri: URI::Generic,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(response_builder, uri, dispatcher)
+      def initialize(client, response_builder, uri, dispatcher)
+        @client = client
         @response_builder = response_builder
         @path = T.let(uri.to_standardized_path, T.nilable(String))
         @group_id = T.let(1, Integer)
@@ -84,11 +112,17 @@ module RubyLsp
       sig { params(node: Prism::ClassNode).void }
       def on_class_node_enter(node)
         class_name = node.constant_path.slice
+        superclass_name = node.superclass&.slice
+
         if class_name.end_with?("Test")
           command = "#{test_command} #{@path}"
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
           @group_id_stack.push(@group_id)
           @group_id += 1
+        end
+
+        if class_name.end_with?("Controller") && superclass_name&.end_with?("Controller")
+          add_route_code_lenses_to_actions(node)
         end
       end
 
@@ -101,6 +135,48 @@ module RubyLsp
       end
 
       private
+
+      sig { params(node: Prism::ClassNode).void }
+      def add_route_code_lenses_to_actions(node)
+        public_method_nodes = T.must(node.body).child_nodes.take_while do |node|
+          !node.is_a?(Prism::CallNode) || ![:protected, :private].include?(node.name)
+        end
+        public_method_nodes.grep(Prism::DefNode).each do |public_method_node|
+          add_route_code_lens_to_action(public_method_node, class_node: node)
+        end
+      end
+
+      sig { params(node: Prism::DefNode, class_node: Prism::ClassNode).void }
+      def add_route_code_lens_to_action(node, class_node:)
+        route = @client.route(
+          controller: class_node.constant_path.slice,
+          action: node.name.to_s,
+        )
+
+        return unless route
+
+        path = route[:path]
+        verb = route[:verb]
+        source_location = route[:source_location]
+
+        arguments = [
+          source_location,
+          {
+            start_line: node.location.start_line - 1,
+            start_column: node.location.start_column,
+            end_line: node.location.end_line - 1,
+            end_column: node.location.end_column,
+          },
+        ]
+
+        @response_builder << create_code_lens(
+          node,
+          title: [verb, path].join(" "),
+          command_name: "rubyLsp.openFile",
+          arguments: arguments,
+          data: { type: "file" },
+        )
+      end
 
       sig { returns(String) }
       def test_command
