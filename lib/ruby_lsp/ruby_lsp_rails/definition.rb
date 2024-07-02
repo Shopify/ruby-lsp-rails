@@ -17,7 +17,7 @@ module RubyLsp
     # # Example
     #
     # ```ruby
-    # before_action :foo # <- Go to definition on this symbol will jump to the method if it is defined in the same class
+    # before_action :foo # <- Go to definition on this symbol will jump to the method
     # ```
     #
     # Notes for named routes:
