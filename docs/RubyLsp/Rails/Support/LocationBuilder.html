@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RDoc Documentation</title>
+
+  <script type="text/javascript">
+    var rdoc_rel_prefix = "../../../";
+    var index_rel_prefix = "../../../";
+  </script>
+
+  <script src="../../../js/search_index.js" defer></script>
+  <script src="../../../js/snapper.js" defer></script>
+  <link href="../../../css/snapper.css" rel="stylesheet">
+</head>
+
+  <body>
+    <div id="main-container">
+  <nav id="nav">
+  <h3 class="title">RDoc Documentation</h3>
+
+  <input id="side-search" type="text" placeholder="Search docs (CMD/CTRL + K)"></input>
+
+  <ul id="navigation-list">
+    <li id="getting-started"><a href="../../../index.html">Getting started</a></li>
+    <p class="separator">PAGES</p>
+    <li class="index-entry">
+  <a href="../../../CODE_OF_CONDUCT_md.html">
+    CODE_OF_CONDUCT
+  </a>
+</li>
+<li class="index-entry">
+  <a href="../../../CONTRIBUTING_md.html">
+    CONTRIBUTING
+  </a>
+</li>
+<li class="index-entry">
+  <a href="../../../README_md.html">
+    README
+  </a>
+</li>
+
+    <p class="separator">CODE</p>
+    <li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../../RubyLsp.html">RubyLsp</a></summary>
+    <ul>
+      <li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../../RubyLsp/Rails.html">Rails</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../../RubyLsp/Rails/ActiveSupportTestCaseHelper.html">ActiveSupportTestCaseHelper</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Addon.html">Addon</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/CodeLens.html">CodeLens</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Definition.html">Definition</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/DocumentSymbol.html">DocumentSymbol</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Hover.html">Hover</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/NullClient.html">NullClient</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Railtie.html">Railtie</a></li><li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../../RubyLsp/Rails/RunnerClient.html">RunnerClient</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../../RubyLsp/Rails/RunnerClient/EmptyMessageError.html">EmptyMessageError</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/RunnerClient/IncompleteMessageError.html">IncompleteMessageError</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/RunnerClient/InitializationError.html">InitializationError</a></li>
+    </ul>
+  </details>
+</li>
+<li class="index-entry"><a href="../../../RubyLsp/Rails/Server.html">Server</a></li><li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../../RubyLsp/Rails/Support.html">Support</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../../RubyLsp/Rails/Support/Associations.html">Associations</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Support/Callbacks.html">Callbacks</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Support/LocationBuilder.html">LocationBuilder</a></li><li class="index-entry"><a href="../../../RubyLsp/Rails/Support/RailsDocumentClient.html">RailsDocumentClient</a></li>
+    </ul>
+  </details>
+</li>
+
+    </ul>
+  </details>
+</li>
+
+    </ul>
+  </details>
+</li>
+
+  </ul>
+</nav>
+
+
+  <article>
+    <h1>class RubyLsp::Rails::Support::LocationBuilder</h1>
+    <section class="description"></section>
+
+      <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+        
+
+        
+            
+
+            <section>
+              <h3 class="section-title">Public Class Methods<hr/></h3>
+
+                <div id="method-c-line_location_from_s" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      line_location_from_s(location_string)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/support/location_builder.rb, line 12</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">line_location_from_s</span>(<span class="ruby-identifier">location_string</span>)
+  <span class="ruby-operator">*</span><span class="ruby-identifier">file_parts</span>, <span class="ruby-identifier">line</span> = <span class="ruby-identifier">location_string</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&quot;:&quot;</span>)
+
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;Invalid location string given&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">file_parts</span>
+
+  <span class="ruby-comment"># On Windows, file paths will look something like `C:/path/to/file.rb:123`. Only the last colon is the line</span>
+  <span class="ruby-comment"># number and all other parts compose the file path</span>
+  <span class="ruby-identifier">file_path</span> = <span class="ruby-identifier">file_parts</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;:&quot;</span>)
+
+  <span class="ruby-constant">Interface</span><span class="ruby-operator">::</span><span class="ruby-constant">Location</span>.<span class="ruby-identifier">new</span>(
+    <span class="ruby-value">uri:</span> <span class="ruby-constant">URI</span><span class="ruby-operator">::</span><span class="ruby-constant">Generic</span>.<span class="ruby-identifier">from_path</span>(<span class="ruby-value">path:</span> <span class="ruby-identifier">file_path</span>).<span class="ruby-identifier">to_s</span>,
+    <span class="ruby-value">range:</span> <span class="ruby-constant">Interface</span><span class="ruby-operator">::</span><span class="ruby-constant">Range</span>.<span class="ruby-identifier">new</span>(
+      <span class="ruby-value">start:</span> <span class="ruby-constant">Interface</span><span class="ruby-operator">::</span><span class="ruby-constant">Position</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">line:</span> <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">line</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>, <span class="ruby-value">character:</span> <span class="ruby-value">0</span>),
+      <span class="ruby-value">end:</span> <span class="ruby-constant">Interface</span><span class="ruby-operator">::</span><span class="ruby-constant">Position</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">line:</span> <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">line</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>, <span class="ruby-value">character:</span> <span class="ruby-value">0</span>),
+    ),
+  )
+<span class="ruby-keyword">end</span></pre>
+                </div>
+            </section>
+          
+            
+            
+        
+            
+            
+            
+        
+      </section>
+  </article>
+
+   <div class="right-section">
+  <nav class="right-nav">
+    <span id="right-side-bar-title" class="right-side-bar-title">On this page</span>
+      <ul>
+          <li id="right-side-bar-class-rubylsp-rails-support-locationbuilder" class="right-side-bar-class">
+            <a href="#" >class RubyLsp::Rails::Support::LocationBuilder</a>
+
+              <ul>
+
+
+
+
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-public-class-methods" class="right-side-bar-section">Public Class Methods</summary>
+                        <ul>
+                            <li id="right-nav-line_location_from_s" class="right-side-bar-element">
+                              <a href="#method-c-line_location_from_s">line_location_from_s</a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+            </li>
+          </ul>
+        </li>
+  </nav>
+</div>
+
+</div>
+
+<div id="search-modal">
+  <div id="search-modal-content">
+    <input id="search-modal-input" type="text" placeholder="Search"></input>
+    <ul id="search-results"></ul>
+  </div>
+</div>
+
+
+    <footer>
+      <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1
+    </footer>
+  </body>
+</html>
