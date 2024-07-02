@@ -8,6 +8,7 @@ module RubyLsp
     class CodeLensTest < ActiveSupport::TestCase
       setup do
         GlobalState.any_instance.stubs(:test_library).returns("rails")
+        @ruby = Gem.win_platform? ? "ruby.exe" : "ruby"
       end
 
       test "does not create code lenses if rails is not the test library" do
@@ -270,13 +271,29 @@ module RubyLsp
           end
         RUBY
 
-        assert_equal("ruby bin/rails test /fake.rb", response[0].command.arguments[2])
+        assert_match("#{ruby} bin/rails test /fake.rb", response[0].command.arguments[2])
+      end
+
+      test "recognizes migrations" do
+        response = generate_code_lens_for_source(<<~RUBY, file: "file://db/migrate/123456_add_first_name_to_users.rb")
+          class AddFirstNameToUsers < ActiveRecord::Migration[7.1]
+            def change
+              add_column(:users, :first_name, :string)
+            end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_match("Run", response[0].command.title)
+        assert_match("#{ruby} bin/rails db:migrate VERSION=123456", response[0].command.arguments[0])
       end
 
       private
 
-      def generate_code_lens_for_source(source)
-        with_server(source) do |server, uri|
+      attr_reader :ruby
+
+      def generate_code_lens_for_source(source, file: "/fake.rb")
+        with_server(source, URI(file)) do |server, uri|
           server.process_message(
             id: 1,
             method: "textDocument/codeLens",
