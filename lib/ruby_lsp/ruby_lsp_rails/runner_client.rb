@@ -39,6 +39,8 @@ module RubyLsp
       sig { returns(String) }
       attr_reader :rails_root
 
+      attr_reader :stdin
+
       sig { void }
       def initialize
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
@@ -98,15 +100,6 @@ module RubyLsp
         make_request("model", name: name)
       rescue IncompleteMessageError
         $stderr.puts("Ruby LSP Rails failed to get model information: #{@stderr.read}")
-        nil
-      end
-
-      sig { params(constants: T::Array[String]).void }
-      def tapioca_dsl(constants)
-        $stderr.puts("RunnerClient#tapioca_dsl: #{constants}")
-        send_notification("tapioca_dsl", constants: constants)
-      rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP failed to get constant information: #{@stderr.read}")
         nil
       end
 

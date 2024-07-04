@@ -9,11 +9,11 @@ GIT
 PATH
   remote: ../tapioca
   specs:
-    tapioca (0.14.3)
+    tapioca (0.16.0)
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
-      rbi (>= 0.1.4, < 0.2)
+      rbi (>= 0.1.14, < 0.2)
       sorbet-static-and-runtime (>= 0.5.11087)
       spoom (>= 1.2.0)
       thor (>= 1.2.0)
@@ -215,7 +215,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.2.1)
-    rbi (0.1.13)
+    rbi (0.1.14)
       prism (>= 0.18.0, < 1.0.0)
       sorbet-runtime (>= 0.5.9204)
     rbs (3.5.2)

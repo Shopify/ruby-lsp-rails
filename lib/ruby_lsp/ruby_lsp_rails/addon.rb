@@ -34,7 +34,10 @@ module RubyLsp
         @global_state = T.let(global_state, T.nilable(RubyLsp::GlobalState))
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
-        Thread.new { @client = RunnerClient.create_client }
+        Thread.new do
+          @client = RunnerClient.create_client
+          @global_state.instance_variable_set(:@rails_runner_stdin, @client.stdin)
+        end
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
 
         T.must(@global_state).index.register_enhancement(IndexingEnhancement.new)
@@ -100,22 +103,6 @@ module RubyLsp
            end
           @client.trigger_reload
         end
-
-        # TODO: Compare sending path vs constants from the index
-        index = T.must(@global_state).index
-        files_to_entries = index.instance_variable_get("@files_to_entries")
-        constants = changes.map do |change|
-          path = change[:uri].gsub("file://", "")
-          entries = files_to_entries[path]
-          return unless entries
-          entries.map do |entry|
-            next unless RubyIndexer::Entry::Namespace === entry
-
-            entry.name
-          end
-        end.flatten.compact
-
-        @client.tapioca_dsl(constants) if constants.any?
       end
 
       sig { params(global_state: GlobalState, message_queue: Thread::Queue).void }

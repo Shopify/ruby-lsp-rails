@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "json"
-require "tapioca/internal"
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
@@ -20,6 +19,7 @@ module RubyLsp
         $stdout.binmode
         $stderr.binmode
         @running = true
+        @addons = {}
       end
 
       def start
@@ -29,6 +29,7 @@ module RubyLsp
 
         initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
+        load_addons
 
         while @running
           headers = $stdin.gets("\r\n\r\n")
@@ -43,7 +44,28 @@ module RubyLsp
         end
       end
 
+      def load_addons
+        # TODO: Retrieve addons from RubyLSP
+        # @addons[:tapioca] = ::RubyLsp::Tapioca::Addon
+        Gem.find_files("ruby_lsp/**/addon.rb").each do |addon|
+          require File.expand_path(addon)
+        rescue => e
+          $stderr.puts(e.full_message)
+        end
+
+        ObjectSpace.each_object(Class).each do |kls|
+          next unless kls < ::RubyLsp::Addon
+
+          @addons[kls.name.split("::").second.underscore.to_sym] = kls
+        end
+      end
+
       def execute(request, params)
+        $stderr.puts "Request: #{request}"
+        key, method = request.split("_", 2)
+        addon = @addons[key.to_sym]
+        return addon.send(method, params) if addon
+
         case request
         when "shutdown"
           @running = false
@@ -68,24 +90,24 @@ module RubyLsp
           # end
 
           # spawn do
-            File.delete("out.txt")
-            File.open("out.txt", "w") do |f|
-              $stdout = f
-              $stderr = f
-              puts "Constants: #{constants}"
+          File.delete("out.txt")
+          File.open("out.txt", "w") do |f|
+            $stdout = f
+            $stderr = f
+            puts "Constants: #{constants}"
 
-              command = ::Tapioca::Commands::DslGenerate.new(
-                requested_constants: constants,
-                tapioca_path: ::Tapioca::TAPIOCA_DIR,
-                requested_paths: [],
-                outpath: Pathname.new(::Tapioca::DEFAULT_DSL_DIR),
-                file_header: true,
-                exclude: [],
-                only: [],
-              )
+            command = ::Tapioca::Commands::DslGenerate.new(
+              requested_constants: constants,
+              tapioca_path: ::Tapioca::TAPIOCA_DIR,
+              requested_paths: [],
+              outpath: Pathname.new(::Tapioca::DEFAULT_DSL_DIR),
+              file_header: true,
+              exclude: [],
+              only: [],
+            )
 
-              command.generate_without_booting
-            end
+            command.generate_without_booting
+          end
           # end
 
           VOID
