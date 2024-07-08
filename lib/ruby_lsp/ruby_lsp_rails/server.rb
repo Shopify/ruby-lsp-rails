@@ -54,6 +54,8 @@ module RubyLsp
           VOID
         when "route_location"
           route_location(params.fetch(:name))
+        when "route_info"
+          resolve_route_info(params)
         else
           VOID
         end
@@ -62,6 +64,32 @@ module RubyLsp
       end
 
       private
+
+      def resolve_route_info(requirements)
+        if requirements[:controller]
+          requirements[:controller] = requirements.fetch(:controller).underscore.delete_suffix("_controller")
+        end
+
+        # In Rails 7.2 we can use `from_requirements, otherwise we fall back to a private API
+        route = if ::Rails.application.routes.respond_to?(:from_requirements)
+          ::Rails.application.routes.from_requirements(requirements)
+        else
+          ::Rails.application.routes.routes.find { |route| route.requirements == requirements }
+        end
+
+        if route&.source_location
+          file, _, line = route.source_location.rpartition(":")
+          body = {
+            source_location: [::Rails.root.join(file).to_s, line],
+            verb: route.verb,
+            path: route.path.spec.to_s,
+          }
+
+          { result: body }
+        else
+          { result: nil }
+        end
+      end
 
       # Older versions of Rails don't support `route_source_locations`.
       # We also check that it's enabled.
