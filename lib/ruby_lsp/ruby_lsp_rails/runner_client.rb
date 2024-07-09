@@ -172,6 +172,8 @@ module RubyLsp
         json = message.to_json
 
         @stdin.write("Content-Length: #{json.length}\r\n\r\n", json)
+      rescue Errno::EPIPE
+        # The server connection died
       end
 
       alias_method :send_notification, :send_message
@@ -193,6 +195,9 @@ module RubyLsp
         end
 
         response.fetch(:result)
+      rescue Errno::EPIPE
+        # The server connection died
+        nil
       end
     end
 
