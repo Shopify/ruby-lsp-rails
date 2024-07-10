@@ -160,8 +160,10 @@ module RubyLsp
 
       sig { returns(T.nilable(T::Boolean)) }
       def controller?
-        class_name, superclass_name = T.must(@constant_name_stack.last)
-        class_name.end_with?("Controller") && superclass_name&.end_with?("Controller")
+        class_name, superclass_name = @constant_name_stack.last
+        return false unless class_name && superclass_name
+
+        class_name.end_with?("Controller") && superclass_name.end_with?("Controller")
       end
 
       sig { params(node: Prism::DefNode).void }

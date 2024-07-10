@@ -303,6 +303,15 @@ module RubyLsp
         assert_match("config/routes.rb", path)
       end
 
+      test "doesn't break when analyzing a file without a class" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          def index
+          end
+        RUBY
+
+        assert_empty(response)
+      end
+
       private
 
       attr_reader :ruby
