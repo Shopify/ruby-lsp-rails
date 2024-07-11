@@ -104,7 +104,8 @@ module RubyLsp
           entries = files_to_entries[path]
           return unless entries
           entries.map do |entry|
-            next unless RubyIndexer::Entry::Namespace === entry
+            next unless entry.class == RubyIndexer::Entry::Class ||
+              entry.class == RubyIndexer::Entry::Module
 
             entry.name
           end
