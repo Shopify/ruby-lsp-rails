@@ -79,13 +79,15 @@ module RubyLsp
       sig do
         params(
           client: RunnerClient,
+          global_state: GlobalState,
           response_builder:  ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
           uri: URI::Generic,
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def initialize(client, response_builder, uri, dispatcher)
+      def initialize(client, global_state, response_builder, uri, dispatcher)
         @client = client
+        @global_state = global_state
         @response_builder = response_builder
         @path = T.let(uri.to_standardized_path, T.nilable(String))
         @group_id = T.let(1, Integer)
@@ -214,6 +216,7 @@ module RubyLsp
       sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
       def add_test_code_lens(node, name:, command:, kind:)
         return unless @path
+        return unless @global_state.test_library == "rails"
 
         arguments = [
           @path,

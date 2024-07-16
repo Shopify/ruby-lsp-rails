@@ -311,6 +311,29 @@ module RubyLsp
         assert_empty(response)
       end
 
+      test "returns code lenses despite different test framework" do
+        RubyLsp::GlobalState.any_instance.stubs(:test_library).returns("rspec")
+
+        response = generate_code_lens_for_source(<<~RUBY)
+          class UsersController < ApplicationController
+            def index
+            end
+          end
+        RUBY
+
+        refute_empty(response)
+
+        response = generate_code_lens_for_source(<<~RUBY, file: "file://db/migrate/123456_add_first_name_to_users.rb")
+          class AddFirstNameToUsers < ActiveRecord::Migration[7.1]
+            def change
+              add_column(:users, :first_name, :string)
+            end
+          end
+        RUBY
+
+        refute_empty(response)
+      end
+
       private
 
       attr_reader :ruby
