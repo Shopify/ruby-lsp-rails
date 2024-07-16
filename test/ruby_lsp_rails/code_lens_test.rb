@@ -295,12 +295,11 @@ module RubyLsp
             end
           end
         RUBY
-        path, line = response[0].command.arguments.first
+        uri = response[0].command.arguments.first.first
 
         assert_equal(1, response.size)
         assert_match("GET /users(.:format)", response[0].command.title)
-        assert_equal("4", line)
-        assert_match("config/routes.rb", path)
+        assert_match("config/routes.rb#L4", uri)
       end
 
       test "doesn't break when analyzing a file without a class" do

@@ -169,32 +169,16 @@ module RubyLsp
       sig { params(node: Prism::DefNode).void }
       def add_route_code_lens_to_action(node)
         class_name, _ = T.must(@constant_name_stack.last)
-        route = @client.route(
-          controller: class_name,
-          action: node.name.to_s,
-        )
-
+        route = @client.route(controller: class_name, action: node.name.to_s)
         return unless route
 
-        path = route[:path]
-        verb = route[:verb]
-        source_location = route[:source_location]
-
-        arguments = [
-          source_location,
-          {
-            start_line: node.location.start_line - 1,
-            start_column: node.location.start_column,
-            end_line: node.location.end_line - 1,
-            end_column: node.location.end_column,
-          },
-        ]
+        file_path, line = route[:source_location]
 
         @response_builder << create_code_lens(
           node,
-          title: [verb, path].join(" "),
+          title: "#{route[:verb]} #{route[:path]}",
           command_name: "rubyLsp.openFile",
-          arguments: arguments,
+          arguments: [["file://#{file_path}#L#{line}"]],
           data: { type: "file" },
         )
       end
