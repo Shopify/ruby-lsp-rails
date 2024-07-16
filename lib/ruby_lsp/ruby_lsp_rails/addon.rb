@@ -51,9 +51,7 @@ module RubyLsp
         ).void
       end
       def create_code_lens_listener(response_builder, uri, dispatcher)
-        return unless T.must(@global_state).test_library == "rails"
-
-        CodeLens.new(@client, response_builder, uri, dispatcher)
+        CodeLens.new(@client, T.must(@global_state), response_builder, uri, dispatcher)
       end
 
       sig do
