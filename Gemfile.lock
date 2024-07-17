@@ -203,7 +203,7 @@ GEM
     rbi (0.1.13)
       prism (>= 0.18.0, < 1.0.0)
       sorbet-runtime (>= 0.5.9204)
-    rbs (3.5.1)
+    rbs (3.5.2)
       logger
     regexp_parser (2.9.0)
     reline (0.5.7)
@@ -232,7 +232,7 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.8.3)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.17.4)
+    ruby-lsp (0.17.7)
       language_server-protocol (~> 3.17.0)
       prism (>= 0.29.0, < 0.31)
       rbs (>= 3, < 4)

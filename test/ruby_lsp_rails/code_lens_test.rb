@@ -297,7 +297,6 @@ module RubyLsp
         RUBY
         uri = response[0].command.arguments.first.first
 
-        assert_equal(1, response.size)
         assert_match("GET /users(.:format)", response[0].command.title)
         assert_match("config/routes.rb#L4", uri)
       end
@@ -332,6 +331,51 @@ module RubyLsp
         RUBY
 
         refute_empty(response)
+      end
+
+      test "displays jump to view lenses for actions" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          class UsersController < ApplicationController
+            def index
+            end
+          end
+        RUBY
+        view_lens = response[1]
+
+        assert_equal("Jump to view", view_lens.command.title)
+        assert_equal(
+          [[
+            URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.html.erb").to_s,
+            URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.json.jbuilder").to_s,
+          ]],
+          view_lens.command.arguments,
+        )
+      end
+
+      test "displays jump to view lenses for namespaced controllers" do
+        FileUtils.mkdir_p("#{dummy_root}/app/views/admin/users")
+        FileUtils.touch("#{dummy_root}/app/views/admin/users/index.html.erb")
+        FileUtils.touch("#{dummy_root}/app/views/admin/users/index.json.jbuilder")
+        response = generate_code_lens_for_source(<<~RUBY)
+          module Admin
+            class UsersController < ApplicationController
+              def index
+              end
+            end
+          end
+        RUBY
+        view_lens = response[1]
+
+        assert_equal("Jump to view", view_lens.command.title)
+        assert_equal(
+          [[
+            URI::Generic.from_path(path: "#{dummy_root}/app/views/admin/users/index.html.erb").to_s,
+            URI::Generic.from_path(path: "#{dummy_root}/app/views/admin/users/index.json.jbuilder").to_s,
+          ]],
+          view_lens.command.arguments,
+        )
+      ensure
+        FileUtils.rm_r("#{dummy_root}/app/views/admin/users")
       end
 
       private
