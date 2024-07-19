@@ -36,6 +36,9 @@ module RubyLsp
 
       extend T::Sig
 
+      sig { returns(String) }
+      attr_reader :rails_root
+
       sig { void }
       def initialize
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
@@ -67,7 +70,8 @@ module RubyLsp
 
         begin
           count += 1
-          read_response
+          initialize_response = T.must(read_response)
+          @rails_root = T.let(initialize_response[:root], String)
         rescue EmptyMessageError
           $stderr.puts("Ruby LSP Rails is retrying initialize (#{count})")
           retry if count < MAX_RETRIES
@@ -216,6 +220,11 @@ module RubyLsp
       sig { override.returns(T::Boolean) }
       def stopped?
         true
+      end
+
+      sig { override.returns(String) }
+      def rails_root
+        Dir.pwd
       end
 
       private

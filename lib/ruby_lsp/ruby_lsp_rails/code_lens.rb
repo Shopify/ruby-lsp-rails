@@ -94,7 +94,15 @@ module RubyLsp
         @group_id_stack = T.let([], T::Array[Integer])
         @constant_name_stack = T.let([], T::Array[[String, T.nilable(String)]])
 
-        dispatcher.register(self, :on_call_node_enter, :on_class_node_enter, :on_def_node_enter, :on_class_node_leave)
+        dispatcher.register(
+          self,
+          :on_call_node_enter,
+          :on_class_node_enter,
+          :on_def_node_enter,
+          :on_class_node_leave,
+          :on_module_node_enter,
+          :on_module_node_leave,
+        )
       end
 
       sig { params(node: Prism::CallNode).void }
@@ -121,6 +129,7 @@ module RubyLsp
 
         if controller?
           add_route_code_lens_to_action(node)
+          add_jump_to_view(node)
         end
       end
 
@@ -158,6 +167,16 @@ module RubyLsp
         @constant_name_stack.pop
       end
 
+      sig { params(node: Prism::ModuleNode).void }
+      def on_module_node_enter(node)
+        @constant_name_stack << [node.constant_path.slice, nil]
+      end
+
+      sig { params(node: Prism::ModuleNode).void }
+      def on_module_node_leave(node)
+        @constant_name_stack.pop
+      end
+
       private
 
       sig { returns(T.nilable(T::Boolean)) }
@@ -166,6 +185,30 @@ module RubyLsp
         return false unless class_name && superclass_name
 
         class_name.end_with?("Controller") && superclass_name.end_with?("Controller")
+      end
+
+      sig { params(node: Prism::DefNode).void }
+      def add_jump_to_view(node)
+        class_name = @constant_name_stack.map(&:first).join("::")
+        action_name = node.name
+        controller_name = class_name
+          .delete_suffix("Controller")
+          .gsub(/([a-z])([A-Z])/, "\\1_\\2")
+          .gsub("::", "/")
+          .downcase
+
+        view_uris = Dir.glob("#{@client.rails_root}/app/views/#{controller_name}/#{action_name}*").map! do |path|
+          URI::Generic.from_path(path: path).to_s
+        end
+        return if view_uris.empty?
+
+        @response_builder << create_code_lens(
+          node,
+          title: "Jump to view",
+          command_name: "rubyLsp.openFile",
+          arguments: [view_uris],
+          data: { type: "file" },
+        )
       end
 
       sig { params(node: Prism::DefNode).void }
