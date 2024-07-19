@@ -3,6 +3,6 @@
 
 module RubyLsp
   module Rails
-    VERSION = "0.3.10"
+    VERSION = "0.3.11"
   end
 end
