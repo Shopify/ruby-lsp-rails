@@ -95,7 +95,13 @@ module RubyLsp
         RUBY
 
         assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Blog::User
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L2,3-3,6)
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
+
 
           **id**: integer (PK)
 
@@ -237,7 +243,7 @@ module RubyLsp
       private
 
       def hover_on_source(source, position)
-        with_server(source) do |server, uri|
+        with_server(source, stub_no_typechecker: true) do |server, uri|
           server.process_message(
             id: 1,
             method: "textDocument/hover",
