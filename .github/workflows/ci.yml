@@ -23,7 +23,7 @@ jobs:
     continue-on-error: ${{ !!matrix.experimental }}
     name: Ruby ${{ matrix.ruby }} on ${{ matrix.os }} with ${{matrix.gemfile}}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Remove Gemfile.lock
         if: (matrix.gemfile == 'Gemfile') && (matrix.ruby == 'head' || matrix.os == 'windows-latest')
@@ -42,7 +42,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
