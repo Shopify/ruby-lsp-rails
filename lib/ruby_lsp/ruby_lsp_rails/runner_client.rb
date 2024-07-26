@@ -181,7 +181,8 @@ module RubyLsp
         # The server connection died
       end
 
-      alias_method :send_notification, :send_message
+      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_notification(request, params = nil) = send_message(request, params)
 
       sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
