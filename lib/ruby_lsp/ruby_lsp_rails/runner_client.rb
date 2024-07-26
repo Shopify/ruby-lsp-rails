@@ -170,7 +170,8 @@ module RubyLsp
         read_response
       end
 
-      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      # Messages expect a response back
+      sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
         message = { method: request }
         message[:params] = params if params
@@ -178,13 +179,14 @@ module RubyLsp
 
         @stdin.write("Content-Length: #{json.length}\r\n\r\n", json)
       rescue Errno::EPIPE
-        # The server connection died
+        $stderr.puts("Lost connection to the Rails server.")
       end
 
+      # Notifications are messages that do not expect a response
       sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_notification(request, params = nil) = send_message(request, params)
 
-      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
         headers = @stdout.gets("\r\n\r\n")
         raise IncompleteMessageError unless headers
