@@ -170,7 +170,7 @@ module RubyLsp
         read_response
       end
 
-      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
         message = { method: request }
         message[:params] = params if params
@@ -181,10 +181,11 @@ module RubyLsp
         # The server connection died
       end
 
+      # Notifications are like messages, but one-way, with no response sent back.
       sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_notification(request, params = nil) = send_message(request, params)
 
-      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
         headers = @stdout.gets("\r\n\r\n")
         raise IncompleteMessageError unless headers
