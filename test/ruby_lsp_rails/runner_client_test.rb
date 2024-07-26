@@ -87,5 +87,33 @@ module RubyLsp
         FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
     end
+
+    class NullClientTest < ActiveSupport::TestCase
+      setup { @client = NullClient.new }
+
+      test "#shutdown is a no-op" do
+        assert_nothing_raised { @client.shutdown }
+      end
+
+      test "#stopped? is always true" do
+        assert_predicate @client, :stopped?
+      end
+
+      test "#rails_root is just the current working directory" do
+        assert_equal Dir.pwd, @client.rails_root
+      end
+
+      test "#send_message is a no-op" do
+        assert_nothing_raised { @client.send(:send_message, "request", nil) }
+      end
+
+      test "#send_notification is a no-op" do
+        assert_nothing_raised { @client.send(:send_notification, "request", nil) }
+      end
+
+      test "#read_response is a no-op" do
+        assert_nothing_raised { @client.send(:read_response) }
+      end
+    end
   end
 end
