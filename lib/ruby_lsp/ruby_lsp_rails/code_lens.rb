@@ -78,7 +78,7 @@ module RubyLsp
 
       sig do
         params(
-          client: RunnerClient,
+          client: Client,
           global_state: GlobalState,
           response_builder:  ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
           uri: URI::Generic,

@@ -6,14 +6,19 @@ require "open3"
 
 module RubyLsp
   module Rails
-    class RunnerClient
+    module Client
+      extend T::Sig
+      extend T::Helpers
+
+      abstract!
+
       class << self
         extend T::Sig
 
-        sig { returns(RunnerClient) }
+        sig { returns(Client) }
         def create_client
           if File.exist?("bin/rails")
-            new
+            RunnerClient.new
           else
             $stderr.puts(<<~MSG)
               Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}"
@@ -31,6 +36,94 @@ module RubyLsp
       class InitializationError < StandardError; end
       class IncompleteMessageError < StandardError; end
       class EmptyMessageError < StandardError; end
+
+      sig { overridable.params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def model(name)
+        make_request("model", name: name)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to get model information: #{read_error}")
+        nil
+      end
+
+      sig { overridable.params(controller: String, action: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def route(controller:, action:)
+        make_request("route_info", controller: controller, action: action)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to get route information: #{read_error}")
+        nil
+      end
+
+      sig { overridable.void }
+      def trigger_reload
+        $stderr.puts("Reloading Rails application")
+        send_notification("reload")
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to trigger reload")
+        nil
+      end
+
+      sig do
+        params(
+          model_name: String,
+          association_name: String,
+          ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
+      def association_target_location(model_name:, association_name:)
+        make_request(
+          "association_target_location",
+          model_name: model_name,
+          association_name: association_name,
+          )
+      rescue => e
+        $stderr.puts("Ruby LSP Rails failed with #{e.message}: #{read_error}")
+      end
+
+      sig { overridable.params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def route_location(name)
+        make_request("route_location", name: name)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to get route location: #{read_error}")
+        nil
+      end
+
+      sig { abstract.void }
+      def shutdown; end
+
+      sig { abstract.returns(T::Boolean) }
+      def stopped?; end
+
+      sig { abstract.returns(String) }
+      def rails_root; end
+
+      private
+
+      sig do
+        overridable.params(
+          request: String,
+          params: T.nilable(T::Hash[Symbol, T.untyped]),
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
+      def make_request(request, params = nil)
+        send_message(request, params)
+        read_response
+      end
+
+      sig { abstract.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_message(request, params = nil); end
+
+      # Notifications are like messages, but one-way, with no response sent back.
+      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_notification(request, params = nil) = send_message(request, params)
+
+      sig { abstract.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def read_response; end
+
+      sig { abstract.returns(String) }
+      def read_error; end
+    end
+
+    class RunnerClient
+      include Client
 
       MAX_RETRIES = 5
 
@@ -89,59 +182,10 @@ module RubyLsp
           end
         end
       rescue Errno::EPIPE, IncompleteMessageError
-        raise InitializationError, @stderr.read
+        raise InitializationError, read_error
       end
 
-      sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
-      def model(name)
-        make_request("model", name: name)
-      rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to get model information: #{@stderr.read}")
-        nil
-      end
-
-      sig do
-        params(
-          model_name: String,
-          association_name: String,
-        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
-      end
-      def association_target_location(model_name:, association_name:)
-        make_request(
-          "association_target_location",
-          model_name: model_name,
-          association_name: association_name,
-        )
-      rescue => e
-        $stderr.puts("Ruby LSP Rails failed with #{e.message}: #{@stderr.read}")
-      end
-
-      sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
-      def route_location(name)
-        make_request("route_location", name: name)
-      rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to get route location: #{@stderr.read}")
-        nil
-      end
-
-      sig { params(controller: String, action: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
-      def route(controller:, action:)
-        make_request("route_info", controller: controller, action: action)
-      rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to get route information: #{@stderr.read}")
-        nil
-      end
-
-      sig { void }
-      def trigger_reload
-        $stderr.puts("Reloading Rails application")
-        send_notification("reload")
-      rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to trigger reload")
-        nil
-      end
-
-      sig { void }
+      sig { override.void }
       def shutdown
         $stderr.puts("Ruby LSP Rails shutting down server")
         send_message("shutdown")
@@ -152,25 +196,14 @@ module RubyLsp
         force_kill
       end
 
-      sig { returns(T::Boolean) }
+      sig { override.returns(T::Boolean) }
       def stopped?
         [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
       end
 
       private
 
-      sig do
-        params(
-          request: String,
-          params: T.nilable(T::Hash[Symbol, T.untyped]),
-        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
-      end
-      def make_request(request, params = nil)
-        send_message(request, params)
-        read_response
-      end
-
-      sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      sig { override.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
         message = { method: request }
         message[:params] = params if params
@@ -181,11 +214,7 @@ module RubyLsp
         # The server connection died
       end
 
-      # Notifications are like messages, but one-way, with no response sent back.
-      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
-      def send_notification(request, params = nil) = send_message(request, params)
-
-      sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      sig { override.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
         headers = @stdout.gets("\r\n\r\n")
         raise IncompleteMessageError unless headers
@@ -207,6 +236,9 @@ module RubyLsp
         nil
       end
 
+      sig { override.returns(String) }
+      def read_error = @stderr.read
+
       sig { void }
       def force_kill
         # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
@@ -214,12 +246,10 @@ module RubyLsp
       end
     end
 
-    class NullClient < RunnerClient
+    class NullClient
       extend T::Sig
 
-      sig { void }
-      def initialize # rubocop:disable Lint/MissingSuper
-      end
+      include Client
 
       sig { override.void }
       def shutdown
@@ -247,6 +277,9 @@ module RubyLsp
       def read_response
         # no-op
       end
+
+      sig { override.returns(String) }
+      def read_error = "<no error information available>"
     end
   end
 end

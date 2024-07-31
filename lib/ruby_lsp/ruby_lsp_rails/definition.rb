@@ -33,7 +33,7 @@ module RubyLsp
 
       sig do
         params(
-          client: RunnerClient,
+          client: Client,
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
           node_context: NodeContext,
           index: RubyIndexer::Index,

@@ -22,7 +22,7 @@ module RubyLsp
 
       sig do
         params(
-          client: RunnerClient,
+          client: Client,
           response_builder: ResponseBuilders::Hover,
           node_context: NodeContext,
           global_state: GlobalState,

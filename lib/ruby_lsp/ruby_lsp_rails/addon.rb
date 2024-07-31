@@ -25,7 +25,7 @@ module RubyLsp
 
         # We first initialize the client as a NullClient, so that we can start the server in a background thread. Until
         # the real client is initialized, features that depend on it will not be blocked by using the NullClient
-        @client = T.let(NullClient.new, RunnerClient)
+        @client = T.let(NullClient.new, Client)
       end
 
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
@@ -33,7 +33,7 @@ module RubyLsp
         @global_state = T.let(global_state, T.nilable(RubyLsp::GlobalState))
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
-        Thread.new { @client = RunnerClient.create_client }
+        Thread.new { @client = Client.create_client }
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
       end
 
