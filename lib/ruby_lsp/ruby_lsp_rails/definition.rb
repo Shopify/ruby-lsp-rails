@@ -34,7 +34,9 @@ module RubyLsp
       sig do
         params(
           client: RunnerClient,
-          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
+          response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[T.any(
+            Interface::Location, Interface::LocationLink
+          )],
           node_context: NodeContext,
           index: RubyIndexer::Index,
           dispatcher: Prism::Dispatcher,
