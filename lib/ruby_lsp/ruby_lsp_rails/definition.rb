@@ -35,7 +35,7 @@ module RubyLsp
         params(
           client: RunnerClient,
           response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[T.any(
-            LanguageServer::Protocol::Interface::Location, LanguageServer::Protocol::Interface::LocationLink
+            Interface::Location, Interface::LocationLink
           )],
           node_context: NodeContext,
           index: RubyIndexer::Index,
