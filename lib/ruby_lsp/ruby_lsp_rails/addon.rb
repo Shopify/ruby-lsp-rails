@@ -77,7 +77,9 @@ module RubyLsp
 
       sig do
         override.params(
-          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::Location],
+          response_builder: ResponseBuilders::CollectionResponseBuilder[T.any(
+            LanguageServer::Protocol::Interface::Location, LanguageServer::Protocol::Interface::LocationLink
+          )],
           uri: URI::Generic,
           node_context: NodeContext,
           dispatcher: Prism::Dispatcher,
