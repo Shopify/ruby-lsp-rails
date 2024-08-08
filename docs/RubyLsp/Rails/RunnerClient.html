@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RDoc Documentation</title>
+
+  <script type="text/javascript">
+    var rdoc_rel_prefix = "../../";
+    var index_rel_prefix = "../../";
+  </script>
+
+  <script src="../../js/search_index.js" defer></script>
+  <script src="../../js/snapper.js" defer></script>
+  <link href="../../css/snapper.css" rel="stylesheet">
+</head>
+
+  <body>
+    <div id="main-container">
+  <nav id="nav">
+  <h3 class="title">RDoc Documentation</h3>
+
+  <input id="side-search" type="text" placeholder="Search docs (CMD/CTRL + K)"></input>
+
+  <ul id="navigation-list">
+    <li id="getting-started"><a href="../../index.html">Getting started</a></li>
+    <p class="separator">PAGES</p>
+    <li class="index-entry">
+  <a href="../../CODE_OF_CONDUCT_md.html">
+    CODE_OF_CONDUCT
+  </a>
+</li>
+<li class="index-entry">
+  <a href="../../CONTRIBUTING_md.html">
+    CONTRIBUTING
+  </a>
+</li>
+<li class="index-entry">
+  <a href="../../README_md.html">
+    README
+  </a>
+</li>
+
+    <p class="separator">CODE</p>
+    <li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp.html">RubyLsp</a></summary>
+    <ul>
+      <li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp/Rails.html">Rails</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../RubyLsp/Rails/ActiveSupportTestCaseHelper.html">ActiveSupportTestCaseHelper</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Addon.html">Addon</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/CodeLens.html">CodeLens</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Definition.html">Definition</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/DocumentSymbol.html">DocumentSymbol</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Hover.html">Hover</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/IndexingEnhancement.html">IndexingEnhancement</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Railtie.html">Railtie</a></li><li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp/Rails/RunnerClient.html">RunnerClient</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/EmptyMessageError.html">EmptyMessageError</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/IncompleteMessageError.html">IncompleteMessageError</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/InitializationError.html">InitializationError</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/NullClient.html">NullClient</a></li>
+    </ul>
+  </details>
+</li>
+<li class="index-entry"><a href="../../RubyLsp/Rails/Server.html">Server</a></li><li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp/Rails/Support.html">Support</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../RubyLsp/Rails/Support/Associations.html">Associations</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Support/Callbacks.html">Callbacks</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Support/LocationBuilder.html">LocationBuilder</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Support/RailsDocumentClient.html">RailsDocumentClient</a></li>
+    </ul>
+  </details>
+</li>
+
+    </ul>
+  </details>
+</li>
+
+    </ul>
+  </details>
+</li>
+
+  </ul>
+</nav>
+
+
+  <article>
+    <h1>class RubyLsp::Rails::RunnerClient</h1>
+    <section class="description"></section>
+
+      <section id="5Buntitled-5D" class="documentation-section">
+
+
+          <section>
+            <h3 class="section-title">Constants<hr/></h3>
+
+            <dl>
+                <dt id="MAX_RETRIES">>MAX_RETRIES</dt>
+                <dd></dd>
+            </dl>
+          </section>
+
+        
+          <section>
+            <h3 class="section-title">Attributes<hr/></h3>
+
+            
+              <div>
+                <h4 id="attribute-i-rails_root" class="method-name">
+                  rails_root <span class="attribute-type">(attr_reader)</span>
+                </h4>
+
+                <div class="description">
+                  
+                </div>
+              </div>
+            
+          </section>
+        
+
+        
+            
+
+            <section>
+              <h3 class="section-title">Public Class Methods<hr/></h3>
+
+                <div id="method-c-create_client" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      create_client()
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 14</span>
+        <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create_client</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-string">&quot;bin/rails&quot;</span>)
+            <span class="ruby-identifier">new</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-identifier">&lt;&lt;~MSG</span>)
+<span class="ruby-value">              Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}&quot;
+</span><span class="ruby-identifier">            MSG</span>
+            <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Server dependent features will not be available&quot;</span>)
+            <span class="ruby-constant">NullClient</span>.<span class="ruby-identifier">new</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span>, <span class="ruby-constant">StandardError</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span> <span class="ruby-comment"># rubocop:disable Lint/ShadowedException</span>
+          <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;Ruby LSP Rails failed to initialize server: #{e.message}\n#{e.backtrace&amp;.join(&quot;\n&quot;)}&quot;</span>)
+          <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Server dependent features will not be available&quot;</span>)
+          <span class="ruby-constant">NullClient</span>.<span class="ruby-identifier">new</span>
+        <span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-c-new" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      new()
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 43</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>
+  <span class="ruby-comment"># Spring needs a Process session ID. It uses this ID to &quot;attach&quot; itself to the parent process, so that when the</span>
+  <span class="ruby-comment"># parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to</span>
+  <span class="ruby-comment"># set its own session ID</span>
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-constant">Process</span>.<span class="ruby-identifier">setpgrp</span>
+    <span class="ruby-constant">Process</span>.<span class="ruby-identifier">setsid</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EPERM</span>
+    <span class="ruby-comment"># If we can&#39;t set the session ID, continue</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">NotImplementedError</span>
+    <span class="ruby-comment"># setpgrp() may be unimplemented on some platform</span>
+    <span class="ruby-comment"># https://github.com/Shopify/ruby-lsp-rails/issues/348</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">stdin</span>, <span class="ruby-identifier">stdout</span>, <span class="ruby-identifier">stderr</span>, <span class="ruby-identifier">wait_thread</span> = <span class="ruby-constant">Bundler</span>.<span class="ruby-identifier">with_original_env</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-constant">Open3</span>.<span class="ruby-identifier">popen3</span>(<span class="ruby-string">&quot;bundle&quot;</span>, <span class="ruby-string">&quot;exec&quot;</span>, <span class="ruby-string">&quot;rails&quot;</span>, <span class="ruby-string">&quot;runner&quot;</span>, <span class="ruby-node">&quot;#{__dir__}/server.rb&quot;</span>, <span class="ruby-string">&quot;start&quot;</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-ivar">@stdin</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">let</span>(<span class="ruby-identifier">stdin</span>, <span class="ruby-constant">IO</span>)
+  <span class="ruby-ivar">@stdout</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">let</span>(<span class="ruby-identifier">stdout</span>, <span class="ruby-constant">IO</span>)
+  <span class="ruby-ivar">@stderr</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">let</span>(<span class="ruby-identifier">stderr</span>, <span class="ruby-constant">IO</span>)
+  <span class="ruby-ivar">@wait_thread</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">let</span>(<span class="ruby-identifier">wait_thread</span>, <span class="ruby-constant">Process</span><span class="ruby-operator">::</span><span class="ruby-constant">Waiter</span>)
+  <span class="ruby-ivar">@stdin</span>.<span class="ruby-identifier">binmode</span> <span class="ruby-comment"># for Windows compatibility</span>
+  <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">binmode</span> <span class="ruby-comment"># for Windows compatibility</span>
+
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Ruby LSP Rails booting server&quot;</span>)
+  <span class="ruby-identifier">count</span> = <span class="ruby-value">0</span>
+
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">count</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+    <span class="ruby-identifier">initialize_response</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">must</span>(<span class="ruby-identifier">read_response</span>)
+    <span class="ruby-ivar">@rails_root</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">let</span>(<span class="ruby-identifier">initialize_response</span>[<span class="ruby-value">:root</span>], <span class="ruby-constant">String</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">EmptyMessageError</span>
+    <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;Ruby LSP Rails is retrying initialize (#{count})&quot;</span>)
+    <span class="ruby-keyword">retry</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">count</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MAX_RETRIES</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Finished booting Ruby LSP Rails server&quot;</span>)
+
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">ENV</span>[<span class="ruby-string">&quot;RAILS_ENV&quot;</span>] <span class="ruby-operator">==</span> <span class="ruby-string">&quot;test&quot;</span>
+    <span class="ruby-identifier">at_exit</span> <span class="ruby-keyword">do</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-ivar">@wait_thread</span>.<span class="ruby-identifier">alive?</span>
+        <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Ruby LSP Rails is force killing the server&quot;</span>)
+        <span class="ruby-identifier">sleep</span>(<span class="ruby-value">0.5</span>) <span class="ruby-comment"># give the server a bit of time if we already issued a shutdown notification</span>
+        <span class="ruby-identifier">force_kill</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EPIPE</span>, <span class="ruby-constant">IncompleteMessageError</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">InitializationError</span>, <span class="ruby-ivar">@stderr</span>.<span class="ruby-identifier">read</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+            </section>
+          
+            
+            
+        
+            
+
+            <section>
+              <h3 class="section-title">Public Instance Methods<hr/></h3>
+
+                <div id="method-i-association_target_location" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      association_target_location(model_name:, association_name:)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 109</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">association_target_location</span>(<span class="ruby-value">model_name:</span>, <span class="ruby-value">association_name:</span>)
+  <span class="ruby-identifier">make_request</span>(
+    <span class="ruby-string">&quot;association_target_location&quot;</span>,
+    <span class="ruby-value">model_name:</span> <span class="ruby-identifier">model_name</span>,
+    <span class="ruby-value">association_name:</span> <span class="ruby-identifier">association_name</span>,
+  )
+<span class="ruby-keyword">rescue</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;Ruby LSP Rails failed with #{e.message}: #{@stderr.read}&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-model" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      model(name)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 96</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">model</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">make_request</span>(<span class="ruby-string">&quot;model&quot;</span>, <span class="ruby-value">name:</span> <span class="ruby-identifier">name</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IncompleteMessageError</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;Ruby LSP Rails failed to get model information: #{@stderr.read}&quot;</span>)
+  <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-route" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      route(controller:, action:)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 128</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">route</span>(<span class="ruby-value">controller:</span>, <span class="ruby-value">action:</span>)
+  <span class="ruby-identifier">make_request</span>(<span class="ruby-string">&quot;route_info&quot;</span>, <span class="ruby-value">controller:</span> <span class="ruby-identifier">controller</span>, <span class="ruby-value">action:</span> <span class="ruby-identifier">action</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IncompleteMessageError</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;Ruby LSP Rails failed to get route information: #{@stderr.read}&quot;</span>)
+  <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-route_location" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      route_location(name)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 120</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">route_location</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">make_request</span>(<span class="ruby-string">&quot;route_location&quot;</span>, <span class="ruby-value">name:</span> <span class="ruby-identifier">name</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IncompleteMessageError</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;Ruby LSP Rails failed to get route location: #{@stderr.read}&quot;</span>)
+  <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-shutdown" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      shutdown()
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 145</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">shutdown</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Ruby LSP Rails shutting down server&quot;</span>)
+  <span class="ruby-identifier">send_message</span>(<span class="ruby-string">&quot;shutdown&quot;</span>)
+  <span class="ruby-identifier">sleep</span>(<span class="ruby-value">0.5</span>) <span class="ruby-comment"># give the server a bit of time to shutdown</span>
+  [<span class="ruby-ivar">@stdin</span>, <span class="ruby-ivar">@stdout</span>, <span class="ruby-ivar">@stderr</span>].<span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:close</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IOError</span>
+  <span class="ruby-comment"># The server connection may have died</span>
+  <span class="ruby-identifier">force_kill</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-stopped-3F" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      stopped?()
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 156</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">stopped?</span>
+  [<span class="ruby-ivar">@stdin</span>, <span class="ruby-ivar">@stdout</span>, <span class="ruby-ivar">@stderr</span>].<span class="ruby-identifier">all?</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:closed?</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@wait_thread</span>.<span class="ruby-identifier">alive?</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-trigger_reload" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      trigger_reload()
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/runner_client.rb, line 136</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">trigger_reload</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Reloading Rails application&quot;</span>)
+  <span class="ruby-identifier">send_notification</span>(<span class="ruby-string">&quot;reload&quot;</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IncompleteMessageError</span>
+  <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-string">&quot;Ruby LSP Rails failed to trigger reload&quot;</span>)
+  <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+            </section>
+          
+            
+            
+        
+      </section>
+  </article>
+
+   <div class="right-section">
+  <nav class="right-nav">
+    <span id="right-side-bar-title" class="right-side-bar-title">On this page</span>
+      <ul>
+          <li id="right-side-bar-class-rubylsp-rails-runnerclient" class="right-side-bar-class">
+            <a href="#" >class RubyLsp::Rails::RunnerClient</a>
+
+              <ul>
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-constants" class="right-side-bar-section">Constants</summary>
+                        <ul>
+                            <li id="right-nav-MAX_RETRIES" class="right-side-bar-element">
+                              <a href="#MAX_RETRIES">
+                              MAX_RETRIES
+                              </a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-attributes" class="right-side-bar-section">Attributes</summary>
+                        <ul>
+                            <li id="right-nav-rails_root" class="right-side-bar-element">
+                              <a href="#attribute-i-rails_root">
+                                rails_root
+                                </a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+
+
+
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-public-class-methods" class="right-side-bar-section">Public Class Methods</summary>
+                        <ul>
+                            <li id="right-nav-create_client" class="right-side-bar-element">
+                              <a href="#method-c-create_client">create_client</a>
+                            </li>
+                            <li id="right-nav-new" class="right-side-bar-element">
+                              <a href="#method-c-new">new</a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+
+
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-public-instance-methods" class="right-side-bar-section">Public Instance Methods</summary>
+                        <ul>
+                            <li id="right-nav-association_target_location" class="right-side-bar-element">
+                              <a href="#method-i-association_target_location">association_target_location</a>
+                            </li>
+                            <li id="right-nav-model" class="right-side-bar-element">
+                              <a href="#method-i-model">model</a>
+                            </li>
+                            <li id="right-nav-route" class="right-side-bar-element">
+                              <a href="#method-i-route">route</a>
+                            </li>
+                            <li id="right-nav-route_location" class="right-side-bar-element">
+                              <a href="#method-i-route_location">route_location</a>
+                            </li>
+                            <li id="right-nav-shutdown" class="right-side-bar-element">
+                              <a href="#method-i-shutdown">shutdown</a>
+                            </li>
+                            <li id="right-nav-stopped?" class="right-side-bar-element">
+                              <a href="#method-i-stopped-3F">stopped?</a>
+                            </li>
+                            <li id="right-nav-trigger_reload" class="right-side-bar-element">
+                              <a href="#method-i-trigger_reload">trigger_reload</a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+            </li>
+          </ul>
+        </li>
+  </nav>
+</div>
+
+</div>
+
+<div id="search-modal">
+  <div id="search-modal-content">
+    <input id="search-modal-input" type="text" placeholder="Search"></input>
+    <ul id="search-results"></ul>
+  </div>
+</div>
+
+
+    <footer>
+      <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RDoc Documentation</title>
+
+  <script type="text/javascript">
+    var rdoc_rel_prefix = "../../";
+    var index_rel_prefix = "../../";
+  </script>
+
+  <script src="../../js/search_index.js" defer></script>
+  <script src="../../js/snapper.js" defer></script>
+  <link href="../../css/snapper.css" rel="stylesheet">
+</head>
+
+  <body>
+    <div id="main-container">
+  <nav id="nav">
+  <h3 class="title">RDoc Documentation</h3>
+
+  <input id="side-search" type="text" placeholder="Search docs (CMD/CTRL + K)"></input>
+
+  <ul id="navigation-list">
+    <li id="getting-started"><a href="../../index.html">Getting started</a></li>
+    <p class="separator">PAGES</p>
+    <li class="index-entry">
+  <a href="../../CODE_OF_CONDUCT_md.html">
+    CODE_OF_CONDUCT
+  </a>
+</li>
+<li class="index-entry">
+  <a href="../../CONTRIBUTING_md.html">
+    CONTRIBUTING
+  </a>
+</li>
+<li class="index-entry">
+  <a href="../../README_md.html">
+    README
+  </a>
+</li>
+
+    <p class="separator">CODE</p>
+    <li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp.html">RubyLsp</a></summary>
+    <ul>
+      <li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp/Rails.html">Rails</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../RubyLsp/Rails/ActiveSupportTestCaseHelper.html">ActiveSupportTestCaseHelper</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Addon.html">Addon</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/CodeLens.html">CodeLens</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Definition.html">Definition</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/DocumentSymbol.html">DocumentSymbol</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Hover.html">Hover</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/IndexingEnhancement.html">IndexingEnhancement</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Railtie.html">Railtie</a></li><li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp/Rails/RunnerClient.html">RunnerClient</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/EmptyMessageError.html">EmptyMessageError</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/IncompleteMessageError.html">IncompleteMessageError</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/InitializationError.html">InitializationError</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/RunnerClient/NullClient.html">NullClient</a></li>
+    </ul>
+  </details>
+</li>
+<li class="index-entry"><a href="../../RubyLsp/Rails/Server.html">Server</a></li><li class="expandable-index-entry">
+  <details>
+    <summary><a href="../../RubyLsp/Rails/Support.html">Support</a></summary>
+    <ul>
+      <li class="index-entry"><a href="../../RubyLsp/Rails/Support/Associations.html">Associations</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Support/Callbacks.html">Callbacks</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Support/LocationBuilder.html">LocationBuilder</a></li><li class="index-entry"><a href="../../RubyLsp/Rails/Support/RailsDocumentClient.html">RailsDocumentClient</a></li>
+    </ul>
+  </details>
+</li>
+
+    </ul>
+  </details>
+</li>
+
+    </ul>
+  </details>
+</li>
+
+  </ul>
+</nav>
+
+
+  <article>
+    <h1>class RubyLsp::Rails::Definition</h1>
+    <section class="description">
+<p><img src="../../definition.gif"></p>
+
+<p>The <a href="https://microsoft.github.io/language-server-protocol/specification#textDocument_definition">definition request</a> jumps to the definition of the symbol under the cursor.</p>
+
+<p>Currently supported targets:</p>
+<ul><li>
+<p>Callbacks</p>
+</li><li>
+<p>Named routes (e.g. <code>users_path</code>)</p>
+</li></ul>
+
+<h1 id="class-RubyLsp::Rails::Definition-label-Example">Example<span><a href="#class-RubyLsp::Rails::Definition-label-Example">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<pre class="ruby"><span class="ruby-identifier">before_action</span> <span class="ruby-value">:foo</span> <span class="ruby-comment"># &lt;- Go to definition on this symbol will jump to the method</span>
+</pre>
+
+<p>Notes for named routes:</p>
+<ul><li>
+<p>It is available only in <a href="../Rails.html"><code>Rails</code></a> 7.1 or newer.</p>
+</li><li>
+<p>Route may be defined across multiple files, e.g. using <code>draw</code>, rather than in <code>routes.rb</code>.</p>
+</li><li>
+<p>Routes won’t be found if not defined for the <a href="../Rails.html"><code>Rails</code></a> development environment.</p>
+</li><li>
+<p>If using <code>constraints</code>, the route can only be found if the constraints are met.</p>
+</li><li>
+<p>Changes to routes won’t be picked up until the server is restarted.</p>
+</li></ul>
+</section>
+
+      <section id="5Buntitled-5D" class="documentation-section">
+
+
+
+        
+
+        
+            
+
+            <section>
+              <h3 class="section-title">Public Class Methods<hr/></h3>
+
+                <div id="method-c-new" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      new(client, response_builder, node_context, index, dispatcher)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/definition.rb, line 45</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">client</span>, <span class="ruby-identifier">response_builder</span>, <span class="ruby-identifier">node_context</span>, <span class="ruby-identifier">index</span>, <span class="ruby-identifier">dispatcher</span>)
+  <span class="ruby-ivar">@client</span> = <span class="ruby-identifier">client</span>
+  <span class="ruby-ivar">@response_builder</span> = <span class="ruby-identifier">response_builder</span>
+  <span class="ruby-ivar">@node_context</span> = <span class="ruby-identifier">node_context</span>
+  <span class="ruby-ivar">@nesting</span> = <span class="ruby-constant">T</span>.<span class="ruby-identifier">let</span>(<span class="ruby-identifier">node_context</span>.<span class="ruby-identifier">nesting</span>, <span class="ruby-constant">T</span><span class="ruby-operator">::</span><span class="ruby-constant">Array</span>[<span class="ruby-constant">String</span>])
+  <span class="ruby-ivar">@index</span> = <span class="ruby-identifier">index</span>
+
+  <span class="ruby-identifier">dispatcher</span>.<span class="ruby-identifier">register</span>(<span class="ruby-keyword">self</span>, <span class="ruby-value">:on_call_node_enter</span>, <span class="ruby-value">:on_symbol_node_enter</span>, <span class="ruby-value">:on_string_node_enter</span>)
+<span class="ruby-keyword">end</span></pre>
+                </div>
+            </section>
+          
+            
+            
+        
+            
+
+            <section>
+              <h3 class="section-title">Public Instance Methods<hr/></h3>
+
+                <div id="method-i-handle_possible_dsl" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      handle_possible_dsl(node)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/definition.rb, line 66</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">handle_possible_dsl</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-identifier">node</span> = <span class="ruby-ivar">@node_context</span>.<span class="ruby-identifier">call_node</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">node</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">self_receiver?</span>(<span class="ruby-identifier">node</span>)
+
+  <span class="ruby-identifier">message</span> = <span class="ruby-identifier">node</span>.<span class="ruby-identifier">message</span>
+
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">message</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">Support</span><span class="ruby-operator">::</span><span class="ruby-constant">Associations</span><span class="ruby-operator">::</span><span class="ruby-constant">ALL</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">message</span>)
+    <span class="ruby-identifier">handle_association</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-constant">Support</span><span class="ruby-operator">::</span><span class="ruby-constant">Callbacks</span><span class="ruby-operator">::</span><span class="ruby-constant">ALL</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">message</span>)
+    <span class="ruby-identifier">handle_callback</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-on_call_node_enter" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      on_call_node_enter(node)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/definition.rb, line 83</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">on_call_node_enter</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">self_receiver?</span>(<span class="ruby-identifier">node</span>)
+
+  <span class="ruby-identifier">message</span> = <span class="ruby-identifier">node</span>.<span class="ruby-identifier">message</span>
+
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">message</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">message</span>.<span class="ruby-identifier">end_with?</span>(<span class="ruby-string">&quot;_path&quot;</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">message</span>.<span class="ruby-identifier">end_with?</span>(<span class="ruby-string">&quot;_url&quot;</span>)
+    <span class="ruby-identifier">handle_route</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-on_string_node_enter" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      on_string_node_enter(node)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/definition.rb, line 61</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">on_string_node_enter</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-identifier">handle_possible_dsl</span>(<span class="ruby-identifier">node</span>)
+<span class="ruby-keyword">end</span></pre>
+                </div>
+                <div id="method-i-on_symbol_node_enter" class="method-entry">
+                  <div class="method-info">
+                    <h4 class="method-name">
+                      on_symbol_node_enter(node)
+
+                        <button type="button" class="show-source">Show source</button>
+                    </h4>
+
+                    
+
+
+
+                  </div>
+
+                    <pre class="method-source hidden"><span class="ruby-comment"># File lib/ruby_lsp/ruby_lsp_rails/definition.rb, line 56</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">on_symbol_node_enter</span>(<span class="ruby-identifier">node</span>)
+  <span class="ruby-identifier">handle_possible_dsl</span>(<span class="ruby-identifier">node</span>)
+<span class="ruby-keyword">end</span></pre>
+                </div>
+            </section>
+          
+            
+            
+        
+      </section>
+  </article>
+
+   <div class="right-section">
+  <nav class="right-nav">
+    <span id="right-side-bar-title" class="right-side-bar-title">On this page</span>
+      <ul>
+          <li id="right-side-bar-class-rubylsp-rails-definition" class="right-side-bar-class">
+            <a href="#" >class RubyLsp::Rails::Definition</a>
+
+              <ul>
+
+
+
+
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-public-class-methods" class="right-side-bar-section">Public Class Methods</summary>
+                        <ul>
+                            <li id="right-nav-new" class="right-side-bar-element">
+                              <a href="#method-c-new">new</a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+
+
+                    <li>
+                      <details open>
+                        <summary id="right-side-bar-section-public-instance-methods" class="right-side-bar-section">Public Instance Methods</summary>
+                        <ul>
+                            <li id="right-nav-handle_possible_dsl" class="right-side-bar-element">
+                              <a href="#method-i-handle_possible_dsl">handle_possible_dsl</a>
+                            </li>
+                            <li id="right-nav-on_call_node_enter" class="right-side-bar-element">
+                              <a href="#method-i-on_call_node_enter">on_call_node_enter</a>
+                            </li>
+                            <li id="right-nav-on_string_node_enter" class="right-side-bar-element">
+                              <a href="#method-i-on_string_node_enter">on_string_node_enter</a>
+                            </li>
+                            <li id="right-nav-on_symbol_node_enter" class="right-side-bar-element">
+                              <a href="#method-i-on_symbol_node_enter">on_symbol_node_enter</a>
+                            </li>
+                        </ul>
+                      </details>
+                    </li>
+            </li>
+          </ul>
+        </li>
+  </nav>
+</div>
+
+</div>
+
+<div id="search-modal">
+  <div id="search-modal-content">
+    <input id="search-modal-input" type="text" placeholder="Search"></input>
+    <ul id="search-results"></ul>
+  </div>
+</div>
+
+
+    <footer>
+      <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.6.3.1
+    </footer>
+  </body>
+</html>
