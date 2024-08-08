@@ -40,7 +40,13 @@ module RubyLsp
         end
       end
 
-      def execute(request, params)
+      def execute(fully_qualified_request, params)
+        addon_name, request = fully_qualified_request.split(":")
+
+        unless addon_name.present? && request.present?
+          raise "Invalid request string '#{fully_qualified_request}'"
+        end
+
         case request
         when "shutdown"
           @running = false

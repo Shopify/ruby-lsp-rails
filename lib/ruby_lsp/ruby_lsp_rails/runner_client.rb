@@ -33,6 +33,9 @@ module RubyLsp
       class EmptyMessageError < StandardError; end
 
       MAX_RETRIES = 5
+      # The prefix determines if the request is handled by ruby_lsp_rails itself, or passed onto another addon,
+      # such as Tapioca
+      RUBY_LSP_RAILS_PREFIX = "ruby_lsp_rails:"
 
       extend T::Sig
 
@@ -166,7 +169,7 @@ module RubyLsp
         ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
       end
       def make_request(request, params = nil)
-        send_message(request, params)
+        send_message(RUBY_LSP_RAILS_PREFIX + request, params)
         read_response
       end
 
