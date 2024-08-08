@@ -13,6 +13,7 @@ require_relative "hover"
 require_relative "code_lens"
 require_relative "document_symbol"
 require_relative "definition"
+require_relative "indexing_enhancement"
 
 module RubyLsp
   module Rails
@@ -35,6 +36,8 @@ module RubyLsp
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new { @client = RunnerClient.create_client }
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
+
+        T.must(@global_state).index.register_enhancement(IndexingEnhancement.new)
       end
 
       sig { override.void }
