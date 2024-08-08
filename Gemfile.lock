@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.3.11)
+    ruby-lsp-rails (0.3.12)
       ruby-lsp (>= 0.17.12, < 0.18.0)
 
 GEM
