@@ -51,7 +51,7 @@ module RubyLsp
     # class AddFirstNameToUsers < ActiveRecord::Migration[7.1]
     #   # ...
     # end
-    # ````
+    # ```
     #
     # The code lenses will be displayed above the class and above each test method.
     #
