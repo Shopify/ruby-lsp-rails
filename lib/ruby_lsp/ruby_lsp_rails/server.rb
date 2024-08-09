@@ -48,6 +48,7 @@ module RubyLsp
         # TODO: Retrieve addons from RubyLSP
         # @addons[:tapioca] = ::RubyLsp::Tapioca::Addon
         Gem.find_files("ruby_lsp/**/addon.rb").each do |addon|
+          $stderr.puts("Loading addon: #{addon}")
           require File.expand_path(addon)
         rescue => e
           $stderr.puts(e.full_message)
