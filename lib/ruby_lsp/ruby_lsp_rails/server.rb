@@ -91,7 +91,7 @@ module RubyLsp
           # end
 
           # spawn do
-          File.delete("out.txt")
+          # File.delete("out.txt")
           File.open("out.txt", "w") do |f|
             $stdout = f
             $stderr = f
