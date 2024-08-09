@@ -47,18 +47,18 @@ module RubyLsp
       def load_addons
         # TODO: Retrieve addons from RubyLSP
         # @addons[:tapioca] = ::RubyLsp::Tapioca::Addon
-        Gem.find_files("ruby_lsp/**/addon.rb").each do |addon|
-          $stderr.puts("Loading addon: #{addon}")
-          require File.expand_path(addon)
-        rescue => e
-          $stderr.puts(e.full_message)
-        end
+        # Gem.find_files("ruby_lsp/**/addon.rb").each do |addon|
+        #   $stderr.puts("Loading addon: #{addon}")
+        #   require File.expand_path(addon)
+        # rescue => e
+        #   $stderr.puts(e.full_message)
+        # end
 
-        ObjectSpace.each_object(Class).each do |kls|
-          next unless kls < ::RubyLsp::Addon
+        # ObjectSpace.each_object(Class).each do |kls|
+        #   next unless kls < ::RubyLsp::Addon
 
-          @addons[kls.name.split("::").second.underscore.to_sym] = kls
-        end
+        #   @addons[kls.name.split("::").second.underscore.to_sym] = kls
+        # end
       end
 
       def execute(request, params)
@@ -237,3 +237,9 @@ module RubyLsp
 end
 
 RubyLsp::Rails::Server.new.start if ARGV.first == "start"
+
+at_exit do
+  if $ERROR_INFO
+    File.write("server.log", Time.now + $ERROR_INFO.full_message(highlight: false) + "\n", mode: "a")
+  end
+end
