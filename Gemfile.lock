@@ -7,19 +7,6 @@ GIT
       psych (>= 4.0.0)
 
 PATH
-  remote: ../tapioca
-  specs:
-    tapioca (0.16.0)
-      bundler (>= 2.2.25)
-      netrc (>= 0.11.0)
-      parallel (>= 1.21.0)
-      rbi (>= 0.1.14, < 0.2)
-      sorbet-static-and-runtime (>= 0.5.11087)
-      spoom (>= 1.2.0)
-      thor (>= 1.2.0)
-      yard-sorbet
-
-PATH
   remote: .
   specs:
     ruby-lsp-rails (0.3.12)
@@ -273,6 +260,15 @@ GEM
     sqlite3 (1.7.3-x86_64-linux)
     stringio (3.1.0)
     strscan (3.1.0)
+    tapioca (0.16.0)
+      bundler (>= 2.2.25)
+      netrc (>= 0.11.0)
+      parallel (>= 1.21.0)
+      rbi (>= 0.1.14, < 0.2)
+      sorbet-static-and-runtime (>= 0.5.11087)
+      spoom (>= 1.2.0)
+      thor (>= 1.2.0)
+      yard-sorbet
     thor (1.3.1)
     timeout (0.4.1)
     tzinfo (2.0.6)
@@ -314,7 +310,7 @@ DEPENDENCIES
   ruby-lsp-rails!
   sorbet-static-and-runtime
   sqlite3 (< 2)
-  tapioca!
+  tapioca (~> 0.13)
   tzinfo
   tzinfo-data
   webmock

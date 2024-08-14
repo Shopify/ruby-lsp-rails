@@ -16,8 +16,7 @@ gem "rubocop-rake", "~> 0.6.0", require: false
 gem "rubocop-sorbet", "~> 0.8", require: false
 gem "rdoc", require: false, github: "Shopify/rdoc", branch: "create_snapper_generator"
 gem "sorbet-static-and-runtime", platforms: :ruby
-# gem "tapioca", "~> 0.13", require: false, platforms: :ruby
-gem "tapioca", path: "../tapioca"
+gem "tapioca", "~> 0.13", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails"
 gem "webmock"
