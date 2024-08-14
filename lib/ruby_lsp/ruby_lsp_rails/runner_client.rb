@@ -41,6 +41,7 @@ module RubyLsp
 
       sig { void }
       def initialize
+        @mutex = T.let(Mutex.new, Mutex)
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
         # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
         # set its own session ID
@@ -176,7 +177,9 @@ module RubyLsp
         message[:params] = params if params
         json = message.to_json
 
-        @stdin.write("Content-Length: #{json.length}\r\n\r\n", json)
+        @mutex.synchronize do
+          @stdin.write("Content-Length: #{json.length}\r\n\r\n", json)
+        end
       rescue Errno::EPIPE
         # The server connection died
       end
@@ -187,13 +190,16 @@ module RubyLsp
 
       sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
-        headers = @stdout.gets("\r\n\r\n")
-        raise IncompleteMessageError unless headers
+        raw_response = @mutex.synchronize do
+          headers = @stdout.gets("\r\n\r\n")
+          raise IncompleteMessageError unless headers
 
-        content_length = headers[/Content-Length: (\d+)/i, 1].to_i
-        raise EmptyMessageError if content_length.zero?
+          content_length = headers[/Content-Length: (\d+)/i, 1].to_i
+          raise EmptyMessageError if content_length.zero?
 
-        raw_response = @stdout.read(content_length)
+          @stdout.read(content_length)
+        end
+
         response = JSON.parse(T.must(raw_response), symbolize_names: true)
 
         if response[:error]
