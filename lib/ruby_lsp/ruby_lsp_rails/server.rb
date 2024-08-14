@@ -29,7 +29,6 @@ module RubyLsp
 
         initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
-        load_addons
 
         while @running
           headers = $stdin.gets("\r\n\r\n")
@@ -42,23 +41,6 @@ module RubyLsp
           json_response = response.to_json
           $stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
         end
-      end
-
-      def load_addons
-        # TODO: Retrieve addons from RubyLSP
-        # @addons[:tapioca] = ::RubyLsp::Tapioca::Addon
-        # Gem.find_files("ruby_lsp/**/addon.rb").each do |addon|
-        #   $stderr.puts("Loading addon: #{addon}")
-        #   require File.expand_path(addon)
-        # rescue => e
-        #   $stderr.puts(e.full_message)
-        # end
-
-        # ObjectSpace.each_object(Class).each do |kls|
-        #   next unless kls < ::RubyLsp::Addon
-
-        #   @addons[kls.name.split("::").second.underscore.to_sym] = kls
-        # end
       end
 
       def execute(request, params)
