@@ -22,3 +22,6 @@ commands:
       optional: args...
 open:
   app: http://localhost:3000
+
+env:
+  'RUBY_DEBUG_IRB_CONSOLE': '1'
