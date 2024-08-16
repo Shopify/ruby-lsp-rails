@@ -152,6 +152,8 @@ module RubyLsp
           }
         end
 
+        # Clear the cache so that we get the latest associations.
+        const.clear_reflections_cache
         association_klass = const.reflect_on_association(params[:association_name].intern).klass
 
         source_location = Object.const_source_location(association_klass.to_s)

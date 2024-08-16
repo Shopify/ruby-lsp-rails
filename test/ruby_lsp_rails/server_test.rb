@@ -103,6 +103,26 @@ class ServerTest < ActiveSupport::TestCase
     assert_nil(response.fetch(:result))
   end
 
+  test "resolve association reflect the latest associations" do
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "User", association_name: :memberships },
+    )
+    assert_nil(response.fetch(:result))
+
+    User.has_many(:memberships)
+
+    response = @server.execute(
+      "association_target_location",
+      { model_name: "User", association_name: :memberships },
+    )
+
+    location = response[:result][:location]
+    assert_match(%r{test/dummy/app/models/membership.rb:3$}, location)
+  ensure
+    User.reflections.delete("memberships")
+  end
+
   test "resolve association handles class_name option" do
     response = @server.execute(
       "association_target_location",
