@@ -223,9 +223,3 @@ module RubyLsp
 end
 
 RubyLsp::Rails::Server.new.start if ARGV.first == "start"
-
-at_exit do
-  if $ERROR_INFO
-    File.write("exit.log", Time.now + $ERROR_INFO.full_message(highlight: false) + "\n", mode: "a")
-  end
-end
