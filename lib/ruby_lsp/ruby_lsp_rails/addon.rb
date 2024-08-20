@@ -36,6 +36,8 @@ module RubyLsp
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         Thread.new do
           @client = RunnerClient.create_client
+          # TODO: move rails_runner_stdin to be in ruby-lsp instead of ivar_get
+          # (or maybe somet other way, probably not in global state)
           @global_state.instance_variable_set(:@rails_runner_stdin, @client.stdin)
         end
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)

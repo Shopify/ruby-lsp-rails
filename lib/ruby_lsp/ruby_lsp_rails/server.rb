@@ -10,15 +10,16 @@ module RubyLsp
   module Rails
     class Server
       class << self
-        def require_server_addon(gem_name, constant_name)
+        def require_server_addon(gem_name)
           const = nil
           File.open("ruby-lsp-rails.txt", "a") do |f|
             f.puts("#{Time.now} trying to get addon...")
             require "ruby_lsp/#{gem_name}/addon"
             f.puts("#{Time.now} past require")
-            const = Object.const_get("RubyLsp::#{constant_name}::Addon") # rubocop:disable Sorbet/ConstantsFromStrings
+            const = Object.const_get("RubyLsp::#{gem_name.classify}::Addon") # rubocop:disable Sorbet/ConstantsFromStrings
             f.puts("#{Time.now} past constant ref")
           rescue => e
+            # TODO: rescue constnat not exising
             # TODO: - show error to user if invalid name given / send back to client
             f.puts(e.full_message)
           end
@@ -46,8 +47,6 @@ module RubyLsp
 
         initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
-        # require "ruby_lsp/tapioca/addon" # TODO: remove
-        load_addons
 
         while @running
           headers = $stdin.gets("\r\n\r\n")
@@ -62,11 +61,28 @@ module RubyLsp
         end
       end
 
-      def load_addons
-        @addons[:tapioca] = self.class.require_server_addon("tapioca", "Tapioca")
-      end
-
       def execute(request, params)
+        if request.include?(".")
+          addon, command = request.split(".")
+
+          unless addon.present? && command.present?
+            return { error: "Invalid request format: #{request}" }
+          end
+
+          # TODO: handle invalid input
+          @addons[addon.to_sym] ||= self.class.require_server_addon(addon)
+          File.open("ruby-lsp-rails.txt", "a") do |f|
+            $stdout = f
+            $stderr = f
+            addon = @addons[addon.to_sym]
+            # TODO: why didn't I see an error when 'dsl' was typoed?
+            addon.send(command, params)
+          rescue => e
+            $stderr.puts "*** rescued Error: #{e.full_message(highlight: false)}"
+          end
+          return VOID
+        end
+
         case request
         when "shutdown"
           @running = false
@@ -82,44 +98,6 @@ module RubyLsp
           route_location(params.fetch(:name))
         when "route_info"
           resolve_route_info(params)
-        when "tapioca_dsl"
-          File.open("ruby-lsp-rails.txt", "a") do |f|
-            $stdout = f
-            $stderr = f
-            $stderr.puts("*** #{Time.now} tapioca_dsl")
-            return VOID unless defined?(Tapioca) # TODO: check for Tapioca::Addon instead?
-
-            $stderr.puts("*** Tapioca is defined")
-
-            constants = params.fetch(:constants)
-            # addon = RubyLsp::Addon.get("Tapioca")
-            addon = @addons[:tapioca]
-            $stderr.puts("*** got addon: #{addon}")
-            # TODO: why didn't I see an error when 'dsl' was typoed?
-            addon.dsl(constants: constants)
-            # constants = constant_names.map do |const|
-            #   ActiveSupport::Inflector.safe_constantize(const)
-            # end
-
-            # spawn do
-            # File.delete("out.txt")
-            $stderr.puts "Constants: #{constants}"
-
-            command = ::Tapioca::Commands::DslGenerate.new(
-              requested_constants: constants,
-              tapioca_path: ::Tapioca::TAPIOCA_DIR,
-              requested_paths: [],
-              outpath: Pathname.new(::Tapioca::DEFAULT_DSL_DIR),
-              file_header: true,
-              exclude: [],
-              only: [],
-            )
-
-            command.generate_without_booting
-          rescue => e
-            $stderr.puts "*** rescued Error: #{e.full_message(highlight: false)}"
-          end
-          VOID
         else
           VOID
         end
