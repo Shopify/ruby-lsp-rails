@@ -64,8 +64,10 @@ module RubyLsp
         @stdout = T.let(stdout, IO)
         @stderr = T.let(stderr, IO)
         @wait_thread = T.let(wait_thread, Process::Waiter)
-        @stdin.binmode # for Windows compatibility
-        @stdout.binmode # for Windows compatibility
+
+        # We set binmode for Windows compatibility
+        @stdin.binmode
+        @stdout.binmode
         @stderr.binmode
 
         $stderr.puts("Ruby LSP Rails booting server")

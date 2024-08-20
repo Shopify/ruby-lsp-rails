@@ -9,6 +9,23 @@ require "json"
 module RubyLsp
   module Rails
     class Server
+      class << self
+        def require_server_addon(gem_name, constant_name)
+          const = nil
+          File.open("ruby-lsp-rails.txt", "a") do |f|
+            f.puts("#{Time.now} trying to get addon...")
+            require "ruby_lsp/#{gem_name}/addon"
+            f.puts("#{Time.now} past require")
+            const = Object.const_get("RubyLsp::#{constant_name}::Addon") # rubocop:disable Sorbet/ConstantsFromStrings
+            f.puts("#{Time.now} past constant ref")
+          rescue => e
+            # TODO: - show error to user if invalid name given / send back to client
+            f.puts(e.full_message)
+          end
+          const
+        end
+      end
+
       VOID = Object.new
 
       def initialize
@@ -29,6 +46,8 @@ module RubyLsp
 
         initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
         $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
+        # require "ruby_lsp/tapioca/addon" # TODO: remove
+        load_addons
 
         while @running
           headers = $stdin.gets("\r\n\r\n")
@@ -43,12 +62,11 @@ module RubyLsp
         end
       end
 
-      def execute(request, params)
-        $stderr.puts "Request: #{request}"
-        key, method = request.split("_", 2)
-        addon = @addons[key.to_sym]
-        return addon.send(method, params) if addon
+      def load_addons
+        @addons[:tapioca] = self.class.require_server_addon("tapioca", "Tapioca")
+      end
 
+      def execute(request, params)
         case request
         when "shutdown"
           @running = false
@@ -65,19 +83,27 @@ module RubyLsp
         when "route_info"
           resolve_route_info(params)
         when "tapioca_dsl"
-          VOID unless defined?(Tapioca)
-
-          constants = params.fetch(:constants)
-          # constants = constant_names.map do |const|
-          #   ActiveSupport::Inflector.safe_constantize(const)
-          # end
-
-          # spawn do
-          # File.delete("out.txt")
-          File.open("out.txt", "w") do |f|
+          File.open("ruby-lsp-rails.txt", "a") do |f|
             $stdout = f
             $stderr = f
-            puts "Constants: #{constants}"
+            $stderr.puts("*** #{Time.now} tapioca_dsl")
+            return VOID unless defined?(Tapioca) # TODO: check for Tapioca::Addon instead?
+
+            $stderr.puts("*** Tapioca is defined")
+
+            constants = params.fetch(:constants)
+            # addon = RubyLsp::Addon.get("Tapioca")
+            addon = @addons[:tapioca]
+            $stderr.puts("*** got addon: #{addon}")
+            # TODO: why didn't I see an error when 'dsl' was typoed?
+            addon.dsl(constants: constants)
+            # constants = constant_names.map do |const|
+            #   ActiveSupport::Inflector.safe_constantize(const)
+            # end
+
+            # spawn do
+            # File.delete("out.txt")
+            $stderr.puts "Constants: #{constants}"
 
             command = ::Tapioca::Commands::DslGenerate.new(
               requested_constants: constants,
@@ -90,9 +116,9 @@ module RubyLsp
             )
 
             command.generate_without_booting
+          rescue => e
+            $stderr.puts "*** rescued Error: #{e.full_message(highlight: false)}"
           end
-          # end
-
           VOID
         else
           VOID
@@ -222,6 +248,6 @@ RubyLsp::Rails::Server.new.start if ARGV.first == "start"
 
 at_exit do
   if $ERROR_INFO
-    File.write("server.log", Time.now + $ERROR_INFO.full_message(highlight: false) + "\n", mode: "a")
+    File.write("exit.log", Time.now + $ERROR_INFO.full_message(highlight: false) + "\n", mode: "a")
   end
 end
