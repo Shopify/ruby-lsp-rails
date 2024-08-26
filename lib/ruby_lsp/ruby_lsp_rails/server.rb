@@ -8,22 +8,16 @@ require "json"
 
 module RubyLsp
   module Rails
+    class InvalidAddonError < RuntimeError
+    end
+
     class Server
       class << self
         def require_server_addon(gem_name)
-          const = nil
-          File.open("ruby-lsp-rails.txt", "a") do |f|
-            f.puts("#{Time.now} trying to get addon...")
-            require "ruby_lsp/#{gem_name}/addon"
-            f.puts("#{Time.now} past require")
-            const = Object.const_get("RubyLsp::#{gem_name.classify}::Addon") # rubocop:disable Sorbet/ConstantsFromStrings
-            f.puts("#{Time.now} past constant ref")
-          rescue => e
-            # TODO: rescue constnat not exising
-            # TODO: - show error to user if invalid name given / send back to client
-            f.puts(e.full_message)
-          end
-          const
+          require "ruby_lsp/#{gem_name}/addon"
+          Object.const_get("RubyLsp::#{gem_name.classify}::Addon") # rubocop:disable Sorbet/ConstantsFromStrings
+        rescue LoadError, NameError
+          raise InvalidAddonError, "Failed to load addon '#{gem_name}'"
         end
       end
 
