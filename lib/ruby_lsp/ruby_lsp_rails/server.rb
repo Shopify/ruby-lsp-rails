@@ -57,26 +57,42 @@ module RubyLsp
 
       def execute(request, params)
         if request.include?(".")
-          addon, command = request.split(".")
+          execute_for_addon(request, params)
+        else
+          execute_for_ruby_lsp_rails(request, params)
+        end
+      end
 
-          unless addon.present? && command.present?
-            return { error: "Invalid request format: #{request}" }
-          end
+      private
 
-          # TODO: handle invalid input
-          @addons[addon.to_sym] ||= self.class.require_server_addon(addon)
-          File.open("ruby-lsp-rails.txt", "a") do |f|
-            $stdout = f
-            $stderr = f
-            addon = @addons[addon.to_sym]
-            # TODO: why didn't I see an error when 'dsl' was typoed?
-            addon.send(command, params)
-          rescue => e
-            $stderr.puts "*** rescued Error: #{e.full_message(highlight: false)}"
-          end
-          return VOID
+      def execute_for_addon(request, params)
+        addon, command = request.split(".")
+
+        unless addon.present? && command.present?
+          return { error: "Invalid request format: #{request}" }
         end
 
+        begin
+          @addons[addon.to_sym] ||= self.class.require_server_addon(addon).new
+        rescue InvalidAddonError
+          return { error: "222 Loading addon '#{addon}' failed" }
+        end
+
+        # TODO: Verify error is seen
+        unless @addons[addon.to_sym]
+          return { error: "Loading addon '#{addon}' failed" }
+        end
+
+        File.open("ruby-lsp-rails.txt", "a") do |f|
+          addon = @addons[addon.to_sym]
+          # TODO: why didn't I see an error when 'dsl' was typoed?
+
+          addon.send(command, params)
+        end
+        VOID
+      end
+
+      def execute_for_ruby_lsp_rails(request, params)
         case request
         when "shutdown"
           @running = false
@@ -98,8 +114,6 @@ module RubyLsp
       rescue => e
         { error: e.full_message(highlight: false) }
       end
-
-      private
 
       def resolve_route_info(requirements)
         if requirements[:controller]
