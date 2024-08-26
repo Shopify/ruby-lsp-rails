@@ -87,6 +87,9 @@ module RubyLsp
 
         $stderr.puts("Finished booting Ruby LSP Rails server")
 
+        # TODO: need to update RBI
+        T.unsafe(global_state).rails_runner_stdin = @stdin
+
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
             if @wait_thread.alive?
