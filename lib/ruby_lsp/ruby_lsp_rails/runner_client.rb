@@ -10,10 +10,12 @@ module RubyLsp
       class << self
         extend T::Sig
 
-        sig { returns(RunnerClient) }
-        def create_client
+        sig do
+          params(global_state: GlobalState).returns(RunnerClient)
+        end
+        def create_client(global_state)
           if File.exist?("bin/rails")
-            new
+            new(global_state)
           else
             $stderr.puts(<<~MSG)
               Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}"
@@ -39,10 +41,11 @@ module RubyLsp
       sig { returns(String) }
       attr_reader :rails_root
 
+      sig { returns(IO) }
       attr_reader :stdin
 
-      sig { void }
-      def initialize
+      sig { params(global_state: RubyLsp::GlobalState).void }
+      def initialize(global_state)
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
         # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
         # set its own session ID
