@@ -25,3 +25,5 @@ platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
   gem "tzinfo-data"
 end
+
+gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "andyw8/connect-rails-runner-stdin"
