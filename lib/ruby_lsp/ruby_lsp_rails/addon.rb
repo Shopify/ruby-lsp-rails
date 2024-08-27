@@ -26,19 +26,19 @@ module RubyLsp
 
         # We first initialize the client as a NullClient, so that we can start the server in a background thread. Until
         # the real client is initialized, features that depend on it will not be blocked by using the NullClient
-        @client = T.let(NullClient.new, RunnerClient)
+        @rails_runner_client = T.let(NullClient.new, RunnerClient)
         @global_state = T.let(nil, T.nilable(GlobalState))
       end
 
       # consider rename to more generic
-      attr_reader :client
+      attr_reader :rails_runner_client
 
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = global_state
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
-        Thread.new { @client = RunnerClient.create_client(global_state) }
+        Thread.new { @rails_runner_client = RunnerClient.create_client(global_state) }
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
 
         @global_state.index.register_enhancement(IndexingEnhancement.new)
@@ -46,7 +46,7 @@ module RubyLsp
 
       sig { override.void }
       def deactivate
-        @client.shutdown
+        @rails_runner_client.shutdown
       end
 
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
@@ -58,7 +58,7 @@ module RubyLsp
         ).void
       end
       def create_code_lens_listener(response_builder, uri, dispatcher)
-        CodeLens.new(@client, T.must(@global_state), response_builder, uri, dispatcher)
+        CodeLens.new(@rails_runner_client, T.must(@global_state), response_builder, uri, dispatcher)
       end
 
       sig do
@@ -69,7 +69,7 @@ module RubyLsp
         ).void
       end
       def create_hover_listener(response_builder, node_context, dispatcher)
-        Hover.new(@client, response_builder, node_context, T.must(@global_state), dispatcher)
+        Hover.new(@rails_runner_client, response_builder, node_context, T.must(@global_state), dispatcher)
       end
 
       sig do
@@ -94,7 +94,7 @@ module RubyLsp
       end
       def create_definition_listener(response_builder, uri, node_context, dispatcher)
         index = T.must(@global_state).index
-        Definition.new(@client, response_builder, node_context, index, dispatcher)
+        Definition.new(@rails_runner_client, response_builder, node_context, index, dispatcher)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
@@ -102,7 +102,7 @@ module RubyLsp
         if changes.any? do |change|
              change[:uri].end_with?("db/schema.rb") || change[:uri].end_with?("structure.sql")
            end
-          @client.trigger_reload
+          @rails_runner_client.trigger_reload
         end
       end
 
