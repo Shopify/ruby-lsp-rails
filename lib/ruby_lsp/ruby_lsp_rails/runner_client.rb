@@ -10,9 +10,7 @@ module RubyLsp
       class << self
         extend T::Sig
 
-        sig do
-          params(global_state: GlobalState).returns(RunnerClient)
-        end
+        sig { params(global_state: GlobalState).returns(RunnerClient) }
         def create_client(global_state)
           if File.exist?("bin/rails")
             new(global_state)
