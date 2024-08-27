@@ -30,7 +30,7 @@ module RubyLsp
         @global_state = T.let(nil, T.nilable(GlobalState))
       end
 
-      # consider rename to more generic
+      sig { returns(RunnerClient) }
       attr_reader :rails_runner_client
 
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
