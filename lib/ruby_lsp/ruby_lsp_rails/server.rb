@@ -75,7 +75,7 @@ module RubyLsp
         begin
           @addons[addon.to_sym] ||= self.class.require_server_addon(addon).new
         rescue InvalidAddonError
-          return { error: "222 Loading addon '#{addon}' failed" }
+          return { error: "Addon '#{addon}' setup failed" }
         end
 
         # TODO: Verify error is seen
