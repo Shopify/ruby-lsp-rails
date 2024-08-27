@@ -83,12 +83,8 @@ module RubyLsp
           return { error: "Loading addon '#{addon}' failed" }
         end
 
-        File.open("ruby-lsp-rails.txt", "a") do |f|
-          addon = @addons[addon.to_sym]
-          # TODO: why didn't I see an error when 'dsl' was typoed?
-
-          addon.send(command, params)
-        end
+        addon = @addons[addon.to_sym]
+        addon.send(command, params)
         VOID
       end
 
