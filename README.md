@@ -2,15 +2,7 @@
 
 # Ruby LSP Rails
 
-Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for extra Rails editor features, such as:
-
-* Hover over an ActiveRecord model to reveal its schema.
-* Run or debug a test by clicking on the code lens which appears above the test class, or an individual test.
-* Navigate to associations, validations, callbacks and test cases using your editor's "Go to Symbol" feature, or outline view.
-* Jump to the definition of callbacks using your editor's "Go to Definition" feature.
-* Jump to the declaration of a route.
-* Code Lens allowing fast-forwarding or rewinding of migrations.
-* Code Lens showing the path that a route action corresponds to.
+Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for extra [Rails editor features](https://shopify.github.io/ruby-lsp-rails/RubyLsp/FEATURES.html).
 
 ## Installation
 
@@ -22,7 +14,7 @@ There is no need to add the gem to your bundle.
 ## Documentation
 
 See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-depth details about the
-[supported features](https://shopify.github.io/ruby-lsp-rails/RubyLsp/Rails.html).
+[supported features](https://shopify.github.io/ruby-lsp-rails/RubyLsp/FEATURES.html).
 
 ## How Runtime Introspection Works
 
