@@ -1,45 +1,31 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "json"
+require "ruby_lsp/addon/process_server"
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
 
 module RubyLsp
   module Rails
-    class Server
-      VOID = Object.new
+    class Server < RubyLsp::Addon::ProcessServer
+      extend T::Sig
 
-      def initialize
-        $stdin.sync = true
-        $stdout.sync = true
-        $stdin.binmode
-        $stdout.binmode
-        @running = true
-      end
-
+      sig { void }
       def start
         # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
         routes_reloader = ::Rails.application.routes_reloader
         routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
-
-        initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
-        $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
-
-        while @running
-          headers = $stdin.gets("\r\n\r\n")
-          json = $stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
-
-          request = JSON.parse(json, symbolize_names: true)
-          response = execute(request.fetch(:method), request[:params])
-          next if response == VOID
-
-          json_response = response.to_json
-          $stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
-        end
+        super
       end
 
+      sig { override.returns(String) }
+      def generate_initialize_response
+        { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
+      end
+
+      sig { override.params(request: String, params: T.untyped).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def execute(request, params)
         case request
         when "shutdown"
@@ -72,7 +58,7 @@ module RubyLsp
 
         # In Rails 7.2 we can use `from_requirements, otherwise we fall back to a private API
         route = if ::Rails.application.routes.respond_to?(:from_requirements)
-          ::Rails.application.routes.from_requirements(requirements)
+          T.unsafe(::Rails.application.routes).from_requirements(requirements)
         else
           ::Rails.application.routes.routes.find { |route| route.requirements == requirements }
         end
@@ -154,7 +140,7 @@ module RubyLsp
 
         association_klass = const.reflect_on_association(params[:association_name].intern).klass
 
-        source_location = Object.const_source_location(association_klass.to_s)
+        source_location = T.must(Object.const_source_location(association_klass.to_s))
 
         {
           result: {
@@ -173,7 +159,7 @@ module RubyLsp
             defined?(ActiveRecord) &&
             const.is_a?(Class) &&
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
-          !const.abstract_class?
+          !T.unsafe(const).abstract_class?
         )
       end
     end
