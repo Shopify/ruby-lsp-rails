@@ -83,7 +83,7 @@ module RubyLsp
           return { error: "Loading addon '#{addon}' failed" }
         end
 
-        addon = @addons[addon.to_sym]
+        addon = @addons.fetch(addon.to_sym)
         addon.send(command, params)
         VOID
       end
