@@ -85,9 +85,6 @@ module RubyLsp
 
         $stderr.puts("Finished booting Ruby LSP Rails server")
 
-        # TODO: need to update RBI
-        global_state.rails_runner_stdin = @stdin
-
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
             if @wait_thread.alive?
@@ -166,8 +163,6 @@ module RubyLsp
         [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
       end
 
-      private
-
       sig do
         params(
           request: String,
@@ -179,6 +174,12 @@ module RubyLsp
         read_response
       end
 
+      # Notifications are like messages, but one-way, with no response sent back.
+      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_notification(request, params = nil) = send_message(request, params)
+
+      private
+
       sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
         message = { method: request }
@@ -189,10 +190,6 @@ module RubyLsp
       rescue Errno::EPIPE
         # The server connection died
       end
-
-      # Notifications are like messages, but one-way, with no response sent back.
-      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
-      def send_notification(request, params = nil) = send_message(request, params)
 
       sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response

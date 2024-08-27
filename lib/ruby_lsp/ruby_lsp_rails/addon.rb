@@ -30,6 +30,9 @@ module RubyLsp
         @global_state = T.let(nil, T.nilable(GlobalState))
       end
 
+      # consider rename to more generic
+      attr_reader :client
+
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = global_state
