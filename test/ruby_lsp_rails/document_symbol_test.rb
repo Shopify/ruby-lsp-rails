@@ -415,6 +415,18 @@ module RubyLsp
         assert_equal("belongs_to :baz", response[0].children[1].name)
       end
 
+      test "does not break with incomplete constant path nodes" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          class FooModel < ApplicationRecord
+            validate var::Foo
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("FooModel", response[0].name)
+        assert_empty(response[0].children)
+      end
+
       private
 
       def generate_document_symbols_for_source(source)

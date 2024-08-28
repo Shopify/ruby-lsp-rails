@@ -151,7 +151,8 @@ module RubyLsp
               selection_range: range_from_location(argument.location),
             )
           when Prism::ConstantReadNode, Prism::ConstantPathNode
-            name = argument.full_name
+            name = constant_name(argument)
+            next unless name
             next if name.empty?
 
             append_document_symbol(
