@@ -39,9 +39,6 @@ module RubyLsp
       sig { returns(String) }
       attr_reader :rails_root
 
-      sig { returns(IO) }
-      attr_reader :stdin
-
       sig { void }
       def initialize
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
