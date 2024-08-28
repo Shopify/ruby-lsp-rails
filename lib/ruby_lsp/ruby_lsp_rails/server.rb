@@ -6,14 +6,6 @@ require "json"
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
 
-# @addon.client.add_route("tapioca/dsl") do
-#   { result: { location: "tapioca/dsl" } }
-# end
-
-# @addon.client.add_route("tapioca/dsl", <<~RUBY)
-
-# RUBY
-
 module RubyLsp
   module Rails
     class InvalidAddonError < RuntimeError
