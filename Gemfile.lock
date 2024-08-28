@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/Shopify/ruby-lsp.git
-  revision: 4c5d60afc15a77b1e1dcfbf216819a21c2dbeabc
-  branch: andyw8/connect-rails-runner-stdin
+  revision: 67727d218fa1bd483e6642494f950760fd3af917
+  branch: andyw8/add-entries-for
   specs:
-    ruby-lsp (0.17.16)
+    ruby-lsp (0.17.17)
       language_server-protocol (~> 3.17.0)
       prism (>= 0.29.0, < 0.31)
       rbs (>= 3, < 4)
