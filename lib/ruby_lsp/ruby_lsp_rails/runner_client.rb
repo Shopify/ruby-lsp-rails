@@ -63,8 +63,11 @@ module RubyLsp
         @stdout = T.let(stdout, IO)
         @stderr = T.let(stderr, IO)
         @wait_thread = T.let(wait_thread, Process::Waiter)
-        @stdin.binmode # for Windows compatibility
-        @stdout.binmode # for Windows compatibility
+
+        # We set binmode for Windows compatibility
+        @stdin.binmode
+        @stdout.binmode
+        @stderr.binmode
 
         $stderr.puts("Ruby LSP Rails booting server")
         count = 0
@@ -158,8 +161,6 @@ module RubyLsp
         [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
       end
 
-      private
-
       sig do
         params(
           request: String,
@@ -170,6 +171,12 @@ module RubyLsp
         send_message(request, params)
         read_response
       end
+
+      # Notifications are like messages, but one-way, with no response sent back.
+      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
+      def send_notification(request, params = nil) = send_message(request, params)
+
+      private
 
       sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)
@@ -183,10 +190,6 @@ module RubyLsp
       rescue Errno::EPIPE
         # The server connection died
       end
-
-      # Notifications are like messages, but one-way, with no response sent back.
-      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
-      def send_notification(request, params = nil) = send_message(request, params)
 
       sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
