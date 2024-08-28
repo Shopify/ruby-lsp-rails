@@ -8,7 +8,7 @@ module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        @client = T.let(RunnerClient.new(GlobalState.new), RunnerClient)
+        @client = T.let(RunnerClient.new, RunnerClient)
       end
 
       teardown do
@@ -45,7 +45,7 @@ module RubyLsp
         FileUtils.mv("bin/rails", "bin/rails_backup")
 
         assert_output("", %r{Ruby LSP Rails failed to locate bin/rails in the current directory}) do
-          client = RunnerClient.create_client(GlobalState.new)
+          client = RunnerClient.create_client
 
           assert_instance_of(NullClient, client)
           assert_nil(client.model("User"))
@@ -61,7 +61,7 @@ module RubyLsp
           "",
           /Ruby LSP Rails failed to initialize server/,
         ) do
-          client = RunnerClient.create_client(GlobalState.new)
+          client = RunnerClient.create_client
 
           assert_instance_of(NullClient, client)
           assert_nil(client.model("User"))
@@ -78,7 +78,7 @@ module RubyLsp
         File.write("test/dummy/config/application.rb", content + junk)
 
         capture_subprocess_io do
-          client = RunnerClient.create_client(GlobalState.new)
+          client = RunnerClient.create_client
 
           response = T.must(client.model("User"))
           assert(response.key?(:columns))

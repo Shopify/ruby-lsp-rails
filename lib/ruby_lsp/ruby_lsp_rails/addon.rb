@@ -38,7 +38,7 @@ module RubyLsp
         @global_state = global_state
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
-        Thread.new { @rails_runner_client = RunnerClient.create_client(global_state) }
+        Thread.new { @rails_runner_client = RunnerClient.create_client }
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
 
         @global_state.index.register_enhancement(IndexingEnhancement.new)
