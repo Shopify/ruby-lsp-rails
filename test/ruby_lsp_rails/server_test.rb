@@ -134,4 +134,11 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal "GET", result[:verb]
     assert_equal "/users(.:format)", result[:path]
   end
+
+  test "require_server_addon raises if addon does not exist" do
+    error = assert_raises do
+      RubyLsp::Rails::Server.require_server_addon("invalid")
+    end
+    assert_equal "Failed to load addon 'invalid'", error.message
+  end
 end
