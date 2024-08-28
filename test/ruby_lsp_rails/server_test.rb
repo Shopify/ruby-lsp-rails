@@ -141,4 +141,17 @@ class ServerTest < ActiveSupport::TestCase
     end
     assert_equal "Failed to load addon 'invalid'", error.message
   end
+
+  test "reports and error if server addon request format is invalid" do
+    response = @server.execute("foo.", {})
+    assert_equal "Invalid request format: foo.", response.fetch(:error)
+
+    response = @server.execute(".bar", {})
+    assert_equal "Invalid request format: .bar", response.fetch(:error)
+  end
+
+  test "reports an error is server addon setup fails" do
+    response = @server.execute("foo.bar", {})
+    assert_equal "Addon 'foo' setup failed", response.fetch(:error)
+  end
 end
