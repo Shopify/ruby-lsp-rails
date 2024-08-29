@@ -46,8 +46,8 @@ module RubyLsp
         # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
         # set its own session ID
         begin
-          Process.setpgrp
           Process.setsid
+          Process.setpgrp
         rescue Errno::EPERM
           # If we can't set the session ID, continue
         rescue NotImplementedError
