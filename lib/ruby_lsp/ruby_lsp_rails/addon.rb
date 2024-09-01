@@ -30,9 +30,6 @@ module RubyLsp
         @global_state = T.let(nil, T.nilable(GlobalState))
       end
 
-      sig { returns(RunnerClient) }
-      attr_reader :rails_runner_client
-
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = global_state
