@@ -8,7 +8,8 @@ module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        @client = T.let(RunnerClient.new, RunnerClient)
+        @addon = Rails::Addon.new
+        @client = T.let(RunnerClient.new(@addon, RunnerClient::COMMAND), RunnerClient)
       end
 
       teardown do
@@ -45,7 +46,7 @@ module RubyLsp
         FileUtils.mv("bin/rails", "bin/rails_backup")
 
         assert_output("", %r{Ruby LSP Rails failed to locate bin/rails in the current directory}) do
-          client = RunnerClient.create_client
+          client = RunnerClient.create_client(@addon)
 
           assert_instance_of(NullClient, client)
           assert_nil(client.model("User"))
@@ -61,7 +62,7 @@ module RubyLsp
           "",
           /Ruby LSP Rails failed to initialize server/,
         ) do
-          client = RunnerClient.create_client
+          client = RunnerClient.create_client(@addon)
 
           assert_instance_of(NullClient, client)
           assert_nil(client.model("User"))
@@ -78,7 +79,7 @@ module RubyLsp
         File.write("test/dummy/config/application.rb", content + junk)
 
         capture_subprocess_io do
-          client = RunnerClient.create_client
+          client = RunnerClient.create_client(@addon)
 
           response = T.must(client.model("User"))
           assert(response.key?(:columns))
@@ -89,7 +90,7 @@ module RubyLsp
     end
 
     class NullClientTest < ActiveSupport::TestCase
-      setup { @client = NullClient.new }
+      setup { @client = NullClient.new(Addon.new) }
 
       test "#shutdown is a no-op" do
         assert_nothing_raised { @client.shutdown }
