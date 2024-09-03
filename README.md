@@ -2,7 +2,7 @@
 
 # Ruby LSP Rails
 
-Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for extra [Rails editor features](https://shopify.github.io/ruby-lsp-rails/RubyLsp/FEATURES.html).
+Ruby LSP Rails is a [Ruby LSP](https://github.com/Shopify/ruby-lsp) addon for extra [Rails editor features](https://shopify.github.io/ruby-lsp-rails/FEATURES_md.html).
 
 ## Installation
 
@@ -14,7 +14,7 @@ There is no need to add the gem to your bundle.
 ## Documentation
 
 See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-depth details about the
-[supported features](https://shopify.github.io/ruby-lsp-rails/RubyLsp/FEATURES.html).
+[supported features](https://shopify.github.io/ruby-lsp-rails/FEATURES_md.html).
 
 ## How Runtime Introspection Works
 
