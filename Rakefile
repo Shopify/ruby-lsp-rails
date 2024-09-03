@@ -23,6 +23,7 @@ RDoc::Task.new do |rdoc|
   rdoc.rdoc_files.include("*.md", "lib/**/*.rb")
   rdoc.rdoc_dir = "docs"
   rdoc.markup = "markdown"
+  rdoc.title = "Ruby LSP Rails"
   rdoc.generator = "snapper"
   rdoc.options.push("--copy-files", "misc")
   rdoc.options.push("--copy-files", "LICENSE.txt")
