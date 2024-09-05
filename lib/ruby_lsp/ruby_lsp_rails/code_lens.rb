@@ -138,8 +138,14 @@ module RubyLsp
         class_name = node.constant_path.slice
         superclass_name = node.superclass&.slice
 
+        # We need to use a stack because someone could define a nested class
+        # inside a controller. When we exit that nested class declaration, we are
+        # back in a controller context. This part is used in other places in the LSP
+        @constant_name_stack << [class_name, superclass_name]
+
         if class_name.end_with?("Test")
-          command = "#{test_command} #{@path}"
+          fully_qualified_name = @constant_name_stack.map(&:first).join("::")
+          command = "#{test_command} #{@path} --name \"/#{Shellwords.escape(fully_qualified_name)}(#|::)/\""
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
           @group_id_stack.push(@group_id)
           @group_id += 1
@@ -149,11 +155,6 @@ module RubyLsp
           command = "#{migrate_command} VERSION=#{migration_version}"
           add_migrate_code_lens(node, name: class_name, command: command)
         end
-
-        # We need to use a stack because someone could define a nested class
-        # inside a controller. When we exit that nested class declaration, we are
-        # back in a controller context. This part is used in other places in the LSP
-        @constant_name_stack << [class_name, superclass_name]
       end
 
       sig { params(node: Prism::ClassNode).void }

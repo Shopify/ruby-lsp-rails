@@ -150,6 +150,23 @@ module RubyLsp
         assert_match("Debug", response[5].command.title)
       end
 
+      test "uses regex to filter test classes defined in the same file" do
+        response = generate_code_lens_for_source(<<~RUBY)
+          class FirstTest < ActiveSupport::TestCase
+            def test_example
+            end
+          end
+
+          class SecondTest < ActiveSupport::TestCase
+            def test_example
+            end
+          end
+        RUBY
+
+        assert_match("bin/rails test /fake.rb --name \"/FirstTest(#|::)/\"", response[0].command.arguments[2])
+        assert_match("bin/rails test /fake.rb --name \"/SecondTest(#|::)/\"", response[7].command.arguments[2])
+      end
+
       test "assigns the correct hierarchy to test structure" do
         response = generate_code_lens_for_source(<<~RUBY)
           class Test < ActiveSupport::TestCase
