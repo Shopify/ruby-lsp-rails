@@ -151,7 +151,7 @@ module RubyLsp
           @group_id += 1
         end
 
-        if superclass_name&.start_with?("ActiveRecord::Migration")
+        if @path && superclass_name&.start_with?("ActiveRecord::Migration")
           command = "#{migrate_command} VERSION=#{migration_version}"
           add_migrate_code_lens(node, name: class_name, command: command)
         end
