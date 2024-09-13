@@ -12,10 +12,22 @@ module RubyLsp
       VOID = Object.new
 
       def initialize
-        $stdin.sync = true
-        $stdout.sync = true
-        $stdin.binmode
-        $stdout.binmode
+        # Grab references to the original pipes so that we can change the default output device further down
+        @stdin = $stdin
+        @stdout = $stdout
+        @stderr = $stderr
+        @stdin.sync = true
+        @stdout.sync = true
+        @stderr.sync = true
+        @stdin.binmode
+        @stdout.binmode
+        @stderr.binmode
+
+        # # Set the default output device to be $stderr. This means that using `puts` by itself will default to printing
+        # # to $stderr and only explicit `$stdout.puts` will go to $stdout. This reduces the chance that output coming
+        # # from the Rails app will be accidentally sent to the client
+        $> = $stderr
+
         @running = true
       end
 
@@ -25,18 +37,18 @@ module RubyLsp
         routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
 
         initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
-        $stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
+        @stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
 
         while @running
-          headers = $stdin.gets("\r\n\r\n")
-          json = $stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
+          headers = @stdin.gets("\r\n\r\n")
+          json = @stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
 
           request = JSON.parse(json, symbolize_names: true)
           response = execute(request.fetch(:method), request[:params])
           next if response == VOID
 
           json_response = response.to_json
-          $stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
+          @stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
         end
       end
 

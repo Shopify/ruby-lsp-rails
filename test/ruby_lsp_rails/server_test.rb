@@ -134,4 +134,22 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal "GET", result[:verb]
     assert_equal "/users(.:format)", result[:path]
   end
+
+  test "prints in the Rails application or server are automatically redirected to stderr" do
+    server = RubyLsp::Rails::Server.new
+
+    server.instance_eval do
+      def resolve_route_info(requirements)
+        puts "Hello"
+        super
+      end
+    end
+
+    stdout, stderr = capture_subprocess_io do
+      server.execute("route_info", { controller: "UsersController", action: "index" })
+    end
+
+    assert_empty(stdout)
+    assert_equal("Hello\n", stderr)
+  end
 end
