@@ -9,8 +9,6 @@ require "json"
 module RubyLsp
   module Rails
     class Server
-      VOID = Object.new
-
       def initialize
         # Grab references to the original pipes so that we can change the default output device further down
         @stdin = $stdin
@@ -44,11 +42,7 @@ module RubyLsp
           json = @stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
 
           request = JSON.parse(json, symbolize_names: true)
-          response = execute(request.fetch(:method), request[:params])
-          next if response == VOID
-
-          json_response = response.to_json
-          @stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
+          execute(request.fetch(:method), request[:params])
         end
       end
 
@@ -56,26 +50,27 @@ module RubyLsp
         case request
         when "shutdown"
           @running = false
-          VOID
         when "model"
-          resolve_database_info_from_model(params.fetch(:name))
+          write_response(resolve_database_info_from_model(params.fetch(:name)))
         when "association_target_location"
-          resolve_association_target(params)
+          write_response(resolve_association_target(params))
         when "reload"
           ::Rails.application.reloader.reload!
-          VOID
         when "route_location"
-          route_location(params.fetch(:name))
+          write_response(route_location(params.fetch(:name)))
         when "route_info"
-          resolve_route_info(params)
-        else
-          VOID
+          write_response(resolve_route_info(params))
         end
       rescue => e
-        { error: e.full_message(highlight: false) }
+        write_response({ error: e.full_message(highlight: false) })
       end
 
       private
+
+      def write_response(response)
+        json_response = response.to_json
+        @stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
+      end
 
       def resolve_route_info(requirements)
         if requirements[:controller]
