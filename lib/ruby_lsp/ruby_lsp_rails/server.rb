@@ -8,6 +8,41 @@ require "json"
 
 module RubyLsp
   module Rails
+    class ServerAddon
+      @server_addon_classes = []
+      @server_addons = {}
+
+      class << self
+        # We keep track of runtime server addons the same way we track other addons, by storing classes that inherit
+        # from the base one
+        def inherited(child)
+          @server_addon_classes << child
+          super
+        end
+
+        # Delegate `request` with `params` to the server addon with the given `name`
+        def delegate(name, request, params)
+          @server_addons[name]&.execute(request, params)
+        end
+
+        # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
+        def finalize_registrations!
+          until @server_addon_classes.empty?
+            addon = @server_addon_classes.shift.new
+            @server_addons[addon.name] = addon
+          end
+        end
+      end
+
+      def name
+        raise NotImplementedError, "Not implemented!"
+      end
+
+      def execute(request, params)
+        raise NotImplementedError, "Not implemented!"
+      end
+    end
+
     class Server
       def initialize(stdout: $stdout, override_default_output_device: true)
         # Grab references to the original pipes so that we can change the default output device further down
@@ -60,6 +95,13 @@ module RubyLsp
           write_response(route_location(params.fetch(:name)))
         when "route_info"
           write_response(resolve_route_info(params))
+        when "server_addon/register"
+          require params[:server_addon_path]
+          ServerAddon.finalize_registrations!
+        when "server_addon/delegate"
+          server_addon_name = params.delete(:server_addon_name)
+          request_name = params.delete(:request_name)
+          write_response(ServerAddon.delegate(server_addon_name, request_name, params))
         end
       rescue => e
         write_response({ error: e.full_message(highlight: false) })

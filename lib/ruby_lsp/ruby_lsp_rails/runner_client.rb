@@ -96,6 +96,14 @@ module RubyLsp
         raise InitializationError, @stderr.read
       end
 
+      sig { params(server_addon_path: String).void }
+      def register_server_addon(server_addon_path)
+        send_notification("server_addon/register", server_addon_path: server_addon_path)
+      rescue IncompleteMessageError
+        $stderr.puts("Ruby LSP Rails failed to register server addon #{server_addon_path}")
+        nil
+      end
+
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def model(name)
         make_request("model", name: name)
