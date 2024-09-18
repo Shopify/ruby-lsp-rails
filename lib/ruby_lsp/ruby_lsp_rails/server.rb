@@ -9,10 +9,10 @@ require "json"
 module RubyLsp
   module Rails
     class Server
-      def initialize
+      def initialize(stdout: $stdout, override_default_output_device: true)
         # Grab references to the original pipes so that we can change the default output device further down
         @stdin = $stdin
-        @stdout = $stdout
+        @stdout = stdout
         @stderr = $stderr
         @stdin.sync = true
         @stdout.sync = true
@@ -24,7 +24,7 @@ module RubyLsp
         # # Set the default output device to be $stderr. This means that using `puts` by itself will default to printing
         # # to $stderr and only explicit `$stdout.puts` will go to $stdout. This reduces the chance that output coming
         # # from the Rails app will be accidentally sent to the client
-        $> = $stderr
+        $> = $stderr if override_default_output_device
 
         @running = true
       end
