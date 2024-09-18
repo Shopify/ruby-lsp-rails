@@ -6,26 +6,27 @@ require "ruby_lsp/ruby_lsp_rails/server"
 
 class ServerTest < ActiveSupport::TestCase
   setup do
-    @server = RubyLsp::Rails::Server.new
+    @stdout = StringIO.new
+    @server = RubyLsp::Rails::Server.new(stdout: @stdout, override_default_output_device: false)
   end
 
   test "returns nil if model doesn't exist" do
-    response = @server.execute("model", { name: "Foo" })
+    @server.execute("model", { name: "Foo" })
     assert_nil(response.fetch(:result))
   end
 
   test "returns nil if class is not a model" do
-    response = @server.execute("model", { name: "Time" })
+    @server.execute("model", { name: "Time" })
     assert_nil(response.fetch(:result))
   end
 
   test "returns nil if class is an abstract model" do
-    response = @server.execute("model", { name: "ApplicationRecord" })
+    @server.execute("model", { name: "ApplicationRecord" })
     assert_nil(response.fetch(:result))
   end
 
   test "returns nil if constant is not a class" do
-    response = @server.execute("model", { name: "RUBY_VERSION" })
+    @server.execute("model", { name: "RUBY_VERSION" })
     assert_nil(response.fetch(:result))
   end
 
@@ -38,21 +39,21 @@ class ServerTest < ActiveSupport::TestCase
       end
     end
 
-    response = @server.execute("model", { name: "TestClassWithOverwrittenLessThan" })
+    @server.execute("model", { name: "TestClassWithOverwrittenLessThan" })
     assert_nil(response.fetch(:result))
   end
 
   test "handles older Rails version which don't have `schema_dump_path`" do
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :old_schema_dump_path, :schema_dump_path)
     ActiveRecord::Tasks::DatabaseTasks.undef_method(:schema_dump_path)
-    response = @server.execute("model", { name: "User" })
+    @server.execute("model", { name: "User" })
     assert_nil(response.fetch(:result)[:schema_file])
   ensure
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :schema_dump_path, :old_schema_dump_path)
   end
 
   test "resolve association returns the location of the target class of a has_many association" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "Organization", association_name: :memberships },
     )
@@ -61,7 +62,7 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association returns the location of the target class of a belongs_to association" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "Membership", association_name: :organization },
     )
@@ -70,7 +71,7 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association returns the location of the target class of a has_one association" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "User", association_name: :profile },
     )
@@ -79,7 +80,7 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association returns the location of the target class of a has_and_belongs_to_many association" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "Profile", association_name: :labels },
     )
@@ -88,7 +89,7 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association handles invalid model name" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "NotHere", association_name: :labels },
     )
@@ -96,7 +97,7 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association handles invalid association name" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "Membership", association_name: :labels },
     )
@@ -104,7 +105,7 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "resolve association handles class_name option" do
-    response = @server.execute(
+    @server.execute(
       "association_target_location",
       { model_name: "User", association_name: :location },
     )
@@ -113,18 +114,18 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "route location returns the location for a valid route" do
-    response = @server.execute("route_location", { name: "user_path" })
+    @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]
     assert_match %r{test/dummy/config/routes.rb:4$}, location
   end
 
   test "route location returns nil for invalid routes" do
-    response = @server.execute("route_location", { name: "invalid_path" })
+    @server.execute("route_location", { name: "invalid_path" })
     assert_nil response[:result]
   end
 
   test "route info" do
-    response = @server.execute("route_info", { controller: "UsersController", action: "index" })
+    @server.execute("route_info", { controller: "UsersController", action: "index" })
 
     result = response[:result]
 
@@ -136,7 +137,8 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "prints in the Rails application or server are automatically redirected to stderr" do
-    server = RubyLsp::Rails::Server.new
+    stdout = StringIO.new
+    server = RubyLsp::Rails::Server.new(stdout: stdout)
 
     server.instance_eval do
       def resolve_route_info(requirements)
@@ -145,11 +147,18 @@ class ServerTest < ActiveSupport::TestCase
       end
     end
 
-    stdout, stderr = capture_subprocess_io do
+    _, stderr = capture_subprocess_io do
       server.execute("route_info", { controller: "UsersController", action: "index" })
     end
 
-    assert_empty(stdout)
+    refute_match("Hello", stdout.string)
     assert_equal("Hello\n", stderr)
+  end
+
+  private
+
+  def response
+    _headers, content = @stdout.string.split("\r\n\r\n")
+    JSON.parse(content, symbolize_names: true)
   end
 end
