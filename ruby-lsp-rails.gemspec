@@ -23,5 +23,5 @@ Gem::Specification.new do |spec|
     Dir["lib/**/*", "LICENSE.txt", "Rakefile", "README.md"]
   end
 
-  spec.add_dependency("ruby-lsp", ">= 0.17.12", "< 0.18.0")
+  spec.add_dependency("ruby-lsp", ">= 0.18.0", "< 0.19.0")
 end
