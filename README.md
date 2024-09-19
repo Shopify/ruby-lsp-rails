@@ -14,7 +14,7 @@ There is no need to add the gem to your bundle.
 ## Documentation
 
 See the [documentation](https://shopify.github.io/ruby-lsp-rails) for more in-depth details about the
-[supported features](https://shopify.github.io/ruby-lsp-rails/FEATURES_md.html).
+[supported features](https://shopify.github.io/ruby-lsp/rails-addon#features).
 
 ## How Runtime Introspection Works
 
