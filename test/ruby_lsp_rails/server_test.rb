@@ -136,6 +136,27 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal "/users(.:format)", result[:path]
   end
 
+  test "server addons" do
+    File.write("server_addon.rb", <<~RUBY)
+      class TapiocaServerAddon < RubyLsp::Rails::ServerAddon
+        def name
+          "Tapioca"
+        end
+
+        def execute(request, params)
+          { request:, params: }
+        end
+      end
+    RUBY
+
+    @server.execute("server_addon/register", server_addon_path: File.expand_path("server_addon.rb"))
+
+    @server.execute("server_addon/delegate", server_addon_name: "Tapioca", request_name: "dsl")
+    assert_equal(response, { params: {}, request: "dsl" })
+  ensure
+    FileUtils.rm("server_addon.rb")
+  end
+
   test "prints in the Rails application or server are automatically redirected to stderr" do
     stdout = StringIO.new
     server = RubyLsp::Rails::Server.new(stdout: stdout)

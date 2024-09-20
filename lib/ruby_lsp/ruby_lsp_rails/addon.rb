@@ -28,20 +28,32 @@ module RubyLsp
         # the real client is initialized, features that depend on it will not be blocked by using the NullClient
         @rails_runner_client = T.let(NullClient.new, RunnerClient)
         @global_state = T.let(nil, T.nilable(GlobalState))
+        @addon_mutex = T.let(Mutex.new, Mutex)
+        @client_mutex = T.let(Mutex.new, Mutex)
+        @client_mutex.lock
+
+        Thread.new do
+          @addon_mutex.synchronize do
+            # We need to ensure the Rails client is fully loaded before we activate the server addons
+            @client_mutex.synchronize { @rails_runner_client = RunnerClient.create_client }
+          end
+        end
       end
 
       sig { returns(RunnerClient) }
-      attr_reader :rails_runner_client
+      def rails_runner_client
+        @addon_mutex.synchronize { @rails_runner_client }
+      end
 
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = global_state
         $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
-        # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
-        Thread.new { @rails_runner_client = RunnerClient.create_client }
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
-
         @global_state.index.register_enhancement(IndexingEnhancement.new)
+
+        # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
+        @client_mutex.unlock
       end
 
       sig { override.void }
