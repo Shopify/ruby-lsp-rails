@@ -26,12 +26,22 @@ module RubyLsp
         end
 
         # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
-        def finalize_registrations!
+        def finalize_registrations!(stdout)
           until @server_addon_classes.empty?
-            addon = @server_addon_classes.shift.new
+            addon = @server_addon_classes.shift.new(stdout)
             @server_addons[addon.name] = addon
           end
         end
+      end
+
+      def initialize(stdout)
+        @stdout = stdout
+      end
+
+      # Write a response back. Can be used for sending notifications to the editor
+      def write_response(response)
+        json_response = response.to_json
+        @stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
       end
 
       def name
@@ -97,11 +107,11 @@ module RubyLsp
           write_response(resolve_route_info(params))
         when "server_addon/register"
           require params[:server_addon_path]
-          ServerAddon.finalize_registrations!
+          ServerAddon.finalize_registrations!(@stdout)
         when "server_addon/delegate"
           server_addon_name = params.delete(:server_addon_name)
           request_name = params.delete(:request_name)
-          write_response(ServerAddon.delegate(server_addon_name, request_name, params))
+          ServerAddon.delegate(server_addon_name, request_name, params)
         end
       rescue => e
         write_response({ error: e.full_message(highlight: false) })
