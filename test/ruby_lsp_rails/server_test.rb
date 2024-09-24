@@ -136,7 +136,7 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal "/users(.:format)", result[:path]
   end
 
-  test "server addons" do
+  test "server add-ons" do
     File.write("server_addon.rb", <<~RUBY)
       class TapiocaServerAddon < RubyLsp::Rails::ServerAddon
         def name

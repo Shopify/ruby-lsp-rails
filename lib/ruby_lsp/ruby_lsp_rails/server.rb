@@ -13,14 +13,14 @@ module RubyLsp
       @server_addons = {}
 
       class << self
-        # We keep track of runtime server addons the same way we track other addons, by storing classes that inherit
+        # We keep track of runtime server add-ons the same way we track other add-ons, by storing classes that inherit
         # from the base one
         def inherited(child)
           @server_addon_classes << child
           super
         end
 
-        # Delegate `request` with `params` to the server addon with the given `name`
+        # Delegate `request` with `params` to the server add-on with the given `name`
         def delegate(name, request, params)
           @server_addons[name]&.execute(request, params)
         end
