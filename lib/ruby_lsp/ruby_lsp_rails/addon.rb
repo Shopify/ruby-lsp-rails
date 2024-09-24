@@ -48,7 +48,7 @@ module RubyLsp
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = global_state
-        $stderr.puts("Activating Ruby LSP Rails addon v#{VERSION}")
+        $stderr.puts("Activating Ruby LSP Rails add-on v#{VERSION}")
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
         @global_state.index.register_enhancement(IndexingEnhancement.new)
 
