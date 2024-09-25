@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/releases"
-  spec.metadata["documentation_uri"] = "https://shopify.github.io/ruby-lsp/rails-addon.html"
+  spec.metadata["documentation_uri"] = "https://shopify.github.io/ruby-lsp/rails-add-on.html"
 
   spec.required_ruby_version = ">= 3.0.0"
 
