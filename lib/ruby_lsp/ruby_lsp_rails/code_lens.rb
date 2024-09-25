@@ -199,8 +199,12 @@ module RubyLsp
           .downcase
 
         view_uris = Dir.glob("#{@client.rails_root}/app/views/#{controller_name}/#{action_name}*").map! do |path|
+          # it's possible we could have a directory with the same name as the action, so we need to skip those
+          next if FileTest.directory?(path)
+
           URI::Generic.from_path(path: path).to_s
-        end
+        end.compact
+
         return if view_uris.empty?
 
         @response_builder << create_code_lens(
