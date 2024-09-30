@@ -19,7 +19,6 @@ gem "tapioca", "~> 0.13", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails"
 gem "webmock"
-gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "main"
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
