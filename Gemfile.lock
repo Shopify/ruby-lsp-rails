@@ -1,3 +1,14 @@
+GIT
+  remote: https://github.com/Shopify/ruby-lsp.git
+  revision: a348fecf33092373c082528af8b8d4cb533f15bc
+  branch: main
+  specs:
+    ruby-lsp (0.18.4)
+      language_server-protocol (~> 3.17.0)
+      prism (~> 1.0)
+      rbs (>= 3, < 4)
+      sorbet-runtime (>= 0.5.10782)
+
 PATH
   remote: .
   specs:
@@ -138,8 +149,6 @@ GEM
     nio4r (2.7.3)
     nokogiri (1.16.5-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.5-x64-mingw-ucrt)
-      racc (~> 1.4)
     nokogiri (1.16.5-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.5-x86_64-linux)
@@ -197,7 +206,7 @@ GEM
     rbi (0.2.0)
       prism (~> 1.0)
       sorbet-runtime (>= 0.5.9204)
-    rbs (3.5.3)
+    rbs (3.6.0)
       logger
     rdoc (6.6.3.1)
       psych (>= 4.0.0)
@@ -228,11 +237,6 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.8.3)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.18.0)
-      language_server-protocol (~> 3.17.0)
-      prism (~> 1.0)
-      rbs (>= 3, < 4)
-      sorbet-runtime (>= 0.5.10782)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     sorbet (0.5.11577)
@@ -249,7 +253,6 @@ GEM
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
     sqlite3 (1.7.3-arm64-darwin)
-    sqlite3 (1.7.3-x64-mingw-ucrt)
     sqlite3 (1.7.3-x86_64-darwin)
     sqlite3 (1.7.3-x86_64-linux)
     stringio (3.1.0)
@@ -286,7 +289,6 @@ GEM
 
 PLATFORMS
   arm64-darwin
-  x64-mingw-ucrt
   x86_64-darwin
   x86_64-linux
 
@@ -300,6 +302,7 @@ DEPENDENCIES
   rubocop-rake (~> 0.6.0)
   rubocop-shopify (~> 2.15)
   rubocop-sorbet (~> 0.8)
+  ruby-lsp!
   ruby-lsp-rails!
   sorbet-static-and-runtime
   sqlite3 (< 2)
