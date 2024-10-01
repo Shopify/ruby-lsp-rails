@@ -360,6 +360,7 @@ module RubyLsp
         view_lens = response[1]
 
         assert_equal("Jump to view", view_lens.command.title)
+        # NOTE: The `views/users` directory contains a directory named `index` which should not be returned.
         assert_equal(
           [[
             URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.html.erb").to_s,
