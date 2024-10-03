@@ -1,6 +1,6 @@
 # typed: false
 # frozen_string_literal: true
-#
+
 # requiring sorbet-runtime in the server can lead to some problems, so this is untyped
 # https://github.com/Shopify/ruby-lsp-rails/pull/469#issuecomment-2391429546
 
