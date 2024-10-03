@@ -36,3 +36,4 @@ Sorbet/StrictSigil:
     - "**/*.rake"
     - "test/**/*.rb"
     - "lib/ruby_lsp/ruby_lsp_rails/server.rb" # we can't assume sorbet-runtime is available
+    - "lib/ruby_lsp/ruby_lsp_rails/server_addon.rb" # we can't assume sorbet-runtime is available
