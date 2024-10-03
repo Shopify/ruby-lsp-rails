@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require_relative "support/rails_document_client"
-
 module RubyLsp
   module Rails
     # ![Hover demo](../../hover.gif)
@@ -34,7 +32,7 @@ module RubyLsp
         @response_builder = response_builder
         @nesting = T.let(node_context.nesting, T::Array[String])
         @index = T.let(global_state.index, RubyIndexer::Index)
-        dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter, :on_call_node_enter)
+        dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter)
       end
 
       sig { params(node: Prism::ConstantPathNode).void }
@@ -43,10 +41,7 @@ module RubyLsp
         return unless entries
 
         name = T.must(entries.first).name
-
         generate_column_content(name)
-
-        generate_rails_document_link_hover(name, node.location)
       end
 
       sig { params(node: Prism::ConstantReadNode).void }
@@ -55,16 +50,6 @@ module RubyLsp
         return unless entries
 
         generate_column_content(T.must(entries.first).name)
-      end
-
-      sig { params(node: Prism::CallNode).void }
-      def on_call_node_enter(node)
-        message_value = node.message
-        message_loc = node.message_loc
-
-        return unless message_value && message_loc
-
-        generate_rails_document_link_hover(message_value, message_loc)
       end
 
       private
@@ -88,14 +73,6 @@ module RubyLsp
           end.join("\n"),
           category: :documentation,
         )
-      end
-
-      sig { params(name: String, location: Prism::Location).void }
-      def generate_rails_document_link_hover(name, location)
-        urls = Support::RailsDocumentClient.generate_rails_document_urls(name)
-        return if urls.empty?
-
-        @response_builder.push(urls.join("\n\n"), category: :links)
       end
     end
   end

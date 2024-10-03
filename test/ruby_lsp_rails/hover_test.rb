@@ -6,23 +6,6 @@ require "test_helper"
 module RubyLsp
   module Rails
     class HoverTest < ActiveSupport::TestCase
-      setup do
-        body = File.read("#{__dir__}/../../test/fixtures/search_index.js")
-        stub_request(:get, %r{https://api\.rubyonrails\.org/v.*/js/search_index\.js})
-          .with(
-            headers: {
-              "Host" => "api.rubyonrails.org",
-              "User-Agent" => %r{^ruby-lsp-rails\/.*$},
-            },
-          )
-          .to_return(status: 200, body: body, headers: {})
-
-        # Build the Rails documents index ahead of time
-        capture_io do
-          Support::RailsDocumentClient.send(:search_index)
-        end
-      end
-
       test "hook returns model column information" do
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",
@@ -199,45 +182,6 @@ module RubyLsp
         RUBY
 
         refute_match(/Schema/, response.contents.value)
-      end
-
-      test "shows documentation for routes DSLs" do
-        value = hover_on_source("root 'projects#index'", { line: 0, character: 0 }).contents.value
-
-        assert_match(/\[Rails Document: `ActionDispatch::Routing::Mapper::Resources#root`\]/, value)
-        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-root\)}, value)
-      end
-
-      test "shows documentation for controller DSLs" do
-        value = hover_on_source("before_action :foo", { line: 0, character: 0 }).contents.value
-
-        assert_match(/\[Rails Document: `AbstractController::Callbacks::ClassMethods#before_action`\]/, value)
-        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-before_action\)}, value)
-      end
-
-      test "shows documentation for job DSLs" do
-        value = hover_on_source("queue_as :default", { line: 0, character: 0 }).contents.value
-
-        assert_match(/\[Rails Document: `ActiveJob::QueueName::ClassMethods#queue_as`\]/, value)
-        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-queue_as\)}, value)
-      end
-
-      test "shows documentation for model DSLs" do
-        value = hover_on_source("validate :foo", { line: 0, character: 0 }).contents.value
-
-        assert_match(/\[Rails Document: `ActiveModel::EachValidator#validate`\]/, value)
-        assert_match(%r{\(https://api\.rubyonrails\.org/.*\.html#method-i-validate\)}, value)
-      end
-
-      test "shows documentation for Rails constants" do
-        value = hover_on_source(<<~RUBY, { line: 2, character: 14 }).contents.value
-          class ActiveRecord::Base
-          end
-          ActiveRecord::Base
-        RUBY
-
-        assert_match(/\[Rails Document: `ActiveRecord::Base`\]/, value)
-        assert_match(%r{\(https://api\.rubyonrails\.org/.*Base\.html\)}, value)
       end
 
       private
