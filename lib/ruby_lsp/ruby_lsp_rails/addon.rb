@@ -48,7 +48,7 @@ module RubyLsp
       sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
       def activate(global_state, message_queue)
         @global_state = global_state
-        $stderr.puts("Activating Ruby LSP Rails add-on v#{VERSION}")
+        $stderr.puts("Activating Ruby LSP Rails add-on v#{version}")
         register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
         @global_state.index.register_enhancement(IndexingEnhancement.new)
 
@@ -59,6 +59,11 @@ module RubyLsp
       sig { override.void }
       def deactivate
         @rails_runner_client.shutdown
+      end
+
+      sig { override.returns(String) }
+      def version
+        VERSION
       end
 
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
