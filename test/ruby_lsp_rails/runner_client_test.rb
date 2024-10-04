@@ -99,6 +99,26 @@ module RubyLsp
         FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
 
+      test "delegate notification" do
+        @client.expects(:send_notification).with(
+          "server_addon/delegate",
+          server_addon_name: "My Add-on",
+          request_name: "do_something",
+          id: 5,
+        )
+        @client.delegate_notification(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
+      end
+
+      test "delegate request" do
+        @client.expects(:make_request).with(
+          "server_addon/delegate",
+          server_addon_name: "My Add-on",
+          request_name: "do_something",
+          id: 5,
+        )
+        @client.delegate_request(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
+      end
+
       private
 
       def pop_log_notification(message_queue, type)
@@ -124,11 +144,11 @@ module RubyLsp
       end
 
       test "#send_message is a no-op" do
-        assert_nothing_raised { @client.send(:send_message, "request", nil) }
+        assert_nothing_raised { @client.send(:send_message, "request") }
       end
 
       test "#send_notification is a no-op" do
-        assert_nothing_raised { @client.send(:send_notification, "request", nil) }
+        assert_nothing_raised { @client.send(:send_notification, "request") }
       end
 
       test "#read_response is a no-op" do
