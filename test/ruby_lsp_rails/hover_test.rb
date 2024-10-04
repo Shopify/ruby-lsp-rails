@@ -35,8 +35,9 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
           **id**: integer (PK)
 
@@ -83,8 +84,9 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L2,3-3,6)
-          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
           **id**: integer (PK)
 
@@ -128,8 +130,9 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
-          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
           **order_id**: integer (PK)
 
