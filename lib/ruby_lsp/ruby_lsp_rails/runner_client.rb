@@ -174,6 +174,36 @@ module RubyLsp
         nil
       end
 
+      # Delegates a notification to a server add-on
+      sig { params(server_addon_name: String, request_name: String, params: T.untyped).void }
+      def delegate_notification(server_addon_name:, request_name:, **params)
+        send_notification(
+          "server_addon/delegate",
+          request_name: request_name,
+          server_addon_name: server_addon_name,
+          **params,
+        )
+      end
+
+      # Delegates a request to a server add-on
+      sig do
+        params(
+          server_addon_name: String,
+          request_name: String,
+          params: T.untyped,
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
+      end
+      def delegate_request(server_addon_name:, request_name:, **params)
+        make_request(
+          "server_addon/delegate",
+          server_addon_name: server_addon_name,
+          request_name: request_name,
+          **params,
+        )
+      rescue IncompleteMessageError
+        nil
+      end
+
       sig { void }
       def trigger_reload
         log_message("Reloading Rails application")
@@ -205,24 +235,24 @@ module RubyLsp
       sig do
         params(
           request: String,
-          params: T.nilable(T::Hash[Symbol, T.untyped]),
+          params: T.untyped,
         ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
       end
-      def make_request(request, params = nil)
-        send_message(request, params)
+      def make_request(request, **params)
+        send_message(request, **params)
         read_response
       end
 
       # Notifications are like messages, but one-way, with no response sent back.
-      sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
-      def send_notification(request, params = nil) = send_message(request, params)
+      sig { params(request: String, params: T.untyped).void }
+      def send_notification(request, **params) = send_message(request, **params)
 
       private
 
-      sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
-      def send_message(request, params = nil)
+      sig { overridable.params(request: String, params: T.untyped).void }
+      def send_message(request, **params)
         message = { method: request }
-        message[:params] = params if params
+        message[:params] = params
         json = message.to_json
 
         @mutex.synchronize do
@@ -303,8 +333,8 @@ module RubyLsp
         # no-op
       end
 
-      sig { override.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
-      def send_message(request, params = nil)
+      sig { override.params(request: String, params: T.untyped).void }
+      def send_message(request, **params)
         # no-op
       end
 
