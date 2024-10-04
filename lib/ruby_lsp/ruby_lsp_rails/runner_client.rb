@@ -10,20 +10,34 @@ module RubyLsp
       class << self
         extend T::Sig
 
-        sig { returns(RunnerClient) }
-        def create_client
+        sig { params(outgoing_queue: Thread::Queue).returns(RunnerClient) }
+        def create_client(outgoing_queue)
           if File.exist?("bin/rails")
-            new
+            new(outgoing_queue)
           else
-            $stderr.puts(<<~MSG)
-              Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}"
-            MSG
-            $stderr.puts("Server dependent features will not be available")
+            unless outgoing_queue.closed?
+              outgoing_queue << RubyLsp::Notification.window_log_message(
+                <<~MESSAGE.chomp,
+                  Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}
+                  Server dependent features will not be available
+                MESSAGE
+                type: RubyLsp::Constant::MessageType::WARNING,
+              )
+            end
+
             NullClient.new
           end
         rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
-          $stderr.puts("Ruby LSP Rails failed to initialize server: #{e.message}\n#{e.backtrace&.join("\n")}")
-          $stderr.puts("Server dependent features will not be available")
+          unless outgoing_queue.closed?
+            outgoing_queue << RubyLsp::Notification.window_log_message(
+              <<~MESSAGE.chomp,
+                Ruby LSP Rails failed to initialize server: #{e.full_message}
+                Server dependent features will not be available
+              MESSAGE
+              type: Constant::MessageType::ERROR,
+            )
+          end
+
           NullClient.new
         end
       end
@@ -39,8 +53,9 @@ module RubyLsp
       sig { returns(String) }
       attr_reader :rails_root
 
-      sig { void }
-      def initialize
+      sig { params(outgoing_queue: Thread::Queue).void }
+      def initialize(outgoing_queue)
+        @outgoing_queue = T.let(outgoing_queue, Thread::Queue)
         @mutex = T.let(Mutex.new, Mutex)
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
         # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
@@ -69,7 +84,7 @@ module RubyLsp
         @stdout.binmode
         @stderr.binmode
 
-        $stderr.puts("Ruby LSP Rails booting server")
+        log_message("Ruby LSP Rails booting server")
         count = 0
 
         begin
@@ -77,16 +92,15 @@ module RubyLsp
           initialize_response = T.must(read_response)
           @rails_root = T.let(initialize_response[:root], String)
         rescue EmptyMessageError
-          $stderr.puts("Ruby LSP Rails is retrying initialize (#{count})")
+          log_message("Ruby LSP Rails is retrying initialize (#{count})")
           retry if count < MAX_RETRIES
         end
 
-        $stderr.puts("Finished booting Ruby LSP Rails server")
+        log_message("Finished booting Ruby LSP Rails server")
 
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
             if @wait_thread.alive?
-              $stderr.puts("Ruby LSP Rails is force killing the server")
               sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
               force_kill
             end
@@ -100,7 +114,10 @@ module RubyLsp
       def register_server_addon(server_addon_path)
         send_notification("server_addon/register", server_addon_path: server_addon_path)
       rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to register server addon #{server_addon_path}")
+        log_message(
+          "Ruby LSP Rails failed to register server addon #{server_addon_path}",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
         nil
       end
 
@@ -108,7 +125,10 @@ module RubyLsp
       def model(name)
         make_request("model", name: name)
       rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to get model information: #{@stderr.read}")
+        log_message(
+          "Ruby LSP Rails failed to get model information: #{@stderr.read}",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
         nil
       end
 
@@ -125,14 +145,21 @@ module RubyLsp
           association_name: association_name,
         )
       rescue => e
-        $stderr.puts("Ruby LSP Rails failed with #{e.message}: #{@stderr.read}")
+        log_message(
+          "Ruby LSP Rails failed with #{e.message}: #{@stderr.read}",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
       end
 
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def route_location(name)
         make_request("route_location", name: name)
       rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to get route location: #{@stderr.read}")
+        log_message(
+          "Ruby LSP Rails failed to get route location: #{@stderr.read}",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
         nil
       end
 
@@ -140,22 +167,28 @@ module RubyLsp
       def route(controller:, action:)
         make_request("route_info", controller: controller, action: action)
       rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to get route information: #{@stderr.read}")
+        log_message(
+          "Ruby LSP Rails failed to get route information: #{@stderr.read}",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
         nil
       end
 
       sig { void }
       def trigger_reload
-        $stderr.puts("Reloading Rails application")
+        log_message("Reloading Rails application")
         send_notification("reload")
       rescue IncompleteMessageError
-        $stderr.puts("Ruby LSP Rails failed to trigger reload")
+        log_message(
+          "Ruby LSP Rails failed to trigger reload",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
         nil
       end
 
       sig { void }
       def shutdown
-        $stderr.puts("Ruby LSP Rails shutting down server")
+        log_message("Ruby LSP Rails shutting down server")
         send_message("shutdown")
         sleep(0.5) # give the server a bit of time to shutdown
         [@stdin, @stdout, @stderr].each(&:close)
@@ -214,7 +247,10 @@ module RubyLsp
         response = JSON.parse(T.must(raw_response), symbolize_names: true)
 
         if response[:error]
-          $stderr.puts("Ruby LSP Rails error: " + response[:error])
+          log_message(
+            "Ruby LSP Rails error: #{response[:error]}",
+            type: RubyLsp::Constant::MessageType::ERROR,
+          )
           return
         end
 
@@ -228,6 +264,13 @@ module RubyLsp
       def force_kill
         # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
         Process.kill(T.must(Signal.list["KILL"]), @wait_thread.pid)
+      end
+
+      sig { params(message: ::String, type: ::Integer).void }
+      def log_message(message, type: RubyLsp::Constant::MessageType::LOG)
+        return if @outgoing_queue.closed?
+
+        @outgoing_queue << RubyLsp::Notification.window_log_message(message, type: type)
       end
     end
 
@@ -254,6 +297,11 @@ module RubyLsp
       end
 
       private
+
+      sig { params(message: ::String, type: ::Integer).void }
+      def log_message(message, type: RubyLsp::Constant::MessageType::LOG)
+        # no-op
+      end
 
       sig { override.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_message(request, params = nil)

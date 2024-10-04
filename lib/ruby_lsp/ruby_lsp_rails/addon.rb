@@ -28,6 +28,7 @@ module RubyLsp
         # the real client is initialized, features that depend on it will not be blocked by using the NullClient
         @rails_runner_client = T.let(NullClient.new, RunnerClient)
         @global_state = T.let(nil, T.nilable(GlobalState))
+        @outgoing_queue = T.let(nil, T.nilable(Thread::Queue))
         @addon_mutex = T.let(Mutex.new, Mutex)
         @client_mutex = T.let(Mutex.new, Mutex)
         @client_mutex.lock
@@ -35,7 +36,7 @@ module RubyLsp
         Thread.new do
           @addon_mutex.synchronize do
             # We need to ensure the Rails client is fully loaded before we activate the server addons
-            @client_mutex.synchronize { @rails_runner_client = RunnerClient.create_client }
+            @client_mutex.synchronize { @rails_runner_client = RunnerClient.create_client(T.must(@outgoing_queue)) }
           end
         end
       end
@@ -45,11 +46,13 @@ module RubyLsp
         @addon_mutex.synchronize { @rails_runner_client }
       end
 
-      sig { override.params(global_state: GlobalState, message_queue: Thread::Queue).void }
-      def activate(global_state, message_queue)
+      sig { override.params(global_state: GlobalState, outgoing_queue: Thread::Queue).void }
+      def activate(global_state, outgoing_queue)
         @global_state = global_state
-        $stderr.puts("Activating Ruby LSP Rails add-on v#{version}")
-        register_additional_file_watchers(global_state: global_state, message_queue: message_queue)
+        @outgoing_queue = outgoing_queue
+        @outgoing_queue << Notification.window_log_message("Activating Ruby LSP Rails add-on v#{VERSION}")
+
+        register_additional_file_watchers(global_state: global_state, outgoing_queue: outgoing_queue)
         @global_state.index.register_enhancement(IndexingEnhancement.new)
 
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
@@ -123,11 +126,11 @@ module RubyLsp
         end
       end
 
-      sig { params(global_state: GlobalState, message_queue: Thread::Queue).void }
-      def register_additional_file_watchers(global_state:, message_queue:)
+      sig { params(global_state: GlobalState, outgoing_queue: Thread::Queue).void }
+      def register_additional_file_watchers(global_state:, outgoing_queue:)
         return unless global_state.supports_watching_files
 
-        message_queue << Request.new(
+        outgoing_queue << Request.new(
           id: "ruby-lsp-rails-file-watcher",
           method: "client/registerCapability",
           params: Interface::RegistrationParams.new(
