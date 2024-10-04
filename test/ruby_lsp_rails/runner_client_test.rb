@@ -119,6 +119,42 @@ module RubyLsp
         @client.delegate_request(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
       end
 
+      test "server add-ons can log messages with the editor" do
+        File.write("server_addon.rb", <<~RUBY)
+          class TapiocaServerAddon < RubyLsp::Rails::ServerAddon
+            def name
+              "Tapioca"
+            end
+
+            def execute(request, params)
+              debug_message("Hello!")
+              send_message({ request:, params: })
+            end
+          end
+        RUBY
+
+        @client.register_server_addon(File.expand_path("server_addon.rb"))
+        @client.delegate_notification(server_addon_name: "Tapioca", request_name: "dsl")
+
+        # Started booting server
+        pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+        # Finished booting server
+        pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+
+        log = pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+
+        # Sometimes we get warnings concerning deprecations and they mess up this expectation
+        3.times do
+          unless log.params.message.match?(/Hello!/)
+            log = pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+          end
+        end
+
+        assert_match("Hello!", log.params.message)
+      ensure
+        FileUtils.rm("server_addon.rb")
+      end
+
       private
 
       def pop_log_notification(message_queue, type)

@@ -144,7 +144,7 @@ class ServerTest < ActiveSupport::TestCase
         end
 
         def execute(request, params)
-          write_response({ request:, params: })
+          send_message({ request:, params: })
         end
       end
     RUBY

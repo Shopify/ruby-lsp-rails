@@ -8,7 +8,22 @@ require "json"
 
 module RubyLsp
   module Rails
+    module Common
+      # Write a message to the client. Can be used for sending notifications to the editor
+      def send_message(message)
+        json_message = message.to_json
+        @stdout.write("Content-Length: #{json_message.length}\r\n\r\n#{json_message}")
+      end
+
+      # Log a debug message to the editor's output
+      def debug_message(message)
+        $stderr.puts(message)
+      end
+    end
+
     class ServerAddon
+      include Common
+
       @server_addon_classes = []
       @server_addons = {}
 
@@ -38,12 +53,6 @@ module RubyLsp
         @stdout = stdout
       end
 
-      # Write a response back. Can be used for sending notifications to the editor
-      def write_response(response)
-        json_response = response.to_json
-        @stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
-      end
-
       def name
         raise NotImplementedError, "Not implemented!"
       end
@@ -54,6 +63,8 @@ module RubyLsp
     end
 
     class Server
+      include Common
+
       def initialize(stdout: $stdout, override_default_output_device: true)
         # Grab references to the original pipes so that we can change the default output device further down
         @stdin = $stdin
@@ -79,8 +90,7 @@ module RubyLsp
         routes_reloader = ::Rails.application.routes_reloader
         routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
 
-        initialize_result = { result: { message: "ok", root: ::Rails.root.to_s } }.to_json
-        @stdout.write("Content-Length: #{initialize_result.length}\r\n\r\n#{initialize_result}")
+        send_message({ result: { message: "ok", root: ::Rails.root.to_s } })
 
         while @running
           headers = @stdin.gets("\r\n\r\n")
@@ -96,15 +106,15 @@ module RubyLsp
         when "shutdown"
           @running = false
         when "model"
-          write_response(resolve_database_info_from_model(params.fetch(:name)))
+          send_message(resolve_database_info_from_model(params.fetch(:name)))
         when "association_target_location"
-          write_response(resolve_association_target(params))
+          send_message(resolve_association_target(params))
         when "reload"
           ::Rails.application.reloader.reload!
         when "route_location"
-          write_response(route_location(params.fetch(:name)))
+          send_message(route_location(params.fetch(:name)))
         when "route_info"
-          write_response(resolve_route_info(params))
+          send_message(resolve_route_info(params))
         when "server_addon/register"
           require params[:server_addon_path]
           ServerAddon.finalize_registrations!(@stdout)
@@ -114,15 +124,10 @@ module RubyLsp
           ServerAddon.delegate(server_addon_name, request_name, params)
         end
       rescue => e
-        write_response({ error: e.full_message(highlight: false) })
+        send_message({ error: e.full_message(highlight: false) })
       end
 
       private
-
-      def write_response(response)
-        json_response = response.to_json
-        @stdout.write("Content-Length: #{json_response.length}\r\n\r\n#{json_response}")
-      end
 
       def resolve_route_info(requirements)
         if requirements[:controller]
