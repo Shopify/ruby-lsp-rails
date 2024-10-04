@@ -184,6 +184,16 @@ module RubyLsp
       sig { params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
       def send_notification(request, params = nil) = send_message(request, params)
 
+      sig { params(server_addon_name: String, request_name: String, params: T::Hash[Symbol, T.untyped]).void }
+      def send_delegate_notification(server_addon_name:, request_name:, params: {})
+        send_notification(
+          "server_addon/delegate",
+          server_addon_name: server_addon_name,
+          request_name: request_name,
+          params: params,
+        )
+      end
+
       private
 
       sig { overridable.params(request: String, params: T.nilable(T::Hash[Symbol, T.untyped])).void }
