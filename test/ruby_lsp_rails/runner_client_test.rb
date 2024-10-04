@@ -8,7 +8,8 @@ module RubyLsp
   module Rails
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
-        @client = T.let(RunnerClient.new, RunnerClient)
+        @outgoing_queue = Thread::Queue.new
+        @client = T.let(RunnerClient.new(@outgoing_queue), RunnerClient)
       end
 
       teardown do
@@ -17,6 +18,7 @@ module RubyLsp
         # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
         # which makes this assertion flaky
         assert_predicate(@client, :stopped?) unless Gem.win_platform?
+        @outgoing_queue.close
       end
 
       # These are integration tests which start the server. For the more fine-grained tests, see `server_test.rb`.
@@ -44,30 +46,37 @@ module RubyLsp
       test "falls back to null client when bin/rails is not found" do
         FileUtils.mv("bin/rails", "bin/rails_backup")
 
-        assert_output("", %r{Ruby LSP Rails failed to locate bin/rails in the current directory}) do
-          client = RunnerClient.create_client
+        outgoing_queue = Thread::Queue.new
+        client = RunnerClient.create_client(outgoing_queue)
 
-          assert_instance_of(NullClient, client)
-          assert_nil(client.model("User"))
-          assert_predicate(client, :stopped?)
-        end
+        assert_instance_of(NullClient, client)
+        assert_nil(client.model("User"))
+        assert_predicate(client, :stopped?)
+        log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::WARNING)
+
+        assert_instance_of(RubyLsp::Notification, log)
+        assert_match("Ruby LSP Rails failed to locate bin/rails in the current directory", log.params.message)
       ensure
+        T.must(outgoing_queue).close
         FileUtils.mv("bin/rails_backup", "bin/rails")
       end
 
       test "failing to spawn server creates a null client" do
         FileUtils.mv("test/dummy/config/application.rb", "test/dummy/config/application.rb.bak")
-        assert_output(
-          "",
-          /Ruby LSP Rails failed to initialize server/,
-        ) do
-          client = RunnerClient.create_client
 
-          assert_instance_of(NullClient, client)
-          assert_nil(client.model("User"))
-          assert_predicate(client, :stopped?)
-        end
+        outgoing_queue = Thread::Queue.new
+        client = RunnerClient.create_client(outgoing_queue)
+
+        assert_instance_of(NullClient, client)
+        assert_nil(client.model("User"))
+        assert_predicate(client, :stopped?)
+
+        log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::ERROR)
+
+        assert_instance_of(RubyLsp::Notification, log)
+        assert_match("Ruby LSP Rails failed to initialize server", log.params.message)
       ensure
+        T.must(outgoing_queue).close
         FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
 
@@ -78,13 +87,24 @@ module RubyLsp
         File.write("test/dummy/config/application.rb", content + junk)
 
         capture_subprocess_io do
-          client = RunnerClient.create_client
+          outgoing_queue = Thread::Queue.new
+          client = RunnerClient.create_client(outgoing_queue)
 
           response = T.must(client.model("User"))
           assert(response.key?(:columns))
+        ensure
+          T.must(outgoing_queue).close
         end
       ensure
         FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
+      end
+
+      private
+
+      def pop_log_notification(message_queue, type)
+        log = message_queue.pop
+        log = message_queue.pop until log.params.type == type
+        log
       end
     end
 

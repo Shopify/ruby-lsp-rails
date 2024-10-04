@@ -233,8 +233,7 @@ module RubyLsp
             params: { textDocument: { uri: uri }, position: position },
           )
 
-          result = server.pop_response
-          assert_instance_of(RubyLsp::Result, result)
+          result = pop_result(server)
           result.response
         end
       end

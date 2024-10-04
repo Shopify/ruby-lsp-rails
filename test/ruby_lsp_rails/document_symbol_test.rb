@@ -437,7 +437,8 @@ module RubyLsp
             params: { textDocument: { uri: uri }, position: { line: 0, character: 0 } },
           )
 
-          server.pop_response.response
+          result = pop_result(server)
+          result.response
         end
       end
     end
