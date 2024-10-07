@@ -106,6 +106,15 @@ module RubyLsp
             end
           end
         end
+
+        @logger_thread = T.let(
+          Thread.new do
+            while (content = @stderr.gets("\n"))
+              log_message(content, type: RubyLsp::Constant::MessageType::LOG)
+            end
+          end,
+          Thread,
+        )
       rescue Errno::EPIPE, IncompleteMessageError
         raise InitializationError, @stderr.read
       end
@@ -126,7 +135,7 @@ module RubyLsp
         make_request("model", name: name)
       rescue IncompleteMessageError
         log_message(
-          "Ruby LSP Rails failed to get model information: #{@stderr.read}",
+          "Ruby LSP Rails failed to get model information",
           type: RubyLsp::Constant::MessageType::ERROR,
         )
         nil
@@ -144,9 +153,9 @@ module RubyLsp
           model_name: model_name,
           association_name: association_name,
         )
-      rescue => e
+      rescue IncompleteMessageError
         log_message(
-          "Ruby LSP Rails failed with #{e.message}: #{@stderr.read}",
+          "Ruby LSP Rails failed to get association location",
           type: RubyLsp::Constant::MessageType::ERROR,
         )
         nil
@@ -157,7 +166,7 @@ module RubyLsp
         make_request("route_location", name: name)
       rescue IncompleteMessageError
         log_message(
-          "Ruby LSP Rails failed to get route location: #{@stderr.read}",
+          "Ruby LSP Rails failed to get route location",
           type: RubyLsp::Constant::MessageType::ERROR,
         )
         nil
@@ -168,7 +177,7 @@ module RubyLsp
         make_request("route_info", controller: controller, action: action)
       rescue IncompleteMessageError
         log_message(
-          "Ruby LSP Rails failed to get route information: #{@stderr.read}",
+          "Ruby LSP Rails failed to get route information",
           type: RubyLsp::Constant::MessageType::ERROR,
         )
         nil
