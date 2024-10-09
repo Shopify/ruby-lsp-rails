@@ -186,8 +186,8 @@ module RubyLsp
           URI::Generic.from_path(path: File.join(dummy_root, "config", "routes.rb")).to_s,
           response[0].uri,
         )
-        assert_equal(3, response[0].range.start.line)
-        assert_equal(3, response[0].range.end.line)
+        assert_equal(2, response[0].range.start.line)
+        assert_equal(2, response[0].range.end.line)
       end
 
       test "handles incomplete routes" do
@@ -209,8 +209,8 @@ module RubyLsp
           URI::Generic.from_path(path: File.join(dummy_root, "config", "routes.rb")).to_s,
           response[0].uri,
         )
-        assert_equal(4, response[0].range.start.line)
-        assert_equal(4, response[0].range.end.line)
+        assert_equal(3, response[0].range.start.line)
+        assert_equal(3, response[0].range.end.line)
       end
 
       test "ignored non-existing routes" do
