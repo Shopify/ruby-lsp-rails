@@ -10,7 +10,7 @@ AllCops:
   NewCops: disable
   SuggestExtensions: false
   Exclude:
-    - "test/dummy/db/**/*.rb"
+    - "test/dummy/**/*"
 
 Naming/FileName:
   Exclude:
