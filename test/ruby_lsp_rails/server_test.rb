@@ -130,7 +130,7 @@ class ServerTest < ActiveSupport::TestCase
     result = response[:result]
 
     source_location_path, source_location_line = result[:source_location]
-    assert_equal "4", source_location_line
+    assert_equal "3", source_location_line
     assert source_location_path.end_with?("config/routes.rb")
     assert_equal "GET", result[:verb]
     assert_equal "/users(.:format)", result[:path]
