@@ -6,6 +6,9 @@ require "json"
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
 
+# TODO: this helps but it still false intermittently. Trying to understand what's going on.
+ActionDispatch::Routing::Mapper.route_source_locations = true
+
 module RubyLsp
   module Rails
     module Common
