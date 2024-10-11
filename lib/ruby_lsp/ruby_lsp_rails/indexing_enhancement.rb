@@ -13,9 +13,13 @@ module RubyLsp
           owner: T.nilable(RubyIndexer::Entry::Namespace),
           node: Prism::CallNode,
           file_path: String,
+          code_units_cache: T.any(
+            T.proc.params(arg0: Integer).returns(Integer),
+            Prism::CodeUnitsCache,
+          ),
         ).void
       end
-      def on_call_node(index, owner, node, file_path)
+      def on_call_node(index, owner, node, file_path, code_units_cache)
         return unless owner
 
         name = node.name
@@ -24,7 +28,7 @@ module RubyLsp
         when :extend
           handle_concern_extend(index, owner, node)
         when :has_one, :has_many, :belongs_to, :has_and_belongs_to_many
-          handle_association(index, owner, node, file_path)
+          handle_association(index, owner, node, file_path, code_units_cache)
         end
       end
 
@@ -36,9 +40,13 @@ module RubyLsp
           owner: RubyIndexer::Entry::Namespace,
           node: Prism::CallNode,
           file_path: String,
+          code_units_cache: T.any(
+            T.proc.params(arg0: Integer).returns(Integer),
+            Prism::CodeUnitsCache,
+          ),
         ).void
       end
-      def handle_association(index, owner, node, file_path)
+      def handle_association(index, owner, node, file_path, code_units_cache)
         arguments = node.arguments&.arguments
         return unless arguments
 
@@ -53,14 +61,15 @@ module RubyLsp
 
         return unless name
 
+        loc = RubyIndexer::Location.from_prism_location(name_arg.location, code_units_cache)
+
         # Reader
         index.add(RubyIndexer::Entry::Method.new(
           name,
           file_path,
-          name_arg.location,
-          name_arg.location,
+          loc,
+          loc,
           nil,
-          index.configuration.encoding,
           [RubyIndexer::Entry::Signature.new([])],
           RubyIndexer::Entry::Visibility::PUBLIC,
           owner,
@@ -70,10 +79,9 @@ module RubyLsp
         index.add(RubyIndexer::Entry::Method.new(
           "#{name}=",
           file_path,
-          name_arg.location,
-          name_arg.location,
+          loc,
+          loc,
           nil,
-          index.configuration.encoding,
           [RubyIndexer::Entry::Signature.new([RubyIndexer::Entry::RequiredParameter.new(name: name.to_sym)])],
           RubyIndexer::Entry::Visibility::PUBLIC,
           owner,
