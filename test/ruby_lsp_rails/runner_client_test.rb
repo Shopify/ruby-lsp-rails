@@ -127,7 +127,7 @@ module RubyLsp
             end
 
             def execute(request, params)
-              debug_message("Hello!")
+              log_message("Hello!")
               send_message({ request:, params: })
             end
           end

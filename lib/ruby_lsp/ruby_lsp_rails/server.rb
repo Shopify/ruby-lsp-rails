@@ -15,8 +15,8 @@ module RubyLsp
         @stdout.write("Content-Length: #{json_message.length}\r\n\r\n#{json_message}")
       end
 
-      # Log a debug message to the editor's output
-      def debug_message(message)
+      # Log a message to the editor's output panel
+      def log_message(message)
         $stderr.puts(message)
       end
     end
@@ -119,12 +119,17 @@ module RubyLsp
           require params[:server_addon_path]
           ServerAddon.finalize_registrations!(@stdout)
         when "server_addon/delegate"
-          server_addon_name = params.delete(:server_addon_name)
-          request_name = params.delete(:request_name)
-          ServerAddon.delegate(server_addon_name, request_name, params)
+          server_addon_name = params[:server_addon_name]
+          request_name = params[:request_name]
+          ServerAddon.delegate(server_addon_name, request_name, params.except(:request_name, :server_addon_name))
         end
+        request_name = request
+        request_name = "#{params[:server_addon_name]}##{params[:request_name]}" if request == "server_addon/delegate"
+      # Since this is a common problem, we show a specific error message to the user, instead of the full stack trace.
+      rescue ActiveRecord::ConnectionNotEstablished
+        log_message("Request #{request_name} failed because database connection was not established.")
       rescue => e
-        send_message({ error: e.full_message(highlight: false) })
+        log_message("Request #{request_name} failed:\n" + e.full_message(highlight: false))
       end
 
       private
