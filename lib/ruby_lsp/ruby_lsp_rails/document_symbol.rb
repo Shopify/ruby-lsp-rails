@@ -141,7 +141,7 @@ module RubyLsp
 
             arg_receiver = argument.receiver
 
-            name = arg_receiver.full_name if arg_receiver.is_a?(Prism::ConstantReadNode) ||
+            name = constant_name(arg_receiver) if arg_receiver.is_a?(Prism::ConstantReadNode) ||
               arg_receiver.is_a?(Prism::ConstantPathNode)
             next unless name
 
@@ -201,8 +201,8 @@ module RubyLsp
         arguments.each do |argument|
           case argument
           when Prism::ConstantReadNode, Prism::ConstantPathNode
-            name = argument.full_name
-            next if name.empty?
+            name = constant_name(argument)
+            next unless name
 
             append_document_symbol(
               name: "#{message} #{name}",
