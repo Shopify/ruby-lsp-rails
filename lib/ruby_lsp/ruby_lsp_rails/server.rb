@@ -146,8 +146,10 @@ module RubyLsp
           ::Rails.application.routes.routes.find { |route| route.requirements == requirements }
         end
 
-        if route&.source_location
-          file, _, line = route.source_location.rpartition(":")
+        source_location = route&.respond_to?(:source_location) && route.source_location
+
+        if source_location
+          file, _, line = source_location.rpartition(":")
           body = {
             source_location: [::Rails.root.join(file).to_s, line],
             verb: route.verb,
