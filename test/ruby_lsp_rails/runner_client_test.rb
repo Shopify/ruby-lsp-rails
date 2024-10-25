@@ -26,13 +26,14 @@ module RubyLsp
       test "#model returns information for the requested model" do
         # These columns are from the schema in the dummy app: test/dummy/db/schema.rb
         columns = [
-          ["id", "integer"],
-          ["first_name", "string"],
-          ["last_name", "string"],
-          ["age", "integer"],
-          ["created_at", "datetime"],
-          ["updated_at", "datetime"],
-          ["country_id", "integer"],
+          ["id", "integer", nil, false],
+          ["first_name", "string", "", true],
+          ["last_name", "string", nil, true],
+          ["age", "integer", "0", true],
+          ["created_at", "datetime", nil, false],
+          ["updated_at", "datetime", nil, false],
+          ["country_id", "integer", nil, false],
+          ["active", "boolean", "1", false],
         ]
         response = T.must(@client.model("User"))
         assert_equal(columns, response.fetch(:columns))

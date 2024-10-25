@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_21_183200) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_25_225348) do
   create_table "composite_primary_keys", primary_key: ["order_id", "product_id"], force: :cascade do |t|
     t.integer "order_id"
     t.integer "product_id"
@@ -48,12 +48,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_21_183200) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "first_name"
+    t.string "first_name", default: ""
     t.string "last_name"
-    t.integer "age"
+    t.integer "age", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "country_id", null: false
+    t.boolean "active", default: true, null: false
     t.index ["country_id"], name: "index_users_on_country_id"
   end
 

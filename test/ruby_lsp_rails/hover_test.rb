@@ -10,12 +10,14 @@ module RubyLsp
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",
           columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", "0", true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", "true", false],
           ],
           primary_keys: ["id"],
         }
@@ -39,17 +41,21 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          **id**: integer (PK)
+          **id**: integer (PK) - not null
 
-          **first_name**: string
+          **first_name**: string - default: ""
 
           **last_name**: string
 
-          **age**: integer
+          **age**: integer - default: 0
 
-          **created_at**: datetime
+          **created_at**: datetime - not null
 
-          **updated_at**: datetime
+          **updated_at**: datetime - not null
+
+          **country_id**: integer - not null
+
+          **active**: boolean - default: TRUE - not null
         CONTENT
       end
 
@@ -57,12 +63,14 @@ module RubyLsp
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",
           columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", "0", true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", "true", false],
           ],
           primary_keys: ["id"],
         }
@@ -88,17 +96,21 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          **id**: integer (PK)
+          **id**: integer (PK) - not null
 
-          **first_name**: string
+          **first_name**: string - default: ""
 
           **last_name**: string
 
-          **age**: integer
+          **age**: integer - default: 0
 
-          **created_at**: datetime
+          **created_at**: datetime - not null
 
-          **updated_at**: datetime
+          **updated_at**: datetime - not null
+
+          **country_id**: integer - not null
+
+          **active**: boolean - default: TRUE - not null
         CONTENT
       end
 
@@ -134,15 +146,15 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          **order_id**: integer (PK)
+          **order_id**: integer (PK) - not null
 
-          **product_id**: integer (PK)
+          **product_id**: integer (PK) - not null
 
-          **note**: string
+          **note**: string - not null
 
-          **created_at**: datetime
+          **created_at**: datetime - not null
 
-          **updated_at**: datetime
+          **updated_at**: datetime - not null
         CONTENT
       end
 
