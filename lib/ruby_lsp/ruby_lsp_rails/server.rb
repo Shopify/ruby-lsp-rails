@@ -90,7 +90,13 @@ module RubyLsp
         routes_reloader = ::Rails.application.routes_reloader
         routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
 
-        send_message({ result: { message: "ok", root: ::Rails.root.to_s } })
+        x = {}
+        ::Rails.application.routes.named_routes.instance_variable_get(:@path_helpers).each do |key, _|
+          route = ::Rails.application.routes.named_routes.get(key.to_s.gsub(/_path$/, "").to_sym)
+          x[key] = route&.source_location # &.source_location ?
+        end
+
+        send_message({ result: { message: "ok", root: ::Rails.root.to_s, routes: x } })
 
         while @running
           headers = @stdin.gets("\r\n\r\n")

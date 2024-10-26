@@ -3,10 +3,8 @@
 
 module RubyLsp
   module Rails
-    class IndexingEnhancement
+    class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
-      include RubyIndexer::Enhancement
-
       sig do
         override.params(
           index: RubyIndexer::Index,
@@ -30,6 +28,53 @@ module RubyLsp
         when :has_one, :has_many, :belongs_to, :has_and_belongs_to_many
           handle_association(index, owner, node, file_path, code_units_cache)
         end
+      end
+
+      def add_all_routes(index, routes)
+        routes.each do |name, _v|
+          file_path = "/Users/andyw8/src/github.com/Shopify/ruby-lsp-rails/test/dummy/config/routes.rb"
+          location = RubyIndexer::Location.new(1, 1, 1, 1)
+          name_location = location
+          comments = nil
+          sig = RubyIndexer::Entry::Signature.new([])
+          signatures = [sig]
+          visibility = RubyIndexer::Entry::Visibility::PUBLIC
+          owner = index["ActionController::Base"] # or ActionDispatch::Routing::RouteSet::MountedHelpers, ?
+
+          index.add(RubyIndexer::Entry::Method.new(
+            name,
+            file_path,
+            location,
+            name_location,
+            comments,
+            signatures,
+            visibility,
+            owner,
+          ))
+        end
+      end
+
+      def _add_all_routes(index)
+        name = "users_path"
+        file_path = "/Users/andyw8/src/github.com/Shopify/ruby-lsp-rails/test/dummy/config/routes.rb"
+        location = RubyIndexer::Location.new(1, 1, 1, 1)
+        name_location = location
+        comments = nil
+        sig = RubyIndexer::Entry::Signature.new([])
+        signatures = [sig]
+        visibility = RubyIndexer::Entry::Visibility::PUBLIC
+        owner = index["ActionController::Base"] # or ActionDispatch::Routing::RouteSet::MountedHelpers, ?
+
+        index.add(RubyIndexer::Entry::Method.new(
+          name,
+          file_path,
+          location,
+          name_location,
+          comments,
+          signatures,
+          visibility,
+          owner,
+        ))
       end
 
       private

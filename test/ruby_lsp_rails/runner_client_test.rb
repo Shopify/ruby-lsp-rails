@@ -39,6 +39,20 @@ module RubyLsp
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
+      test "routes" do
+        expected = {
+          rails_info_properties_path: nil,
+          rails_info_routes_path: nil,
+          rails_info_path: nil,
+          archive_users_path: "config/routes.rb:5",
+          users_path: "config/routes.rb:4",
+          new_user_path: "config/routes.rb:4",
+          edit_user_path: "config/routes.rb:4",
+          user_path: "config/routes.rb:4",
+        }
+        assert_equal(expected, @client.routes)
+      end
+
       test "returns nil if the request returns a nil response" do
         assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
       end

@@ -12,8 +12,10 @@ module RubyLsp
         def populated_index
           @index ||= begin
             index = RubyIndexer::Index.new
-            index.register_enhancement(IndexingEnhancement.new)
-            index.index_all
+            ie = IndexingEnhancement.new
+            ie.add_all_routes(index)
+            index.register_enhancement(ie)
+            # index.index_all
             index
           end
         end
@@ -33,6 +35,14 @@ module RubyLsp
         assert_includes(ancestors, "ActiveRecord::Associations::ClassMethods")
         assert_includes(ancestors, "ActiveRecord::Store::ClassMethods")
         assert_includes(ancestors, "ActiveRecord::AttributeMethods::ClassMethods")
+      end
+
+      test "routes" do
+        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+          class UsersController < ActionController::Base
+          end
+        RUBY
+        assert @index["users_path"]
       end
 
       test "associations" do

@@ -91,12 +91,14 @@ module RubyLsp
           count += 1
           initialize_response = T.must(read_response)
           @rails_root = T.let(initialize_response[:root], String)
+          # TODO: fix type
+          @routes = T.let(initialize_response[:routes], T.untyped) # could we do this async after booting?
         rescue EmptyMessageError
           log_message("Ruby LSP Rails is retrying initialize (#{count})")
           retry if count < MAX_RETRIES
         end
 
-        log_message("Finished booting Ruby LSP Rails server")
+        log_message("Finished booting Ruby LSP Rails server. routes size: #{@routes.size}")
 
         unless ENV["RAILS_ENV"] == "test"
           at_exit do
