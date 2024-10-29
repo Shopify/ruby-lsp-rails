@@ -67,11 +67,11 @@ module RubyLsp
         ) if schema_file
 
         @response_builder.push(
-          model[:columns].map do |name, type, default_string, null|
+          model[:columns].map do |name, type, default_value, nullable|
             primary_key_suffix = " (PK)" if model[:primary_keys].include?(name)
             suffixes = []
-            suffixes << "default: #{format_default(default_string, type)}" if default_string
-            suffixes << "not null" unless null
+            suffixes << "default: #{format_default(default_value, type)}" if default_value
+            suffixes << "not null" unless nullable || primary_key_suffix.present?
             suffix_string = " - #{suffixes.join(" - ")}" if suffixes.any?
             "**#{name}**: #{type}#{primary_key_suffix}#{suffix_string}\n"
           end.join("\n"),
@@ -79,14 +79,15 @@ module RubyLsp
         )
       end
 
-      sig { params(default_string: String, type: String).returns(String) }
-      def format_default(default_string, type)
-        if type == "boolean"
-          default_string == "true" ? "TRUE" : "FALSE"
-        elsif type == "string"
-          default_string.inspect
+      sig { params(default_value: String, type: String).returns(String) }
+      def format_default(default_value, type)
+        case type
+        when "boolean"
+          default_value == "true" ? "true" : "false"
+        when "string"
+          default_value.inspect
         else
-          default_string
+          default_value
         end
       end
     end
