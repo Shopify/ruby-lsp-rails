@@ -200,7 +200,7 @@ module RubyLsp
 
         info = {
           result: {
-            columns: const.columns.map { |column| [column.name, column.type] },
+            columns: const.columns.map { |column| [column.name, column.type, column.default, column.null] },
             primary_keys: Array(const.primary_key),
           },
         }

@@ -10,12 +10,14 @@ module RubyLsp
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",
           columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", "0", true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", "true", false],
           ],
           primary_keys: ["id"],
         }
@@ -41,15 +43,19 @@ module RubyLsp
 
           **id**: integer (PK)
 
-          **first_name**: string
+          **first_name**: string - default: ""
 
           **last_name**: string
 
-          **age**: integer
+          **age**: integer - default: 0
 
-          **created_at**: datetime
+          **created_at**: datetime - not null
 
-          **updated_at**: datetime
+          **updated_at**: datetime - not null
+
+          **country_id**: integer - not null
+
+          **active**: boolean - default: true - not null
         CONTENT
       end
 
@@ -57,12 +63,14 @@ module RubyLsp
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",
           columns: [
-            ["id", "integer"],
-            ["first_name", "string"],
-            ["last_name", "string"],
-            ["age", "integer"],
-            ["created_at", "datetime"],
-            ["updated_at", "datetime"],
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", "0", true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", "true", false],
           ],
           primary_keys: ["id"],
         }
@@ -90,15 +98,19 @@ module RubyLsp
 
           **id**: integer (PK)
 
-          **first_name**: string
+          **first_name**: string - default: ""
 
           **last_name**: string
 
-          **age**: integer
+          **age**: integer - default: 0
 
-          **created_at**: datetime
+          **created_at**: datetime - not null
 
-          **updated_at**: datetime
+          **updated_at**: datetime - not null
+
+          **country_id**: integer - not null
+
+          **active**: boolean - default: true - not null
         CONTENT
       end
 
@@ -138,11 +150,11 @@ module RubyLsp
 
           **product_id**: integer (PK)
 
-          **note**: string
+          **note**: string - not null
 
-          **created_at**: datetime
+          **created_at**: datetime - not null
 
-          **updated_at**: datetime
+          **updated_at**: datetime - not null
         CONTENT
       end
 

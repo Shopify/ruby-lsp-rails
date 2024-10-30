@@ -67,12 +67,28 @@ module RubyLsp
         ) if schema_file
 
         @response_builder.push(
-          model[:columns].map do |name, type|
+          model[:columns].map do |name, type, default_value, nullable|
             primary_key_suffix = " (PK)" if model[:primary_keys].include?(name)
-            "**#{name}**: #{type}#{primary_key_suffix}\n"
+            suffixes = []
+            suffixes << "default: #{format_default(default_value, type)}" if default_value
+            suffixes << "not null" unless nullable || primary_key_suffix.present?
+            suffix_string = " - #{suffixes.join(" - ")}" if suffixes.any?
+            "**#{name}**: #{type}#{primary_key_suffix}#{suffix_string}\n"
           end.join("\n"),
           category: :documentation,
         )
+      end
+
+      sig { params(default_value: String, type: String).returns(String) }
+      def format_default(default_value, type)
+        case type
+        when "boolean"
+          default_value == "true" ? "true" : "false"
+        when "string"
+          default_value.inspect
+        else
+          default_value
+        end
       end
     end
   end
