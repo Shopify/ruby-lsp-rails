@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "boot"
 
 require "rails/all"
@@ -9,16 +11,16 @@ Bundler.require(*Rails.groups)
 module Dummy
   class Application < Rails::Application
     # Normally this is disabled for the test environment (see `actionpack/lib/action_dispatch/railtie.rb`)
-    initializer "enable_route_source_locations", after: "action_dispatch.configure" do |app|
+    initializer "enable_route_source_locations", after: "action_dispatch.configure" do |_app|
       ActionDispatch::Routing::Mapper.route_source_locations = true
     end
 
-    config.load_defaults Rails::VERSION::STRING.to_f
+    config.load_defaults(Rails::VERSION::STRING.to_f)
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: ["assets", "tasks"])
 
     # Configuration for the application, engines, and railties goes here.
     #
