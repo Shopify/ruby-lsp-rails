@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_05_21_183200) do
+ActiveRecord::Schema[8.0].define(version: 2024_10_25_225348) do
   create_table "composite_primary_keys", primary_key: ["order_id", "product_id"], force: :cascade do |t|
     t.integer "order_id"
     t.integer "product_id"
