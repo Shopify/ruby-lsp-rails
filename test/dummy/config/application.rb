@@ -2,29 +2,25 @@
 
 require_relative "boot"
 
-require "active_model/railtie"
-require "active_job/railtie"
-require "active_record/railtie"
-# require "active_storage/engine"
-require "action_controller/railtie"
-# require "action_mailer/railtie"
-# require "action_mailbox/engine"
-# require "action_text/engine"
-require "action_view/railtie"
-# require "action_cable/engine"
-require "rails/test_unit/railtie"
+require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-require "ruby-lsp-rails"
 
 module Dummy
   class Application < Rails::Application
+    # Normally this is disabled for the test environment (see `actionpack/lib/action_dispatch/railtie.rb`)
+    initializer "enable_route_source_locations", after: "action_dispatch.configure" do |_app|
+      ActionDispatch::Routing::Mapper.route_source_locations = true
+    end
+
     config.load_defaults(Rails::VERSION::STRING.to_f)
 
-    # For compatibility with applications that use this config
-    config.action_controller.include_all_helpers = false
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: ["assets", "tasks"])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -33,8 +29,5 @@ module Dummy
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
-    # Don't generate system test files.
-    config.generators.system_tests = nil
   end
 end

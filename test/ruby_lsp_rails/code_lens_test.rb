@@ -315,7 +315,7 @@ module RubyLsp
         uri = response[0].command.arguments.first.first
 
         assert_match("GET /users(.:format)", response[0].command.title)
-        assert_match("config/routes.rb#L4", uri)
+        assert_match("config/routes.rb#L5", uri)
       end
 
       test "doesn't break when analyzing a file without a class" do
