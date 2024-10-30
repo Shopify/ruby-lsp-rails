@@ -116,7 +116,7 @@ class ServerTest < ActiveSupport::TestCase
   test "route location returns the location for a valid route" do
     @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]
-    assert_match %r{test/dummy/config/routes.rb:3$}, location
+    assert_match %r{test/dummy/config/routes.rb:5$}, location
   end
 
   test "route location returns nil for invalid routes" do
@@ -130,7 +130,7 @@ class ServerTest < ActiveSupport::TestCase
     result = response[:result]
 
     source_location_path, source_location_line = result[:source_location]
-    assert_equal "3", source_location_line
+    assert_equal "5", source_location_line
     assert source_location_path.end_with?("config/routes.rb")
     assert_equal "GET", result[:verb]
     assert_equal "/users(.:format)", result[:path]
