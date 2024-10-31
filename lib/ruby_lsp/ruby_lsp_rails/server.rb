@@ -167,6 +167,11 @@ module RubyLsp
       if ActionDispatch::Routing::Mapper.respond_to?(:route_source_locations) &&
           ActionDispatch::Routing::Mapper.route_source_locations
         def route_location(name)
+          # In Rails 8, Rails.application.routes.named_routes is not populated by default
+          if ::Rails.application.respond_to?(:reload_routes_unless_loaded)
+            ::Rails.application.reload_routes_unless_loaded
+          end
+
           match_data = name.match(/^(.+)(_path|_url)$/)
           return { result: nil } unless match_data
 
