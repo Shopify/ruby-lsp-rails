@@ -123,6 +123,10 @@ module RubyLsp
              change[:uri].end_with?("db/schema.rb") || change[:uri].end_with?("structure.sql")
            end
           @rails_runner_client.trigger_reload
+        elsif changes.any? do |change|
+                change[:uri].end_with?("routes.rb") # TODO: handle other patterns
+              end
+          @rails_runner_client.reload_routes
         end
       end
 
@@ -141,7 +145,7 @@ module RubyLsp
                 register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
                   watchers: [
                     Interface::FileSystemWatcher.new(
-                      glob_pattern: "**/*structure.sql",
+                      glob_pattern: "**/*structure.sql,**/*routes.rb",
                       kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
                     ),
                   ],

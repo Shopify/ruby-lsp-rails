@@ -226,6 +226,18 @@ module RubyLsp
       end
 
       sig { void }
+      def reload_routes
+        log_message("Reloading Rails routes")
+        send_notification("reload_routes")
+      rescue IncompleteMessageError
+        log_message(
+          "Ruby LSP Rails failed to reload routes",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
+      sig { void }
       def shutdown
         log_message("Ruby LSP Rails shutting down server")
         send_message("shutdown")
