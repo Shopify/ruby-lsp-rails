@@ -6,12 +6,6 @@ module RubyLsp
     class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
 
-      sig { params(index: RubyIndexer::Index).void }
-      def initialize(index)
-        super
-        @index = index
-      end
-
       sig do
         override.params(
           owner: T.nilable(RubyIndexer::Entry::Namespace),
