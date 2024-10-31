@@ -53,7 +53,7 @@ module RubyLsp
         @outgoing_queue << Notification.window_log_message("Activating Ruby LSP Rails add-on v#{VERSION}")
 
         register_additional_file_watchers(global_state: global_state, outgoing_queue: outgoing_queue)
-        @global_state.index.register_enhancement(IndexingEnhancement.new)
+        @global_state.index.register_enhancement(IndexingEnhancement.new(@global_state.index))
 
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         @client_mutex.unlock
@@ -128,7 +128,7 @@ module RubyLsp
 
       sig { params(global_state: GlobalState, outgoing_queue: Thread::Queue).void }
       def register_additional_file_watchers(global_state:, outgoing_queue:)
-        return unless global_state.supports_watching_files
+        return unless global_state.client_capabilities.supports_watching_files
 
         outgoing_queue << Request.new(
           id: "ruby-lsp-rails-file-watcher",

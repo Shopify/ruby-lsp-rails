@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     ruby-lsp-rails (0.3.21)
-      ruby-lsp (>= 0.20.0, < 0.21.0)
+      ruby-lsp (>= 0.21.0, < 0.22.0)
 
 GEM
   remote: https://rubygems.org/
@@ -224,7 +224,7 @@ GEM
       rubocop (~> 1.51)
     rubocop-sorbet (0.8.3)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.20.0)
+    ruby-lsp (0.21.0)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 4)
