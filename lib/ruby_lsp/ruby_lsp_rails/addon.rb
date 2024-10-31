@@ -119,13 +119,12 @@ module RubyLsp
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
       def workspace_did_change_watched_files(changes)
-        if changes.any? do |change|
-             change[:uri].end_with?("db/schema.rb") || change[:uri].end_with?("structure.sql")
-           end
+        schema = lambda { |change| change[:uri].end_with?("db/schema.rb") || change[:uri].end_with?("structure.sql") }
+        routes = lambda { |change| change[:uri].end_with?("routes.rb") || change[:uri].match?("routes/**/*.rb") }
+
+        if changes.any?(&schema)
           @rails_runner_client.trigger_reload
-        elsif changes.any? do |change|
-                change[:uri].end_with?("routes.rb") # TODO: handle other patterns
-              end
+        elsif changes.any?(&routes)
           @rails_runner_client.reload_routes
         end
       end
@@ -145,7 +144,7 @@ module RubyLsp
                 register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
                   watchers: [
                     Interface::FileSystemWatcher.new(
-                      glob_pattern: "**/*structure.sql,**/*routes.rb",
+                      glob_pattern: "**/*structure.sql,**/*routes.rb,routes/**/*.rb",
                       kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
                     ),
                   ],
