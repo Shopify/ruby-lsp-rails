@@ -87,17 +87,16 @@ module RubyLsp
         junk = %{\nputs "1\r\n\r\nhello"}
         File.write("test/dummy/config/application.rb", content + junk)
 
-        capture_subprocess_io do
-          outgoing_queue = Thread::Queue.new
-          client = RunnerClient.create_client(outgoing_queue)
+        outgoing_queue = Thread::Queue.new
+        client = RunnerClient.create_client(outgoing_queue)
+        response = client.model("User")
 
-          response = T.must(client.model("User"))
-          assert(response.key?(:columns))
+        begin
+          assert(T.must(response).key?(:columns))
         ensure
           T.must(outgoing_queue).close
+          FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
         end
-      ensure
-        FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
       end
 
       test "delegate notification" do
@@ -154,14 +153,6 @@ module RubyLsp
         assert_match("Hello!", log.params.message)
       ensure
         FileUtils.rm("server_addon.rb")
-      end
-
-      private
-
-      def pop_log_notification(message_queue, type)
-        log = message_queue.pop
-        log = message_queue.pop until log.params.type == type
-        log
       end
     end
 

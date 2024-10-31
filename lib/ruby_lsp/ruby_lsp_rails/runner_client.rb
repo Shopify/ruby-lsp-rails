@@ -70,6 +70,8 @@ module RubyLsp
           # https://github.com/Shopify/ruby-lsp-rails/issues/348
         end
 
+        log_message("Ruby LSP Rails booting server")
+
         stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
           Open3.popen3("bundle", "exec", "rails", "runner", "#{__dir__}/server.rb", "start")
         end
@@ -77,6 +79,9 @@ module RubyLsp
         @stdin = T.let(stdin, IO)
         @stdout = T.let(stdout, IO)
         @stderr = T.let(stderr, IO)
+        @stdin.sync = true
+        @stdout.sync = true
+        @stderr.sync = true
         @wait_thread = T.let(wait_thread, Process::Waiter)
 
         # We set binmode for Windows compatibility
@@ -84,18 +89,8 @@ module RubyLsp
         @stdout.binmode
         @stderr.binmode
 
-        log_message("Ruby LSP Rails booting server")
-        count = 0
-
-        begin
-          count += 1
-          initialize_response = T.must(read_response)
-          @rails_root = T.let(initialize_response[:root], String)
-        rescue EmptyMessageError
-          log_message("Ruby LSP Rails is retrying initialize (#{count})")
-          retry if count < MAX_RETRIES
-        end
-
+        initialize_response = T.must(read_response)
+        @rails_root = T.let(initialize_response[:root], String)
         log_message("Finished booting Ruby LSP Rails server")
 
         unless ENV["RAILS_ENV"] == "test"
@@ -274,11 +269,9 @@ module RubyLsp
       sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def read_response
         raw_response = @mutex.synchronize do
-          headers = @stdout.gets("\r\n\r\n")
-          raise IncompleteMessageError unless headers
-
-          content_length = headers[/Content-Length: (\d+)/i, 1].to_i
-          raise EmptyMessageError if content_length.zero?
+          content_length = read_content_length
+          content_length = read_content_length unless content_length
+          raise EmptyMessageError unless content_length
 
           @stdout.read(content_length)
         end
@@ -310,6 +303,17 @@ module RubyLsp
         return if @outgoing_queue.closed?
 
         @outgoing_queue << RubyLsp::Notification.window_log_message(message, type: type)
+      end
+
+      sig { returns(T.nilable(Integer)) }
+      def read_content_length
+        headers = @stdout.gets("\r\n\r\n")
+        return unless headers
+
+        length = headers[/Content-Length: (\d+)/i, 1]
+        return unless length
+
+        length.to_i
       end
     end
 

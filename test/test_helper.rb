@@ -48,5 +48,13 @@ module ActiveSupport
       )
       T.cast(result, RubyLsp::Result)
     end
+
+    def pop_log_notification(message_queue, type)
+      log = message_queue.pop
+      return log if log.params.type == type
+
+      log = message_queue.pop until log.params.type == type
+      log
+    end
   end
 end
