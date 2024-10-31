@@ -176,6 +176,28 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal("Hello\n", stderr)
   end
 
+  test "reloads if routes files change" do
+    @server.execute("route_location", { name: "user_path" })
+    location = response[:result][:location]
+    assert_match(%r{test/dummy/config/routes.rb:5$}, location)
+
+    old_routes = File.read("test/dummy/config/routes.rb")
+
+    File.write("test/dummy/config/routes.rb", <<~RUBY)
+      Rails.application.routes.draw do
+      end
+    RUBY
+
+    @server.execute("reload_routes", {})
+
+    @server.execute("route_location", { name: "user_path" })
+
+    location = response[:result][:location]
+    assert_nil(location)
+  ensure
+    File.write("test/dummy/config/routes.rb", old_routes)
+  end
+
   private
 
   def response
