@@ -3,13 +3,17 @@
 
 module RubyLsp
   module Rails
-    class IndexingEnhancement
+    class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
-      include RubyIndexer::Enhancement
+
+      sig { params(index: RubyIndexer::Index).void }
+      def initialize(index)
+        super
+        @index = index
+      end
 
       sig do
         override.params(
-          index: RubyIndexer::Index,
           owner: T.nilable(RubyIndexer::Entry::Namespace),
           node: Prism::CallNode,
           file_path: String,
@@ -19,16 +23,16 @@ module RubyLsp
           ),
         ).void
       end
-      def on_call_node(index, owner, node, file_path, code_units_cache)
+      def on_call_node_enter(owner, node, file_path, code_units_cache)
         return unless owner
 
         name = node.name
 
         case name
         when :extend
-          handle_concern_extend(index, owner, node)
+          handle_concern_extend(owner, node)
         when :has_one, :has_many, :belongs_to, :has_and_belongs_to_many
-          handle_association(index, owner, node, file_path, code_units_cache)
+          handle_association(owner, node, file_path, code_units_cache)
         end
       end
 
@@ -36,7 +40,6 @@ module RubyLsp
 
       sig do
         params(
-          index: RubyIndexer::Index,
           owner: RubyIndexer::Entry::Namespace,
           node: Prism::CallNode,
           file_path: String,
@@ -46,7 +49,7 @@ module RubyLsp
           ),
         ).void
       end
-      def handle_association(index, owner, node, file_path, code_units_cache)
+      def handle_association(owner, node, file_path, code_units_cache)
         arguments = node.arguments&.arguments
         return unless arguments
 
@@ -64,7 +67,7 @@ module RubyLsp
         loc = RubyIndexer::Location.from_prism_location(name_arg.location, code_units_cache)
 
         # Reader
-        index.add(RubyIndexer::Entry::Method.new(
+        @index.add(RubyIndexer::Entry::Method.new(
           name,
           file_path,
           loc,
@@ -76,7 +79,7 @@ module RubyLsp
         ))
 
         # Writer
-        index.add(RubyIndexer::Entry::Method.new(
+        @index.add(RubyIndexer::Entry::Method.new(
           "#{name}=",
           file_path,
           loc,
@@ -90,12 +93,11 @@ module RubyLsp
 
       sig do
         params(
-          index: RubyIndexer::Index,
           owner: RubyIndexer::Entry::Namespace,
           node: Prism::CallNode,
         ).void
       end
-      def handle_concern_extend(index, owner, node)
+      def handle_concern_extend(owner, node)
         arguments = node.arguments&.arguments
         return unless arguments
 
@@ -105,7 +107,7 @@ module RubyLsp
           module_name = node.full_name
           next unless module_name == "ActiveSupport::Concern"
 
-          index.register_included_hook(owner.name) do |index, base|
+          @index.register_included_hook(owner.name) do |index, base|
             class_methods_name = "#{owner.name}::ClassMethods"
 
             if index.indexed?(class_methods_name)

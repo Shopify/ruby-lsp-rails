@@ -12,7 +12,8 @@ module RubyLsp
         def populated_index
           @index ||= begin
             index = RubyIndexer::Index.new
-            index.register_enhancement(IndexingEnhancement.new)
+            indexing_enhancement = IndexingEnhancement.new(index)
+            index.register_enhancement(indexing_enhancement)
             index.index_all
             index
           end
