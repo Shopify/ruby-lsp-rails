@@ -187,6 +187,29 @@ module RubyLsp
         )
       end
 
+      sig { returns(T.nilable(String)) }
+      def pending_migrations_message
+        response = make_request("pending_migrations_message")
+        response[:pending_migrations_message] if response
+      rescue IncompleteMessageError
+        log_message(
+          "Ruby LSP Rails failed when checking for pending migrations",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
+      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def run_migrations
+        make_request("run_migrations")
+      rescue IncompleteMessageError
+        log_message(
+          "Ruby LSP Rails failed to run migrations",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
       # Delegates a request to a server add-on
       sig do
         params(

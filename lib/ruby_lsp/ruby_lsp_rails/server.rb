@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "open3"
 
 # NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
 # client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
@@ -109,6 +110,10 @@ module RubyLsp
           send_message(resolve_database_info_from_model(params.fetch(:name)))
         when "association_target_location"
           send_message(resolve_association_target(params))
+        when "pending_migrations_message"
+          send_message({ result: { pending_migrations_message: pending_migrations_message } })
+        when "run_migrations"
+          send_message({ result: run_migrations })
         when "reload"
           ::Rails.application.reloader.reload!
         when "route_location"
@@ -251,6 +256,26 @@ module RubyLsp
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
           !const.abstract_class?
         )
+      end
+
+      def pending_migrations_message
+        return unless defined?(ActiveRecord)
+
+        ActiveRecord::Migration.check_all_pending!
+        nil
+      rescue ActiveRecord::PendingMigrationError => e
+        e.message
+      end
+
+      def run_migrations
+        # Running migrations invokes `load` which will repeatedly load the same files. It's not designed to be invoked
+        # multiple times within the same process. To avoid any memory bloat, we run migrations in a separate process
+        stdout, status = Open3.capture2(
+          { "VERBOSE" => "true" },
+          "bundle exec rails db:migrate",
+        )
+
+        { message: stdout, status: status.exitstatus }
       end
     end
   end

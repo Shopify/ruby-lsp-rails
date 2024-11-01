@@ -176,6 +176,28 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal("Hello\n", stderr)
   end
 
+  test "checking for pending migrations" do
+    capture_subprocess_io do
+      system("bundle exec rails g migration CreateStudents name:string")
+    end
+
+    @server.execute("pending_migrations_message", {})
+    message = response.dig(:result, :pending_migrations_message)
+    assert_match("You have 1 pending migration", message)
+    assert_match(%r{db/migrate/[\d]+_create_students\.rb}, message)
+  ensure
+    FileUtils.rm_rf("db") if File.directory?("db")
+  end
+
+  test "running migrations happens in a child process" do
+    Open3.expects(:capture2)
+      .with({ "VERBOSE" => "true" }, "bundle exec rails db:migrate")
+      .returns(["Running migrations...", mock(exitstatus: 0)])
+
+    @server.execute("run_migrations", {})
+    assert_equal({ message: "Running migrations...", status: 0 }, response[:result])
+  end
+
   private
 
   def response
