@@ -177,11 +177,11 @@ class ServerTest < ActiveSupport::TestCase
   end
 
   test "reloads if routes files change" do
+    old_routes = File.read("test/dummy/config/routes.rb")
+
     @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]
     assert_match(%r{test/dummy/config/routes.rb:5$}, location)
-
-    old_routes = File.read("test/dummy/config/routes.rb")
 
     File.write("test/dummy/config/routes.rb", <<~RUBY)
       Rails.application.routes.draw do
@@ -192,8 +192,7 @@ class ServerTest < ActiveSupport::TestCase
 
     @server.execute("route_location", { name: "user_path" })
 
-    location = response[:result][:location]
-    assert_nil(location)
+    assert_nil(response[:result])
   ensure
     File.write("test/dummy/config/routes.rb", old_routes)
   end
@@ -201,7 +200,10 @@ class ServerTest < ActiveSupport::TestCase
   private
 
   def response
-    _headers, content = @stdout.string.split("\r\n\r\n")
-    JSON.parse(content, symbolize_names: true)
+    headers, content = @stdout.string.split("\r\n\r\n")
+    content_length = headers[/Content-Length: (\d+)/i, 1].to_i
+    # binding.break
+    # @stdout.string = ""
+    JSON.parse(content.first(content_length), symbolize_names: true)
   end
 end
