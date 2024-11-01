@@ -218,7 +218,7 @@ class RBI::TypedParam < ::T::Struct
   const :type, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.11554lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11577lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -879,7 +879,7 @@ class Tapioca::Commands::Command
   sig { void }
   def initialize; end
 
-  # source://thor/1.3.1lib/thor/base.rb#155
+  # source://thor/1.3.2lib/thor/base.rb#155
   sig { returns(::Thor::Actions) }
   def file_writer; end
 
@@ -1141,7 +1141,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-    # source://sorbet-runtime/0.5.11554lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11577lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1152,7 +1152,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-    # source://sorbet-runtime/0.5.11554lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11577lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2208,7 +2208,7 @@ class Tapioca::GemInfo < ::T::Struct
     sig { params(spec: ::Bundler::LazySpecification).returns(::Tapioca::GemInfo) }
     def from_spec(spec); end
 
-    # source://sorbet-runtime/0.5.11554lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11577lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -3534,30 +3534,30 @@ Tapioca::VERSION = T.let(T.unsafe(nil), String)
 
 # source://tapioca/lib/tapioca/helpers/source_uri.rb#7
 class URI::Source < ::URI::File
-  # source://ruby-lsp/0.18.0lib/ruby_lsp/requests/support/source_uri.rb#62
+  # source://ruby-lsp/0.21.2lib/ruby_lsp/requests/support/source_uri.rb#69
   sig { params(v: T.nilable(::String)).returns(T::Boolean) }
   def check_host(v); end
 
-  # source://uri/0.13.0uri/generic.rb#243
+  # source://uri/0.13.1lib/uri/generic.rb#243
   def gem_name; end
 
-  # source://ruby-lsp/0.18.0lib/ruby_lsp/requests/support/source_uri.rb#26
+  # source://ruby-lsp/0.21.2lib/ruby_lsp/requests/support/source_uri.rb#33
   sig { returns(T.nilable(::String)) }
   def gem_version; end
 
-  # source://uri/0.13.0uri/generic.rb#283
+  # source://uri/0.13.1lib/uri/generic.rb#283
   def line_number; end
 
-  # source://ruby-lsp/0.18.0lib/ruby_lsp/requests/support/source_uri.rb#52
+  # source://ruby-lsp/0.21.2lib/ruby_lsp/requests/support/source_uri.rb#59
   sig { params(v: T.nilable(::String)).void }
   def set_path(v); end
 
-  # source://ruby-lsp/0.18.0lib/ruby_lsp/requests/support/source_uri.rb#74
+  # source://ruby-lsp/0.21.2lib/ruby_lsp/requests/support/source_uri.rb#81
   sig { returns(::String) }
   def to_s; end
 
   class << self
-    # source://ruby-lsp/0.18.0lib/ruby_lsp/requests/support/source_uri.rb#39
+    # source://ruby-lsp/0.21.2lib/ruby_lsp/requests/support/source_uri.rb#46
     sig do
       params(
         gem_name: ::String,

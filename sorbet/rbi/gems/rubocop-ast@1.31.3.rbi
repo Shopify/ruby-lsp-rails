@@ -699,6 +699,12 @@ module RuboCop::AST::CollectionNode
   def compact!(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def compact_blank(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def compact_blank!(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def concat(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
@@ -762,6 +768,15 @@ module RuboCop::AST::CollectionNode
   def entries(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def exclude?(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def excluding(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def extract!(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def extract_options!(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
@@ -810,10 +825,22 @@ module RuboCop::AST::CollectionNode
   def group_by(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def in_order_of(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def include?(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def including(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def index(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def index_by(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def index_with(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
   def inject(*args, **_arg1, &block); end
@@ -843,6 +870,9 @@ module RuboCop::AST::CollectionNode
   def length(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def many?(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def map(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
@@ -855,6 +885,9 @@ module RuboCop::AST::CollectionNode
   def max_by(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def maximum(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def member?(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
@@ -862,6 +895,9 @@ module RuboCop::AST::CollectionNode
 
   # source://forwardable/1.3.3forwardable.rb#231
   def min_by(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def minimum(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
   def minmax(*args, **_arg1, &block); end
@@ -885,7 +921,13 @@ module RuboCop::AST::CollectionNode
   def permutation(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def pick(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def place(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def pluck(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
   def pop(*args, **_arg1, &block); end
@@ -978,6 +1020,9 @@ module RuboCop::AST::CollectionNode
   def slice_when(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
+  def sole(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
   def sort(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
@@ -1003,9 +1048,6 @@ module RuboCop::AST::CollectionNode
 
   # source://forwardable/1.3.3forwardable.rb#231
   def to_ary(*args, **_arg1, &block); end
-
-  # source://forwardable/1.3.3forwardable.rb#231
-  def to_default_s(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
   def to_formatted_s(*args, **_arg1, &block); end
@@ -1042,6 +1084,9 @@ module RuboCop::AST::CollectionNode
 
   # source://forwardable/1.3.3forwardable.rb#231
   def values_at(*args, **_arg1, &block); end
+
+  # source://forwardable/1.3.3forwardable.rb#231
+  def without(*args, **_arg1, &block); end
 
   # source://forwardable/1.3.3forwardable.rb#231
   def zip(*args, **_arg1, &block); end
