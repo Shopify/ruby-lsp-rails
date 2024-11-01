@@ -148,10 +148,46 @@ module Concurrent
     # source://concurrent-ruby/lib/concurrent-ruby/concurrent/tvar.rb#82
     def atomically; end
 
+    # Number of processors cores available for process scheduling.
+    # This method takes in account the CPU quota if the process is inside a cgroup with a
+    # dedicated CPU quota (typically Docker).
+    # Otherwise it returns the same value as #processor_count but as a Float.
+    #
+    # For performance reasons the calculated value will be memoized on the first
+    # call.
+    #
+    # @return [Float] number of available processors
+    #
+    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#194
+    def available_processor_count; end
+
     # @raise [ArgumentError]
     #
     # source://concurrent-ruby/lib/concurrent-ruby/concurrent/dataflow.rb#56
     def call_dataflow(method, executor, *inputs, &block); end
+
+    # The maximum number of processors cores available for process scheduling.
+    # Returns `nil` if there is no enforced limit, or a `Float` if the
+    # process is inside a cgroup with a dedicated CPU quota (typically Docker).
+    #
+    # Note that nothing prevents setting a CPU quota higher than the actual number of
+    # cores on the system.
+    #
+    # For performance reasons the calculated value will be memoized on the first
+    # call.
+    #
+    # @return [nil, Float] Maximum number of available processors as set by a cgroup CPU quota, or nil if none set
+    #
+    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#209
+    def cpu_quota; end
+
+    # The CPU shares requested by the process. For performance reasons the calculated
+    # value will be memoized on the first call.
+    #
+    # @return [Float, nil] CPU shares requested by the process, or nil if not set
+    #
+    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#217
+    def cpu_shares; end
 
     # @return [Logger] Logger with provided level and output.
     #
@@ -291,7 +327,7 @@ module Concurrent
     # @see http://www.unix.com/man-page/osx/1/HWPREFS/
     # @see http://linux.die.net/man/8/sysctl
     #
-    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#107
+    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#181
     def physical_processor_count; end
 
     # Number of processors seen by the OS and used for process scheduling. For
@@ -302,18 +338,18 @@ module Concurrent
     # `java.lang.Runtime.getRuntime.availableProcessors` will be used. According
     # to the Java documentation this "value may change during a particular
     # invocation of the virtual machine... [applications] should therefore
-    # occasionally poll this property." Subsequently the result will NOT be
-    # memoized under JRuby.
+    # occasionally poll this property." We still memoize this value once under
+    # JRuby.
     #
     # Otherwise Ruby's Etc.nprocessors will be used.
     #
     # @return [Integer] number of processors seen by the OS or Java runtime
     # @see http://docs.oracle.com/javase/6/docs/api/java/lang/Runtime.html#availableProcessors()
     #
-    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#86
+    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#160
     def processor_count; end
 
-    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#68
+    # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#142
     def processor_counter; end
 
     # Use logger created by #create_simple_logger to log concurrent-ruby messages.
@@ -11572,19 +11608,37 @@ class Concurrent::Utility::ProcessorCounter
   # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#11
   def initialize; end
 
-  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#20
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#26
+  def available_processor_count; end
+
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#41
+  def cpu_quota; end
+
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#45
+  def cpu_shares; end
+
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#22
   def physical_processor_count; end
 
-  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#16
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#18
   def processor_count; end
 
   private
 
-  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#34
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#104
+  def compute_cpu_quota; end
+
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#124
+  def compute_cpu_shares; end
+
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#59
   def compute_physical_processor_count; end
 
-  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#26
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#51
   def compute_processor_count; end
+
+  # source://concurrent-ruby/lib/concurrent-ruby/concurrent/utility/processor_counter.rb#99
+  def run(command); end
 end
 
 # source://concurrent-ruby/lib/concurrent-ruby/concurrent/version.rb#2

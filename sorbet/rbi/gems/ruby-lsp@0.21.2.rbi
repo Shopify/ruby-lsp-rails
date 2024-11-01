@@ -2031,15 +2031,20 @@ end
 #
 # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#7
 class RubyLsp::ClientCapabilities
-  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#16
+  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#17
   sig { void }
   def initialize; end
 
-  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#34
+  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#38
   sig { params(capabilities: T::Hash[::Symbol, T.untyped]).void }
   def apply_client_capabilities(capabilities); end
 
-  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#56
+  # @return [Boolean]
+  #
+  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#11
+  def supports_progress; end
+
+  # source://ruby-lsp/lib/ruby_lsp/client_capabilities.rb#63
   sig { returns(T::Boolean) }
   def supports_rename?; end
 
@@ -2299,17 +2304,17 @@ class RubyLsp::ERBDocument::ERBScanner
   def scan_char; end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#115
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#170
 class RubyLsp::Error
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#122
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#177
   sig { params(id: ::Integer, code: ::Integer, message: ::String, data: T.nilable(T::Hash[::Symbol, T.untyped])).void }
   def initialize(id:, code:, message:, data: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#119
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#174
   sig { returns(::String) }
   def message; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#130
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#185
   sig { returns(T::Hash[::Symbol, T.untyped]) }
   def to_hash; end
 end
@@ -2381,6 +2386,10 @@ class RubyLsp::GlobalState
   sig { params(addon_name: ::String).returns(T.nilable(T::Hash[::Symbol, T.untyped])) }
   def settings_for_addon(addon_name); end
 
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#163
+  sig { returns(T::Boolean) }
+  def supports_watching_files; end
+
   # source://ruby-lsp/lib/ruby_lsp/global_state.rb#9
   sig { returns(::String) }
   def test_library; end
@@ -2400,42 +2409,42 @@ class RubyLsp::GlobalState
 
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#221
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#226
   sig { returns(T::Boolean) }
   def bin_rails_present; end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#165
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#170
   sig { params(direct_dependencies: T::Array[::String], all_dependencies: T::Array[::String]).returns(::String) }
   def detect_formatter(direct_dependencies, all_dependencies); end
 
   # Try to detect if there are linters in the project's dependencies. For auto-detection, we always only consider a
   # single linter. To have multiple linters running, the user must configure them manually
   #
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#181
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#186
   sig { params(dependencies: T::Array[::String], all_dependencies: T::Array[::String]).returns(T::Array[::String]) }
   def detect_linters(dependencies, all_dependencies); end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#192
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#197
   sig { params(dependencies: T::Array[::String]).returns(::String) }
   def detect_test_library(dependencies); end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#212
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#217
   sig { params(dependencies: T::Array[::String]).returns(T::Boolean) }
   def detect_typechecker(dependencies); end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#226
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#231
   sig { returns(T::Boolean) }
   def dot_rubocop_yml_present; end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#248
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#253
   sig { returns(T::Array[::String]) }
   def gather_direct_and_indirect_dependencies; end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#231
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#236
   sig { returns(T::Array[::String]) }
   def gather_direct_dependencies; end
 
-  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#241
+  # source://ruby-lsp/lib/ruby_lsp/global_state.rb#246
   sig { returns(T::Array[::String]) }
   def gemspec_dependencies; end
 end
@@ -3846,11 +3855,36 @@ end
 
 # source://ruby-lsp/lib/ruby_lsp/utils.rb#63
 class RubyLsp::Notification < ::RubyLsp::Message
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#95
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#150
   sig { override.returns(T::Hash[::Symbol, T.untyped]) }
   def to_hash; end
 
   class << self
+    # source://ruby-lsp/lib/ruby_lsp/utils.rb#99
+    sig do
+      params(
+        id: ::String,
+        title: ::String,
+        percentage: T.nilable(::Integer),
+        message: T.nilable(::String)
+      ).returns(::RubyLsp::Notification)
+    end
+    def progress_begin(id, title, percentage: T.unsafe(nil), message: T.unsafe(nil)); end
+
+    # source://ruby-lsp/lib/ruby_lsp/utils.rb#136
+    sig { params(id: ::String).returns(::RubyLsp::Notification) }
+    def progress_end(id); end
+
+    # source://ruby-lsp/lib/ruby_lsp/utils.rb#121
+    sig do
+      params(
+        id: ::String,
+        percentage: T.nilable(::Integer),
+        message: T.nilable(::String)
+      ).returns(::RubyLsp::Notification)
+    end
+    def progress_report(id, percentage: T.unsafe(nil), message: T.unsafe(nil)); end
+
     # source://ruby-lsp/lib/ruby_lsp/utils.rb#84
     sig { params(data: T::Hash[::Symbol, T.untyped]).returns(::RubyLsp::Notification) }
     def telemetry(data); end
@@ -3888,35 +3922,35 @@ class RubyLsp::RBSDocument < ::RubyLsp::Document
   def syntax_error?; end
 end
 
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#100
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#155
 class RubyLsp::Request < ::RubyLsp::Message
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#104
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#159
   sig { params(id: T.any(::Integer, ::String), method: ::String, params: ::Object).void }
   def initialize(id:, method:, params:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#110
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#165
   sig { override.returns(T::Hash[::Symbol, T.untyped]) }
   def to_hash; end
 end
 
 # A request configuration, to turn on/off features
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#165
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#220
 class RubyLsp::RequestConfig
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#172
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#227
   sig { params(configuration: T::Hash[::Symbol, T::Boolean]).void }
   def initialize(configuration); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#169
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#224
   sig { returns(T::Hash[::Symbol, T::Boolean]) }
   def configuration; end
 
   # @return [Hash{Symbol => Boolean}]
   #
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#169
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#224
   def configuration=(_arg0); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#177
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#232
   sig { params(feature: ::Symbol).returns(T.nilable(T::Boolean)) }
   def enabled?(feature); end
 end
@@ -5421,21 +5455,21 @@ end
 
 # The final result of running a request before its IO is finalized
 #
-# source://ruby-lsp/lib/ruby_lsp/utils.rb#143
+# source://ruby-lsp/lib/ruby_lsp/utils.rb#198
 class RubyLsp::Result
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#153
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#208
   sig { params(id: ::Integer, response: T.untyped).void }
   def initialize(id:, response:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#150
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#205
   sig { returns(::Integer) }
   def id; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#147
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#202
   sig { returns(T.untyped) }
   def response; end
 
-  # source://ruby-lsp/lib/ruby_lsp/utils.rb#159
+  # source://ruby-lsp/lib/ruby_lsp/utils.rb#214
   sig { returns(T::Hash[::Symbol, T.untyped]) }
   def to_hash; end
 end
@@ -5558,7 +5592,7 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   sig { returns(::RubyLsp::GlobalState) }
   def global_state; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#144
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#153
   sig { params(include_project_addons: T::Boolean).void }
   def load_addons(include_project_addons: T.unsafe(nil)); end
 
@@ -5566,57 +5600,63 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   sig { override.params(message: T::Hash[::Symbol, T.untyped]).void }
   def process_message(message); end
 
+  # Process responses to requests that were sent to the client
+  #
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#145
+  sig { params(message: T::Hash[::Symbol, T.untyped]).void }
+  def process_response(message); end
+
   private
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1107
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1114
   sig { params(id: ::String, title: ::String, percentage: ::Integer).void }
   def begin_progress(id, title, percentage: T.unsafe(nil)); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1168
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1144
   sig { void }
   def check_formatter_is_available; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#793
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#800
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def code_action_resolve(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1150
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1134
   sig { params(id: ::String).void }
   def end_progress(id); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1075
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1082
   sig { void }
   def perform_initial_indexing; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1187
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1163
   sig { params(indexing_options: T.nilable(T::Hash[::Symbol, T.untyped])).void }
   def process_indexing_configuration(indexing_options); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1131
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1127
   sig { params(id: ::String, percentage: ::Integer).void }
   def progress(id, percentage); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#441
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#448
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def run_combined_requests(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#184
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#193
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def run_initialize(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#322
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#329
   sig { void }
   def run_initialized; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1070
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1077
   sig { override.void }
   def shutdown; end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#729
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#736
   sig { params(document: RubyLsp::Document[T.untyped]).returns(::RubyLsp::RubyDocument::SorbetLevel) }
   def sorbet_level(document); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#771
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#778
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_code_action(message); end
 
@@ -5626,35 +5666,35 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
   def text_document_code_lens(*args, **_arg1, &blk); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#858
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#865
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_completion(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#883
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#890
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_completion_item_resolve(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#928
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#935
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_definition(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#818
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#825
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_diagnostic(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#405
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#412
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_did_change(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#389
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#396
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_did_close(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#349
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#356
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_did_open(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#627
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#634
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_document_highlight(message); end
 
@@ -5676,94 +5716,94 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
   def text_document_folding_range(*args, **_arg1, &blk); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#588
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#595
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_formatting(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#666
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#673
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_hover(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#737
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#744
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_inlay_hint(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#643
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#650
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_on_type_formatting(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1012
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1019
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_prepare_type_hierarchy(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#560
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#567
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_range_formatting(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#711
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#718
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_references(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#691
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#698
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_rename(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#415
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#422
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_selection_range(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#506
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#513
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_semantic_tokens_delta(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#485
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#492
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_semantic_tokens_full(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#531
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#538
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_semantic_tokens_range(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#993
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1000
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_show_syntax_tree(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#902
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#909
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def text_document_signature_help(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1040
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1047
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def type_hierarchy_subtypes(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1031
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1038
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def type_hierarchy_supertypes(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1228
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1204
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def window_show_message_request(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#1047
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#1054
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_dependencies(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#953
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#960
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_did_change_watched_files(message); end
 
-  # source://ruby-lsp/lib/ruby_lsp/server.rb#980
+  # source://ruby-lsp/lib/ruby_lsp/server.rb#987
   sig { params(message: T::Hash[::Symbol, T.untyped]).void }
   def workspace_symbol(message); end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/store.rb#5
 class RubyLsp::Store
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#20
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#17
   sig { void }
   def initialize; end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#122
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#118
   sig do
     type_parameters(:T)
       .params(
@@ -5774,53 +5814,53 @@ class RubyLsp::Store
   end
   def cache_fetch(uri, request_name, &block); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#88
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#84
   sig { void }
   def clear; end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#17
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#14
   sig { returns(::String) }
   def client_name; end
 
   # @return [String]
   #
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#17
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#14
   def client_name=(_arg0); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#98
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#94
   sig { params(uri: ::URI::Generic).void }
   def delete(uri); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#108
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#104
   sig { params(block: T.proc.params(uri: ::String, document: RubyLsp::Document[T.untyped]).void).void }
   def each(&block); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#93
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#89
   sig { returns(T::Boolean) }
   def empty?; end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#14
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#11
   sig { returns(T::Hash[::Symbol, ::RubyLsp::RequestConfig]) }
   def features_configuration; end
 
   # @return [Hash{Symbol => RequestConfig}]
   #
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#14
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#11
   def features_configuration=(_arg0); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#37
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#33
   sig { params(uri: ::URI::Generic).returns(RubyLsp::Document[T.untyped]) }
   def get(uri); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#103
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#99
   sig { params(uri: ::URI::Generic).returns(T::Boolean) }
   def key?(uri); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#83
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#79
   sig { params(uri: ::URI::Generic, edits: T::Array[T::Hash[::Symbol, T.untyped]], version: ::Integer).void }
   def push_edits(uri:, edits:, version:); end
 
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#71
+  # source://ruby-lsp/lib/ruby_lsp/store.rb#67
   sig do
     params(
       uri: ::URI::Generic,
@@ -5831,15 +5871,6 @@ class RubyLsp::Store
     ).returns(RubyLsp::Document[T.untyped])
   end
   def set(uri:, source:, version:, language_id:, encoding: T.unsafe(nil)); end
-
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#11
-  sig { returns(T::Boolean) }
-  def supports_progress; end
-
-  # @return [Boolean]
-  #
-  # source://ruby-lsp/lib/ruby_lsp/store.rb#11
-  def supports_progress=(_arg0); end
 end
 
 # source://ruby-lsp/lib/ruby_lsp/store.rb#8
@@ -5918,15 +5949,9 @@ end
 # source://ruby-lsp/lib/ruby-lsp.rb#5
 RubyLsp::VERSION = T.let(T.unsafe(nil), String)
 
-# source://ruby-lsp/lib/core_ext/uri.rb#4
-module URI
-  include ::URI::RFC2396_REGEXP
-end
-
 # source://ruby-lsp/lib/core_ext/uri.rb#5
 class URI::Generic
   include ::URI::RFC2396_REGEXP
-  include ::URI
 end
 
 # Avoid a deprecation warning with Ruby 3.4 where the default parser was changed to RFC3986.
@@ -5987,5 +6012,3 @@ URI::Source::COMPONENT = T.let(T.unsafe(nil), Array)
 #
 # source://ruby-lsp/lib/ruby_lsp/requests/support/source_uri.rb#27
 URI::Source::PARSER = T.let(T.unsafe(nil), URI::RFC2396_Parser)
-
-class URI::WSS < ::URI::WS; end
