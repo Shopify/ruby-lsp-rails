@@ -20,6 +20,8 @@ module RubyLsp
     class Addon < ::RubyLsp::Addon
       extend T::Sig
 
+      RUN_MIGRATIONS_TITLE = "Run Migrations"
+
       sig { void }
       def initialize
         super
@@ -37,6 +39,7 @@ module RubyLsp
           @addon_mutex.synchronize do
             # We need to ensure the Rails client is fully loaded before we activate the server addons
             @client_mutex.synchronize { @rails_runner_client = RunnerClient.create_client(T.must(@outgoing_queue)) }
+            offer_to_run_pending_migrations
           end
         end
       end
@@ -119,11 +122,80 @@ module RubyLsp
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
       def workspace_did_change_watched_files(changes)
-        if changes.any? do |change|
-             change[:uri].end_with?("db/schema.rb") || change[:uri].end_with?("structure.sql")
-           end
+        if changes.any? { |c| c[:uri].end_with?("db/schema.rb") || c[:uri].end_with?("structure.sql") }
           @rails_runner_client.trigger_reload
         end
+
+        if changes.any? do |c|
+             %r{db(/|\\)migrate(/|\\).*\.rb}.match?(c[:uri]) && c[:type] != Constant::FileChangeType::CHANGED
+           end
+
+          offer_to_run_pending_migrations
+        end
+      end
+
+      sig { override.returns(String) }
+      def name
+        "Ruby LSP Rails"
+      end
+
+      sig { override.params(title: String).void }
+      def handle_window_show_message_response(title)
+        if title == RUN_MIGRATIONS_TITLE
+
+          begin_progress("run-migrations", "Running Migrations")
+          response = @rails_runner_client.run_migrations
+
+          if response && @outgoing_queue
+            if response[:status] == 0
+              # Both log the message and show it as part of progress because sometimes running migrations is so fast you
+              # can't see the progress notification
+              @outgoing_queue << Notification.window_log_message(response[:message])
+              report_progress("run-migrations", message: response[:message])
+            else
+              @outgoing_queue << Notification.window_show_message(
+                "Migrations failed to run\n\n#{response[:message]}",
+                type: Constant::MessageType::ERROR,
+              )
+            end
+          end
+
+          end_progress("run-migrations")
+        end
+      end
+
+      private
+
+      sig { params(id: String, title: String, percentage: T.nilable(Integer), message: T.nilable(String)).void }
+      def begin_progress(id, title, percentage: nil, message: nil)
+        return unless @global_state&.client_capabilities&.supports_progress && @outgoing_queue
+
+        @outgoing_queue << Request.new(
+          id: "progress-request-#{id}",
+          method: "window/workDoneProgress/create",
+          params: Interface::WorkDoneProgressCreateParams.new(token: id),
+        )
+
+        @outgoing_queue << Notification.progress_begin(
+          id,
+          title,
+          percentage: percentage,
+          message: "#{percentage}% completed",
+        )
+      end
+
+      sig { params(id: String, percentage: T.nilable(Integer), message: T.nilable(String)).void }
+      def report_progress(id,  percentage: nil, message: nil)
+        return unless @global_state&.client_capabilities&.supports_progress && @outgoing_queue
+
+        @outgoing_queue << Notification.progress_report(id, percentage: percentage, message: message)
+      end
+
+      sig { params(id: String).void }
+      def end_progress(id)
+        return unless @global_state&.client_capabilities&.supports_progress && @outgoing_queue
+
+        @outgoing_queue << Notification.progress_end(id)
       end
 
       sig { params(global_state: GlobalState, outgoing_queue: Thread::Queue).void }
@@ -152,9 +224,26 @@ module RubyLsp
         )
       end
 
-      sig { override.returns(String) }
-      def name
-        "Ruby LSP Rails"
+      sig { void }
+      def offer_to_run_pending_migrations
+        return unless @outgoing_queue
+        return unless @global_state&.client_capabilities&.window_show_message_supports_extra_properties
+
+        migration_message = @rails_runner_client.pending_migrations_message
+        return unless migration_message
+
+        @outgoing_queue << Request.new(
+          id: "rails-pending-migrations",
+          method: "window/showMessageRequest",
+          params: {
+            type: Constant::MessageType::INFO,
+            message: migration_message,
+            actions: [
+              { title: RUN_MIGRATIONS_TITLE, addon_name: name, method: "window/showMessageRequest" },
+              { title: "Cancel", addon_name: name, method: "window/showMessageRequest" },
+            ],
+          },
+        )
       end
     end
   end
