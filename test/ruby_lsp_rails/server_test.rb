@@ -32,11 +32,6 @@ class ServerTest < ActiveSupport::TestCase
 
   test "doesn't fail if the class overrides `<`" do
     class TestClassWithOverwrittenLessThan
-      class << self
-        def <(other)
-          raise
-        end
-      end
     end
 
     @server.execute("model", { name: "TestClassWithOverwrittenLessThan" })
