@@ -122,7 +122,7 @@ module RubyLsp
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
       def workspace_did_change_watched_files(changes)
-        if changes.any? { |c| c[:uri].end_with?("db/schema.rb") || c[:uri].end_with?("structure.sql") }
+        if changes.any? { |c| %r{db(/|\\)schema\.rb}.match?(c[:uri]) || c[:uri].end_with?("structure.sql") }
           @rails_runner_client.trigger_reload
         end
 
