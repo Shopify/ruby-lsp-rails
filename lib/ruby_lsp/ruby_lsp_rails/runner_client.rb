@@ -46,8 +46,6 @@ module RubyLsp
       class IncompleteMessageError < StandardError; end
       class EmptyMessageError < StandardError; end
 
-      MAX_RETRIES = 5
-
       extend T::Sig
 
       sig { returns(String) }
