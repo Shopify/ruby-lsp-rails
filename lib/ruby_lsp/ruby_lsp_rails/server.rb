@@ -111,6 +111,8 @@ module RubyLsp
           send_message(resolve_association_target(params))
         when "reload"
           ::Rails.application.reloader.reload!
+        when "reload_routes"
+          ::Rails.application.routes_reloader.execute
         when "route_location"
           send_message(route_location(params.fetch(:name)))
         when "route_info"
