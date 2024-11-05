@@ -56,5 +56,13 @@ module ActiveSupport
       log = message_queue.pop until log.params.type == type
       log
     end
+
+    def pop_message(outgoing_queue, &block)
+      message = outgoing_queue.pop
+      return message if block.call(message)
+
+      message = outgoing_queue.pop until block.call(message)
+      message
+    end
   end
 end
