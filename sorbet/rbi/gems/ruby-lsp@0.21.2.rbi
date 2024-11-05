@@ -357,7 +357,7 @@ class RubyIndexer::Entry
 
   # @return [RubyIndexer::Location]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def name_location(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_indexer/lib/ruby_indexer/entry.rb#57
@@ -705,7 +705,7 @@ class RubyIndexer::Entry::Parameter
   #
   # @return [Symbol]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def decorated_name(*args, **_arg1, &blk); end
 
   # Name includes just the name of the parameter, excluding symbols like splats
@@ -5070,7 +5070,7 @@ class RubyLsp::Requests::Support::RuboCopDiagnostic
 end
 
 # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#22
-RubyLsp::Requests::Support::RuboCopDiagnostic::ENHANCED_DOC_URL = T.let(T.unsafe(nil), FalseClass)
+RubyLsp::Requests::Support::RuboCopDiagnostic::ENHANCED_DOC_URL = T.let(T.unsafe(nil), TrueClass)
 
 # source://ruby-lsp/lib/ruby_lsp/requests/support/rubocop_diagnostic.rb#10
 RubyLsp::Requests::Support::RuboCopDiagnostic::RUBOCOP_TO_LSP_SEVERITY = T.let(T.unsafe(nil), Hash)
@@ -5249,7 +5249,7 @@ class RubyLsp::ResponseBuilders::DocumentSymbol < ::RubyLsp::ResponseBuilders::R
   # @param symbol [Interface::DocumentSymbol]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def <<(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_lsp/response_builders/document_symbol.rb#47
@@ -5663,7 +5663,7 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # @param message [Hash{Symbol => T.untyped}]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def text_document_code_lens(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_lsp/server.rb#865
@@ -5701,19 +5701,19 @@ class RubyLsp::Server < ::RubyLsp::BaseServer
   # @param message [Hash{Symbol => T.untyped}]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def text_document_document_link(*args, **_arg1, &blk); end
 
   # @param message [Hash{Symbol => T.untyped}]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def text_document_document_symbol(*args, **_arg1, &blk); end
 
   # @param message [Hash{Symbol => T.untyped}]
   # @return [void]
   #
-  # source://sorbet-runtime/0.5.11577lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11635lib/types/private/methods/_methods.rb#257
   def text_document_folding_range(*args, **_arg1, &blk); end
 
   # source://ruby-lsp/lib/ruby_lsp/server.rb#595

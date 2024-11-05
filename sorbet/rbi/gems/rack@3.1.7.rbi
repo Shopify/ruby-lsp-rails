@@ -2813,13 +2813,13 @@ class Rack::Request
   # source://rack/lib/rack/request.rb#71
   def update_param(k, v); end
 
-  # source://yard/0.9.36lib/yard/server/rack_adapter.rb#94
+  # source://yard/0.9.37lib/yard/server/rack_adapter.rb#94
   def version_supplied; end
 
-  # source://yard/0.9.36lib/yard/server/rack_adapter.rb#94
+  # source://yard/0.9.37lib/yard/server/rack_adapter.rb#94
   def version_supplied=(_arg0); end
 
-  # source://yard/0.9.36lib/yard/server/rack_adapter.rb#96
+  # source://yard/0.9.37lib/yard/server/rack_adapter.rb#96
   def xhr?; end
 
   class << self
