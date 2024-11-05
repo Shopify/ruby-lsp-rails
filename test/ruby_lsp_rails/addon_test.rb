@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class AddonTest < ActiveSupport::TestCase
+    class AddonTest < Minitest::Test
       test "name returns add-on name" do
         addon = Addon.new
         assert_equal("Ruby LSP Rails", addon.name)

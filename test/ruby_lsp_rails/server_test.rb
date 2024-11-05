@@ -1,11 +1,11 @@
 # typed: true
 # frozen_string_literal: true
 
-require "test_helper"
+require "test_helper_server"
 require "ruby_lsp/ruby_lsp_rails/server"
 
-class ServerTest < ActiveSupport::TestCase
-  setup do
+class ServerTest < ActiveSupport::TestCase # Minitest::Test
+  def setup
     @stdout = StringIO.new
     @server = RubyLsp::Rails::Server.new(stdout: @stdout, override_default_output_device: false)
   end

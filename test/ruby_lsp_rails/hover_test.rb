@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class HoverTest < ActiveSupport::TestCase
+    class HoverTest < Minitest::Test
       test "hook returns model column information" do
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",

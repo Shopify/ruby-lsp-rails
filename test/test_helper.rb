@@ -1,16 +1,10 @@
 # typed: true
 # frozen_string_literal: true
 
-# Configure Rails Environment
-ENV["RAILS_ENV"] = "test"
-
-require_relative "../test/dummy/config/environment"
-ActiveRecord::Migrator.migrations_paths = [File.expand_path("../test/dummy/db/migrate", __dir__)]
-ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __dir__)
-require "sorbet-runtime"
-require "rails/test_help"
-require "mocha/minitest"
 require "ruby_lsp/internal"
+require "minitest/autorun"
+require "test_declarative"
+require "mocha/minitest"
 require "ruby_lsp/test_helper"
 require "ruby_lsp/ruby_lsp_rails/addon"
 
@@ -26,8 +20,8 @@ rescue LoadError
   # Tapioca (and thus Spoom) is not available on Windows
 end
 
-module ActiveSupport
-  class TestCase
+module Minitest
+  class Test
     extend T::Sig
     include RubyLsp::TestHelper
 
@@ -62,6 +56,36 @@ module ActiveSupport
 
       message = outgoing_queue.pop until block.call(message)
       message
+    end
+
+    # Copied from Rails
+    def assert_nothing_raised(*args)
+      msg = if Module === args.last
+        nil
+      else
+        args.pop
+      end
+      begin
+        line = __LINE__
+        yield
+      rescue MiniTest::Skip
+        raise
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        bt = e.backtrace
+        as = e.instance_of?(MiniTest::Assertion)
+        if as
+          ans = /\A#{Regexp.quote(__FILE__)}:#{line}:in /
+          bt.reject! { |ln| ans =~ ln }
+        end
+        if (args.empty? && !as) ||
+            args.any? { |a| a.instance_of?(Module) ? e.is_a?(a) : e.class == a }
+          msg = message(msg) { "Exception raised:\n<#{mu_pp(e)}>" }
+          raise MiniTest::Assertion, msg.call, bt
+        else
+          raise
+        end
+      end
+      nil
     end
   end
 end

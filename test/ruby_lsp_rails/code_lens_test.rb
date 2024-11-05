@@ -5,8 +5,8 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class CodeLensTest < ActiveSupport::TestCase
-      setup do
+    class CodeLensTest < Minitest::Test
+      def setup
         GlobalState.any_instance.stubs(:test_library).returns("rails")
         @ruby = Gem.win_platform? ? "ruby.exe" : "ruby"
       end

@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class LaunchTest < ActiveSupport::TestCase
+    class LaunchTest < Minitest::Test
       test "launching the client succeeds" do
         outgoing_queue = Thread::Queue.new
 

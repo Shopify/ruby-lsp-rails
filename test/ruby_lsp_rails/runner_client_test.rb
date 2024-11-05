@@ -6,13 +6,13 @@ require "ruby_lsp/ruby_lsp_rails/runner_client"
 
 module RubyLsp
   module Rails
-    class RunnerClientTest < ActiveSupport::TestCase
-      setup do
+    class RunnerClientTest < Minitest::Test
+      def setup
         @outgoing_queue = Thread::Queue.new
         @client = T.let(RunnerClient.new(@outgoing_queue), RunnerClient)
       end
 
-      teardown do
+      def teardown
         @client.shutdown
 
         # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
@@ -156,8 +156,10 @@ module RubyLsp
       end
     end
 
-    class NullClientTest < ActiveSupport::TestCase
-      setup { @client = NullClient.new }
+    class NullClientTest < Minitest::Test
+      def setup
+        @client = NullClient.new
+      end
 
       test "#shutdown is a no-op" do
         assert_nothing_raised { @client.shutdown }
