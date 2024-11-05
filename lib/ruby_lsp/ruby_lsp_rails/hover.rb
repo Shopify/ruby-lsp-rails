@@ -71,7 +71,7 @@ module RubyLsp
             primary_key_suffix = " (PK)" if model[:primary_keys].include?(name)
             suffixes = []
             suffixes << "default: #{format_default(default_value, type)}" if default_value
-            suffixes << "not null" unless nullable || primary_key_suffix.present?
+            suffixes << "not null" unless nullable || primary_key_suffix
             suffix_string = " - #{suffixes.join(" - ")}" if suffixes.any?
             "**#{name}**: #{type}#{primary_key_suffix}#{suffix_string}\n"
           end.join("\n"),
