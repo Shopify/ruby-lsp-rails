@@ -43,8 +43,9 @@ module RubyLsp
       end
 
       class InitializationError < StandardError; end
-      class IncompleteMessageError < StandardError; end
-      class EmptyMessageError < StandardError; end
+      class MessageError < StandardError; end
+      class IncompleteMessageError < MessageError; end
+      class EmptyMessageError < MessageError; end
 
       extend T::Sig
 
@@ -115,7 +116,7 @@ module RubyLsp
       sig { params(server_addon_path: String).void }
       def register_server_addon(server_addon_path)
         send_notification("server_addon/register", server_addon_path: server_addon_path)
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to register server addon #{server_addon_path}",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -126,7 +127,7 @@ module RubyLsp
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def model(name)
         make_request("model", name: name)
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to get model information",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -146,7 +147,7 @@ module RubyLsp
           model_name: model_name,
           association_name: association_name,
         )
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to get association location",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -157,7 +158,7 @@ module RubyLsp
       sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def route_location(name)
         make_request("route_location", name: name)
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to get route location",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -168,7 +169,7 @@ module RubyLsp
       sig { params(controller: String, action: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def route(controller:, action:)
         make_request("route_info", controller: controller, action: action)
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to get route information",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -191,7 +192,7 @@ module RubyLsp
       def pending_migrations_message
         response = make_request("pending_migrations_message")
         response[:pending_migrations_message] if response
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed when checking for pending migrations",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -202,7 +203,7 @@ module RubyLsp
       sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
       def run_migrations
         make_request("run_migrations")
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to run migrations",
           type: RubyLsp::Constant::MessageType::ERROR,
@@ -225,7 +226,7 @@ module RubyLsp
           request_name: request_name,
           **params,
         )
-      rescue IncompleteMessageError
+      rescue MessageError
         nil
       end
 
@@ -233,7 +234,7 @@ module RubyLsp
       def trigger_reload
         log_message("Reloading Rails application")
         send_notification("reload")
-      rescue IncompleteMessageError
+      rescue MessageError
         log_message(
           "Ruby LSP Rails failed to trigger reload",
           type: RubyLsp::Constant::MessageType::ERROR,
