@@ -259,7 +259,8 @@ module RubyLsp
       end
 
       def pending_migrations_message
-        return unless defined?(ActiveRecord)
+        # `check_all_pending!` is only available since Rails 7.1
+        return unless defined?(ActiveRecord) && ActiveRecord::Migration.respond_to?(:check_all_pending!)
 
         ActiveRecord::Migration.check_all_pending!
         nil
