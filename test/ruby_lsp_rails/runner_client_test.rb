@@ -9,11 +9,11 @@ module RubyLsp
     class RunnerClientTest < Minitest::Test
       def setup
         @outgoing_queue = Thread::Queue.new
-        @client = T.let(RunnerClient.new(@outgoing_queue), RunnerClient)
+        @client = T.let(RunnerClient.new(@outgoing_queue), T.nilable(RunnerClient))
       end
 
       def teardown
-        @client.shutdown
+        T.must(@client).shutdown
 
         # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
         # which makes this assertion flaky
@@ -35,13 +35,13 @@ module RubyLsp
           ["country_id", "integer", nil, false],
           ["active", "boolean", "1", false],
         ]
-        response = T.must(@client.model("User"))
+        response = T.must(T.must(@client).model("User"))
         assert_equal(columns, response.fetch(:columns))
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
       test "returns nil if the request returns a nil response" do
-        assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
+        assert_nil T.must(@client).model("ApplicationRecord") # ApplicationRecord is abstract
       end
 
       test "falls back to null client when bin/rails is not found" do
@@ -106,7 +106,7 @@ module RubyLsp
           request_name: "do_something",
           id: 5,
         )
-        @client.delegate_notification(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
+        T.must(@client).delegate_notification(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
       end
 
       test "delegate request" do
@@ -116,7 +116,7 @@ module RubyLsp
           request_name: "do_something",
           id: 5,
         )
-        @client.delegate_request(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
+        T.must(@client).delegate_request(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
       end
 
       test "server add-ons can log messages with the editor" do
@@ -133,8 +133,8 @@ module RubyLsp
           end
         RUBY
 
-        @client.register_server_addon(File.expand_path("server_addon.rb"))
-        @client.delegate_notification(server_addon_name: "Tapioca", request_name: "dsl")
+        T.must(@client).register_server_addon(File.expand_path("server_addon.rb"))
+        T.must(@client).delegate_notification(server_addon_name: "Tapioca", request_name: "dsl")
 
         # Started booting server
         pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
