@@ -7,6 +7,7 @@ require "test_declarative"
 require "mocha/minitest"
 require "ruby_lsp/test_helper"
 require "ruby_lsp/ruby_lsp_rails/addon"
+require "active_support/testing/assertions" # for assert_nothing_raised
 
 if defined?(DEBUGGER__)
   DEBUGGER__::CONFIG[:skip_path] =
@@ -24,6 +25,7 @@ module Minitest
   class Test
     extend T::Sig
     include RubyLsp::TestHelper
+    include ActiveSupport::Testing::Assertions # for assert_nothing_raised
 
     def dummy_root
       File.expand_path("#{__dir__}/dummy")
@@ -56,36 +58,6 @@ module Minitest
 
       message = outgoing_queue.pop until block.call(message)
       message
-    end
-
-    # Copied from Rails
-    def assert_nothing_raised(*args)
-      msg = if Module === args.last
-        nil
-      else
-        args.pop
-      end
-      begin
-        line = __LINE__
-        yield
-      rescue MiniTest::Skip
-        raise
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        bt = e.backtrace
-        as = e.instance_of?(MiniTest::Assertion)
-        if as
-          ans = /\A#{Regexp.quote(__FILE__)}:#{line}:in /
-          bt.reject! { |ln| ans =~ ln }
-        end
-        if (args.empty? && !as) ||
-            args.any? { |a| a.instance_of?(Module) ? e.is_a?(a) : e.class == a }
-          msg = message(msg) { "Exception raised:\n<#{mu_pp(e)}>" }
-          raise MiniTest::Assertion, msg.call, bt
-        else
-          raise
-        end
-      end
-      nil
     end
   end
 end
