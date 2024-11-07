@@ -198,6 +198,26 @@ class ServerTest < ActiveSupport::TestCase
     assert_equal({ message: "Running migrations...", status: 0 }, response[:result])
   end
 
+  test "shows error if there is a database connection error" do
+    @server.expects(:pending_migrations_message).raises(ActiveRecord::ConnectionNotEstablished)
+
+    _, stderr = capture_subprocess_io do
+      @server.execute("pending_migrations_message", {})
+    end
+    assert_equal(stderr, "Request pending_migrations_message failed because database connection was not established.\n")
+    assert_equal({ result: nil }, response)
+  end
+
+  test "shows error if database does not exist" do
+    @server.expects(:pending_migrations_message).raises(ActiveRecord::NoDatabaseError)
+
+    _, stderr = capture_subprocess_io do
+      @server.execute("pending_migrations_message", {})
+    end
+    assert_equal(stderr, "Request pending_migrations_message failed because the database does not exist.\n")
+    assert_equal({ result: nil }, response)
+  end
+
   private
 
   def response

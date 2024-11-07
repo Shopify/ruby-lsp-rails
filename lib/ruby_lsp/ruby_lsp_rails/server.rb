@@ -19,6 +19,7 @@ module RubyLsp
       # Log a message to the editor's output panel
       def log_message(message)
         $stderr.puts(message)
+        send_message({ result: nil })
       end
     end
 
@@ -103,6 +104,9 @@ module RubyLsp
       end
 
       def execute(request, params)
+        request_name = request
+        request_name = "#{params[:server_addon_name]}##{params[:request_name]}" if request == "server_addon/delegate"
+
         case request
         when "shutdown"
           @running = false
@@ -128,11 +132,11 @@ module RubyLsp
           request_name = params[:request_name]
           ServerAddon.delegate(server_addon_name, request_name, params.except(:request_name, :server_addon_name))
         end
-        request_name = request
-        request_name = "#{params[:server_addon_name]}##{params[:request_name]}" if request == "server_addon/delegate"
       # Since this is a common problem, we show a specific error message to the user, instead of the full stack trace.
       rescue ActiveRecord::ConnectionNotEstablished
         log_message("Request #{request_name} failed because database connection was not established.")
+      rescue ActiveRecord::NoDatabaseError
+        log_message("Request #{request_name} failed because the database does not exist.")
       rescue => e
         log_message("Request #{request_name} failed:\n" + e.full_message(highlight: false))
       end
