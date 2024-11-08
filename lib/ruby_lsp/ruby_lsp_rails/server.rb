@@ -19,7 +19,6 @@ module RubyLsp
       # Log a message to the editor's output panel
       def log_message(message)
         $stderr.puts(message)
-        send_message({ result: nil })
       end
     end
 
@@ -135,10 +134,13 @@ module RubyLsp
       # Since this is a common problem, we show a specific error message to the user, instead of the full stack trace.
       rescue ActiveRecord::ConnectionNotEstablished
         log_message("Request #{request_name} failed because database connection was not established.")
+        send_message({ result: nil })
       rescue ActiveRecord::NoDatabaseError
         log_message("Request #{request_name} failed because the database does not exist.")
+        send_message({ result: nil })
       rescue => e
         log_message("Request #{request_name} failed:\n" + e.full_message(highlight: false))
+        send_message({ result: nil })
       end
 
       private
