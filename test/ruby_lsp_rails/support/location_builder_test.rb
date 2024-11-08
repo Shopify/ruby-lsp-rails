@@ -6,7 +6,7 @@ require "test_helper"
 module RubyLsp
   module Rails
     module Support
-      class LocationBuilderTest < ActiveSupport::TestCase
+      class LocationBuilderTest < Minitest::Test
         test "line_location_from_s raises argument error if invalid string given" do
           assert_raises(ArgumentError) { LocationBuilder.line_location_from_s("banana") }
         end

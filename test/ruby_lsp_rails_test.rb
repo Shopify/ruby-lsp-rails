@@ -4,7 +4,7 @@
 require "test_helper"
 
 module RubyLsp
-  class RailsTest < ActiveSupport::TestCase
+  class RailsTest < Minitest::Test
     test "it has a version number" do
       assert RubyLsp::Rails::VERSION
     end

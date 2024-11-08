@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class IndexingEnhancementTest < ActiveSupport::TestCase
+    class IndexingEnhancementTest < Minitest::Test
       class << self
         # For these tests, it's convenient to have the index fully populated with Rails information, but we don't have
         # to reindex on every single example or that will be too slow

@@ -1,18 +1,13 @@
 # typed: true
 # frozen_string_literal: true
 
-# Configure Rails Environment
-ENV["RAILS_ENV"] = "test"
-
-require_relative "../test/dummy/config/environment"
-ActiveRecord::Migrator.migrations_paths = [File.expand_path("../test/dummy/db/migrate", __dir__)]
-ActiveRecord::Migrator.migrations_paths << File.expand_path("../db/migrate", __dir__)
-require "sorbet-runtime"
-require "rails/test_help"
-require "mocha/minitest"
 require "ruby_lsp/internal"
+require "minitest/autorun"
+require "test_declarative"
+require "mocha/minitest"
 require "ruby_lsp/test_helper"
 require "ruby_lsp/ruby_lsp_rails/addon"
+require "active_support/testing/assertions" # for assert_nothing_raised
 
 if defined?(DEBUGGER__)
   DEBUGGER__::CONFIG[:skip_path] =
@@ -26,10 +21,11 @@ rescue LoadError
   # Tapioca (and thus Spoom) is not available on Windows
 end
 
-module ActiveSupport
-  class TestCase
+module Minitest
+  class Test
     extend T::Sig
     include RubyLsp::TestHelper
+    include ActiveSupport::Testing::Assertions # for assert_nothing_raised
 
     def dummy_root
       File.expand_path("#{__dir__}/dummy")

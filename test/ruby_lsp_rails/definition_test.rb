@@ -5,7 +5,7 @@ require "test_helper"
 
 module RubyLsp
   module Rails
-    class DefinitionTest < ActiveSupport::TestCase
+    class DefinitionTest < Minitest::Test
       test "recognizes model callback with multiple symbol arguments" do
         response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 18 })
           # typed: false
