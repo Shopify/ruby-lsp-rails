@@ -9,9 +9,12 @@ class User < ApplicationRecord
 
   attr_readonly :last_name
 
-  private
-
   def foo
     puts "test"
+    @last_name
+  end
+
+  def test
+    User.where(
   end
 end
