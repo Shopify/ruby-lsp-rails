@@ -122,7 +122,7 @@ module RubyLsp
       end
 
       sig do
-        params(
+        override.params(
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
           node_context: NodeContext,
           dispatcher: Prism::Dispatcher,

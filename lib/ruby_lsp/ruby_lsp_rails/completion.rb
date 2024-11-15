@@ -39,7 +39,7 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def handle_active_record_where_completions(node)
-        resolved_class = @client.model(@node_context.call_node.receiver&.name)
+        resolved_class = @client.model(T.must(@node_context.call_node).receiver&.name)
         return if resolved_class.nil?
 
         resolved_class[:columns].each do |column|
@@ -47,7 +47,7 @@ module RubyLsp
             label: column[0],
             filter_text: column[0],
             label_details: Interface::CompletionItemLabelDetails.new(
-              description: "Filter #{@node_context.call_node.receiver.name} records by #{column[0]}",
+              description: "Filter #{T.must(@node_context.call_node).receiver.name} records by #{column[0]}",
             ),
             text_edit: Interface::TextEdit.new(range: 0, new_text: "#{column[0]}:"),
             kind: Constant::CompletionItemKind::FIELD,
