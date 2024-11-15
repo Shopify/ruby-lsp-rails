@@ -32,20 +32,17 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
-        $stderr.puts("Entrered call node")
+        if @node_context.call_node&.name == :where
+          handle_active_record_where_completions(node)
+        end
+      end
 
-        $stderr.puts(node.receiver&.name)
-        $stderr.puts(node.name)
-        $stderr.puts(node.opening_loc&.slice)
-        receiver_name = node.receiver&.name
-        return if receiver_name.nil?
+      private
 
-        resolved_class = @client.model(receiver_name)
+      sig { params(node: Prism::CallNode).void }
+      def handle_active_record_where_completions(node)
+        resolved_class = @client.model(@node_context.call_node.receiver&.name)
         return if resolved_class.nil?
-
-        $stderr.puts("MADEIT")
-        $stderr.puts(node.message)
-        $stderr.puts(node.arguments)
 
         resolved_class[:columns].each do |column|
           @response_builder << Interface::CompletionItem.new(
