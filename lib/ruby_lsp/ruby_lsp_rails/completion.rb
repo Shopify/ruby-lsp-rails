@@ -19,7 +19,6 @@ module RubyLsp
         ).void
       end
       def initialize(client, response_builder, node_context, dispatcher, uri)
-        $stderr.puts("In the new completion class")
         @response_builder = response_builder
         @client = client
         @node_context = node_context
@@ -27,7 +26,6 @@ module RubyLsp
           self,
           :on_call_node_enter,
         )
-        $stderr.puts("After dispatcher being registered")
       end
 
       sig { params(node: Prism::CallNode).void }

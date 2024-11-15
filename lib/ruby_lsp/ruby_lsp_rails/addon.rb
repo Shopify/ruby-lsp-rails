@@ -130,7 +130,6 @@ module RubyLsp
         ).void
       end
       def create_completion_listener(response_builder, node_context, dispatcher, uri)
-        $stderr.puts("in completion listener WOOO")
         Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
       end
 
