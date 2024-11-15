@@ -30,7 +30,7 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
-        if @node_context.call_node&.name == :where
+        if @node_context&.call_node&.name == :where
           handle_active_record_where_completions(node)
         end
       end
@@ -49,7 +49,7 @@ module RubyLsp
             label_details: Interface::CompletionItemLabelDetails.new(
               description: "Filter #{T.must(@node_context.call_node).receiver.name} records by #{column[0]}",
             ),
-            text_edit: Interface::TextEdit.new(range: 0, new_text: "#{column[0]}:"),
+            text_edit: Interface::TextEdit.new(range: 0, new_text: "#{column[0]}: "),
             kind: Constant::CompletionItemKind::FIELD,
           )
         end
