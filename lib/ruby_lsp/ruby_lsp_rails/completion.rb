@@ -46,9 +46,11 @@ module RubyLsp
           @response_builder << Interface::CompletionItem.new(
             label: column[0],
             filter_text: column[0],
-            label_details: column[0],
-            text_edit: Interface::TextEdit.new(range: 0, new_text: column[0]),
-            kind: Constant::CompletionItemKind::METHOD,
+            label_details: Interface::CompletionItemLabelDetails.new(
+              description: "Filter #{@node_context.call_node.receiver.name} records by #{column[0]}",
+            ),
+            text_edit: Interface::TextEdit.new(range: 0, new_text: "#{column[0]}:"),
+            kind: Constant::CompletionItemKind::FIELD,
           )
         end
       end
