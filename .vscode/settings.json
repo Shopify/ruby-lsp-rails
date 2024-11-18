@@ -1,0 +1,7 @@
+{
+    "rubyLsp.indexing": {
+        "includedPatterns": [
+            "test/dummy/**/*.rb"
+        ]
+    }
+}

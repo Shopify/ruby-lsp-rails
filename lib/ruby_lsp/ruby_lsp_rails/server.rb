@@ -19,7 +19,43 @@ module RubyLsp
       # Log a message to the editor's output panel
       def log_message(message)
         $stderr.puts(message)
-        send_message({ result: nil })
+      end
+
+      # Sends an error result to a request, if the request failed. DO NOT INVOKE THIS METHOD FOR NOTIFICATIONS! Use
+      # `log_message` instead, otherwise the client/server communication will go out of sync
+      def send_error_response(message)
+        send_message({ error: message })
+      end
+
+      # Sends a result back to the client
+      def send_result(result)
+        send_message({ result: result })
+      end
+
+      # Handle possible errors for a request. This should only be used for requests, which means messages that return a
+      # response back to the client. Errors are returned as an error object back to the client
+      def with_request_error_handling(request_name, &block)
+        block.call
+      rescue ActiveRecord::ConnectionNotEstablished
+        # Since this is a common problem, we show a specific error message to the user, instead of the full stack trace.
+        send_error_response("Request #{request_name} failed because database connection was not established.")
+      rescue ActiveRecord::NoDatabaseError
+        send_error_response("Request #{request_name} failed because the database does not exist.")
+      rescue => e
+        send_error_response("Request #{request_name} failed:\n#{e.full_message(highlight: false)}")
+      end
+
+      # Handle possible errors for a notification. This should only be used for notifications, which means messages that
+      # do not return a response back to the client. Errors are logged to the editor's output panel
+      def with_notification_error_handling(notification_name, &block)
+        block.call
+      rescue ActiveRecord::ConnectionNotEstablished
+        # Since this is a common problem, we show a specific error message to the user, instead of the full stack trace.
+        log_message("Request #{notification_name} failed because database connection was not established.")
+      rescue ActiveRecord::NoDatabaseError
+        log_message("Request #{notification_name} failed because the database does not exist.")
+      rescue => e
+        log_message("Request #{notification_name} failed:\n#{e.full_message(highlight: false)}")
       end
     end
 
@@ -88,11 +124,8 @@ module RubyLsp
       end
 
       def start
-        # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
-        routes_reloader = ::Rails.application.routes_reloader
-        routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
-
-        send_message({ result: { message: "ok", root: ::Rails.root.to_s } })
+        load_routes
+        send_result({ message: "ok", root: ::Rails.root.to_s })
 
         while @running
           headers = @stdin.gets("\r\n\r\n")
@@ -104,41 +137,50 @@ module RubyLsp
       end
 
       def execute(request, params)
-        request_name = request
-        request_name = "#{params[:server_addon_name]}##{params[:request_name]}" if request == "server_addon/delegate"
-
         case request
         when "shutdown"
           @running = false
         when "model"
-          send_message(resolve_database_info_from_model(params.fetch(:name)))
+          with_request_error_handling(request) do
+            send_result(resolve_database_info_from_model(params.fetch(:name)))
+          end
         when "association_target_location"
-          send_message(resolve_association_target(params))
+          with_request_error_handling(request) do
+            send_result(resolve_association_target(params))
+          end
         when "pending_migrations_message"
-          send_message({ result: { pending_migrations_message: pending_migrations_message } })
+          with_request_error_handling(request) do
+            send_result({ pending_migrations_message: pending_migrations_message })
+          end
         when "run_migrations"
-          send_message({ result: run_migrations })
+          with_request_error_handling(request) do
+            send_result(run_migrations)
+          end
         when "reload"
-          ::Rails.application.reloader.reload!
+          with_notification_error_handling(request) do
+            ::Rails.application.reloader.reload!
+          end
         when "route_location"
-          send_message(route_location(params.fetch(:name)))
+          with_request_error_handling(request) do
+            send_result(route_location(params.fetch(:name)))
+          end
         when "route_info"
-          send_message(resolve_route_info(params))
+          with_request_error_handling(request) do
+            send_result(resolve_route_info(params))
+          end
         when "server_addon/register"
-          require params[:server_addon_path]
-          ServerAddon.finalize_registrations!(@stdout)
+          with_notification_error_handling(request) do
+            require params[:server_addon_path]
+            ServerAddon.finalize_registrations!(@stdout)
+          end
         when "server_addon/delegate"
           server_addon_name = params[:server_addon_name]
           request_name = params[:request_name]
+
+          # Do not wrap this in error handlers. Server add-ons need to have the flexibility to choose if they want to
+          # include a response or not as part of error handling, so a blanket approach is not appropriate.
           ServerAddon.delegate(server_addon_name, request_name, params.except(:request_name, :server_addon_name))
         end
-      # Since this is a common problem, we show a specific error message to the user, instead of the full stack trace.
-      rescue ActiveRecord::ConnectionNotEstablished
-        log_message("Request #{request_name} failed because database connection was not established.")
-      rescue ActiveRecord::NoDatabaseError
-        log_message("Request #{request_name} failed because the database does not exist.")
-      rescue => e
-        log_message("Request #{request_name} failed:\n" + e.full_message(highlight: false))
       end
 
       private
@@ -156,19 +198,15 @@ module RubyLsp
         end
 
         source_location = route&.respond_to?(:source_location) && route.source_location
+        return unless source_location
 
-        if source_location
-          file, _, line = source_location.rpartition(":")
-          body = {
-            source_location: [::Rails.root.join(file).to_s, line],
-            verb: route.verb,
-            path: route.path.spec.to_s,
-          }
+        file, _, line = source_location.rpartition(":")
 
-          { result: body }
-        else
-          { result: nil }
-        end
+        {
+          source_location: [::Rails.root.join(file).to_s, line],
+          verb: route.verb,
+          path: route.path.spec.to_s,
+        }
       end
 
       # Older versions of Rails don't support `route_source_locations`.
@@ -182,74 +220,48 @@ module RubyLsp
           end
 
           match_data = name.match(/^(.+)(_path|_url)$/)
-          return { result: nil } unless match_data
+          return unless match_data
 
           key = match_data[1]
 
           # A token could match the _path or _url pattern, but not be an actual route.
           route = ::Rails.application.routes.named_routes.get(key)
-          return { result: nil } unless route&.source_location
+          return unless route&.source_location
 
-          {
-            result: {
-              location: ::Rails.root.join(route.source_location).to_s,
-            },
-          }
-        rescue => e
-          { error: e.full_message(highlight: false) }
+          { location: ::Rails.root.join(route.source_location).to_s }
         end
       else
         def route_location(name)
-          { result: nil }
+          nil
         end
       end
 
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
-        unless active_record_model?(const)
-          return {
-            result: nil,
-          }
-        end
+        return unless active_record_model?(const)
 
         info = {
-          result: {
-            columns: const.columns.map { |column| [column.name, column.type, column.default, column.null] },
-            primary_keys: Array(const.primary_key),
-          },
+          columns: const.columns.map { |column| [column.name, column.type, column.default, column.null] },
+          primary_keys: Array(const.primary_key),
         }
 
         if ActiveRecord::Tasks::DatabaseTasks.respond_to?(:schema_dump_path)
-          info[:result][:schema_file] =
-            ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
-
+          info[:schema_file] = ActiveRecord::Tasks::DatabaseTasks.schema_dump_path(const.connection.pool.db_config)
         end
+
         info
-      rescue => e
-        { error: e.full_message(highlight: false) }
       end
 
       def resolve_association_target(params)
         const = ActiveSupport::Inflector.safe_constantize(params[:model_name])
-        unless active_record_model?(const)
-          return {
-            result: nil,
-          }
-        end
+        return unless active_record_model?(const)
 
         association_klass = const.reflect_on_association(params[:association_name].intern).klass
-
         source_location = Object.const_source_location(association_klass.to_s)
 
-        {
-          result: {
-            location: source_location.first + ":" + source_location.second.to_s,
-          },
-        }
+        { location: source_location.first + ":" + source_location.second.to_s }
       rescue NameError
-        {
-          result: nil,
-        }
+        nil
       end
 
       def active_record_model?(const)
@@ -281,6 +293,14 @@ module RubyLsp
         )
 
         { message: stdout, status: status.exitstatus }
+      end
+
+      def load_routes
+        with_notification_error_handling("initial_load_routes") do
+          # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
+          routes_reloader = ::Rails.application.routes_reloader
+          routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
+        end
       end
     end
   end
