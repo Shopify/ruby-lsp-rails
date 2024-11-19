@@ -24,14 +24,62 @@ module RubyLsp
 
       test "ClassMethods module inside concerns are automatically extended" do
         @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
-          class Post < ActiveRecord::Base
+          module Verifiable
+            extend ActiveSupport::Concern
+
+            module ClassMethods
+              def all_verified; end
+            end
+          end
+
+          class Post
+            include Verifiable
           end
         RUBY
 
         ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
-        assert_includes(ancestors, "ActiveRecord::Associations::ClassMethods")
-        assert_includes(ancestors, "ActiveRecord::Store::ClassMethods")
-        assert_includes(ancestors, "ActiveRecord::AttributeMethods::ClassMethods")
+
+        assert_includes(ancestors, "Verifiable::ClassMethods")
+        refute_nil(@index.resolve_method("all_verified", "Post::<Class:Post>"))
+      end
+
+      test "class_methods blocks inside concerns are automatically extended via a ClassMethods module" do
+        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+          module Verifiable
+            extend ActiveSupport::Concern
+
+            class_methods do
+              def all_verified; end
+            end
+          end
+
+          class Post
+            include Verifiable
+          end
+        RUBY
+
+        ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
+
+        assert_includes(ancestors, "Verifiable::ClassMethods")
+        refute_nil(@index.resolve_method("all_verified", "Post::<Class:Post>"))
+      end
+
+      test "ignores `class_methods` calls without a block" do
+        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+          module Verifiable
+            extend ActiveSupport::Concern
+
+            class_methods
+          end
+
+          class Post
+            include Verifiable
+          end
+        RUBY
+
+        ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
+
+        refute_includes(ancestors, "Verifiable::ClassMethods")
       end
 
       test "associations" do

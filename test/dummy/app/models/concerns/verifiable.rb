@@ -20,5 +20,3 @@ module Verifiable
     end
   end
 end
-
-user = User.new
