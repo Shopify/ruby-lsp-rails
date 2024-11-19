@@ -6,27 +6,27 @@ module RubyLsp
     class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
 
+      sig { params(listener: RubyIndexer::DeclarationListener).void }
+      def initialize(listener)
+        super
+        # We need this to prevent Sorbet from complaining that @listener is undeclared
+        @listener = listener
+      end
+
       sig do
         override.params(
-          owner: T.nilable(RubyIndexer::Entry::Namespace),
-          node: Prism::CallNode,
-          file_path: String,
-          code_units_cache: T.any(
-            T.proc.params(arg0: Integer).returns(Integer),
-            Prism::CodeUnitsCache,
-          ),
+          call_node: Prism::CallNode,
         ).void
       end
-      def on_call_node_enter(owner, node, file_path, code_units_cache)
+      def on_call_node_enter(call_node)
+        owner = @listener.current_owner
         return unless owner
 
-        name = node.name
-
-        case name
+        case call_node.name
         when :extend
-          handle_concern_extend(owner, node)
+          handle_concern_extend(owner, call_node)
         when :has_one, :has_many, :belongs_to, :has_and_belongs_to_many
-          handle_association(owner, node, file_path, code_units_cache)
+          handle_association(owner, call_node)
         end
       end
 
@@ -35,16 +35,11 @@ module RubyLsp
       sig do
         params(
           owner: RubyIndexer::Entry::Namespace,
-          node: Prism::CallNode,
-          file_path: String,
-          code_units_cache: T.any(
-            T.proc.params(arg0: Integer).returns(Integer),
-            Prism::CodeUnitsCache,
-          ),
+          call_node: Prism::CallNode,
         ).void
       end
-      def handle_association(owner, node, file_path, code_units_cache)
-        arguments = node.arguments&.arguments
+      def handle_association(owner, call_node)
+        arguments = call_node.arguments&.arguments
         return unless arguments
 
         name_arg = arguments.first
@@ -58,41 +53,22 @@ module RubyLsp
 
         return unless name
 
-        loc = RubyIndexer::Location.from_prism_location(name_arg.location, code_units_cache)
+        loc = name_arg.location
 
         # Reader
-        @index.add(RubyIndexer::Entry::Method.new(
-          name,
-          file_path,
-          loc,
-          loc,
-          nil,
-          [RubyIndexer::Entry::Signature.new([])],
-          RubyIndexer::Entry::Visibility::PUBLIC,
-          owner,
-        ))
+        reader_signatures = [RubyIndexer::Entry::Signature.new([])]
+        @listener.add_method(name, loc, reader_signatures)
 
         # Writer
-        @index.add(RubyIndexer::Entry::Method.new(
-          "#{name}=",
-          file_path,
-          loc,
-          loc,
-          nil,
-          [RubyIndexer::Entry::Signature.new([RubyIndexer::Entry::RequiredParameter.new(name: name.to_sym)])],
-          RubyIndexer::Entry::Visibility::PUBLIC,
-          owner,
-        ))
+        writer_signatures = [
+          RubyIndexer::Entry::Signature.new([RubyIndexer::Entry::RequiredParameter.new(name: name.to_sym)]),
+        ]
+        @listener.add_method("#{name}=", loc, writer_signatures)
       end
 
-      sig do
-        params(
-          owner: RubyIndexer::Entry::Namespace,
-          node: Prism::CallNode,
-        ).void
-      end
-      def handle_concern_extend(owner, node)
-        arguments = node.arguments&.arguments
+      sig { params(owner: RubyIndexer::Entry::Namespace, call_node: Prism::CallNode).void }
+      def handle_concern_extend(owner, call_node)
+        arguments = call_node.arguments&.arguments
         return unless arguments
 
         arguments.each do |node|
@@ -101,7 +77,7 @@ module RubyLsp
           module_name = node.full_name
           next unless module_name == "ActiveSupport::Concern"
 
-          @index.register_included_hook(owner.name) do |index, base|
+          @listener.register_included_hook do |index, base|
             class_methods_name = "#{owner.name}::ClassMethods"
 
             if index.indexed?(class_methods_name)

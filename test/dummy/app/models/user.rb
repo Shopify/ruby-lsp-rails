@@ -9,6 +9,8 @@ class User < ApplicationRecord
 
   attr_readonly :last_name
 
+  include Verifiable # an ActiveSupport::Concern
+
   private
 
   def foo
