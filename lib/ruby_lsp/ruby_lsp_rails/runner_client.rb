@@ -27,7 +27,7 @@ module RubyLsp
 
             NullClient.new
           end
-        rescue Errno::ENOENT, StandardError => e # rubocop:disable Lint/ShadowedException
+        rescue StandardError => e
           unless outgoing_queue.closed?
             outgoing_queue << RubyLsp::Notification.window_log_message(
               <<~MESSAGE.chomp,
