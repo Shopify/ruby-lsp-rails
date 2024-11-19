@@ -23,3 +23,5 @@ platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
   gem "tzinfo-data"
 end
+
+gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "11-14-allow_indexing_enhancements_to_create_namespaces"
