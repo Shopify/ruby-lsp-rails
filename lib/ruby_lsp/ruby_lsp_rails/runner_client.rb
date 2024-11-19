@@ -109,7 +109,7 @@ module RubyLsp
           end,
           Thread,
         )
-      rescue Errno::EPIPE, IncompleteMessageError
+      rescue StandardError
         raise InitializationError, @stderr.read
       end
 
