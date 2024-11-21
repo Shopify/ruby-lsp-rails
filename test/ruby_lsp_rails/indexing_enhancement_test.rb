@@ -24,7 +24,8 @@ module RubyLsp
 
       def teardown
         # Prevent state leaking between tests
-        @index.delete(@indexable_path)
+        indexable_path = RubyIndexer::IndexablePath.new(nil, "/fake.rb")
+        @index.delete(indexable_path)
         @index.instance_variable_set(:@ancestors, {})
       end
 
