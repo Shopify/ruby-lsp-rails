@@ -22,6 +22,12 @@ module RubyLsp
         @index = self.class.populated_index
       end
 
+      def teardown
+        # Prevent state leaking between tests
+        @index.delete(@indexable_path)
+        @index.instance_variable_set(:@ancestors, {})
+      end
+
       test "ClassMethods module inside concerns are automatically extended" do
         @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
           module Verifiable
