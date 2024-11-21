@@ -20,6 +20,20 @@ module RubyLsp
           handle_concern_extend(owner, call_node)
         when :has_one, :has_many, :belongs_to, :has_and_belongs_to_many
           handle_association(owner, call_node)
+        # for `class_methods do` blocks within concerns
+        when :class_methods
+          handle_class_methods(owner, call_node)
+        end
+      end
+
+      sig do
+        override.params(
+          call_node: Prism::CallNode,
+        ).void
+      end
+      def on_call_node_leave(call_node)
+        if call_node.name == :class_methods && call_node.block
+          @listener.pop_namespace_stack
         end
       end
 
@@ -82,6 +96,13 @@ module RubyLsp
                Prism::ConstantPathNode::MissingNodesInConstantPathError
           # Do nothing
         end
+      end
+
+      sig { params(owner: RubyIndexer::Entry::Namespace, call_node: Prism::CallNode).void }
+      def handle_class_methods(owner, call_node)
+        return unless call_node.block
+
+        @listener.add_module("ClassMethods", call_node.location, call_node.location)
       end
     end
   end

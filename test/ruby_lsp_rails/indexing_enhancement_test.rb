@@ -8,7 +8,7 @@ module RubyLsp
     class IndexingEnhancementTest < ActiveSupport::TestCase
       class << self
         # For these tests, it's convenient to have the index fully populated with Rails information, but we don't have
-        # to reindex on every single example or that will be too slow
+        # to re-index on every single example or that will be too slow
         def populated_index
           @index ||= begin
             index = RubyIndexer::Index.new
@@ -20,22 +20,77 @@ module RubyLsp
 
       def setup
         @index = self.class.populated_index
+        @indexable_path = RubyIndexer::IndexablePath.new(nil, "/fake.rb")
+      end
+
+      def teardown
+        # Prevent state leaking between tests
+        @index.delete(@indexable_path)
+        @index.instance_variable_set(:@ancestors, {})
       end
 
       test "ClassMethods module inside concerns are automatically extended" do
-        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
-          class Post < ActiveRecord::Base
+        @index.index_single(@indexable_path, <<~RUBY)
+          module Verifiable
+            extend ActiveSupport::Concern
+
+            module ClassMethods
+              def all_verified; end
+            end
+          end
+
+          class Post
+            include Verifiable
           end
         RUBY
 
         ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
-        assert_includes(ancestors, "ActiveRecord::Associations::ClassMethods")
-        assert_includes(ancestors, "ActiveRecord::Store::ClassMethods")
-        assert_includes(ancestors, "ActiveRecord::AttributeMethods::ClassMethods")
+
+        assert_includes(ancestors, "Verifiable::ClassMethods")
+        refute_nil(@index.resolve_method("all_verified", "Post::<Class:Post>"))
+      end
+
+      test "class_methods blocks inside concerns are automatically extended via a ClassMethods module" do
+        @index.index_single(@indexable_path, <<~RUBY)
+          module Verifiable
+            extend ActiveSupport::Concern
+
+            class_methods do
+              def all_verified; end
+            end
+          end
+
+          class Post
+            include Verifiable
+          end
+        RUBY
+
+        ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
+
+        assert_includes(ancestors, "Verifiable::ClassMethods")
+        refute_nil(@index.resolve_method("all_verified", "Post::<Class:Post>"))
+      end
+
+      test "ignores `class_methods` calls without a block" do
+        @index.index_single(@indexable_path, <<~RUBY)
+          module Verifiable
+            extend ActiveSupport::Concern
+
+            class_methods
+          end
+
+          class Post
+            include Verifiable
+          end
+        RUBY
+
+        ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
+
+        refute_includes(ancestors, "Verifiable::ClassMethods")
       end
 
       test "associations" do
-        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+        @index.index_single(@indexable_path, <<~RUBY)
           class Post < ActiveRecord::Base
             has_one :content
             belongs_to :author

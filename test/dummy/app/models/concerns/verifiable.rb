@@ -13,4 +13,10 @@ module Verifiable
       all.select(&:verified?)
     end
   end
+
+  class_methods do
+    def all_unverified
+      all.reject(&:verified?)
+    end
+  end
 end
