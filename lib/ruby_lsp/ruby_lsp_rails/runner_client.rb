@@ -44,7 +44,6 @@ module RubyLsp
 
       class InitializationError < StandardError; end
       class MessageError < StandardError; end
-      class IncompleteMessageError < MessageError; end
       class EmptyMessageError < MessageError; end
 
       extend T::Sig
