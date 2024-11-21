@@ -8,7 +8,7 @@ module RubyLsp
     class IndexingEnhancementTest < ActiveSupport::TestCase
       class << self
         # For these tests, it's convenient to have the index fully populated with Rails information, but we don't have
-        # to reindex on every single example or that will be too slow
+        # to re-index on every single example or that will be too slow
         def populated_index
           @index ||= begin
             index = RubyIndexer::Index.new
@@ -20,17 +20,17 @@ module RubyLsp
 
       def setup
         @index = self.class.populated_index
+        @indexable_path = RubyIndexer::IndexablePath.new(nil, "/fake.rb")
       end
 
       def teardown
         # Prevent state leaking between tests
-        indexable_path = RubyIndexer::IndexablePath.new(nil, "/fake.rb")
-        @index.delete(indexable_path)
+        @index.delete(@indexable_path)
         @index.instance_variable_set(:@ancestors, {})
       end
 
       test "ClassMethods module inside concerns are automatically extended" do
-        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+        @index.index_single(@indexable_path, <<~RUBY)
           module Verifiable
             extend ActiveSupport::Concern
 
@@ -51,7 +51,7 @@ module RubyLsp
       end
 
       test "class_methods blocks inside concerns are automatically extended via a ClassMethods module" do
-        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+        @index.index_single(@indexable_path, <<~RUBY)
           module Verifiable
             extend ActiveSupport::Concern
 
@@ -72,7 +72,7 @@ module RubyLsp
       end
 
       test "ignores `class_methods` calls without a block" do
-        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+        @index.index_single(@indexable_path, <<~RUBY)
           module Verifiable
             extend ActiveSupport::Concern
 
@@ -90,7 +90,7 @@ module RubyLsp
       end
 
       test "associations" do
-        @index.index_single(RubyIndexer::IndexablePath.new(nil, "/fake.rb"), <<~RUBY)
+        @index.index_single(@indexable_path, <<~RUBY)
           class Post < ActiveRecord::Base
             has_one :content
             belongs_to :author
