@@ -6,13 +6,6 @@ module RubyLsp
     class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
 
-      sig { params(listener: RubyIndexer::DeclarationListener).void }
-      def initialize(listener)
-        super
-        # We need this to prevent Sorbet from complaining that @listener is undeclared
-        @listener = listener
-      end
-
       sig do
         override.params(
           call_node: Prism::CallNode,
