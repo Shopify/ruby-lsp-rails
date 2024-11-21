@@ -56,7 +56,6 @@ module RubyLsp
         @outgoing_queue << Notification.window_log_message("Activating Ruby LSP Rails add-on v#{VERSION}")
 
         register_additional_file_watchers(global_state: global_state, outgoing_queue: outgoing_queue)
-        @global_state.index.register_enhancement(IndexingEnhancement.new(@global_state.index))
 
         # Start booting the real client in a background thread. Until this completes, the client will be a NullClient
         @client_mutex.unlock
