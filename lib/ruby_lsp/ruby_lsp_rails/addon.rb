@@ -13,6 +13,7 @@ require_relative "hover"
 require_relative "code_lens"
 require_relative "document_symbol"
 require_relative "definition"
+require_relative "completion"
 require_relative "indexing_enhancement"
 
 module RubyLsp
@@ -117,6 +118,18 @@ module RubyLsp
       def create_definition_listener(response_builder, uri, node_context, dispatcher)
         index = T.must(@global_state).index
         Definition.new(@rails_runner_client, response_builder, node_context, index, dispatcher)
+      end
+
+      sig do
+        override.params(
+          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
+          node_context: NodeContext,
+          dispatcher: Prism::Dispatcher,
+          uri: URI::Generic,
+        ).void
+      end
+      def create_completion_listener(response_builder, node_context, dispatcher, uri)
+        Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
       end
 
       sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
