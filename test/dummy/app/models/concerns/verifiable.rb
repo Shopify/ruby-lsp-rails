@@ -9,9 +9,6 @@ module Verifiable
   end
 
   module ClassMethods
-    def all_verified
-      all.select(&:verified?)
-    end
   end
 
   class_methods do
