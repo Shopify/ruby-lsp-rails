@@ -112,6 +112,72 @@ module RubyLsp
         assert_declaration_on_line("tags=", "Post", 5)
       end
 
+      test "inherited class_methods" do
+        @index.index_single(@indexable_path, <<~RUBY)
+          module TheConcern
+            extend ActiveSupport::Concern
+
+            class_methods do
+              def found_me; end
+            end
+          end
+
+          module OtherConcern
+            extend ActiveSupport::Concern
+            include TheConcern
+          end
+
+          class Foo
+            include OtherConcern
+          end
+        RUBY
+
+        ancestors = @index.linearized_ancestors_of("Foo::<Class:Foo>")
+
+        assert_includes(ancestors, "TheConcern::ClassMethods")
+        refute_nil(@index.resolve_method("found_me", "Foo::<Class:Foo>"))
+      end
+
+      test "prepended and inherited class_methods" do
+        @index.index_single(@indexable_path, <<~RUBY)
+          module TheConcern
+            extend ActiveSupport::Concern
+
+            class_methods do
+              def found_me; end
+            end
+          end
+
+          module OtherConcern
+            extend ActiveSupport::Concern
+            prepend TheConcern
+
+            module ClassMethods
+              def other_found_me; end
+            end
+          end
+
+          class Foo
+            include OtherConcern
+          end
+        RUBY
+
+        ancestors = @index.linearized_ancestors_of("Foo::<Class:Foo>")
+        relevant_ancestors = ancestors[0..ancestors.index("BasicObject::<Class:BasicObject>")]
+
+        assert_equal(
+          [
+            "Foo::<Class:Foo>",
+            "OtherConcern::ClassMethods",
+            "TheConcern::ClassMethods",
+            "Object::<Class:Object>",
+            "BasicObject::<Class:BasicObject>",
+          ],
+          relevant_ancestors,
+        )
+        refute_nil(@index.resolve_method("other_found_me", "Foo::<Class:Foo>"))
+      end
+
       private
 
       def assert_declaration_on_line(method_name, class_name, line)
