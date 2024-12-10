@@ -281,7 +281,7 @@ module RubyLsp
         json = message.to_json
 
         @mutex.synchronize do
-          @stdin.write("Content-Length: #{json.length}\r\n\r\n", json)
+          @stdin.write("Content-Length: #{json.bytesize}\r\n\r\n", json)
         end
       rescue Errno::EPIPE
         # The server connection died

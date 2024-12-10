@@ -217,6 +217,18 @@ class ServerTest < ActiveSupport::TestCase
     )
   end
 
+  test "send_message uses bytesize for content length with ASCII characters" do
+    @server.send(:send_message, { test: "hello" })
+    assert_equal "Content-Length: 16\r\n\r\n{\"test\":\"hello\"}", @stdout.string
+  end
+
+  test "send_message uses bytesize for content length with multibyte characters" do
+    @server.send(:send_message, { test: "こんにちは" }) # Japanese "hello"
+    expected = "Content-Length: 26\r\n\r\n"
+    expected += { test: "こんにちは" }.to_json.force_encoding(Encoding::ASCII_8BIT)
+    assert_equal expected, @stdout.string
+  end
+
   private
 
   def response

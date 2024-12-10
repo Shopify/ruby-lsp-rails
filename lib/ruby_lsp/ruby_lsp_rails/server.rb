@@ -13,7 +13,7 @@ module RubyLsp
       # Write a message to the client. Can be used for sending notifications to the editor
       def send_message(message)
         json_message = message.to_json
-        @stdout.write("Content-Length: #{json_message.length}\r\n\r\n#{json_message}")
+        @stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
       end
 
       # Log a message to the editor's output panel
