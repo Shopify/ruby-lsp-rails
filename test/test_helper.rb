@@ -63,5 +63,11 @@ module ActiveSupport
       message = outgoing_queue.pop until block.call(message)
       message
     end
+
+    def wait_for_rails_to_boot
+      while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(RubyLsp::Rails::NullClient)
+        sleep(0.1)
+      end
+    end
   end
 end
