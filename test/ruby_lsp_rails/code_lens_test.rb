@@ -36,9 +36,9 @@ module RubyLsp
         # The first 3 responses are for the test class.
         # The last 3 are for the test declaration.
         assert_equal(6, response.size)
-        assert_match("Run", response[3].command.title)
+        assert_match("▶ Run", response[3].command.title)
         assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
-        assert_match("Run In Terminal", response[4].command.title)
+        assert_match("▶ Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
 
@@ -54,9 +54,9 @@ module RubyLsp
         # The first 3 responses are for the test class.
         # The last 3 are for the test declaration.
         assert_equal(6, response.size)
-        assert_match("Run", response[3].command.title)
+        assert_match("▶ Run", response[3].command.title)
         assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
-        assert_match("Run In Terminal", response[4].command.title)
+        assert_match("▶ Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
 
@@ -73,9 +73,9 @@ module RubyLsp
         # The first 3 responses are for the test class.
         # The last 3 are for the test declaration.
         assert_equal(6, response.size)
-        assert_match("Run", response[3].command.title)
+        assert_match("▶ Run", response[3].command.title)
         assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
-        assert_match("Run In Terminal", response[4].command.title)
+        assert_match("▶ Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
 
@@ -144,9 +144,9 @@ module RubyLsp
         # The first 3 responses are for the test declaration.
         # The last 3 are for the test class.
         assert_equal(6, response.size)
-        assert_match("Run", response[3].command.title)
+        assert_match("▶ Run", response[3].command.title)
         assert_match(%r{(ruby )?bin/rails test /fake\.rb:2}, response[3].command.arguments[2])
-        assert_match("Run In Terminal", response[4].command.title)
+        assert_match("▶ Run In Terminal", response[4].command.title)
         assert_match("Debug", response[5].command.title)
       end
 
@@ -301,7 +301,7 @@ module RubyLsp
         RUBY
 
         assert_equal(1, response.size)
-        assert_match("Run", response[0].command.title)
+        assert_match("▶ Run", response[0].command.title)
         assert_match("#{ruby} bin/rails db:migrate VERSION=123456", response[0].command.arguments[0])
       end
 
