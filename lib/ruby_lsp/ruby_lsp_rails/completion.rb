@@ -28,26 +28,24 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
-        if @node_context.call_node && @node_context.call_node&.name == :where
-          handle_active_record_where_completions(node)
+        call_node = T.must(@node_context.call_node)
+        receiver = call_node.receiver
+        if call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
+          handle_active_record_where_completions(node: node, receiver: receiver)
         end
       end
 
       private
 
-      sig { params(node: Prism::CallNode).void }
-      def handle_active_record_where_completions(node)
-        receiver = T.must(@node_context.call_node).receiver
-        return if receiver.nil?
-        return unless receiver.is_a?(Prism::ConstantReadNode)
-
+      sig { params(node: Prism::CallNode, receiver: Prism::ConstantReadNode).void }
+      def handle_active_record_where_completions(node:, receiver:)
         resolved_class = @client.model(receiver.name.to_s)
         return if resolved_class.nil?
 
         arguments = T.must(@node_context.call_node).arguments&.arguments
         indexed_call_node_args = T.let({}, T::Hash[String, Prism::Node])
 
-        if arguments&.is_a?(Array)
+        if arguments
           indexed_call_node_args = index_call_node_args(arguments: arguments)
           return if indexed_call_node_args.values.any? { |v| v == node }
         end
