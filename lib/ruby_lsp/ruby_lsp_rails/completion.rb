@@ -28,7 +28,9 @@ module RubyLsp
 
       sig { params(node: Prism::CallNode).void }
       def on_call_node_enter(node)
-        call_node = T.must(@node_context.call_node)
+        call_node = @node_context.call_node
+        return unless call_node
+
         receiver = call_node.receiver
         if call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
           handle_active_record_where_completions(node: node, receiver: receiver)
@@ -50,6 +52,8 @@ module RubyLsp
           return if indexed_call_node_args.values.any? { |v| v == node }
         end
 
+        range = range_from_location(node.location)
+
         resolved_class[:columns].each do |column|
           next unless column[0].start_with?(node.name.to_s)
           next if indexed_call_node_args.key?(column[0])
@@ -60,7 +64,7 @@ module RubyLsp
             label_details: Interface::CompletionItemLabelDetails.new(
               description: "Filter #{receiver.name} records by #{column[0]}",
             ),
-            text_edit: Interface::TextEdit.new(range: range_from_location(node.location), new_text: "#{column[0]}: "),
+            text_edit: Interface::TextEdit.new(range: range, new_text: "#{column[0]}: "),
             kind: Constant::CompletionItemKind::FIELD,
           )
         end

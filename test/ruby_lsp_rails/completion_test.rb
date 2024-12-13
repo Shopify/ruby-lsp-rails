@@ -6,16 +6,25 @@ require "test_helper"
 module RubyLsp
   module Rails
     class CompletionTest < ActiveSupport::TestCase
-      test "Does not suggest column if it already exists within .where as an arg and parantheses are not closed" do
-        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 37 })
+      test "on_call_node_enter returns when node_context has no call node" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 5 })
           # typed: false
-          User.where(id:, first_name:, first_na
+          where
         RUBY
 
         assert_equal(0, response.size)
       end
 
-      test "Provides suggestions when typing column name partially" do
+      test "on_call_node_enter provides no suggestions when .where is called on a non ActiveRecord model" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 20 })
+          # typed: false
+          FakeClass.where(crea
+        RUBY
+
+        assert_equal(0, response.size)
+      end
+
+      test "on_call_node_enter provides completions when AR model column name is typed partially" do
         response = generate_completions_for_source(<<~RUBY, { line: 1, character: 17 })
           # typed: false
           User.where(first_
@@ -30,7 +39,16 @@ module RubyLsp
         assert_equal(1, response[0].text_edit.range.end.line)
       end
 
-      test "Does not provide suggestion when typing argument value" do
+      test "on_call_node_enter does not provide column name suggestion if column is already a key in the .where call" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 37 })
+          # typed: false
+          User.where(id:, first_name:, first_na
+        RUBY
+
+        assert_equal(0, response.size)
+      end
+
+      test "on_call_node_enter doesn't provide completions when typing an argument's value within a .where call" do
         response = generate_completions_for_source(<<~RUBY, { line: 1, character: 20 })
           # typed: false
           User.where(id: creat
