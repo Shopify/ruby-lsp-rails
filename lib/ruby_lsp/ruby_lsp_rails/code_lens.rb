@@ -254,7 +254,7 @@ module RubyLsp
 
         @response_builder << create_code_lens(
           node,
-          title: "Run",
+          title: "▶ Run",
           command_name: "rubyLsp.runTask",
           arguments: [command],
           data: { type: "migrate" },
@@ -283,7 +283,7 @@ module RubyLsp
 
         @response_builder << create_code_lens(
           node,
-          title: "Run",
+          title: "▶ Run",
           command_name: "rubyLsp.runTest",
           arguments: arguments,
           data: { type: "test", **grouping_data },
@@ -291,7 +291,7 @@ module RubyLsp
 
         @response_builder << create_code_lens(
           node,
-          title: "Run In Terminal",
+          title: "▶ Run In Terminal",
           command_name: "rubyLsp.runTestInTerminal",
           arguments: arguments,
           data: { type: "test_in_terminal", **grouping_data },
