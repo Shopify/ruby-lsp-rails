@@ -19,6 +19,9 @@ gem "tapioca", "~> 0.13", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails", "8.0.0"
 
+# temporary
+gem "ruby-lsp", github: "Shopify/ruby-lsp"
+
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
   gem "tzinfo-data"
