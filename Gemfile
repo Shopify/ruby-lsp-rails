@@ -20,7 +20,7 @@ gem "psych", "~> 5.1", require: false
 gem "rails", "8.0.0"
 gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "andyw8/add-test-helper-methods-from-rails-addon"
 
-platforms :mingw, :x64_mingw, :mswin, :jruby do
-  gem "tzinfo"
-  gem "tzinfo-data"
-end
+# # platforms :mingw, :x64_mingw, :mswin, :jruby do
+#   gem "tzinfo"
+#   gem "tzinfo-data"
+# # end
