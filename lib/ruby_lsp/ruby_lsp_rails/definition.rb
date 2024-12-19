@@ -145,7 +145,7 @@ module RubyLsp
 
         methods.each do |target_method|
           location = target_method.location
-          file_path = target_method.file_path
+          file_path = T.must(target_method.file_path)
 
           @response_builder << Interface::Location.new(
             uri: URI::Generic.from_path(path: file_path).to_s,
