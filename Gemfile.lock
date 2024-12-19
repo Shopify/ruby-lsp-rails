@@ -1,10 +1,11 @@
 GIT
   remote: https://github.com/Shopify/ruby-lsp.git
-  revision: 37ec45538d627119aed225296bd19c3e8119e35c
+  revision: b005fbcfb53a9202e939a4c72bdc348a110d9874
+  branch: main
   specs:
-    ruby-lsp (0.17.16)
+    ruby-lsp (0.23.0)
       language_server-protocol (~> 3.17.0)
-      prism (>= 0.29.0, < 0.31)
+      prism (>= 1.2, < 2.0)
       rbs (>= 3, < 4)
       sorbet-runtime (>= 0.5.10782)
 
@@ -12,7 +13,7 @@ PATH
   remote: .
   specs:
     ruby-lsp-rails (0.3.27)
-      ruby-lsp
+      ruby-lsp (>= 0.23.0, < 0.24.0)
 
 GEM
   remote: https://rubygems.org/
@@ -112,7 +113,7 @@ GEM
       reline (>= 0.4.2)
     json (2.7.6)
     language_server-protocol (3.17.0.3)
-    logger (1.6.3)
+    logger (1.6.4)
     loofah (2.23.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -149,7 +150,7 @@ GEM
     parser (3.3.6.0)
       ast (~> 2.4.1)
       racc
-    prism (0.30.0)
+    prism (1.2.0)
     psych (5.2.0)
       stringio
     puma (6.4.3)
@@ -193,8 +194,8 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.2.1)
-    rbi (0.1.14)
-      prism (>= 0.18.0, < 1.0.0)
+    rbi (0.2.2)
+      prism (~> 1.0)
       sorbet-runtime (>= 0.5.9204)
     rbs (3.7.0)
       logger
@@ -245,11 +246,11 @@ GEM
     sqlite3 (2.1.0-x86_64-darwin)
     sqlite3 (2.1.0-x86_64-linux-gnu)
     stringio (3.1.2)
-    tapioca (0.16.1)
+    tapioca (0.16.5)
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
-      rbi (>= 0.1.14, < 0.2)
+      rbi (~> 0.2)
       sorbet-static-and-runtime (>= 0.5.11087)
       spoom (>= 1.2.0)
       thor (>= 1.2.0)

@@ -20,7 +20,7 @@ gem "psych", "~> 5.1", require: false
 gem "rails", "8.0.0"
 
 # temporary
-gem "ruby-lsp", github: "Shopify/ruby-lsp"
+gem "ruby-lsp", github: "Shopify/ruby-lsp", branch: "main"
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
