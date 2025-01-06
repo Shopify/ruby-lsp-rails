@@ -18,35 +18,35 @@ module ActiveSupport
   # source://activesupport/lib/active_support/json/decoding.rb#9
   def parse_json_times=(val); end
 
-  # source://activesupport/lib/active_support.rb#101
+  # source://activesupport/lib/active_support.rb#100
   def test_order; end
 
-  # source://activesupport/lib/active_support.rb#101
+  # source://activesupport/lib/active_support.rb#100
   def test_order=(val); end
 
-  # source://activesupport/lib/active_support.rb#102
+  # source://activesupport/lib/active_support.rb#101
   def test_parallelization_threshold; end
 
-  # source://activesupport/lib/active_support.rb#102
+  # source://activesupport/lib/active_support.rb#101
   def test_parallelization_threshold=(val); end
 
   class << self
-    # source://activesupport/lib/active_support.rb#107
+    # source://activesupport/lib/active_support.rb#106
     def cache_format_version; end
 
-    # source://activesupport/lib/active_support.rb#111
+    # source://activesupport/lib/active_support.rb#110
     def cache_format_version=(value); end
 
     # source://activesupport/lib/active_support/deprecator.rb#4
     def deprecator; end
 
-    # source://activesupport/lib/active_support.rb#95
+    # source://activesupport/lib/active_support.rb#94
     def eager_load!; end
 
-    # source://activesupport/lib/active_support.rb#105
+    # source://activesupport/lib/active_support.rb#104
     def error_reporter; end
 
-    # source://activesupport/lib/active_support.rb#105
+    # source://activesupport/lib/active_support.rb#104
     def error_reporter=(_arg0); end
 
     # source://activesupport/lib/active_support/json/encoding.rb#8
@@ -72,16 +72,16 @@ module ActiveSupport
     # source://activesupport/lib/active_support/json/decoding.rb#9
     def parse_json_times=(val); end
 
-    # source://activesupport/lib/active_support.rb#101
+    # source://activesupport/lib/active_support.rb#100
     def test_order; end
 
-    # source://activesupport/lib/active_support.rb#101
+    # source://activesupport/lib/active_support.rb#100
     def test_order=(val); end
 
-    # source://activesupport/lib/active_support.rb#102
+    # source://activesupport/lib/active_support.rb#101
     def test_parallelization_threshold; end
 
-    # source://activesupport/lib/active_support.rb#102
+    # source://activesupport/lib/active_support.rb#101
     def test_parallelization_threshold=(val); end
 
     # source://activesupport/lib/active_support/json/encoding.rb#8
@@ -90,10 +90,10 @@ module ActiveSupport
     # source://activesupport/lib/active_support/json/encoding.rb#8
     def time_precision=(arg); end
 
-    # source://activesupport/lib/active_support.rb#115
+    # source://activesupport/lib/active_support.rb#114
     def to_time_preserves_timezone; end
 
-    # source://activesupport/lib/active_support.rb#119
+    # source://activesupport/lib/active_support.rb#118
     def to_time_preserves_timezone=(value); end
 
     # source://activesupport/lib/active_support/json/encoding.rb#8
@@ -102,10 +102,10 @@ module ActiveSupport
     # source://activesupport/lib/active_support/json/encoding.rb#8
     def use_standard_json_time_format=(arg); end
 
-    # source://activesupport/lib/active_support.rb#135
+    # source://activesupport/lib/active_support.rb#134
     def utc_to_local_returns_utc_offset_times; end
 
-    # source://activesupport/lib/active_support.rb#139
+    # source://activesupport/lib/active_support.rb#138
     def utc_to_local_returns_utc_offset_times=(value); end
 
     # Returns the currently loaded version of Active Support as a +Gem::Version+.
@@ -1546,7 +1546,7 @@ class ActiveSupport::Cache::Store
   #   <tt>coder: nil</tt> to avoid the overhead of safeguarding against
   #   mutation.
   #
-  #   The +:coder+ option is mutally exclusive with the +:serializer+ and
+  #   The +:coder+ option is mutually exclusive with the +:serializer+ and
   #   +:compressor+ options. Specifying them together will raise an
   #   +ArgumentError+.
   #
@@ -1721,7 +1721,7 @@ class ActiveSupport::Cache::Store
   #     t1.join
   #
   #     p val_1 # => "new value 1"
-  #     p val_2 # => "oritinal value"
+  #     p val_2 # => "original value"
   #     p cache.fetch("foo") # => "new value 1"
   #
   #     # The entry requires 3 seconds to expire (expires_in + race_condition_ttl)
@@ -3952,30 +3952,30 @@ module ActiveSupport::DeepMergeable
   def deep_merge?(other); end
 end
 
-# source://activesupport/lib/active_support/delegation.rb#16
+# source://activesupport/lib/active_support/delegation.rb#14
 module ActiveSupport::Delegation
   class << self
-    # source://activesupport/lib/active_support/delegation.rb#23
+    # source://activesupport/lib/active_support/delegation.rb#21
     def generate(owner, methods, location: T.unsafe(nil), to: T.unsafe(nil), prefix: T.unsafe(nil), allow_nil: T.unsafe(nil), nilable: T.unsafe(nil), private: T.unsafe(nil), as: T.unsafe(nil), signature: T.unsafe(nil)); end
 
-    # source://activesupport/lib/active_support/delegation.rb#152
+    # source://activesupport/lib/active_support/delegation.rb#150
     def generate_method_missing(owner, target, allow_nil: T.unsafe(nil)); end
   end
 end
 
-# source://activesupport/lib/active_support/delegation.rb#20
+# source://activesupport/lib/active_support/delegation.rb#18
 ActiveSupport::Delegation::RESERVED_METHOD_NAMES = T.let(T.unsafe(nil), Set)
 
-# source://activesupport/lib/active_support/delegation.rb#17
+# source://activesupport/lib/active_support/delegation.rb#15
 ActiveSupport::Delegation::RUBY_RESERVED_KEYWORDS = T.let(T.unsafe(nil), Array)
 
 # Error generated by +delegate+ when a method is called on +nil+ and +allow_nil+
 # option is not used.
 #
-# source://activesupport/lib/active_support/delegation.rb#8
+# source://activesupport/lib/active_support/delegation.rb#6
 class ActiveSupport::DelegationError < ::NoMethodError
   class << self
-    # source://activesupport/lib/active_support/delegation.rb#10
+    # source://activesupport/lib/active_support/delegation.rb#8
     def nil_target(method_name, target); end
   end
 end
@@ -3983,34 +3983,34 @@ end
 # source://activesupport/lib/active_support/dependencies/interlock.rb#6
 module ActiveSupport::Dependencies
   class << self
-    # source://activesupport/lib/active_support/dependencies.rb#62
+    # source://activesupport/lib/active_support/dependencies.rb#61
     def _autoloaded_tracked_classes; end
 
-    # source://activesupport/lib/active_support/dependencies.rb#62
+    # source://activesupport/lib/active_support/dependencies.rb#61
     def _autoloaded_tracked_classes=(_arg0); end
 
-    # source://activesupport/lib/active_support/dependencies.rb#56
+    # source://activesupport/lib/active_support/dependencies.rb#55
     def _eager_load_paths; end
 
-    # source://activesupport/lib/active_support/dependencies.rb#56
+    # source://activesupport/lib/active_support/dependencies.rb#55
     def _eager_load_paths=(_arg0); end
 
-    # source://activesupport/lib/active_support/dependencies.rb#49
+    # source://activesupport/lib/active_support/dependencies.rb#48
     def autoload_once_paths; end
 
-    # source://activesupport/lib/active_support/dependencies.rb#49
+    # source://activesupport/lib/active_support/dependencies.rb#48
     def autoload_once_paths=(_arg0); end
 
-    # source://activesupport/lib/active_support/dependencies.rb#43
+    # source://activesupport/lib/active_support/dependencies.rb#42
     def autoload_paths; end
 
-    # source://activesupport/lib/active_support/dependencies.rb#43
+    # source://activesupport/lib/active_support/dependencies.rb#42
     def autoload_paths=(_arg0); end
 
-    # source://activesupport/lib/active_support/dependencies.rb#69
+    # source://activesupport/lib/active_support/dependencies.rb#68
     def autoloader; end
 
-    # source://activesupport/lib/active_support/dependencies.rb#69
+    # source://activesupport/lib/active_support/dependencies.rb#68
     def autoloader=(_arg0); end
 
     # Private method that reloads constants autoloaded by the main autoloader.
@@ -4019,45 +4019,45 @@ module ActiveSupport::Dependencies
     # reload. That involves more things, like deleting unloaded classes from the
     # internal state of the descendants tracker, or reloading routes.
     #
-    # source://activesupport/lib/active_support/dependencies.rb#76
+    # source://activesupport/lib/active_support/dependencies.rb#75
     def clear; end
 
     # Private method that helps configuring the autoloaders.
     #
     # @return [Boolean]
     #
-    # source://activesupport/lib/active_support/dependencies.rb#94
+    # source://activesupport/lib/active_support/dependencies.rb#93
     def eager_load?(path); end
 
-    # source://activesupport/lib/active_support/dependencies.rb#10
+    # source://activesupport/lib/active_support/dependencies.rb#9
     def interlock; end
 
-    # source://activesupport/lib/active_support/dependencies.rb#10
+    # source://activesupport/lib/active_support/dependencies.rb#9
     def interlock=(_arg0); end
 
     # Execute the supplied block while holding an exclusive lock,
     # preventing any other thread from being inside a #run_interlock
     # block at the same time.
     #
-    # source://activesupport/lib/active_support/dependencies.rb#24
+    # source://activesupport/lib/active_support/dependencies.rb#23
     def load_interlock(&block); end
 
     # Execute the supplied block without interference from any
     # concurrent loads.
     #
-    # source://activesupport/lib/active_support/dependencies.rb#17
+    # source://activesupport/lib/active_support/dependencies.rb#16
     def run_interlock(&block); end
 
     # Private method used by require_dependency.
     #
-    # source://activesupport/lib/active_support/dependencies.rb#84
+    # source://activesupport/lib/active_support/dependencies.rb#83
     def search_for_file(relpath); end
 
     # Execute the supplied block while holding an exclusive lock,
     # preventing any other thread from being inside a #run_interlock
     # block at the same time.
     #
-    # source://activesupport/lib/active_support/dependencies.rb#31
+    # source://activesupport/lib/active_support/dependencies.rb#30
     def unload_interlock(&block); end
   end
 end
@@ -4695,9 +4695,6 @@ module ActiveSupport::Deprecation::Reporting
 
   private
 
-  # source://activesupport/lib/active_support/deprecation/reporting.rb#153
-  def _extract_callstack(callstack); end
-
   # Outputs a deprecation warning message
   #
   #   deprecated_method_warning(:method_name)
@@ -4721,14 +4718,14 @@ module ActiveSupport::Deprecation::Reporting
 
   # @return [Boolean]
   #
-  # source://activesupport/lib/active_support/deprecation/reporting.rb#174
+  # source://activesupport/lib/active_support/deprecation/reporting.rb#155
   def ignored_callstack?(path); end
 end
 
-# source://activesupport/lib/active_support/deprecation/reporting.rb#172
+# source://activesupport/lib/active_support/deprecation/reporting.rb#153
 ActiveSupport::Deprecation::Reporting::LIB_DIR = T.let(T.unsafe(nil), String)
 
-# source://activesupport/lib/active_support/deprecation/reporting.rb#171
+# source://activesupport/lib/active_support/deprecation/reporting.rb#152
 ActiveSupport::Deprecation::Reporting::RAILS_GEM_ROOT = T.let(T.unsafe(nil), String)
 
 # Raised when ActiveSupport::Deprecation::Behavior#behavior is set with <tt>:raise</tt>.
@@ -5087,17 +5084,17 @@ class ActiveSupport::Duration
 
   private
 
-  # source://activesupport/lib/active_support/duration.rb#512
+  # source://activesupport/lib/active_support/duration.rb#516
   def method_missing(*_arg0, **_arg1, &_arg2); end
 
   # @raise [TypeError]
   #
-  # source://activesupport/lib/active_support/duration.rb#516
+  # source://activesupport/lib/active_support/duration.rb#520
   def raise_type_error(other); end
 
   # @return [Boolean]
   #
-  # source://activesupport/lib/active_support/duration.rb#508
+  # source://activesupport/lib/active_support/duration.rb#512
   def respond_to_missing?(method, _); end
 
   # source://activesupport/lib/active_support/duration.rb#486
@@ -5456,7 +5453,7 @@ class ActiveSupport::EncryptedConfiguration < ::ActiveSupport::EncryptedFile
   # source://activesupport/lib/active_support/encrypted_configuration.rb#89
   def inspect; end
 
-  # source://activesupport/lib/active_support/delegation.rb#187
+  # source://activesupport/lib/active_support/delegation.rb#185
   def method_missing(method, *_arg1, **_arg2, &_arg3); end
 
   # Reads the file and returns the decrypted content. See EncryptedFile#read.
@@ -5481,7 +5478,7 @@ class ActiveSupport::EncryptedConfiguration < ::ActiveSupport::EncryptedFile
   # source://activesupport/lib/active_support/encrypted_configuration.rb#112
   def options; end
 
-  # source://activesupport/lib/active_support/delegation.rb#179
+  # source://activesupport/lib/active_support/delegation.rb#177
   def respond_to_missing?(name, include_private = T.unsafe(nil)); end
 end
 
@@ -6344,16 +6341,10 @@ class ActiveSupport::HashWithIndifferentAccess < ::Hash
   # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#181
   def assoc(key); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#375
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#371
   def compact; end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#319
-  def deep_stringify_keys; end
-
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#317
-  def deep_stringify_keys!; end
-
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#324
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#320
   def deep_symbolize_keys; end
 
   # Same as <tt>Hash#default</tt> where the key passed as argument can be
@@ -6536,7 +6527,7 @@ class ActiveSupport::HashWithIndifferentAccess < ::Hash
   def regular_update(*_arg0); end
   def regular_writer(_arg0, _arg1); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#332
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#328
   def reject(*args, &block); end
 
   # Replaces the contents of this hash with other_hash.
@@ -6562,13 +6553,13 @@ class ActiveSupport::HashWithIndifferentAccess < ::Hash
   # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#289
   def reverse_merge!(other_hash); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#327
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#323
   def select(*args, &block); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#365
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#361
   def slice(*keys); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#370
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#366
   def slice!(*keys); end
 
   # Assigns a new value to the hash:
@@ -6582,35 +6573,29 @@ class ActiveSupport::HashWithIndifferentAccess < ::Hash
   def store(key, value); end
 
   # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#318
-  def stringify_keys; end
-
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#316
-  def stringify_keys!; end
-
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#322
   def symbolize_keys; end
 
   # Convert to a regular hash with string keys.
   #
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#380
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#376
   def to_hash; end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#322
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#318
   def to_options; end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#325
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#321
   def to_options!; end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#387
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#383
   def to_proc; end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#344
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#340
   def transform_keys(hash = T.unsafe(nil), &block); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#349
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#345
   def transform_keys!(hash = T.unsafe(nil), &block); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#337
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#333
   def transform_values(&block); end
 
   # Updates the receiver in-place, merging in the hashes passed as arguments:
@@ -6683,19 +6668,19 @@ class ActiveSupport::HashWithIndifferentAccess < ::Hash
 
   private
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#392
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#388
   def convert_key(key); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#396
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#392
   def convert_value(value, conversion: T.unsafe(nil)); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#409
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#405
   def convert_value_to_hash(value); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#420
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#416
   def set_defaults(target); end
 
-  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#428
+  # source://activesupport/lib/active_support/hash_with_indifferent_access.rb#424
   def update_with_single_argument(other_hash, block); end
 
   class << self
@@ -6704,7 +6689,7 @@ class ActiveSupport::HashWithIndifferentAccess < ::Hash
   end
 end
 
-# source://activesupport/lib/active_support/hash_with_indifferent_access.rb#342
+# source://activesupport/lib/active_support/hash_with_indifferent_access.rb#338
 ActiveSupport::HashWithIndifferentAccess::NOT_GIVEN = T.let(T.unsafe(nil), Object)
 
 # source://activesupport/lib/active_support/html_safe_translation.rb#4
@@ -7431,51 +7416,51 @@ class ActiveSupport::InheritableOptions < ::ActiveSupport::OrderedOptions
   def own_key?(_arg0); end
 end
 
-# source://activesupport/lib/active_support/isolated_execution_state.rb#5
+# source://activesupport/lib/active_support/isolated_execution_state.rb#4
 module ActiveSupport::IsolatedExecutionState
   class << self
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#36
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#35
     def [](key); end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#40
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#39
     def []=(key, value); end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#52
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#51
     def clear; end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#56
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#55
     def context; end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#48
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#47
     def delete(key); end
 
     # Returns the value of attribute isolation_level.
     #
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#12
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#11
     def isolation_level; end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#14
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#13
     def isolation_level=(level); end
 
     # @return [Boolean]
     #
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#44
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#43
     def key?(key); end
 
     # Returns the value of attribute scope.
     #
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#12
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#11
     def scope; end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#60
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#59
     def share_with(other); end
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#32
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#31
     def unique_id; end
 
     private
 
-    # source://activesupport/lib/active_support/isolated_execution_state.rb#68
+    # source://activesupport/lib/active_support/isolated_execution_state.rb#67
     def state; end
   end
 end
@@ -9656,104 +9641,104 @@ end
 #
 # This class is thread safe. All methods are reentrant.
 #
-# source://activesupport/lib/active_support/notifications/fanout.rb#50
+# source://activesupport/lib/active_support/notifications/fanout.rb#49
 class ActiveSupport::Notifications::Fanout
   include ::ActiveSupport::Notifications::FanoutIteration
 
   # @return [Fanout] a new instance of Fanout
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#51
+  # source://activesupport/lib/active_support/notifications/fanout.rb#50
   def initialize; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#298
+  # source://activesupport/lib/active_support/notifications/fanout.rb#297
   def all_listeners_for(name); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#273
+  # source://activesupport/lib/active_support/notifications/fanout.rb#272
   def build_handle(name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#102
+  # source://activesupport/lib/active_support/notifications/fanout.rb#101
   def clear_cache(key = T.unsafe(nil)); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#284
+  # source://activesupport/lib/active_support/notifications/fanout.rb#283
   def finish(name, id, payload, listeners = T.unsafe(nil)); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#188
+  # source://activesupport/lib/active_support/notifications/fanout.rb#187
   def groups_for(name); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#60
+  # source://activesupport/lib/active_support/notifications/fanout.rb#59
   def inspect; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#307
+  # source://activesupport/lib/active_support/notifications/fanout.rb#306
   def listeners_for(name); end
 
   # @return [Boolean]
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#311
+  # source://activesupport/lib/active_support/notifications/fanout.rb#310
   def listening?(name); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#290
+  # source://activesupport/lib/active_support/notifications/fanout.rb#289
   def publish(name, *args); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#294
+  # source://activesupport/lib/active_support/notifications/fanout.rb#293
   def publish_event(event); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#277
+  # source://activesupport/lib/active_support/notifications/fanout.rb#276
   def start(name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#65
+  # source://activesupport/lib/active_support/notifications/fanout.rb#64
   def subscribe(pattern = T.unsafe(nil), callable = T.unsafe(nil), monotonic: T.unsafe(nil), &block); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#82
+  # source://activesupport/lib/active_support/notifications/fanout.rb#81
   def unsubscribe(subscriber_or_name); end
 
   # This is a sync queue, so there is no waiting.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#316
+  # source://activesupport/lib/active_support/notifications/fanout.rb#315
   def wait; end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#114
+# source://activesupport/lib/active_support/notifications/fanout.rb#113
 class ActiveSupport::Notifications::Fanout::BaseGroup
   include ::ActiveSupport::Notifications::FanoutIteration
 
   # @return [BaseGroup] a new instance of BaseGroup
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#117
+  # source://activesupport/lib/active_support/notifications/fanout.rb#116
   def initialize(listeners, name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#121
+  # source://activesupport/lib/active_support/notifications/fanout.rb#120
   def each(&block); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#126
+# source://activesupport/lib/active_support/notifications/fanout.rb#125
 class ActiveSupport::Notifications::Fanout::BaseTimeGroup < ::ActiveSupport::Notifications::Fanout::BaseGroup
-  # source://activesupport/lib/active_support/notifications/fanout.rb#131
+  # source://activesupport/lib/active_support/notifications/fanout.rb#130
   def finish(name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#127
+  # source://activesupport/lib/active_support/notifications/fanout.rb#126
   def start(name, id, payload); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#167
+# source://activesupport/lib/active_support/notifications/fanout.rb#166
 class ActiveSupport::Notifications::Fanout::EventObjectGroup < ::ActiveSupport::Notifications::Fanout::BaseGroup
-  # source://activesupport/lib/active_support/notifications/fanout.rb#173
+  # source://activesupport/lib/active_support/notifications/fanout.rb#172
   def finish(name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#168
+  # source://activesupport/lib/active_support/notifications/fanout.rb#167
   def start(name, id, payload); end
 
   private
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#183
+  # source://activesupport/lib/active_support/notifications/fanout.rb#182
   def build_event(name, id, payload); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#153
+# source://activesupport/lib/active_support/notifications/fanout.rb#152
 class ActiveSupport::Notifications::Fanout::EventedGroup < ::ActiveSupport::Notifications::Fanout::BaseGroup
-  # source://activesupport/lib/active_support/notifications/fanout.rb#160
+  # source://activesupport/lib/active_support/notifications/fanout.rb#159
   def finish(name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#154
+  # source://activesupport/lib/active_support/notifications/fanout.rb#153
   def start(name, id, payload); end
 end
 
@@ -9772,179 +9757,179 @@ end
 #     handle.finish
 #   end
 #
-# source://activesupport/lib/active_support/notifications/fanout.rb#228
+# source://activesupport/lib/active_support/notifications/fanout.rb#227
 class ActiveSupport::Notifications::Fanout::Handle
   include ::ActiveSupport::Notifications::FanoutIteration
 
   # @return [Handle] a new instance of Handle
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#231
+  # source://activesupport/lib/active_support/notifications/fanout.rb#230
   def initialize(notifier, name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#250
+  # source://activesupport/lib/active_support/notifications/fanout.rb#249
   def finish; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#254
+  # source://activesupport/lib/active_support/notifications/fanout.rb#253
   def finish_with_values(name, id, payload); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#241
+  # source://activesupport/lib/active_support/notifications/fanout.rb#240
   def start; end
 
   private
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#264
+  # source://activesupport/lib/active_support/notifications/fanout.rb#263
   def ensure_state!(expected); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#139
+# source://activesupport/lib/active_support/notifications/fanout.rb#138
 class ActiveSupport::Notifications::Fanout::MonotonicTimedGroup < ::ActiveSupport::Notifications::Fanout::BaseTimeGroup
   private
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#141
+  # source://activesupport/lib/active_support/notifications/fanout.rb#140
   def now; end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#319
+# source://activesupport/lib/active_support/notifications/fanout.rb#318
 module ActiveSupport::Notifications::Fanout::Subscribers
   class << self
-    # source://activesupport/lib/active_support/notifications/fanout.rb#320
+    # source://activesupport/lib/active_support/notifications/fanout.rb#319
     def new(pattern, listener, monotonic); end
   end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#434
+# source://activesupport/lib/active_support/notifications/fanout.rb#433
 class ActiveSupport::Notifications::Fanout::Subscribers::EventObject < ::ActiveSupport::Notifications::Fanout::Subscribers::Evented
-  # source://activesupport/lib/active_support/notifications/fanout.rb#435
+  # source://activesupport/lib/active_support/notifications/fanout.rb#434
   def group_class; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#439
+  # source://activesupport/lib/active_support/notifications/fanout.rb#438
   def publish_event(event); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#376
+# source://activesupport/lib/active_support/notifications/fanout.rb#375
 class ActiveSupport::Notifications::Fanout::Subscribers::Evented
   # @return [Evented] a new instance of Evented
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#379
+  # source://activesupport/lib/active_support/notifications/fanout.rb#378
   def initialize(pattern, delegate); end
 
   # Returns the value of attribute delegate.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#377
+  # source://activesupport/lib/active_support/notifications/fanout.rb#376
   def delegate; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#387
+  # source://activesupport/lib/active_support/notifications/fanout.rb#386
   def group_class; end
 
   # Returns the value of attribute pattern.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#377
+  # source://activesupport/lib/active_support/notifications/fanout.rb#376
   def pattern; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#391
+  # source://activesupport/lib/active_support/notifications/fanout.rb#390
   def publish(name, *args); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#397
+  # source://activesupport/lib/active_support/notifications/fanout.rb#396
   def publish_event(event); end
 
   # Returns the value of attribute silenceable.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#377
+  # source://activesupport/lib/active_support/notifications/fanout.rb#376
   def silenceable; end
 
   # @return [Boolean]
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#405
+  # source://activesupport/lib/active_support/notifications/fanout.rb#404
   def silenced?(name); end
 
   # @return [Boolean]
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#409
+  # source://activesupport/lib/active_support/notifications/fanout.rb#408
   def subscribed_to?(name); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#413
+  # source://activesupport/lib/active_support/notifications/fanout.rb#412
   def unsubscribe!(name); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#339
+# source://activesupport/lib/active_support/notifications/fanout.rb#338
 class ActiveSupport::Notifications::Fanout::Subscribers::Matcher
   # @return [Matcher] a new instance of Matcher
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#352
+  # source://activesupport/lib/active_support/notifications/fanout.rb#351
   def initialize(pattern); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#361
+  # source://activesupport/lib/active_support/notifications/fanout.rb#360
   def ===(name); end
 
   # Returns the value of attribute exclusions.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#340
+  # source://activesupport/lib/active_support/notifications/fanout.rb#339
   def exclusions; end
 
   # Returns the value of attribute pattern.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#340
+  # source://activesupport/lib/active_support/notifications/fanout.rb#339
   def pattern; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#357
+  # source://activesupport/lib/active_support/notifications/fanout.rb#356
   def unsubscribe!(name); end
 
   class << self
-    # source://activesupport/lib/active_support/notifications/fanout.rb#342
+    # source://activesupport/lib/active_support/notifications/fanout.rb#341
     def wrap(pattern); end
   end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#365
+# source://activesupport/lib/active_support/notifications/fanout.rb#364
 class ActiveSupport::Notifications::Fanout::Subscribers::Matcher::AllMessages
-  # source://activesupport/lib/active_support/notifications/fanout.rb#366
+  # source://activesupport/lib/active_support/notifications/fanout.rb#365
   def ===(name); end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#370
+  # source://activesupport/lib/active_support/notifications/fanout.rb#369
   def unsubscribe!(*_arg0); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#428
+# source://activesupport/lib/active_support/notifications/fanout.rb#427
 class ActiveSupport::Notifications::Fanout::Subscribers::MonotonicTimed < ::ActiveSupport::Notifications::Fanout::Subscribers::Timed
-  # source://activesupport/lib/active_support/notifications/fanout.rb#429
+  # source://activesupport/lib/active_support/notifications/fanout.rb#428
   def group_class; end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#418
+# source://activesupport/lib/active_support/notifications/fanout.rb#417
 class ActiveSupport::Notifications::Fanout::Subscribers::Timed < ::ActiveSupport::Notifications::Fanout::Subscribers::Evented
-  # source://activesupport/lib/active_support/notifications/fanout.rb#419
+  # source://activesupport/lib/active_support/notifications/fanout.rb#418
   def group_class; end
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#423
+  # source://activesupport/lib/active_support/notifications/fanout.rb#422
   def publish(name, *args); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#146
+# source://activesupport/lib/active_support/notifications/fanout.rb#145
 class ActiveSupport::Notifications::Fanout::TimedGroup < ::ActiveSupport::Notifications::Fanout::BaseTimeGroup
   private
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#148
+  # source://activesupport/lib/active_support/notifications/fanout.rb#147
   def now; end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#19
+# source://activesupport/lib/active_support/notifications/fanout.rb#18
 module ActiveSupport::Notifications::FanoutIteration
   private
 
-  # source://activesupport/lib/active_support/notifications/fanout.rb#21
+  # source://activesupport/lib/active_support/notifications/fanout.rb#20
   def iterate_guarding_exceptions(collection); end
 end
 
-# source://activesupport/lib/active_support/notifications/fanout.rb#9
+# source://activesupport/lib/active_support/notifications/fanout.rb#8
 class ActiveSupport::Notifications::InstrumentationSubscriberError < ::RuntimeError
   # @return [InstrumentationSubscriberError] a new instance of InstrumentationSubscriberError
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#12
+  # source://activesupport/lib/active_support/notifications/fanout.rb#11
   def initialize(exceptions); end
 
   # Returns the value of attribute exceptions.
   #
-  # source://activesupport/lib/active_support/notifications/fanout.rb#10
+  # source://activesupport/lib/active_support/notifications/fanout.rb#9
   def exceptions; end
 end
 
@@ -11251,21 +11236,6 @@ end
 
 # source://activesupport/lib/active_support/parameter_filter.rb#40
 ActiveSupport::ParameterFilter::FILTERED = T.let(T.unsafe(nil), String)
-
-# source://activesupport/lib/active_support/proxy_object.rb#4
-class ActiveSupport::ProxyObject < ::BasicObject
-  # Let ActiveSupport::ProxyObject at least raise exceptions.
-  #
-  # source://activesupport/lib/active_support/proxy_object.rb#9
-  def raise(*args); end
-
-  class << self
-    # @private
-    #
-    # source://activesupport/lib/active_support/proxy_object.rb#13
-    def inherited(_subclass); end
-  end
-end
 
 # source://activesupport/lib/active_support/railtie.rb#7
 class ActiveSupport::Railtie < ::Rails::Railtie; end
@@ -13690,7 +13660,7 @@ class ActiveSupport::TimeWithZone
   # source://activesupport/lib/active_support/time_with_zone.rb#442
   def day; end
 
-  # Returns true if the current time is within Daylight Savings Time for the
+  # Returns true if the current time is within Daylight Savings \Time for the
   # specified time zone.
   #
   #   Time.zone = 'Eastern Time (US & Canada)'    # => 'Eastern Time (US & Canada)'
@@ -13832,7 +13802,7 @@ class ActiveSupport::TimeWithZone
   # source://activesupport/lib/active_support/time_with_zone.rb#509
   def is_a?(klass); end
 
-  # Returns true if the current time is within Daylight Savings Time for the
+  # Returns true if the current time is within Daylight Savings \Time for the
   # specified time zone.
   #
   #   Time.zone = 'Eastern Time (US & Canada)'    # => 'Eastern Time (US & Canada)'
@@ -14199,7 +14169,7 @@ ActiveSupport::TimeWithZone::SECONDS_PER_DAY = T.let(T.unsafe(nil), Integer)
 # * Limit the set of zones provided by TZInfo to a meaningful subset of 134
 #   zones.
 # * Retrieve and display zones with a friendlier name
-#   (e.g., "Eastern Time (US & Canada)" instead of "America/New_York").
+#   (e.g., "Eastern \Time (US & Canada)" instead of "America/New_York").
 # * Lazily load +TZInfo::Timezone+ instances only when they're needed.
 # * Create ActiveSupport::TimeWithZone instances via TimeZone's +local+,
 #   +parse+, +at+, and +now+ methods.
@@ -14242,7 +14212,7 @@ class ActiveSupport::TimeZone
   # source://activesupport/lib/active_support/values/time_zone.rb#567
   def abbr(time); end
 
-  # Method for creating new ActiveSupport::TimeWithZone instance in time zone
+  # \Method for creating new ActiveSupport::TimeWithZone instance in time zone
   # of +self+ from number of seconds since the Unix epoch.
   #
   #   Time.zone = 'Hawaii'        # => "Hawaii"
@@ -14278,7 +14248,7 @@ class ActiveSupport::TimeZone
   # source://activesupport/lib/active_support/values/time_zone.rb#575
   def init_with(coder); end
 
-  # Method for creating new ActiveSupport::TimeWithZone instance in time zone
+  # \Method for creating new ActiveSupport::TimeWithZone instance in time zone
   # of +self+ from an ISO 8601 string.
   #
   #   Time.zone = 'Hawaii'                     # => "Hawaii"
@@ -14295,7 +14265,7 @@ class ActiveSupport::TimeZone
   # source://activesupport/lib/active_support/values/time_zone.rb#396
   def iso8601(str); end
 
-  # Method for creating new ActiveSupport::TimeWithZone instance in time zone
+  # \Method for creating new ActiveSupport::TimeWithZone instance in time zone
   # of +self+ from given values.
   #
   #   Time.zone = 'Hawaii'                    # => "Hawaii"
@@ -14332,7 +14302,7 @@ class ActiveSupport::TimeZone
   # source://activesupport/lib/active_support/values/time_zone.rb#516
   def now; end
 
-  # Method for creating new ActiveSupport::TimeWithZone instance in time zone
+  # \Method for creating new ActiveSupport::TimeWithZone instance in time zone
   # of +self+ from parsed string.
   #
   #   Time.zone = 'Hawaii'                   # => "Hawaii"
@@ -14363,7 +14333,7 @@ class ActiveSupport::TimeZone
   # source://activesupport/lib/active_support/values/time_zone.rb#563
   def periods_for_local(time); end
 
-  # Method for creating new ActiveSupport::TimeWithZone instance in time zone
+  # \Method for creating new ActiveSupport::TimeWithZone instance in time zone
   # of +self+ from an RFC 3339 string.
   #
   #   Time.zone = 'Hawaii'                     # => "Hawaii"
@@ -14554,7 +14524,7 @@ ActiveSupport::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
 ActiveSupport::VERSION::MINOR = T.let(T.unsafe(nil), Integer)
 
 # source://activesupport/lib/active_support/gem_version.rb#13
-ActiveSupport::VERSION::PRE = T.let(T.unsafe(nil), String)
+ActiveSupport::VERSION::PRE = T.let(T.unsafe(nil), T.untyped)
 
 # source://activesupport/lib/active_support/gem_version.rb#15
 ActiveSupport::VERSION::STRING = T.let(T.unsafe(nil), String)
@@ -17071,9 +17041,9 @@ end
 # source://activesupport/lib/active_support/core_ext/enumerable.rb#21
 class Enumerable::SoleItemExpectedError < ::StandardError; end
 
-# source://activesupport/lib/active_support/core_ext/object/json.rb#254
+# source://activesupport/lib/active_support/core_ext/object/json.rb#256
 class Exception
-  # source://activesupport/lib/active_support/core_ext/object/json.rb#255
+  # source://activesupport/lib/active_support/core_ext/object/json.rb#257
   def as_json(options = T.unsafe(nil)); end
 end
 
@@ -17605,7 +17575,7 @@ end
 
 # :stopdoc:
 #
-# source://activesupport/lib/active_support/hash_with_indifferent_access.rb#445
+# source://activesupport/lib/active_support/hash_with_indifferent_access.rb#441
 HashWithIndifferentAccess = ActiveSupport::HashWithIndifferentAccess
 
 # :enddoc:
@@ -17660,10 +17630,10 @@ end
 # source://activesupport/lib/active_support/i18n_railtie.rb#9
 class I18n::Railtie < ::Rails::Railtie
   class << self
-    # source://activesupport/lib/active_support/i18n_railtie.rb#104
+    # source://activesupport/lib/active_support/i18n_railtie.rb#103
     def include_fallbacks_module; end
 
-    # source://activesupport/lib/active_support/i18n_railtie.rb#108
+    # source://activesupport/lib/active_support/i18n_railtie.rb#107
     def init_fallbacks(fallbacks); end
 
     # Setup i18n configuration.
@@ -17671,13 +17641,13 @@ class I18n::Railtie < ::Rails::Railtie
     # source://activesupport/lib/active_support/i18n_railtie.rb#35
     def initialize_i18n(app); end
 
-    # source://activesupport/lib/active_support/i18n_railtie.rb#85
+    # source://activesupport/lib/active_support/i18n_railtie.rb#84
     def setup_raise_on_missing_translations_config(app, strict); end
 
-    # source://activesupport/lib/active_support/i18n_railtie.rb#124
+    # source://activesupport/lib/active_support/i18n_railtie.rb#123
     def validate_fallbacks(fallbacks); end
 
-    # source://activesupport/lib/active_support/i18n_railtie.rb#135
+    # source://activesupport/lib/active_support/i18n_railtie.rb#134
     def watched_dirs_with_extensions(paths); end
   end
 end
@@ -17804,9 +17774,9 @@ IO::READABLE = T.let(T.unsafe(nil), Integer)
 class IO::TimeoutError < ::IOError; end
 IO::WRITABLE = T.let(T.unsafe(nil), Integer)
 
-# source://activesupport/lib/active_support/core_ext/object/json.rb#242
+# source://activesupport/lib/active_support/core_ext/object/json.rb#243
 class IPAddr
-  # source://activesupport/lib/active_support/core_ext/object/json.rb#243
+  # source://activesupport/lib/active_support/core_ext/object/json.rb#244
   def as_json(options = T.unsafe(nil)); end
 end
 
@@ -17842,8 +17812,6 @@ class Integer < ::Numeric
   # source://activesupport/lib/active_support/core_ext/integer/time.rb#18
   def years; end
 end
-
-Integer::GMP_VERSION = T.let(T.unsafe(nil), String)
 
 # source://activesupport/lib/active_support/core_ext/kernel/reporting.rb#3
 module Kernel
@@ -17922,6 +17890,19 @@ module Kernel
     # source://activesupport/lib/active_support/core_ext/kernel/reporting.rb#26
     def with_warnings(flag); end
   end
+end
+
+# source://activesupport/lib/active_support/core_ext/object/duplicable.rb#39
+class Method
+  # Methods are not duplicable:
+  #
+  #   method(:puts).duplicable? # => false
+  #   method(:puts).dup         # => TypeError: allocator undefined for Method
+  #
+  # @return [Boolean]
+  #
+  # source://activesupport/lib/active_support/core_ext/object/duplicable.rb#44
+  def duplicable?; end
 end
 
 # == Attribute Accessors per Thread
@@ -18871,7 +18852,7 @@ class Module
 
   private
 
-  # source://activesupport/lib/active_support/core_ext/module/attr_internal.rb#41
+  # source://activesupport/lib/active_support/core_ext/module/attr_internal.rb#40
   def attr_internal_define(attr_name, type); end
 
   class << self
@@ -19694,9 +19675,9 @@ module Process
   end
 end
 
-# source://activesupport/lib/active_support/core_ext/object/json.rb#248
+# source://activesupport/lib/active_support/core_ext/object/json.rb#250
 class Process::Status
-  # source://activesupport/lib/active_support/core_ext/object/json.rb#249
+  # source://activesupport/lib/active_support/core_ext/object/json.rb#251
   def as_json(options = T.unsafe(nil)); end
 end
 
@@ -20105,7 +20086,7 @@ class String
   #   >> "ǉ".upcase
   #   => "Ǉ"
   #
-  # == Method chaining
+  # == \Method chaining
   #
   # All the methods on the Chars proxy which normally return a string will return a Chars object. This allows
   # method chaining on the result of any of these methods.
@@ -20483,16 +20464,16 @@ class Symbol
 end
 
 class Thread
-  # source://activesupport/lib/active_support/isolated_execution_state.rb#8
+  # source://activesupport/lib/active_support/isolated_execution_state.rb#7
   def active_support_execution_state; end
 
-  # source://activesupport/lib/active_support/isolated_execution_state.rb#8
+  # source://activesupport/lib/active_support/isolated_execution_state.rb#7
   def active_support_execution_state=(_arg0); end
 end
 
 # source://activesupport/lib/active_support/core_ext/thread/backtrace/location.rb#3
 class Thread::Backtrace::Location
-  # source://activesupport/lib/active_support/core_ext/thread/backtrace/location.rb#5
+  # source://activesupport/lib/active_support/core_ext/thread/backtrace/location.rb#4
   def spot(ex); end
 end
 
@@ -20864,8 +20845,13 @@ class Time
 
   private
 
-  # source://activesupport/lib/active_support/core_ext/time/compatibility.rb#24
+  # source://activesupport/lib/active_support/core_ext/time/compatibility.rb#32
   def active_support_local_zone; end
+
+  # @return [Boolean]
+  #
+  # source://activesupport/lib/active_support/core_ext/time/compatibility.rb#22
+  def system_local_time?; end
 
   class << self
     # Overriding case equality method so that it returns true for ActiveSupport::TimeWithZone instances
@@ -20970,7 +20956,7 @@ class Time
     # This method accepts any of the following:
     #
     # * A \Rails TimeZone object.
-    # * An identifier for a \Rails TimeZone object (e.g., "Eastern Time (US & Canada)", <tt>-5.hours</tt>).
+    # * An identifier for a \Rails TimeZone object (e.g., "Eastern \Time (US & Canada)", <tt>-5.hours</tt>).
     # * A +TZInfo::Timezone+ object.
     # * An identifier for a +TZInfo::Timezone+ object (e.g., "America/New_York").
     #
@@ -21039,8 +21025,21 @@ end
 
 # source://activesupport/lib/active_support/core_ext/object/json.rb#230
 class URI::Generic
-  include ::URI::RFC2396_REGEXP
+  include ::URI
 
   # source://activesupport/lib/active_support/core_ext/object/json.rb#231
   def as_json(options = T.unsafe(nil)); end
+end
+
+# source://activesupport/lib/active_support/core_ext/object/duplicable.rb#49
+class UnboundMethod
+  # Unbound methods are not duplicable:
+  #
+  #   method(:puts).unbind.duplicable? # => false
+  #   method(:puts).unbind.dup         # => TypeError: allocator undefined for UnboundMethod
+  #
+  # @return [Boolean]
+  #
+  # source://activesupport/lib/active_support/core_ext/object/duplicable.rb#54
+  def duplicable?; end
 end
