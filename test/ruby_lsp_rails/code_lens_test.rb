@@ -402,7 +402,7 @@ module RubyLsp
 
       def generate_code_lens_for_source(source, file: "/fake.rb")
         with_server(source, URI(file)) do |server, uri|
-          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+          wait_for_rails_to_boot
 
           server.process_message(
             id: 1,

@@ -225,7 +225,7 @@ module RubyLsp
 
       def generate_definitions_for_source(source, position)
         with_server(source) do |server, uri|
-          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+          wait_for_rails_to_boot
 
           server.process_message(
             id: 1,
