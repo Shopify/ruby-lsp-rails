@@ -20,7 +20,7 @@ module RubyLsp
 
       def setup
         @index = self.class.populated_index
-        @indexable_path = RubyIndexer::IndexablePath.new(nil, "/fake.rb")
+        @indexable_path = URI::Generic.from_path(path: "/fake.rb")
       end
 
       def teardown

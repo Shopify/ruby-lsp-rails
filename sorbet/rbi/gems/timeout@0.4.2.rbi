@@ -5,7 +5,7 @@
 # Please instead update this file by running `bin/tapioca gem timeout`.
 
 
-# source://timeout/lib/timeout.rb#25
+# source://timeout/lib/timeout.rb#21
 module Timeout
   private
 
@@ -35,11 +35,11 @@ module Timeout
   # Timeout</tt> into your classes so they have a #timeout method, as well as
   # a module method, so you can call it directly as Timeout.timeout().
   #
-  # source://timeout/lib/timeout.rb#169
+  # source://timeout/lib/timeout.rb#166
   def timeout(sec, klass = T.unsafe(nil), message = T.unsafe(nil), &block); end
 
   class << self
-    # source://timeout/lib/timeout.rb#127
+    # source://timeout/lib/timeout.rb#124
     def ensure_timeout_thread_created; end
 
     # Perform an operation in a block, raising an error if it takes longer than
@@ -68,82 +68,84 @@ module Timeout
     # Timeout</tt> into your classes so they have a #timeout method, as well as
     # a module method, so you can call it directly as Timeout.timeout().
     #
-    # source://timeout/lib/timeout.rb#169
+    # source://timeout/lib/timeout.rb#166
     def timeout(sec, klass = T.unsafe(nil), message = T.unsafe(nil), &block); end
 
     private
 
-    # source://timeout/lib/timeout.rb#97
+    # source://timeout/lib/timeout.rb#94
     def create_timeout_thread; end
   end
 end
 
 # :stopdoc:
 #
-# source://timeout/lib/timeout.rb#50
+# source://timeout/lib/timeout.rb#47
 Timeout::CONDVAR = T.let(T.unsafe(nil), Thread::ConditionVariable)
 
 # Raised by Timeout.timeout when the block times out.
 #
-# source://timeout/lib/timeout.rb#36
+# source://timeout/lib/timeout.rb#33
 class Timeout::Error < ::RuntimeError
   class << self
-    # source://timeout/lib/timeout.rb#37
+    # source://timeout/lib/timeout.rb#34
     def handle_timeout(message); end
   end
 end
 
 # Internal error raised to when a timeout is triggered.
 #
-# source://timeout/lib/timeout.rb#29
+# source://timeout/lib/timeout.rb#26
 class Timeout::ExitException < ::Exception
-  # source://timeout/lib/timeout.rb#30
+  # source://timeout/lib/timeout.rb#27
   def exception(*_arg0); end
 end
 
 # We keep a private reference so that time mocking libraries won't break
 # Timeout.
 #
-# source://timeout/lib/timeout.rb#139
+# source://timeout/lib/timeout.rb#136
 Timeout::GET_TIME = T.let(T.unsafe(nil), Method)
 
-# source://timeout/lib/timeout.rb#51
+# source://timeout/lib/timeout.rb#48
 Timeout::QUEUE = T.let(T.unsafe(nil), Thread::Queue)
 
-# source://timeout/lib/timeout.rb#52
+# source://timeout/lib/timeout.rb#49
 Timeout::QUEUE_MUTEX = T.let(T.unsafe(nil), Thread::Mutex)
 
-# source://timeout/lib/timeout.rb#57
+# source://timeout/lib/timeout.rb#54
 class Timeout::Request
   # @return [Request] a new instance of Request
   #
-  # source://timeout/lib/timeout.rb#60
+  # source://timeout/lib/timeout.rb#57
   def initialize(thread, timeout, exception_class, message); end
 
   # Returns the value of attribute deadline.
   #
-  # source://timeout/lib/timeout.rb#58
+  # source://timeout/lib/timeout.rb#55
   def deadline; end
 
   # @return [Boolean]
   #
-  # source://timeout/lib/timeout.rb#70
+  # source://timeout/lib/timeout.rb#67
   def done?; end
 
   # @return [Boolean]
   #
-  # source://timeout/lib/timeout.rb#76
+  # source://timeout/lib/timeout.rb#73
   def expired?(now); end
 
-  # source://timeout/lib/timeout.rb#89
+  # source://timeout/lib/timeout.rb#86
   def finished; end
 
-  # source://timeout/lib/timeout.rb#80
+  # source://timeout/lib/timeout.rb#77
   def interrupt; end
 end
 
-# source://timeout/lib/timeout.rb#53
+# source://timeout/lib/timeout.rb#50
 Timeout::TIMEOUT_THREAD_MUTEX = T.let(T.unsafe(nil), Thread::Mutex)
 
-# source://timeout/lib/timeout.rb#26
+# The version
+#
+# source://timeout/lib/timeout.rb#23
 Timeout::VERSION = T.let(T.unsafe(nil), String)

@@ -87,13 +87,13 @@ module ActionMailbox
     # source://actionmailbox/lib/action_mailbox.rb#24
     def queues=(val); end
 
-    # source://railties/8.0.0.beta1lib/rails/engine.rb#413
+    # source://railties/8.0.0lib/rails/engine.rb#413
     def railtie_helpers_paths; end
 
-    # source://railties/8.0.0.beta1lib/rails/engine.rb#396
+    # source://railties/8.0.0lib/rails/engine.rb#396
     def railtie_namespace; end
 
-    # source://railties/8.0.0.beta1lib/rails/engine.rb#417
+    # source://railties/8.0.0lib/rails/engine.rb#417
     def railtie_routes_url_helpers(include_path_helpers = T.unsafe(nil)); end
 
     # source://actionmailbox/lib/action_mailbox.rb#25
@@ -102,10 +102,10 @@ module ActionMailbox
     # source://actionmailbox/lib/action_mailbox.rb#25
     def storage_service=(val); end
 
-    # source://railties/8.0.0.beta1lib/rails/engine.rb#402
+    # source://railties/8.0.0lib/rails/engine.rb#402
     def table_name_prefix; end
 
-    # source://railties/8.0.0.beta1lib/rails/engine.rb#409
+    # source://railties/8.0.0lib/rails/engine.rb#409
     def use_relative_model_naming?; end
 
     # Returns the currently loaded version of Action Mailbox as a +Gem::Version+.
@@ -190,13 +190,13 @@ class ActionMailbox::Base
   # source://actionmailbox/lib/action_mailbox/base.rb#79
   def initialize(inbound_email); end
 
-  # source://activesupport/8.0.0.beta1lib/active_support/callbacks.rb#69
+  # source://activesupport/8.0.0lib/active_support/callbacks.rb#69
   def __callbacks; end
 
-  # source://activesupport/8.0.0.beta1lib/active_support/callbacks.rb#923
+  # source://activesupport/8.0.0lib/active_support/callbacks.rb#923
   def _process_callbacks; end
 
-  # source://activesupport/8.0.0.beta1lib/active_support/callbacks.rb#911
+  # source://activesupport/8.0.0lib/active_support/callbacks.rb#911
   def _run_process_callbacks(&block); end
 
   # Immediately sends the given +message+ and changes the inbound email's status to +:bounced+.
@@ -237,13 +237,13 @@ class ActionMailbox::Base
   # source://actionmailbox/lib/action_mailbox/base.rb#96
   def process; end
 
-  # source://activesupport/8.0.0.beta1lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.0lib/active_support/rescuable.rb#15
   def rescue_handlers; end
 
-  # source://activesupport/8.0.0.beta1lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.0lib/active_support/rescuable.rb#15
   def rescue_handlers=(_arg0); end
 
-  # source://activesupport/8.0.0.beta1lib/active_support/rescuable.rb#15
+  # source://activesupport/8.0.0lib/active_support/rescuable.rb#15
   def rescue_handlers?; end
 
   # source://actionmailbox/lib/action_mailbox/routing.rb#9
@@ -261,28 +261,28 @@ class ActionMailbox::Base
   def track_status_of_inbound_email; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/callbacks.rb#915
+    # source://activesupport/8.0.0lib/active_support/callbacks.rb#915
     def _process_callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/callbacks.rb#919
+    # source://activesupport/8.0.0lib/active_support/callbacks.rb#919
     def _process_callbacks=(value); end
 
     # source://actionmailbox/lib/action_mailbox/base.rb#75
     def receive(inbound_email); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def rescue_handlers; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def rescue_handlers=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/rescuable.rb#15
+    # source://activesupport/8.0.0lib/active_support/rescuable.rb#15
     def rescue_handlers?; end
 
     # source://actionmailbox/lib/action_mailbox/routing.rb#9
@@ -296,7 +296,7 @@ end
 class ActionMailbox::BaseController < ::ActionController::Base
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def authenticate_by_password; end
@@ -305,16 +305,16 @@ class ActionMailbox::BaseController < ::ActionController::Base
   def password; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -362,10 +362,10 @@ ActionMailbox::Callbacks::TERMINATOR = T.let(T.unsafe(nil), Proc)
 # source://actionmailbox/lib/action_mailbox/engine.rb#12
 class ActionMailbox::Engine < ::Rails::Engine
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
   end
 end
@@ -378,10 +378,10 @@ class ActionMailbox::InboundEmail < ::ActionMailbox::Record
   include ::ActionMailbox::InboundEmail::Incineratable
   extend ::ActionMailbox::InboundEmail::MessageId::ClassMethods
 
-  # source://activerecord/8.0.0.beta1lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.0lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_raw_email_attachment(*args); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/autosave_association.rb#162
+  # source://activerecord/8.0.0lib/active_record/autosave_association.rb#162
   def autosave_associated_records_for_raw_email_blob(*args); end
 
   def instrumentation_payload; end
@@ -390,121 +390,121 @@ class ActionMailbox::InboundEmail < ::ActionMailbox::Record
   def source; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def _reflections; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def _reflections=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def _validators; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def _validators=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def attachment_reflections; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def attachment_reflections=(new_value); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def bounced(*args, **_arg1); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def defined_enums; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def defined_enums=(new_value); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def delivered(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def failed(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def not_bounced(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def not_delivered(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def not_failed(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def not_pending(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def not_processing(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def pending(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def processing(*args, **_arg1); end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/enum.rb#250
+    # source://activerecord/8.0.0lib/active_record/enum.rb#232
     def statuses; end
 
-    # source://activerecord/8.0.0.beta1lib/active_record/scoping/named.rb#174
+    # source://activerecord/8.0.0lib/active_record/scoping/named.rb#174
     def with_attached_raw_email(*args, **_arg1); end
   end
 end
 
 module ActionMailbox::InboundEmail::GeneratedAssociationMethods
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#32
   def build_raw_email_attachment(*args, &block); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#32
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#32
   def build_raw_email_blob(*args, &block); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#36
   def create_raw_email_attachment(*args, &block); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#40
   def create_raw_email_attachment!(*args, &block); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#36
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#36
   def create_raw_email_blob(*args, &block); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#40
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#40
   def create_raw_email_blob!(*args, &block); end
 
-  # source://activestorage/8.0.0.beta1lib/active_storage/attached/model.rb#113
+  # source://activestorage/8.0.0lib/active_storage/attached/model.rb#113
   def raw_email; end
 
-  # source://activestorage/8.0.0.beta1lib/active_storage/attached/model.rb#118
+  # source://activestorage/8.0.0lib/active_storage/attached/model.rb#118
   def raw_email=(attachable); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.0lib/active_record/associations/builder/association.rb#104
   def raw_email_attachment; end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.0lib/active_record/associations/builder/association.rb#112
   def raw_email_attachment=(value); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/association.rb#104
+  # source://activerecord/8.0.0lib/active_record/associations/builder/association.rb#104
   def raw_email_blob; end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/association.rb#112
+  # source://activerecord/8.0.0lib/active_record/associations/builder/association.rb#112
   def raw_email_blob=(value); end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#19
   def reload_raw_email_attachment; end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#19
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#19
   def reload_raw_email_blob; end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#23
   def reset_raw_email_attachment; end
 
-  # source://activerecord/8.0.0.beta1lib/active_record/associations/builder/singular_association.rb#23
+  # source://activerecord/8.0.0lib/active_record/associations/builder/singular_association.rb#23
   def reset_raw_email_blob; end
 end
 
@@ -555,16 +555,16 @@ class ActionMailbox::IncinerationJob < ::ActiveJob::Base
   def perform(inbound_email); end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def queue_name; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def queue_name=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def rescue_handlers; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def rescue_handlers=(new_value); end
 
     def schedule(inbound_email); end
@@ -579,7 +579,7 @@ class ActionMailbox::Ingresses::Mailgun::InboundEmailsController < ::ActionMailb
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def authenticate; end
@@ -588,16 +588,16 @@ class ActionMailbox::Ingresses::Mailgun::InboundEmailsController < ::ActionMailb
   def mail; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -626,7 +626,7 @@ class ActionMailbox::Ingresses::Mandrill::InboundEmailsController < ::ActionMail
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def authenticate; end
@@ -636,16 +636,16 @@ class ActionMailbox::Ingresses::Mandrill::InboundEmailsController < ::ActionMail
   def raw_emails; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -671,22 +671,22 @@ class ActionMailbox::Ingresses::Postmark::InboundEmailsController < ::ActionMail
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def mail; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -698,22 +698,22 @@ class ActionMailbox::Ingresses::Relay::InboundEmailsController < ::ActionMailbox
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def require_valid_rfc822_message; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -725,23 +725,23 @@ class ActionMailbox::Ingresses::Sendgrid::InboundEmailsController < ::ActionMail
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def envelope; end
   def mail; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -751,16 +751,16 @@ class ActionMailbox::Record < ::ActiveRecord::Base
   include ::ActionMailbox::Record::GeneratedAssociationMethods
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def _validators; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def _validators=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def defined_enums; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def defined_enums=(new_value); end
   end
 end
@@ -851,10 +851,10 @@ class ActionMailbox::RoutingJob < ::ActiveJob::Base
   def perform(inbound_email); end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def queue_name; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def queue_name=(new_value); end
   end
 end
@@ -960,7 +960,7 @@ ActionMailbox::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
 ActionMailbox::VERSION::MINOR = T.let(T.unsafe(nil), Integer)
 
 # source://actionmailbox/lib/action_mailbox/gem_version.rb#13
-ActionMailbox::VERSION::PRE = T.let(T.unsafe(nil), String)
+ActionMailbox::VERSION::PRE = T.let(T.unsafe(nil), T.untyped)
 
 # source://actionmailbox/lib/action_mailbox/gem_version.rb#15
 ActionMailbox::VERSION::STRING = T.let(T.unsafe(nil), String)
@@ -1733,70 +1733,70 @@ end
 
 module Rails
   class << self
-    # source://railties/8.0.0.beta1lib/rails.rb#44
+    # source://railties/8.0.0lib/rails.rb#44
     def app_class; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#44
+    # source://railties/8.0.0lib/rails.rb#44
     def app_class=(_arg0); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#45
+    # source://railties/8.0.0lib/rails.rb#45
     def application; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#43
+    # source://railties/8.0.0lib/rails.rb#43
     def application=(_arg0); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#126
+    # source://railties/8.0.0lib/rails.rb#126
     def autoloaders; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#56
+    # source://railties/8.0.0lib/rails.rb#56
     def backtrace_cleaner; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#44
+    # source://railties/8.0.0lib/rails.rb#44
     def cache; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#44
+    # source://railties/8.0.0lib/rails.rb#44
     def cache=(_arg0); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#52
+    # source://railties/8.0.0lib/rails.rb#52
     def configuration; end
 
-    # source://railties/8.0.0.beta1lib/rails/deprecator.rb#4
+    # source://railties/8.0.0lib/rails/deprecator.rb#4
     def deprecator; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#75
+    # source://railties/8.0.0lib/rails.rb#75
     def env; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#82
+    # source://railties/8.0.0lib/rails.rb#82
     def env=(environment); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#93
+    # source://railties/8.0.0lib/rails.rb#93
     def error; end
 
-    # source://railties/8.0.0.beta1lib/rails/gem_version.rb#5
+    # source://railties/8.0.0lib/rails/gem_version.rb#5
     def gem_version; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#106
+    # source://railties/8.0.0lib/rails.rb#106
     def groups(*groups); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#49
+    # source://railties/8.0.0lib/rails.rb#49
     def initialize!(*_arg0, **_arg1, &_arg2); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#49
+    # source://railties/8.0.0lib/rails.rb#49
     def initialized?(*_arg0, **_arg1, &_arg2); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#44
+    # source://railties/8.0.0lib/rails.rb#44
     def logger; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#44
+    # source://railties/8.0.0lib/rails.rb#44
     def logger=(_arg0); end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#122
+    # source://railties/8.0.0lib/rails.rb#122
     def public_path; end
 
-    # source://railties/8.0.0.beta1lib/rails.rb#65
+    # source://railties/8.0.0lib/rails.rb#65
     def root; end
 
-    # source://railties/8.0.0.beta1lib/rails/version.rb#7
+    # source://railties/8.0.0lib/rails/version.rb#7
     def version; end
   end
 end
@@ -1811,14 +1811,14 @@ class Rails::Conductor::ActionMailbox::InboundEmails::SourcesController < ::Rail
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -1831,7 +1831,7 @@ class Rails::Conductor::ActionMailbox::InboundEmailsController < ::Rails::Conduc
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def create_inbound_email(mail); end
@@ -1839,10 +1839,10 @@ class Rails::Conductor::ActionMailbox::InboundEmailsController < ::Rails::Conduc
   def new_mail; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -1852,14 +1852,14 @@ class Rails::Conductor::ActionMailbox::IncineratesController < ::Rails::Conducto
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -1869,16 +1869,16 @@ class Rails::Conductor::ActionMailbox::ReroutesController < ::Rails::Conductor::
 
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def reroute(inbound_email); end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end
@@ -1886,34 +1886,34 @@ end
 class Rails::Conductor::BaseController < ::ActionController::Base
   private
 
-  # source://actionview/8.0.0.beta1lib/action_view/layouts.rb#328
+  # source://actionview/8.0.0lib/action_view/layouts.rb#328
   def _layout(lookup_context, formats); end
 
   def ensure_development_env; end
 
   class << self
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def __callbacks; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def __callbacks=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def _layout; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def _layout=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def _layout_conditions; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def _layout_conditions=(new_value); end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#12
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#12
     def middleware_stack; end
 
-    # source://activesupport/8.0.0.beta1lib/active_support/class_attribute.rb#15
+    # source://activesupport/8.0.0lib/active_support/class_attribute.rb#15
     def middleware_stack=(new_value); end
   end
 end

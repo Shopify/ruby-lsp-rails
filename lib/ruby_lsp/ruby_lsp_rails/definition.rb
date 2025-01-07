@@ -144,15 +144,9 @@ module RubyLsp
         return unless methods
 
         methods.each do |target_method|
-          location = target_method.location
-          file_path = target_method.file_path
-
           @response_builder << Interface::Location.new(
-            uri: URI::Generic.from_path(path: file_path).to_s,
-            range: Interface::Range.new(
-              start: Interface::Position.new(line: location.start_line - 1, character: location.start_column),
-              end: Interface::Position.new(line: location.end_line - 1, character: location.end_column),
-            ),
+            uri: target_method.uri.to_s,
+            range: range_from_location(target_method.location),
           )
         end
       end
