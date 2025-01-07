@@ -127,6 +127,8 @@ GEM
       net-protocol
     netrc (0.11.0)
     nio4r (2.7.4)
+    nokogiri (1.16.7-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.16.7-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.7-x64-mingw-ucrt)
@@ -235,10 +237,13 @@ GEM
       prism (>= 0.28.0)
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
+    sqlite3 (2.1.0-aarch64-linux-gnu)
+    sqlite3 (2.1.0-aarch64-linux-musl)
     sqlite3 (2.1.0-arm64-darwin)
     sqlite3 (2.1.0-x64-mingw-ucrt)
     sqlite3 (2.1.0-x86_64-darwin)
     sqlite3 (2.1.0-x86_64-linux-gnu)
+    sqlite3 (2.1.0-x86_64-linux-musl)
     stringio (3.1.2)
     tapioca (0.16.8)
       benchmark
@@ -254,8 +259,6 @@ GEM
     timeout (0.4.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    tzinfo-data (1.2024.2)
-      tzinfo (>= 1.0.0)
     unicode-display_width (2.6.0)
     uri (1.0.1)
     useragent (0.16.10)
@@ -269,10 +272,16 @@ GEM
     zeitwerk (2.7.1)
 
 PLATFORMS
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
   arm64-darwin
+  universal-darwin
   x64-mingw-ucrt
   x86_64-darwin
   x86_64-linux
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   debug (>= 1.7.0)
