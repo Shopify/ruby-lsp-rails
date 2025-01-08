@@ -138,9 +138,9 @@ module RubyLsp
           @rails_runner_client.trigger_reload
         end
 
-        # Asking the user to run a migration which has just been created may be overly-aggressive, but we _do_
-        # want to offer it after switching branchs. As a middle-ground, we only offer to run migrations if the
-        # migration was created more than a minute ago.
+        # It may be too agressive to ask a user to run a migration which has just been created.
+        # But we do want to offer it for situations such as switching branches or pulling from a remote.
+        # As a middle-ground, we only offer to run migrations if the # migration was created more than a minute ago.
         if changes.any? do |c|
              %r{db/migrate/.*\.rb}.match?(c[:uri]) &&
                  c[:type] == Constant::FileChangeType::CREATED && !changed_in_last_minute?(c[:uri])
