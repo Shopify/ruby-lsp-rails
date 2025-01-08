@@ -138,8 +138,12 @@ module RubyLsp
           @rails_runner_client.trigger_reload
         end
 
+        # Asking the user to run a migration which has just been created may be overly-aggressive, but we _do_
+        # want to offer it after switching branchs. As a middle-ground, we only offer to run migrations if the
+        # migration was created more than a minute ago.
         if changes.any? do |c|
-             %r{db/migrate/.*\.rb}.match?(c[:uri]) && c[:type] != Constant::FileChangeType::CHANGED
+             %r{db/migrate/.*\.rb}.match?(c[:uri]) &&
+                 c[:type] == Constant::FileChangeType::CREATED && !changed_in_last_minute?(c[:uri])
            end
 
           offer_to_run_pending_migrations
@@ -177,6 +181,12 @@ module RubyLsp
       end
 
       private
+
+      sig { params(uri: String).returns(T::Boolean) }
+      def changed_in_last_minute?(uri)
+        path = URI(uri).to_standardized_path
+        File.stat(path).mtime > (Time.now - 60)
+      end
 
       sig { params(id: String, title: String, percentage: T.nilable(Integer), message: T.nilable(String)).void }
       def begin_progress(id, title, percentage: nil, message: nil)

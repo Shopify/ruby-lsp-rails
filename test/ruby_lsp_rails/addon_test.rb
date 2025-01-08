@@ -92,6 +92,64 @@ module RubyLsp
       ensure
         T.must(outgoing_queue).close
       end
+
+      test "offers to run migrations created more than 60 seconds ago" do
+        path = "#{dummy_root}/db/migrate/20210101000000_create_foos.rb"
+        begin
+          mtime = 1.minute.ago.to_time
+          FileUtils.touch(path, mtime: mtime)
+          changes = [
+            {
+              uri: "file://#{path}",
+              type: RubyLsp::Constant::FileChangeType::CREATED,
+            },
+          ]
+
+          addon = Addon.new
+          addon.expects(:offer_to_run_pending_migrations).once
+          addon.workspace_did_change_watched_files(changes)
+        ensure
+          FileUtils.rm(path)
+        end
+      end
+
+      test "does not offer to run migrations created less than 60 seconds ago" do
+        path = "#{dummy_root}/db/migrate/20210101000000_create_foos.rb"
+        begin
+          mtime = 30.seconds.ago.to_time
+          FileUtils.touch(path, mtime: mtime)
+          changes = [
+            {
+              uri: "file://#{path}",
+              type: RubyLsp::Constant::FileChangeType::CREATED,
+            },
+          ]
+
+          addon = Addon.new
+          addon.expects(:offer_to_run_pending_migrations).never
+          addon.workspace_did_change_watched_files(changes)
+        ensure
+          FileUtils.rm(path)
+        end
+      end
+
+      test "doesn't offers to run migrations if deleted" do
+        path = "#{dummy_root}/db/migrate/20210101000000_create_foos.rb"
+        changes = [
+          {
+            uri: "file://#{path}",
+            type: Constant::FileChangeType::DELETED,
+          },
+          {
+            uri: "file://#{path}",
+            type: RubyLsp::Constant::FileChangeType::CHANGED,
+          },
+        ]
+
+        addon = Addon.new
+        addon.expects(:offer_to_run_pending_migrations).never
+        addon.workspace_did_change_watched_files(changes)
+      end
     end
   end
 end
