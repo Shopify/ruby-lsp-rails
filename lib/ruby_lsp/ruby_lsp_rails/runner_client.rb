@@ -105,6 +105,8 @@ module RubyLsp
             while (content = @stderr.gets("\n"))
               log_message(content, type: RubyLsp::Constant::MessageType::LOG)
             end
+          rescue IOError
+            # The server was shutdown and stderr is already closed
           end,
           Thread,
         )
