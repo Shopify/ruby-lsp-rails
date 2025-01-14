@@ -4,9 +4,6 @@
 require "json"
 require "open3"
 
-# NOTE: We should avoid printing to stderr since it causes problems. We never read the standard error pipe from the
-# client, so it will become full and eventually hang or crash. Instead, return a response with an `error` key.
-
 module RubyLsp
   module Rails
     module Common
@@ -125,6 +122,7 @@ module RubyLsp
 
       def start
         load_routes
+        clear_file_system_resolver_hooks
         send_result({ message: "ok", root: ::Rails.root.to_s })
 
         while @running
@@ -300,6 +298,18 @@ module RubyLsp
           # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
           routes_reloader = ::Rails.application.routes_reloader
           routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
+        end
+      end
+
+      # File system resolver hooks spawn file watcher threads which introduce unnecessary overhead since the LSP already
+      # watches files. Since the Rails application is already booted by the time we reach this script, we can't no-op
+      # the file watcher implementation. Instead, we clear the hooks to prevent the registered file watchers from being
+      # instantiated
+      def clear_file_system_resolver_hooks
+        return unless defined?(::ActionView::PathRegistry)
+
+        with_notification_error_handling("clear_file_system_resolver_hooks") do
+          ::ActionView::PathRegistry.file_system_resolver_hooks.clear
         end
       end
     end
