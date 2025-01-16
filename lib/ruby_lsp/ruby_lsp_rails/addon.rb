@@ -76,12 +76,12 @@ module RubyLsp
       sig do
         override.params(
           response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
-          uri: URI::Generic,
+          document: RubyLsp::Document[T.untyped],
           dispatcher: Prism::Dispatcher,
         ).void
       end
-      def create_code_lens_listener(response_builder, uri, dispatcher)
-        CodeLens.new(@rails_runner_client, T.must(@global_state), response_builder, uri, dispatcher)
+      def create_code_lens_listener(response_builder, document, dispatcher)
+        CodeLens.new(@rails_runner_client, T.must(@global_state), response_builder, document, dispatcher)
       end
 
       sig do
