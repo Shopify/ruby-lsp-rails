@@ -26,17 +26,6 @@ module RubyLsp
         )
       end
 
-      sig { params(node: Prism::CallNode).void }
-      def on_call_node_enter(node)
-        call_node = @node_context.call_node
-        return unless call_node
-
-        receiver = call_node.receiver
-        if call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
-          handle_active_record_where_completions(node: node, receiver: receiver)
-        end
-      end
-
       private
 
       sig { params(node: Prism::CallNode, receiver: Prism::ConstantReadNode).void }
