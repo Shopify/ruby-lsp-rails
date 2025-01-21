@@ -223,16 +223,27 @@ module RubyLsp
                 id: "workspace/didChangeWatchedFilesRails",
                 method: "workspace/didChangeWatchedFiles",
                 register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
-                  watchers: [
-                    Interface::FileSystemWatcher.new(
-                      glob_pattern: "**/*structure.sql",
-                      kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
-                    ),
-                  ],
+                  watchers: [structure_sql_file_watcher, fixture_file_watcher],
                 ),
               ),
             ],
           ),
+        )
+      end
+
+      sig { returns(Interface::FileSystemWatcher) }
+      def structure_sql_file_watcher
+        Interface::FileSystemWatcher.new(
+          glob_pattern: "**/*structure.sql",
+          kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
+        )
+      end
+
+      sig { returns(Interface::FileSystemWatcher) }
+      def fixture_file_watcher
+        Interface::FileSystemWatcher.new(
+          glob_pattern: "**/fixtures/**/*.{yml,yaml,yml.erb,yaml.erb}",
+          kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
         )
       end
 
