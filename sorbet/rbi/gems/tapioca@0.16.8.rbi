@@ -218,13 +218,7 @@ class RBI::TypedParam < ::T::Struct
   const :type, ::String
 
   class << self
-<<<<<<<< HEAD:sorbet/rbi/gems/tapioca@0.16.8.rbi
     # source://sorbet-runtime/0.5.11761lib/types/struct.rb#13
-|||||||| parent of 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.5.rbi
-    # source://sorbet-runtime/0.5.11635lib/types/struct.rb#13
-========
-    # source://sorbet-runtime/0.5.11725lib/types/struct.rb#13
->>>>>>>> 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.6.rbi
     def inherited(s); end
   end
 end
@@ -1149,13 +1143,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-<<<<<<<< HEAD:sorbet/rbi/gems/tapioca@0.16.8.rbi
     # source://sorbet-runtime/0.5.11761lib/types/struct.rb#13
-|||||||| parent of 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.5.rbi
-    # source://sorbet-runtime/0.5.11635lib/types/struct.rb#13
-========
-    # source://sorbet-runtime/0.5.11725lib/types/struct.rb#13
->>>>>>>> 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.6.rbi
     def inherited(s); end
   end
 end
@@ -1166,13 +1154,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-<<<<<<<< HEAD:sorbet/rbi/gems/tapioca@0.16.8.rbi
     # source://sorbet-runtime/0.5.11761lib/types/struct.rb#13
-|||||||| parent of 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.5.rbi
-    # source://sorbet-runtime/0.5.11635lib/types/struct.rb#13
-========
-    # source://sorbet-runtime/0.5.11725lib/types/struct.rb#13
->>>>>>>> 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.6.rbi
     def inherited(s); end
   end
 end
@@ -2246,13 +2228,7 @@ class Tapioca::GemInfo < ::T::Struct
     sig { params(spec: ::Bundler::LazySpecification).returns(::Tapioca::GemInfo) }
     def from_spec(spec); end
 
-<<<<<<<< HEAD:sorbet/rbi/gems/tapioca@0.16.8.rbi
     # source://sorbet-runtime/0.5.11761lib/types/struct.rb#13
-|||||||| parent of 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.5.rbi
-    # source://sorbet-runtime/0.5.11635lib/types/struct.rb#13
-========
-    # source://sorbet-runtime/0.5.11725lib/types/struct.rb#13
->>>>>>>> 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.6.rbi
     def inherited(s); end
   end
 end
@@ -2452,13 +2428,7 @@ class Tapioca::Loaders::Dsl < ::Tapioca::Loaders::Loader
 
   protected
 
-<<<<<<<< HEAD:sorbet/rbi/gems/tapioca@0.16.8.rbi
   # source://tapioca/lib/tapioca/loaders/dsl.rb#103
-|||||||| parent of 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.5.rbi
-  # source://tapioca/lib/tapioca/loaders/dsl.rb#105
-========
-  # source://tapioca/lib/tapioca/loaders/dsl.rb#110
->>>>>>>> 0e32ef8 (Update Tapioca):sorbet/rbi/gems/tapioca@0.16.6.rbi
   sig { void }
   def load_application; end
 
