@@ -12,7 +12,7 @@ jobs:
         gemfile:
           - Gemfile
           - gemfiles/Gemfile-rails-main
-        ruby: ["3.2", "3.3"]
+        ruby: ["3.3", "3.4"]
         include:
           - gemfile: "gemfiles/Gemfile-rails-main"
             experimental: true
