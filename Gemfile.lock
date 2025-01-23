@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.3.30)
+    ruby-lsp-rails (0.3.31)
       ruby-lsp (>= 0.23.0, < 0.24.0)
 
 GEM
@@ -231,6 +231,7 @@ GEM
     sorbet (0.5.11761)
       sorbet-static (= 0.5.11761)
     sorbet-runtime (0.5.11761)
+    sorbet-static (0.5.11761-aarch64-linux)
     sorbet-static (0.5.11761-universal-darwin)
     sorbet-static (0.5.11761-x86_64-linux)
     sorbet-static-and-runtime (0.5.11761)
