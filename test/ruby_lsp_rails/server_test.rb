@@ -7,7 +7,8 @@ require "ruby_lsp/ruby_lsp_rails/server"
 class ServerTest < ActiveSupport::TestCase
   setup do
     @stdout = StringIO.new
-    @server = RubyLsp::Rails::Server.new(stdout: @stdout, override_default_output_device: false)
+    @stderr = StringIO.new
+    @server = RubyLsp::Rails::Server.new(stdout: @stdout, stderr: @stderr, override_default_output_device: false)
   end
 
   test "returns nil if model doesn't exist" do
@@ -227,6 +228,28 @@ class ServerTest < ActiveSupport::TestCase
     expected = "Content-Length: 26\r\n\r\n"
     expected += { test: "こんにちは" }.to_json.force_encoding(Encoding::ASCII_8BIT)
     assert_equal expected, @stdout.string
+  end
+
+  test "log_message sends notification to client" do
+    @server.log_message("Hello")
+
+    expected_notification = {
+      method: "window/logMessage",
+      params: { type: 4, message: "Hello" },
+    }.to_json
+
+    assert_equal "Content-Length: #{expected_notification.bytesize}\r\n\r\n#{expected_notification}", @stderr.string
+  end
+
+  test "log_message allows server to define message type" do
+    @server.log_message("Hello", type: 1)
+
+    expected_notification = {
+      method: "window/logMessage",
+      params: { type: 1, message: "Hello" },
+    }.to_json
+
+    assert_equal "Content-Length: #{expected_notification.bytesize}\r\n\r\n#{expected_notification}", @stderr.string
   end
 
   private

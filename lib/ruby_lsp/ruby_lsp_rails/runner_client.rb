@@ -100,10 +100,16 @@ module RubyLsp
           end
         end
 
-        @logger_thread = T.let(
+        # Responsible for transmitting notifications coming from the server to the outgoing queue, so that we can do
+        # things such as showing progress notifications initiated by the server
+        @notifier_thread = T.let(
           Thread.new do
-            while (content = @stderr.gets("\n"))
-              log_message(content, type: RubyLsp::Constant::MessageType::LOG)
+            until @stderr.closed?
+              notification = read_notification
+
+              unless @outgoing_queue.closed? || !notification
+                @outgoing_queue << notification
+              end
             end
           rescue IOError
             # The server was shutdown and stderr is already closed
@@ -337,6 +343,21 @@ module RubyLsp
         return unless length
 
         length.to_i
+      end
+
+      # Read a server notification from stderr. Only intended to be used by notifier thread
+      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      def read_notification
+        headers = @stderr.gets("\r\n\r\n")
+        return unless headers
+
+        length = headers[/Content-Length: (\d+)/i, 1]
+        return unless length
+
+        raw_content = @stderr.read(length.to_i)
+        return unless raw_content
+
+        JSON.parse(raw_content, symbolize_names: true)
       end
     end
 

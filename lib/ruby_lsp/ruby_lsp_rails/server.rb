@@ -7,15 +7,10 @@ require "open3"
 module RubyLsp
   module Rails
     module Common
-      # Write a message to the client. Can be used for sending notifications to the editor
-      def send_message(message)
-        json_message = message.to_json
-        @stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
-      end
-
-      # Log a message to the editor's output panel
-      def log_message(message)
-        $stderr.puts(message)
+      # Log a message to the editor's output panel. The type is the number of the message type, which can be found in
+      # the specification https://microsoft.github.io/language-server-protocol/specification/#messageType
+      def log_message(message, type: 4)
+        send_notification({ method: "window/logMessage", params: { type: type, message: message } })
       end
 
       # Sends an error result to a request, if the request failed. DO NOT INVOKE THIS METHOD FOR NOTIFICATIONS! Use
@@ -54,6 +49,20 @@ module RubyLsp
       rescue => e
         log_message("Request #{notification_name} failed:\n#{e.full_message(highlight: false)}")
       end
+
+      private
+
+      # Write a response message back to the client
+      def send_message(message)
+        json_message = message.to_json
+        @stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+      end
+
+      # Write a notification to the client to be transmitted to the editor
+      def send_notification(message)
+        json_message = message.to_json
+        @stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+      end
     end
 
     class ServerAddon
@@ -76,16 +85,17 @@ module RubyLsp
         end
 
         # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
-        def finalize_registrations!(stdout)
+        def finalize_registrations!(stdout, stderr)
           until @server_addon_classes.empty?
-            addon = @server_addon_classes.shift.new(stdout)
+            addon = @server_addon_classes.shift.new(stdout, stderr)
             @server_addons[addon.name] = addon
           end
         end
       end
 
-      def initialize(stdout)
+      def initialize(stdout, stderr)
         @stdout = stdout
+        @stderr = stderr
       end
 
       def name
@@ -100,11 +110,11 @@ module RubyLsp
     class Server
       include Common
 
-      def initialize(stdout: $stdout, override_default_output_device: true)
+      def initialize(stdout: $stdout, stderr: $stderr, override_default_output_device: true)
         # Grab references to the original pipes so that we can change the default output device further down
         @stdin = $stdin
         @stdout = stdout
-        @stderr = $stderr
+        @stderr = stderr
         @stdin.sync = true
         @stdout.sync = true
         @stderr.sync = true
@@ -169,7 +179,7 @@ module RubyLsp
         when "server_addon/register"
           with_notification_error_handling(request) do
             require params[:server_addon_path]
-            ServerAddon.finalize_registrations!(@stdout)
+            ServerAddon.finalize_registrations!(@stdout, @stderr)
           end
         when "server_addon/delegate"
           server_addon_name = params[:server_addon_name]
