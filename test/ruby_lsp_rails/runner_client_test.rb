@@ -9,7 +9,8 @@ module RubyLsp
     class RunnerClientTest < ActiveSupport::TestCase
       setup do
         @outgoing_queue = Thread::Queue.new
-        @client = T.let(RunnerClient.new(@outgoing_queue), RunnerClient)
+        @global_state = GlobalState.new
+        @client = T.let(RunnerClient.new(@outgoing_queue, @global_state), RunnerClient)
       end
 
       teardown do
@@ -48,7 +49,7 @@ module RubyLsp
         FileUtils.mv("bin/rails", "bin/rails_backup")
 
         outgoing_queue = Thread::Queue.new
-        client = RunnerClient.create_client(outgoing_queue)
+        client = RunnerClient.create_client(outgoing_queue, @global_state)
 
         assert_instance_of(NullClient, client)
         assert_nil(client.model("User"))
@@ -66,7 +67,7 @@ module RubyLsp
         FileUtils.mv("test/dummy/config/application.rb", "test/dummy/config/application.rb.bak")
 
         outgoing_queue = Thread::Queue.new
-        client = RunnerClient.create_client(outgoing_queue)
+        client = RunnerClient.create_client(outgoing_queue, @global_state)
 
         assert_instance_of(NullClient, client)
         assert_nil(client.model("User"))
@@ -88,7 +89,7 @@ module RubyLsp
         File.write("test/dummy/config/application.rb", content + junk)
 
         outgoing_queue = Thread::Queue.new
-        client = RunnerClient.create_client(outgoing_queue)
+        client = RunnerClient.create_client(outgoing_queue, @global_state)
         response = client.model("User")
 
         begin
