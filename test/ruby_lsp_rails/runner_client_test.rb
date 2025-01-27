@@ -10,6 +10,13 @@ module RubyLsp
       setup do
         @outgoing_queue = Thread::Queue.new
         @global_state = GlobalState.new
+        @global_state.apply_options({
+          capabilities: {
+            window: {
+              workDoneProgress: true,
+            },
+          },
+        })
         @client = T.let(RunnerClient.new(@outgoing_queue, @global_state), RunnerClient)
       end
 
@@ -152,6 +159,84 @@ module RubyLsp
         end
 
         assert_match("Hello!", log.dig(:params, :message))
+      ensure
+        FileUtils.rm("server_addon.rb")
+      end
+
+      test "server add-ons can report progress" do
+        File.write("server_addon.rb", <<~RUBY)
+          class TapiocaServerAddon < RubyLsp::Rails::ServerAddon
+            def name
+              "Tapioca"
+            end
+
+            def execute(request, params)
+              begin_progress("my-progress-id", "Doing something expensive")
+              report_progress("my-progress-id", message: "Made some progress!")
+              end_progress("my-progress-id")
+            end
+          end
+        RUBY
+
+        @client.register_server_addon(File.expand_path("server_addon.rb"))
+        @client.delegate_notification(server_addon_name: "Tapioca", request_name: "dsl")
+
+        # Started booting server
+        pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+        # Finished booting server
+        pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+
+        messages = []
+
+        # Sometimes we get warnings concerning deprecations and they mess up this expectation
+        until messages.length == 4
+          message = @outgoing_queue.pop
+          messages << message if message.dig(:params, :token) == "my-progress-id"
+        end
+
+        assert_equal("window/workDoneProgress/create", messages.dig(0, :method))
+        assert_equal("begin", messages.dig(1, :params, :value, :kind))
+        assert_equal("report", messages.dig(2, :params, :value, :kind))
+        assert_equal("end", messages.dig(3, :params, :value, :kind))
+      ensure
+        FileUtils.rm("server_addon.rb")
+      end
+
+      test "server add-ons can report progress through block API" do
+        File.write("server_addon.rb", <<~RUBY)
+          class TapiocaServerAddon < RubyLsp::Rails::ServerAddon
+            def name
+              "Tapioca"
+            end
+
+            def execute(request, params)
+              with_progress("my-progress-id", "Doing something expensive") do |progress|
+                progress.report(message: "Made some progress!")
+              end
+            end
+          end
+        RUBY
+
+        @client.register_server_addon(File.expand_path("server_addon.rb"))
+        @client.delegate_notification(server_addon_name: "Tapioca", request_name: "dsl")
+
+        # Started booting server
+        pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+        # Finished booting server
+        pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+
+        messages = []
+
+        # Sometimes we get warnings concerning deprecations and they mess up this expectation
+        until messages.length == 4
+          message = @outgoing_queue.pop
+          messages << message if message.dig(:params, :token) == "my-progress-id"
+        end
+
+        assert_equal("window/workDoneProgress/create", messages.dig(0, :method))
+        assert_equal("begin", messages.dig(1, :params, :value, :kind))
+        assert_equal("report", messages.dig(2, :params, :value, :kind))
+        assert_equal("end", messages.dig(3, :params, :value, :kind))
       ensure
         FileUtils.rm("server_addon.rb")
       end
