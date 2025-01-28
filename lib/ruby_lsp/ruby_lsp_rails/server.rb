@@ -3,6 +3,7 @@
 
 require "json"
 require "open3"
+require "delegate"
 
 module RubyLsp
   module Rails
@@ -197,6 +198,23 @@ module RubyLsp
       end
     end
 
+    class IOWrapper < SimpleDelegator
+      def puts(*args)
+        args.each { |arg| log("#{arg}\n") }
+      end
+
+      def print(*args)
+        args.each { |arg| log(arg.to_s) }
+      end
+
+      private
+
+      def log(message)
+        json_message = { method: "window/logMessage", params: { type: 4, message: message } }.to_json
+        write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+      end
+    end
+
     class Server
       include Common
 
@@ -218,7 +236,7 @@ module RubyLsp
         # # Set the default output device to be $stderr. This means that using `puts` by itself will default to printing
         # # to $stderr and only explicit `$stdout.puts` will go to $stdout. This reduces the chance that output coming
         # # from the Rails app will be accidentally sent to the client
-        $> = $stderr if override_default_output_device
+        $> = IOWrapper.new(@stderr) if override_default_output_device
 
         @running = true
       end
