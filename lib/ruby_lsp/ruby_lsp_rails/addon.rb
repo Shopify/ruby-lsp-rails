@@ -81,7 +81,9 @@ module RubyLsp
         ).void
       end
       def create_code_lens_listener(response_builder, uri, dispatcher)
-        CodeLens.new(@rails_runner_client, T.must(@global_state), response_builder, uri, dispatcher)
+        return unless @global_state
+
+        CodeLens.new(@rails_runner_client, @global_state, response_builder, uri, dispatcher)
       end
 
       sig do
@@ -92,7 +94,9 @@ module RubyLsp
         ).void
       end
       def create_hover_listener(response_builder, node_context, dispatcher)
-        Hover.new(@rails_runner_client, response_builder, node_context, T.must(@global_state), dispatcher)
+        return unless @global_state
+
+        Hover.new(@rails_runner_client, response_builder, node_context, @global_state, dispatcher)
       end
 
       sig do
@@ -116,8 +120,9 @@ module RubyLsp
         ).void
       end
       def create_definition_listener(response_builder, uri, node_context, dispatcher)
-        index = T.must(@global_state).index
-        Definition.new(@rails_runner_client, response_builder, node_context, index, dispatcher)
+        return unless @global_state
+
+        Definition.new(@rails_runner_client, response_builder, node_context, @global_state.index, dispatcher)
       end
 
       sig do
