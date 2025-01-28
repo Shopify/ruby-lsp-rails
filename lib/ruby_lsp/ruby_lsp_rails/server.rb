@@ -258,8 +258,10 @@ module RubyLsp
             send_result(run_migrations)
           end
         when "reload"
-          with_notification_error_handling(request) do
-            ::Rails.application.reloader.reload!
+          with_progress("rails-reload", "Reloading Ruby LSP Rails instance") do
+            with_notification_error_handling(request) do
+              ::Rails.application.reloader.reload!
+            end
           end
         when "route_location"
           with_request_error_handling(request) do
