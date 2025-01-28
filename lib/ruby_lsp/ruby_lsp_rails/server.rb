@@ -7,6 +7,33 @@ require "open3"
 module RubyLsp
   module Rails
     module Common
+      class Progress
+        def initialize(stderr, id, supports_progress)
+          @stderr = stderr
+          @id = id
+          @supports_progress = supports_progress
+        end
+
+        def report(percentage: nil, message: nil)
+          return unless @supports_progress
+          return unless percentage || message
+
+          json_message = {
+            method: "$/progress",
+            params: {
+              token: @id,
+              value: {
+                kind: "report",
+                percentage: percentage,
+                message: message,
+              },
+            },
+          }.to_json
+
+          @stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        end
+      end
+
       # Log a message to the editor's output panel. The type is the number of the message type, which can be found in
       # the specification https://microsoft.github.io/language-server-protocol/specification/#messageType
       def log_message(message, type: 4)
@@ -50,6 +77,68 @@ module RubyLsp
         log_message("Request #{notification_name} failed:\n#{e.full_message(highlight: false)}")
       end
 
+      def begin_progress(id, title, percentage: nil, message: nil)
+        return unless @capabilities[:supports_progress]
+
+        # This is actually a request, but it is sent asynchronously and we do not return the response back to the
+        # server, so we consider it a notification from the perspective of the client/runtime server dynamic
+        send_notification({
+          id: "progress-request-#{id}",
+          method: "window/workDoneProgress/create",
+          params: { token: id },
+        })
+
+        send_notification({
+          method: "$/progress",
+          params: {
+            token: id,
+            value: {
+              kind: "begin",
+              title: title,
+              percentage: percentage,
+              message: message,
+            },
+          },
+        })
+      end
+
+      def report_progress(id, percentage: nil, message: nil)
+        return unless @capabilities[:supports_progress]
+
+        send_notification({
+          method: "$/progress",
+          params: {
+            token: id,
+            value: {
+              kind: "report",
+              percentage: percentage,
+              message: message,
+            },
+          },
+        })
+      end
+
+      def end_progress(id)
+        return unless @capabilities[:supports_progress]
+
+        send_notification({
+          method: "$/progress",
+          params: {
+            token: id,
+            value: { kind: "end" },
+          },
+        })
+      end
+
+      def with_progress(id, title, percentage: nil, message: nil, &block)
+        progress_block = Progress.new(@stderr, id, @capabilities[:supports_progress])
+        return block.call(progress_block) unless @capabilities[:supports_progress]
+
+        begin_progress(id, title, percentage: percentage, message: message)
+        block.call(progress_block)
+        end_progress(id)
+      end
+
       private
 
       # Write a response message back to the client
@@ -85,17 +174,18 @@ module RubyLsp
         end
 
         # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
-        def finalize_registrations!(stdout, stderr)
+        def finalize_registrations!(stdout, stderr, capabilities)
           until @server_addon_classes.empty?
-            addon = @server_addon_classes.shift.new(stdout, stderr)
+            addon = @server_addon_classes.shift.new(stdout, stderr, capabilities)
             @server_addons[addon.name] = addon
           end
         end
       end
 
-      def initialize(stdout, stderr)
+      def initialize(stdout, stderr, capabilities)
         @stdout = stdout
         @stderr = stderr
+        @capabilities = capabilities
       end
 
       def name
@@ -182,7 +272,7 @@ module RubyLsp
         when "server_addon/register"
           with_notification_error_handling(request) do
             require params[:server_addon_path]
-            ServerAddon.finalize_registrations!(@stdout, @stderr)
+            ServerAddon.finalize_registrations!(@stdout, @stderr, @capabilities)
           end
         when "server_addon/delegate"
           server_addon_name = params[:server_addon_name]
