@@ -110,7 +110,7 @@ module RubyLsp
     class Server
       include Common
 
-      def initialize(stdout: $stdout, stderr: $stderr, override_default_output_device: true)
+      def initialize(stdout: $stdout, stderr: $stderr, override_default_output_device: true, capabilities: {})
         # Grab references to the original pipes so that we can change the default output device further down
         @stdin = $stdin
         @stdout = stdout
@@ -121,6 +121,9 @@ module RubyLsp
         @stdin.binmode
         @stdout.binmode
         @stderr.binmode
+
+        # A hash containing the capabilities of the editor that may be relevant for the runtime server
+        @capabilities = capabilities
 
         # # Set the default output device to be $stderr. This means that using `puts` by itself will default to printing
         # # to $stderr and only explicit `$stdout.puts` will go to $stdout. This reduces the chance that output coming
@@ -326,4 +329,6 @@ module RubyLsp
   end
 end
 
-RubyLsp::Rails::Server.new.start if ARGV.first == "start"
+if ARGV.first == "start"
+  RubyLsp::Rails::Server.new(capabilities: JSON.parse(ARGV[1], symbolize_names: true)).start
+end

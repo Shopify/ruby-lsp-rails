@@ -39,7 +39,9 @@ module RubyLsp
         Thread.new do
           @addon_mutex.synchronize do
             # We need to ensure the Rails client is fully loaded before we activate the server addons
-            @client_mutex.synchronize { @rails_runner_client = RunnerClient.create_client(T.must(@outgoing_queue)) }
+            @client_mutex.synchronize do
+              @rails_runner_client = RunnerClient.create_client(T.must(@outgoing_queue), T.must(@global_state))
+            end
             offer_to_run_pending_migrations
           end
         end

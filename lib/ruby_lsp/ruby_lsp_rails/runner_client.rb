@@ -10,10 +10,10 @@ module RubyLsp
       class << self
         extend T::Sig
 
-        sig { params(outgoing_queue: Thread::Queue).returns(RunnerClient) }
-        def create_client(outgoing_queue)
+        sig { params(outgoing_queue: Thread::Queue, global_state: RubyLsp::GlobalState).returns(RunnerClient) }
+        def create_client(outgoing_queue, global_state)
           if File.exist?("bin/rails")
-            new(outgoing_queue)
+            new(outgoing_queue, global_state)
           else
             unless outgoing_queue.closed?
               outgoing_queue << RubyLsp::Notification.window_log_message(
@@ -51,8 +51,8 @@ module RubyLsp
       sig { returns(String) }
       attr_reader :rails_root
 
-      sig { params(outgoing_queue: Thread::Queue).void }
-      def initialize(outgoing_queue)
+      sig { params(outgoing_queue: Thread::Queue, global_state: RubyLsp::GlobalState).void }
+      def initialize(outgoing_queue, global_state)
         @outgoing_queue = T.let(outgoing_queue, Thread::Queue)
         @mutex = T.let(Mutex.new, Mutex)
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
@@ -71,7 +71,15 @@ module RubyLsp
         log_message("Ruby LSP Rails booting server")
 
         stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
-          Open3.popen3("bundle", "exec", "rails", "runner", "#{__dir__}/server.rb", "start")
+          Open3.popen3(
+            "bundle",
+            "exec",
+            "rails",
+            "runner",
+            "#{__dir__}/server.rb",
+            "start",
+            server_relevant_capabilities(global_state),
+          )
         end
 
         @stdin = T.let(stdin, IO)
@@ -358,6 +366,13 @@ module RubyLsp
         return unless raw_content
 
         JSON.parse(raw_content, symbolize_names: true)
+      end
+
+      sig { params(global_state: GlobalState).returns(String) }
+      def server_relevant_capabilities(global_state)
+        {
+          supports_progress: global_state.client_capabilities.supports_progress,
+        }.to_json
       end
     end
 
