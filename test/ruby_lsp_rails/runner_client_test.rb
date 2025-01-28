@@ -128,7 +128,7 @@ module RubyLsp
 
             def execute(request, params)
               log_message("Hello!")
-              send_message({ request:, params: })
+              send_result({ request: request, params: params })
             end
           end
         RUBY
@@ -141,16 +141,16 @@ module RubyLsp
         # Finished booting server
         pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
 
-        log = pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+        log = @outgoing_queue.pop
 
         # Sometimes we get warnings concerning deprecations and they mess up this expectation
         3.times do
-          unless log.params.message.match?(/Hello!/)
-            log = pop_log_notification(@outgoing_queue, RubyLsp::Constant::MessageType::LOG)
+          unless log.dig(:params, :message).match?(/Hello!/)
+            log = @outgoing_queue.pop
           end
         end
 
-        assert_match("Hello!", log.params.message)
+        assert_match("Hello!", log.dig(:params, :message))
       ensure
         FileUtils.rm("server_addon.rb")
       end
