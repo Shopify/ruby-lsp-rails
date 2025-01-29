@@ -158,25 +158,6 @@ class ServerTest < ActiveSupport::TestCase
     FileUtils.rm("server_addon.rb")
   end
 
-  test "prints in the Rails application or server are automatically redirected to stderr" do
-    stdout = StringIO.new
-    server = RubyLsp::Rails::Server.new(stdout: stdout)
-
-    server.instance_eval do
-      def resolve_route_info(requirements)
-        puts "Hello"
-        super
-      end
-    end
-
-    _, stderr = capture_subprocess_io do
-      server.execute("route_info", { controller: "UsersController", action: "index" })
-    end
-
-    refute_match("Hello", stdout.string)
-    assert_equal("Hello\n", stderr)
-  end
-
   test "checking for pending migrations" do
     capture_subprocess_io do
       system("bundle exec rails g migration CreateStudents name:string")
@@ -250,6 +231,30 @@ class ServerTest < ActiveSupport::TestCase
     }.to_json
 
     assert_equal "Content-Length: #{expected_notification.bytesize}\r\n\r\n#{expected_notification}", @stderr.string
+  end
+
+  test "regular prints become structured log messages" do
+    original_stdout = $stdout
+
+    stdout = StringIO.new
+    stderr = StringIO.new
+    server = RubyLsp::Rails::Server.new(stdout: stdout, stderr: stderr, override_default_output_device: true)
+
+    server.instance_eval do
+      def print_it!
+        puts "hello"
+      end
+    end
+
+    T.unsafe(server).print_it!
+
+    assert_match("Content-Length: 70\r\n\r\n", stderr.string)
+    assert_match(
+      "{\"method\":\"window/logMessage\",\"params\":{\"type\":4,\"message\":\"hello\\n\"}}",
+      stderr.string,
+    )
+  ensure
+    $> = original_stdout
   end
 
   private
