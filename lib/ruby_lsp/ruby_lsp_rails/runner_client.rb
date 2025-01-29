@@ -273,6 +273,13 @@ module RubyLsp
         [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
       end
 
+      sig { returns(T::Boolean) }
+      def connected?
+        true
+      end
+
+      private
+
       sig do
         params(
           request: String,
@@ -287,8 +294,6 @@ module RubyLsp
       # Notifications are like messages, but one-way, with no response sent back.
       sig { params(request: String, params: T.untyped).void }
       def send_notification(request, **params) = send_message(request, **params)
-
-      private
 
       sig { overridable.params(request: String, params: T.untyped).void }
       def send_message(request, **params)
@@ -396,6 +401,11 @@ module RubyLsp
       sig { override.returns(String) }
       def rails_root
         Dir.pwd
+      end
+
+      sig { returns(T::Boolean) }
+      def connected?
+        false
       end
 
       private
