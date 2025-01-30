@@ -13,25 +13,6 @@ module RubyLsp
           @id = id
           @supports_progress = supports_progress
         end
-
-        def report(percentage: nil, message: nil)
-          return unless @supports_progress
-          return unless percentage || message
-
-          json_message = {
-            method: "$/progress",
-            params: {
-              token: @id,
-              value: {
-                kind: "report",
-                percentage: percentage,
-                message: message,
-              },
-            },
-          }.to_json
-
-          @stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
-        end
       end
 
       # Log a message to the editor's output panel. The type is the number of the message type, which can be found in
