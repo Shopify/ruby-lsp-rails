@@ -273,11 +273,6 @@ module RubyLsp
         [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
       end
 
-      sig { returns(T::Boolean) }
-      def connected?
-        true
-      end
-
       private
 
       sig do
