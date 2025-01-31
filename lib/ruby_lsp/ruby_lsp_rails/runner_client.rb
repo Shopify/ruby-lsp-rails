@@ -403,11 +403,6 @@ module RubyLsp
         Dir.pwd
       end
 
-      sig { returns(T::Boolean) }
-      def connected?
-        false
-      end
-
       private
 
       sig { params(message: ::String, type: ::Integer).void }
