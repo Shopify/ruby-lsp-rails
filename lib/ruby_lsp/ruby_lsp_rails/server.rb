@@ -203,10 +203,6 @@ module RubyLsp
         args.each { |arg| log("#{arg}\n") }
       end
 
-      def print(*args)
-        args.each { |arg| log(arg.to_s) }
-      end
-
       private
 
       def log(message)
