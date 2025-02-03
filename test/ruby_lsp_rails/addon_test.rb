@@ -92,6 +92,35 @@ module RubyLsp
       ensure
         T.must(outgoing_queue).close
       end
+
+      test "migration dialog respects enabled setting" do
+        outgoing_queue = Thread::Queue.new
+        global_state = GlobalState.new
+        global_state.apply_options({
+          capabilities: { window: { showMessage: { messageActionItem: { additionalPropertiesSupport: true } } } },
+          initializationOptions: { addonSettings: { "Ruby LSP Rails": { enablePendingMigrationsPrompt: false } } },
+        })
+
+        refute(T.must(global_state.settings_for_addon("Ruby LSP Rails"))[:enablePendingMigrationsPrompt])
+
+        addon = Addon.new
+        addon.activate(global_state, outgoing_queue)
+
+        # Wait until activation is done
+        Thread.new do
+          addon.rails_runner_client
+        end.join
+
+        RunnerClient.any_instance.expects(:pending_migrations_message).never
+        addon.workspace_did_change_watched_files([
+          {
+            uri: "file://#{dummy_root}/db/migrate/20210901000000_create_foos.rb",
+            type: RubyLsp::Constant::FileChangeType::CREATED,
+          },
+        ])
+      ensure
+        T.must(outgoing_queue).close
+      end
     end
   end
 end

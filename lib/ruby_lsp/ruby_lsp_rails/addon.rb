@@ -32,6 +32,12 @@ module RubyLsp
         @rails_runner_client = T.let(NullClient.new, RunnerClient)
         @global_state = T.let(nil, T.nilable(GlobalState))
         @outgoing_queue = T.let(nil, T.nilable(Thread::Queue))
+        @settings = T.let(
+          {
+            enablePendingMigrationsPrompt: true,
+          },
+          T::Hash[Symbol, T.untyped],
+        )
         @addon_mutex = T.let(Mutex.new, Mutex)
         @client_mutex = T.let(Mutex.new, Mutex)
         @client_mutex.lock
@@ -57,6 +63,9 @@ module RubyLsp
         @global_state = global_state
         @outgoing_queue = outgoing_queue
         @outgoing_queue << Notification.window_log_message("Activating Ruby LSP Rails add-on v#{VERSION}")
+
+        addon_settings = @global_state.settings_for_addon(name)
+        @settings.merge!(addon_settings) if addon_settings
 
         register_additional_file_watchers(global_state: global_state, outgoing_queue: outgoing_queue)
 
@@ -258,6 +267,7 @@ module RubyLsp
       def offer_to_run_pending_migrations
         return unless @outgoing_queue
         return unless @global_state&.client_capabilities&.window_show_message_supports_extra_properties
+        return unless @settings[:enablePendingMigrationsPrompt]
 
         migration_message = @rails_runner_client.pending_migrations_message
         return unless migration_message
