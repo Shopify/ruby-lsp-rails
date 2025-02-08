@@ -6,11 +6,14 @@ module RubyLsp
     class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
 
-      sig do
-        override.params(
-          call_node: Prism::CallNode,
-        ).void
+      sig { params(listener: RubyIndexer::DeclarationListener).void }
+      def initialize(listener)
+        super
+
+        @discovered_concerns = T.let([], T::Array[String])
       end
+
+      sig { override.params(call_node: Prism::CallNode).void }
       def on_call_node_enter(call_node)
         owner = @listener.current_owner
         return unless owner
@@ -26,11 +29,7 @@ module RubyLsp
         end
       end
 
-      sig do
-        override.params(
-          call_node: Prism::CallNode,
-        ).void
-      end
+      sig { override.params(call_node: Prism::CallNode).void }
       def on_call_node_leave(call_node)
         if call_node.name == :class_methods && call_node.block
           @listener.pop_namespace_stack
@@ -39,12 +38,7 @@ module RubyLsp
 
       private
 
-      sig do
-        params(
-          owner: RubyIndexer::Entry::Namespace,
-          call_node: Prism::CallNode,
-        ).void
-      end
+      sig { params(owner: RubyIndexer::Entry::Namespace, call_node: Prism::CallNode).void }
       def handle_association(owner, call_node)
         arguments = call_node.arguments&.arguments
         return unless arguments
@@ -84,12 +78,33 @@ module RubyLsp
           module_name = node.full_name
           next unless module_name == "ActiveSupport::Concern"
 
+          @discovered_concerns << owner.name
+
           @listener.register_included_hook do |index, base|
             class_methods_name = "#{owner.name}::ClassMethods"
 
+            singleton = index.existing_or_new_singleton_class(base.name)
+
             if index.indexed?(class_methods_name)
-              singleton = index.existing_or_new_singleton_class(base.name)
               singleton.mixin_operations << RubyIndexer::Entry::Include.new(class_methods_name)
+            end
+
+            if @discovered_concerns.include?(owner.name)
+              owner.mixin_operations.each do |operation|
+                resolved_module = index.resolve(operation.module_name, base.nesting)
+                next unless resolved_module
+
+                name = T.must(resolved_module.first).name
+                module_name = "#{name}::ClassMethods"
+                next unless @discovered_concerns.include?(name) && index.indexed?(module_name)
+
+                case operation
+                when RubyIndexer::Entry::Include
+                  singleton.mixin_operations << RubyIndexer::Entry::Include.new(module_name)
+                when RubyIndexer::Entry::Prepend
+                  singleton.mixin_operations.unshift(RubyIndexer::Entry::Include.new(module_name))
+                end
+              end
             end
           end
         rescue Prism::ConstantPathNode::DynamicPartsInConstantPathError,
