@@ -158,6 +158,8 @@ module RubyLsp
     class ServerAddon
       include Common
 
+      class MissingAddonError < StandardError; end
+
       @server_addon_classes = []
       @server_addons = {}
 
@@ -171,7 +173,14 @@ module RubyLsp
 
         # Delegate `request` with `params` to the server add-on with the given `name`
         def delegate(name, request, params)
-          @server_addons[name]&.execute(request, params)
+          addon = @server_addons.fetch(name) do
+            checker = DidYouMean::SpellChecker.new(dictionary: @server_addons.keys)
+            suggestions = checker.correct(name)
+            msg = "No extension with name #{name}."
+            msg += " Did you mean: #{options.join(" / ")}" if suggestions.any?
+            raise ServerAddon::MissingAddonError, msg
+          end
+          addon.execute(request, params)
         end
 
         # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
@@ -298,9 +307,13 @@ module RubyLsp
           server_addon_name = params[:server_addon_name]
           request_name = params[:request_name]
 
-          # Do not wrap this in error handlers. Server add-ons need to have the flexibility to choose if they want to
-          # include a response or not as part of error handling, so a blanket approach is not appropriate.
-          ServerAddon.delegate(server_addon_name, request_name, params.except(:request_name, :server_addon_name))
+          # Do not wrap this in additional error handlers. Server add-ons need to have the flexibility to choose if they want to
+          # include a response or not as part of their own error handling, so a blanket approach is not appropriate.
+          begin
+            ServerAddon.delegate(server_addon_name, request_name, params.except(:request_name, :server_addon_name))
+          rescue ServerAddon::MissingAddonError => e
+            send_error_response(e.message)
+          end
         end
       end
 
