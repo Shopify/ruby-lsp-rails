@@ -174,11 +174,7 @@ module RubyLsp
         # Delegate `request` with `params` to the server add-on with the given `name`
         def delegate(name, request, params)
           addon = @server_addons.fetch(name) do
-            checker = DidYouMean::SpellChecker.new(dictionary: @server_addons.keys)
-            suggestions = checker.correct(name)
-            msg = "No extension with name #{name}."
-            msg += " Did you mean: #{options.join(" / ")}" if suggestions.any?
-            raise ServerAddon::MissingAddonError, msg
+            raise ServerAddon::MissingAddonError, "No extension with name #{name}"
           end
           addon.execute(request, params)
         end
