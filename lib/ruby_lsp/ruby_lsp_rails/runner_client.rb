@@ -10,7 +10,7 @@ module RubyLsp
       class << self
         extend T::Sig
 
-        sig { params(outgoing_queue: Thread::Queue, global_state: RubyLsp::GlobalState).returns(RunnerClient) }
+        #: (Thread::Queue outgoing_queue, RubyLsp::GlobalState global_state) -> RunnerClient
         def create_client(outgoing_queue, global_state)
           if File.exist?("bin/rails")
             new(outgoing_queue, global_state)
@@ -48,10 +48,10 @@ module RubyLsp
 
       extend T::Sig
 
-      sig { returns(String) }
+      #: String
       attr_reader :rails_root
 
-      sig { params(outgoing_queue: Thread::Queue, global_state: RubyLsp::GlobalState).void }
+      #: (Thread::Queue outgoing_queue, RubyLsp::GlobalState global_state) -> void
       def initialize(outgoing_queue, global_state)
         @outgoing_queue = T.let(outgoing_queue, Thread::Queue)
         @mutex = T.let(Mutex.new, Mutex)
@@ -128,7 +128,7 @@ module RubyLsp
         raise InitializationError, @stderr.read
       end
 
-      sig { params(server_addon_path: String).void }
+      #: (String server_addon_path) -> void
       def register_server_addon(server_addon_path)
         send_notification("server_addon/register", server_addon_path: server_addon_path)
       rescue MessageError
@@ -139,7 +139,7 @@ module RubyLsp
         nil
       end
 
-      sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      #: (String name) -> Hash[Symbol, untyped]?
       def model(name)
         make_request("model", name: name)
       rescue MessageError
@@ -150,12 +150,7 @@ module RubyLsp
         nil
       end
 
-      sig do
-        params(
-          model_name: String,
-          association_name: String,
-        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
-      end
+      #: (model_name: String, association_name: String) -> Hash[Symbol, untyped]?
       def association_target_location(model_name:, association_name:)
         make_request(
           "association_target_location",
@@ -170,7 +165,7 @@ module RubyLsp
         nil
       end
 
-      sig { params(name: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      #: (String name) -> Hash[Symbol, untyped]?
       def route_location(name)
         make_request("route_location", name: name)
       rescue MessageError
@@ -181,7 +176,7 @@ module RubyLsp
         nil
       end
 
-      sig { params(controller: String, action: String).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      #: (controller: String, action: String) -> Hash[Symbol, untyped]?
       def route(controller:, action:)
         make_request("route_info", controller: controller, action: action)
       rescue MessageError
@@ -193,7 +188,7 @@ module RubyLsp
       end
 
       # Delegates a notification to a server add-on
-      sig { params(server_addon_name: String, request_name: String, params: T.untyped).void }
+      #: (server_addon_name: String, request_name: String, **untyped params) -> void
       def delegate_notification(server_addon_name:, request_name:, **params)
         send_notification(
           "server_addon/delegate",
@@ -203,7 +198,7 @@ module RubyLsp
         )
       end
 
-      sig { returns(T.nilable(String)) }
+      #: -> String?
       def pending_migrations_message
         response = make_request("pending_migrations_message")
         response[:pending_migrations_message] if response
@@ -215,7 +210,7 @@ module RubyLsp
         nil
       end
 
-      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      #: -> Hash[Symbol, untyped]?
       def run_migrations
         make_request("run_migrations")
       rescue MessageError
@@ -227,13 +222,7 @@ module RubyLsp
       end
 
       # Delegates a request to a server add-on
-      sig do
-        params(
-          server_addon_name: String,
-          request_name: String,
-          params: T.untyped,
-        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
-      end
+      #: (server_addon_name: String, request_name: String, **untyped params) -> Hash[Symbol, untyped]?
       def delegate_request(server_addon_name:, request_name:, **params)
         make_request(
           "server_addon/delegate",
@@ -245,7 +234,7 @@ module RubyLsp
         nil
       end
 
-      sig { void }
+      #: -> void
       def trigger_reload
         log_message("Reloading Rails application")
         send_notification("reload")
@@ -257,7 +246,7 @@ module RubyLsp
         nil
       end
 
-      sig { void }
+      #: -> void
       def shutdown
         log_message("Ruby LSP Rails shutting down server")
         send_message("shutdown")
@@ -268,34 +257,30 @@ module RubyLsp
         force_kill
       end
 
-      sig { returns(T::Boolean) }
+      #: -> bool
       def stopped?
         [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
       end
 
-      sig { returns(T::Boolean) }
+      #: -> bool
       def connected?
         true
       end
 
       private
 
-      sig do
-        params(
-          request: String,
-          params: T.untyped,
-        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
-      end
+      #: (String request, **untyped params) -> Hash[Symbol, untyped]?
       def make_request(request, **params)
         send_message(request, **params)
         read_response
       end
 
       # Notifications are like messages, but one-way, with no response sent back.
-      sig { params(request: String, params: T.untyped).void }
+      #: (String request, **untyped params) -> void
       def send_notification(request, **params) = send_message(request, **params)
 
-      sig { overridable.params(request: String, params: T.untyped).void }
+      # @overridable
+      #: (String request, **untyped params) -> void
       def send_message(request, **params)
         message = { method: request }
         message[:params] = params
@@ -308,7 +293,8 @@ module RubyLsp
         # The server connection died
       end
 
-      sig { overridable.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      # @overridable
+      #: -> Hash[Symbol, untyped]?
       def read_response
         raw_response = @mutex.synchronize do
           content_length = read_content_length
@@ -334,20 +320,20 @@ module RubyLsp
         nil
       end
 
-      sig { void }
+      #: -> void
       def force_kill
         # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
         Process.kill(T.must(Signal.list["KILL"]), @wait_thread.pid)
       end
 
-      sig { params(message: ::String, type: ::Integer).void }
+      #: (::String message, ?type: ::Integer) -> void
       def log_message(message, type: RubyLsp::Constant::MessageType::LOG)
         return if @outgoing_queue.closed?
 
         @outgoing_queue << RubyLsp::Notification.window_log_message(message, type: type)
       end
 
-      sig { returns(T.nilable(Integer)) }
+      #: -> Integer?
       def read_content_length
         headers = @stdout.gets("\r\n\r\n")
         return unless headers
@@ -359,7 +345,7 @@ module RubyLsp
       end
 
       # Read a server notification from stderr. Only intended to be used by notifier thread
-      sig { returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      #: -> Hash[Symbol, untyped]?
       def read_notification
         headers = @stderr.gets("\r\n\r\n")
         return unless headers
@@ -373,7 +359,7 @@ module RubyLsp
         JSON.parse(raw_content, symbolize_names: true)
       end
 
-      sig { params(global_state: GlobalState).returns(String) }
+      #: (GlobalState global_state) -> String
       def server_relevant_capabilities(global_state)
         {
           supports_progress: global_state.client_capabilities.supports_progress,
@@ -384,43 +370,48 @@ module RubyLsp
     class NullClient < RunnerClient
       extend T::Sig
 
-      sig { void }
+      #: -> void
       def initialize # rubocop:disable Lint/MissingSuper
       end
 
-      sig { override.void }
+      # @override
+      #: -> void
       def shutdown
         # no-op
       end
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def stopped?
         true
       end
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def rails_root
         Dir.pwd
       end
 
-      sig { returns(T::Boolean) }
+      #: -> bool
       def connected?
         false
       end
 
       private
 
-      sig { params(message: ::String, type: ::Integer).void }
+      #: (::String message, ?type: ::Integer) -> void
       def log_message(message, type: RubyLsp::Constant::MessageType::LOG)
         # no-op
       end
 
-      sig { override.params(request: String, params: T.untyped).void }
+      # @override
+      #: (String request, **untyped params) -> void
       def send_message(request, **params)
         # no-op
       end
 
-      sig { override.returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+      # @override
+      #: -> Hash[Symbol, untyped]?
       def read_response
         # no-op
       end

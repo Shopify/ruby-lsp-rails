@@ -6,7 +6,7 @@ module RubyLsp
     module ActiveSupportTestCaseHelper
       extend T::Sig
 
-      sig { params(node: Prism::CallNode).returns(T.nilable(String)) }
+      #: (Prism::CallNode node) -> String?
       def extract_test_case_name(node)
         message_value = node.message
         return unless message_value == "test" || message_value == "it"

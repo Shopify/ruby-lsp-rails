@@ -31,17 +31,7 @@ module RubyLsp
       extend T::Sig
       include Requests::Support::Common
 
-      sig do
-        params(
-          client: RunnerClient,
-          response_builder: RubyLsp::ResponseBuilders::CollectionResponseBuilder[T.any(
-            Interface::Location, Interface::LocationLink
-          )],
-          node_context: NodeContext,
-          index: RubyIndexer::Index,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
       def initialize(client, response_builder, node_context, index, dispatcher)
         @client = client
         @response_builder = response_builder
@@ -52,17 +42,17 @@ module RubyLsp
         dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
       end
 
-      sig { params(node: Prism::SymbolNode).void }
+      #: (Prism::SymbolNode node) -> void
       def on_symbol_node_enter(node)
         handle_possible_dsl(node)
       end
 
-      sig { params(node: Prism::StringNode).void }
+      #: (Prism::StringNode node) -> void
       def on_string_node_enter(node)
         handle_possible_dsl(node)
       end
 
-      sig { params(node: T.any(Prism::SymbolNode, Prism::StringNode)).void }
+      #: ((Prism::SymbolNode | Prism::StringNode) node) -> void
       def handle_possible_dsl(node)
         node = @node_context.call_node
         return unless node
@@ -79,7 +69,7 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         return unless self_receiver?(node)
 
@@ -94,7 +84,7 @@ module RubyLsp
 
       private
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def handle_callback(node)
         arguments = node.arguments&.arguments
         return unless arguments&.any?
@@ -113,7 +103,7 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def handle_association(node)
         first_argument = node.arguments&.arguments&.first
         return unless first_argument.is_a?(Prism::SymbolNode)
@@ -130,7 +120,7 @@ module RubyLsp
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def handle_route(node)
         result = @client.route_location(T.must(node.message))
         return unless result
@@ -138,7 +128,7 @@ module RubyLsp
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
-      sig { params(name: String).void }
+      #: (String name) -> void
       def collect_definitions(name)
         methods = @index.resolve_method(name, @nesting.join("::"))
         return unless methods
