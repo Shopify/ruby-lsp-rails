@@ -28,7 +28,6 @@ end
 
 module ActiveSupport
   class TestCase
-    extend T::Sig
     include RubyLsp::TestHelper
 
     def dummy_root

@@ -8,8 +8,6 @@ module RubyLsp
   module Rails
     class RunnerClient
       class << self
-        extend T::Sig
-
         #: (Thread::Queue outgoing_queue, RubyLsp::GlobalState global_state) -> RunnerClient
         def create_client(outgoing_queue, global_state)
           if File.exist?("bin/rails")
@@ -45,8 +43,6 @@ module RubyLsp
       class InitializationError < StandardError; end
       class MessageError < StandardError; end
       class EmptyMessageError < MessageError; end
-
-      extend T::Sig
 
       #: String
       attr_reader :rails_root
@@ -368,8 +364,6 @@ module RubyLsp
     end
 
     class NullClient < RunnerClient
-      extend T::Sig
-
       #: -> void
       def initialize # rubocop:disable Lint/MissingSuper
       end

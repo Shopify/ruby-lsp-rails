@@ -19,8 +19,6 @@ require_relative "indexing_enhancement"
 module RubyLsp
   module Rails
     class Addon < ::RubyLsp::Addon
-      extend T::Sig
-
       RUN_MIGRATIONS_TITLE = "Run Migrations"
 
       #: -> void

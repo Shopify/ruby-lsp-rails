@@ -9,7 +9,6 @@ module RubyLsp
     # request allows users to navigate between associations, validations, callbacks and ActiveSupport test cases with
     # VS Code's "Go to Symbol" feature.
     class DocumentSymbol
-      extend T::Sig
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
 

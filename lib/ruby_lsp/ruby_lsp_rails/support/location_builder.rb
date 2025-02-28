@@ -6,8 +6,6 @@ module RubyLsp
     module Support
       class LocationBuilder
         class << self
-          extend T::Sig
-
           #: (String location_string) -> Interface::Location
           def line_location_from_s(location_string)
             *file_parts, line = location_string.split(":")

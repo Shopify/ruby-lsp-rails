@@ -4,8 +4,6 @@
 module RubyLsp
   module Rails
     module ActiveSupportTestCaseHelper
-      extend T::Sig
-
       #: (Prism::CallNode node) -> String?
       def extract_test_case_name(node)
         message_value = node.message
