@@ -387,13 +387,14 @@ module RubyLsp
         nil
       end
 
-      #: (const: singleton(ActiveRecord::Base)?) -> bool
+      #: (const: Module?) -> bool
       def active_record_model?(const)
         !!(
           const &&
             defined?(ActiveRecord) &&
             const.is_a?(Class) &&
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
+            const < ActiveRecord::Base && # this is just to narrow the type for Sorbet
           !const.abstract_class?
         )
       end
