@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "json"
@@ -380,11 +380,14 @@ module RubyLsp
         association_klass = const.reflect_on_association(params[:association_name].intern).klass
         source_location = Object.const_source_location(association_klass.to_s)
 
+        raise "Could not determine source location" unless source_location
+
         { location: source_location.first + ":" + source_location.second.to_s }
       rescue NameError
         nil
       end
 
+      #: (const: singleton(ActiveRecord::Base)?) -> bool
       def active_record_model?(const)
         !!(
           const &&
