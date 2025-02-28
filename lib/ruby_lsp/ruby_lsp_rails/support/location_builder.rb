@@ -8,7 +8,7 @@ module RubyLsp
         class << self
           extend T::Sig
 
-          sig { params(location_string: String).returns(Interface::Location) }
+          #: (String location_string) -> Interface::Location
           def line_location_from_s(location_string)
             *file_parts, line = location_string.split(":")
             raise ArgumentError, "Invalid location string given" if file_parts.empty?

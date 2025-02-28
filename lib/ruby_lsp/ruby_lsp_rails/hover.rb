@@ -18,15 +18,7 @@ module RubyLsp
       extend T::Sig
       include Requests::Support::Common
 
-      sig do
-        params(
-          client: RunnerClient,
-          response_builder: ResponseBuilders::Hover,
-          node_context: NodeContext,
-          global_state: GlobalState,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      #: (RunnerClient client, ResponseBuilders::Hover response_builder, NodeContext node_context, GlobalState global_state, Prism::Dispatcher dispatcher) -> void
       def initialize(client, response_builder, node_context, global_state, dispatcher)
         @client = client
         @response_builder = response_builder
@@ -35,7 +27,7 @@ module RubyLsp
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter)
       end
 
-      sig { params(node: Prism::ConstantPathNode).void }
+      #: (Prism::ConstantPathNode node) -> void
       def on_constant_path_node_enter(node)
         entries = @index.resolve(node.slice, @nesting)
         return unless entries
@@ -44,7 +36,7 @@ module RubyLsp
         generate_column_content(name)
       end
 
-      sig { params(node: Prism::ConstantReadNode).void }
+      #: (Prism::ConstantReadNode node) -> void
       def on_constant_read_node_enter(node)
         entries = @index.resolve(node.name.to_s, @nesting)
         return unless entries
@@ -54,7 +46,7 @@ module RubyLsp
 
       private
 
-      sig { params(name: String).void }
+      #: (String name) -> void
       def generate_column_content(name)
         model = @client.model(name)
         return if model.nil?
@@ -79,7 +71,7 @@ module RubyLsp
         )
       end
 
-      sig { params(default_value: String, type: String).returns(String) }
+      #: (String default_value, String type) -> String
       def format_default(default_value, type)
         case type
         when "boolean"

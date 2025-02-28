@@ -23,7 +23,7 @@ module RubyLsp
 
       RUN_MIGRATIONS_TITLE = "Run Migrations"
 
-      sig { void }
+      #: -> void
       def initialize
         super
 
@@ -53,12 +53,13 @@ module RubyLsp
         end
       end
 
-      sig { returns(RunnerClient) }
+      #: -> RunnerClient
       def rails_runner_client
         @addon_mutex.synchronize { @rails_runner_client }
       end
 
-      sig { override.params(global_state: GlobalState, outgoing_queue: Thread::Queue).void }
+      # @override
+      #: (GlobalState global_state, Thread::Queue outgoing_queue) -> void
       def activate(global_state, outgoing_queue)
         @global_state = global_state
         @outgoing_queue = outgoing_queue
@@ -73,82 +74,56 @@ module RubyLsp
         @client_mutex.unlock
       end
 
-      sig { override.void }
+      # @override
+      #: -> void
       def deactivate
         @rails_runner_client.shutdown
       end
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def version
         VERSION
       end
 
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
-      sig do
-        override.params(
-          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
-          uri: URI::Generic,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      # @override
+      #: (ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens] response_builder, URI::Generic uri, Prism::Dispatcher dispatcher) -> void
       def create_code_lens_listener(response_builder, uri, dispatcher)
         return unless @global_state
 
         CodeLens.new(@rails_runner_client, @global_state, response_builder, uri, dispatcher)
       end
 
-      sig do
-        override.params(
-          response_builder: ResponseBuilders::Hover,
-          node_context: NodeContext,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      # @override
+      #: (ResponseBuilders::Hover response_builder, NodeContext node_context, Prism::Dispatcher dispatcher) -> void
       def create_hover_listener(response_builder, node_context, dispatcher)
         return unless @global_state
 
         Hover.new(@rails_runner_client, response_builder, node_context, @global_state, dispatcher)
       end
 
-      sig do
-        override.params(
-          response_builder: ResponseBuilders::DocumentSymbol,
-          dispatcher: Prism::Dispatcher,
-        ).returns(Object)
-      end
+      # @override
+      #: (ResponseBuilders::DocumentSymbol response_builder, Prism::Dispatcher dispatcher) -> Object
       def create_document_symbol_listener(response_builder, dispatcher)
         DocumentSymbol.new(response_builder, dispatcher)
       end
 
-      sig do
-        override.params(
-          response_builder: ResponseBuilders::CollectionResponseBuilder[T.any(
-            Interface::Location, Interface::LocationLink
-          )],
-          uri: URI::Generic,
-          node_context: NodeContext,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      # @override
+      #: (ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, URI::Generic uri, NodeContext node_context, Prism::Dispatcher dispatcher) -> void
       def create_definition_listener(response_builder, uri, node_context, dispatcher)
         return unless @global_state
 
         Definition.new(@rails_runner_client, response_builder, node_context, @global_state.index, dispatcher)
       end
 
-      sig do
-        override.params(
-          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
-          node_context: NodeContext,
-          dispatcher: Prism::Dispatcher,
-          uri: URI::Generic,
-        ).void
-      end
+      # @override
+      #: (ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def create_completion_listener(response_builder, node_context, dispatcher, uri)
         Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
       end
 
-      sig { params(changes: T::Array[{ uri: String, type: Integer }]).void }
+      #: (Array[{uri: String, type: Integer}] changes) -> void
       def workspace_did_change_watched_files(changes)
         if changes.any? { |c| c[:uri].end_with?("db/schema.rb") || c[:uri].end_with?("structure.sql") }
           @rails_runner_client.trigger_reload
@@ -162,12 +137,14 @@ module RubyLsp
         end
       end
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def name
         "Ruby LSP Rails"
       end
 
-      sig { override.params(title: String).void }
+      # @override
+      #: (String title) -> void
       def handle_window_show_message_response(title)
         if title == RUN_MIGRATIONS_TITLE
 
@@ -194,7 +171,7 @@ module RubyLsp
 
       private
 
-      sig { params(id: String, title: String, percentage: T.nilable(Integer), message: T.nilable(String)).void }
+      #: (String id, String title, ?percentage: Integer?, ?message: String?) -> void
       def begin_progress(id, title, percentage: nil, message: nil)
         return unless @global_state&.client_capabilities&.supports_progress && @outgoing_queue
 
@@ -212,21 +189,21 @@ module RubyLsp
         )
       end
 
-      sig { params(id: String, percentage: T.nilable(Integer), message: T.nilable(String)).void }
-      def report_progress(id,  percentage: nil, message: nil)
+      #: (String id, ?percentage: Integer?, ?message: String?) -> void
+      def report_progress(id, percentage: nil, message: nil)
         return unless @global_state&.client_capabilities&.supports_progress && @outgoing_queue
 
         @outgoing_queue << Notification.progress_report(id, percentage: percentage, message: message)
       end
 
-      sig { params(id: String).void }
+      #: (String id) -> void
       def end_progress(id)
         return unless @global_state&.client_capabilities&.supports_progress && @outgoing_queue
 
         @outgoing_queue << Notification.progress_end(id)
       end
 
-      sig { params(global_state: GlobalState, outgoing_queue: Thread::Queue).void }
+      #: (global_state: GlobalState, outgoing_queue: Thread::Queue) -> void
       def register_additional_file_watchers(global_state:, outgoing_queue:)
         return unless global_state.client_capabilities.supports_watching_files
 
@@ -247,7 +224,7 @@ module RubyLsp
         )
       end
 
-      sig { returns(Interface::FileSystemWatcher) }
+      #: -> Interface::FileSystemWatcher
       def structure_sql_file_watcher
         Interface::FileSystemWatcher.new(
           glob_pattern: "**/*structure.sql",
@@ -255,7 +232,7 @@ module RubyLsp
         )
       end
 
-      sig { returns(Interface::FileSystemWatcher) }
+      #: -> Interface::FileSystemWatcher
       def fixture_file_watcher
         Interface::FileSystemWatcher.new(
           glob_pattern: "**/fixtures/**/*.{yml,yaml,yml.erb,yaml.erb}",
@@ -263,7 +240,7 @@ module RubyLsp
         )
       end
 
-      sig { void }
+      #: -> void
       def offer_to_run_pending_migrations
         return unless @outgoing_queue
         return unless @global_state&.client_capabilities&.window_show_message_supports_extra_properties

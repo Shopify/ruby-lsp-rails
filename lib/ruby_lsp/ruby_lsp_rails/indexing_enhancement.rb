@@ -6,11 +6,8 @@ module RubyLsp
     class IndexingEnhancement < RubyIndexer::Enhancement
       extend T::Sig
 
-      sig do
-        override.params(
-          call_node: Prism::CallNode,
-        ).void
-      end
+      # @override
+      #: (Prism::CallNode call_node) -> void
       def on_call_node_enter(call_node)
         owner = @listener.current_owner
         return unless owner
@@ -26,11 +23,8 @@ module RubyLsp
         end
       end
 
-      sig do
-        override.params(
-          call_node: Prism::CallNode,
-        ).void
-      end
+      # @override
+      #: (Prism::CallNode call_node) -> void
       def on_call_node_leave(call_node)
         if call_node.name == :class_methods && call_node.block
           @listener.pop_namespace_stack
@@ -39,12 +33,7 @@ module RubyLsp
 
       private
 
-      sig do
-        params(
-          owner: RubyIndexer::Entry::Namespace,
-          call_node: Prism::CallNode,
-        ).void
-      end
+      #: (RubyIndexer::Entry::Namespace owner, Prism::CallNode call_node) -> void
       def handle_association(owner, call_node)
         arguments = call_node.arguments&.arguments
         return unless arguments
@@ -73,7 +62,7 @@ module RubyLsp
         @listener.add_method("#{name}=", loc, writer_signatures)
       end
 
-      sig { params(owner: RubyIndexer::Entry::Namespace, call_node: Prism::CallNode).void }
+      #: (RubyIndexer::Entry::Namespace owner, Prism::CallNode call_node) -> void
       def handle_concern_extend(owner, call_node)
         arguments = call_node.arguments&.arguments
         return unless arguments
@@ -98,7 +87,7 @@ module RubyLsp
         end
       end
 
-      sig { params(owner: RubyIndexer::Entry::Namespace, call_node: Prism::CallNode).void }
+      #: (RubyIndexer::Entry::Namespace owner, Prism::CallNode call_node) -> void
       def handle_class_methods(owner, call_node)
         return unless call_node.block
 

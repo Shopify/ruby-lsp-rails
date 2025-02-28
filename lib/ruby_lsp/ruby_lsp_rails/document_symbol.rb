@@ -13,12 +13,7 @@ module RubyLsp
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
 
-      sig do
-        params(
-          response_builder: ResponseBuilders::DocumentSymbol,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      #: (ResponseBuilders::DocumentSymbol response_builder, Prism::Dispatcher dispatcher) -> void
       def initialize(response_builder, dispatcher)
         @response_builder = response_builder
         @namespace_stack = T.let([], T::Array[String])
@@ -33,7 +28,7 @@ module RubyLsp
         )
       end
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         return if @namespace_stack.empty?
 
@@ -62,39 +57,39 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::ClassNode).void }
+      #: (Prism::ClassNode node) -> void
       def on_class_node_enter(node)
         add_to_namespace_stack(node)
       end
 
-      sig { params(node: Prism::ClassNode).void }
+      #: (Prism::ClassNode node) -> void
       def on_class_node_leave(node)
         remove_from_namespace_stack(node)
       end
 
-      sig { params(node: Prism::ModuleNode).void }
+      #: (Prism::ModuleNode node) -> void
       def on_module_node_enter(node)
         add_to_namespace_stack(node)
       end
 
-      sig { params(node: Prism::ModuleNode).void }
+      #: (Prism::ModuleNode node) -> void
       def on_module_node_leave(node)
         remove_from_namespace_stack(node)
       end
 
       private
 
-      sig { params(node: T.any(Prism::ClassNode, Prism::ModuleNode)).void }
+      #: ((Prism::ClassNode | Prism::ModuleNode) node) -> void
       def add_to_namespace_stack(node)
         @namespace_stack << node.constant_path.slice
       end
 
-      sig { params(node: T.any(Prism::ClassNode, Prism::ModuleNode)).void }
+      #: ((Prism::ClassNode | Prism::ModuleNode) node) -> void
       def remove_from_namespace_stack(node)
         @namespace_stack.delete(node.constant_path.slice)
       end
 
-      sig { params(node: Prism::CallNode, message: String).void }
+      #: (Prism::CallNode node, String message) -> void
       def handle_all_arg_types(node, message)
         block = node.block
 
@@ -164,7 +159,7 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::CallNode, message: String).void }
+      #: (Prism::CallNode node, String message) -> void
       def handle_symbol_and_string_arg_types(node, message)
         arguments = node.arguments&.arguments
         return unless arguments&.any?
@@ -193,7 +188,7 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::CallNode, message: String).void }
+      #: (Prism::CallNode node, String message) -> void
       def handle_class_arg_types(node, message)
         arguments = node.arguments&.arguments
         return unless arguments&.any?
@@ -213,13 +208,7 @@ module RubyLsp
         end
       end
 
-      sig do
-        params(
-          name: String,
-          range: RubyLsp::Interface::Range,
-          selection_range: RubyLsp::Interface::Range,
-        ).void
-      end
+      #: (name: String, range: RubyLsp::Interface::Range, selection_range: RubyLsp::Interface::Range) -> void
       def append_document_symbol(name:, range:, selection_range:)
         @response_builder.last.children << RubyLsp::Interface::DocumentSymbol.new(
           name: name,

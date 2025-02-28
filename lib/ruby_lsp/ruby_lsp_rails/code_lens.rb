@@ -76,15 +76,7 @@ module RubyLsp
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
 
-      sig do
-        params(
-          client: RunnerClient,
-          global_state: GlobalState,
-          response_builder:  ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens],
-          uri: URI::Generic,
-          dispatcher: Prism::Dispatcher,
-        ).void
-      end
+      #: (RunnerClient client, GlobalState global_state, ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens] response_builder, URI::Generic uri, Prism::Dispatcher dispatcher) -> void
       def initialize(client, global_state, response_builder, uri, dispatcher)
         @client = client
         @global_state = global_state
@@ -105,7 +97,7 @@ module RubyLsp
         )
       end
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         content = extract_test_case_name(node)
 
@@ -117,7 +109,7 @@ module RubyLsp
       end
 
       # Although uncommon, Rails tests can be written with the classic "def test_name" syntax.
-      sig { params(node: Prism::DefNode).void }
+      #: (Prism::DefNode node) -> void
       def on_def_node_enter(node)
         method_name = node.name.to_s
 
@@ -133,7 +125,7 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::ClassNode).void }
+      #: (Prism::ClassNode node) -> void
       def on_class_node_enter(node)
         class_name = node.constant_path.slice
         superclass_name = node.superclass&.slice
@@ -157,7 +149,7 @@ module RubyLsp
         end
       end
 
-      sig { params(node: Prism::ClassNode).void }
+      #: (Prism::ClassNode node) -> void
       def on_class_node_leave(node)
         class_name = node.constant_path.slice
 
@@ -168,19 +160,19 @@ module RubyLsp
         @constant_name_stack.pop
       end
 
-      sig { params(node: Prism::ModuleNode).void }
+      #: (Prism::ModuleNode node) -> void
       def on_module_node_enter(node)
         @constant_name_stack << [node.constant_path.slice, nil]
       end
 
-      sig { params(node: Prism::ModuleNode).void }
+      #: (Prism::ModuleNode node) -> void
       def on_module_node_leave(node)
         @constant_name_stack.pop
       end
 
       private
 
-      sig { returns(T.nilable(T::Boolean)) }
+      #: -> bool?
       def controller?
         class_name, superclass_name = @constant_name_stack.last
         return false unless class_name && superclass_name
@@ -188,7 +180,7 @@ module RubyLsp
         class_name.end_with?("Controller") && superclass_name.end_with?("Controller")
       end
 
-      sig { params(node: Prism::DefNode).void }
+      #: (Prism::DefNode node) -> void
       def add_jump_to_view(node)
         class_name = @constant_name_stack.map(&:first).join("::")
         action_name = node.name
@@ -216,7 +208,7 @@ module RubyLsp
         )
       end
 
-      sig { params(node: Prism::DefNode).void }
+      #: (Prism::DefNode node) -> void
       def add_route_code_lens_to_action(node)
         class_name, _ = T.must(@constant_name_stack.last)
         route = @client.route(controller: class_name, action: node.name.to_s)
@@ -233,22 +225,22 @@ module RubyLsp
         )
       end
 
-      sig { returns(String) }
+      #: -> String
       def test_command
         "#{RbConfig.ruby} bin/rails test"
       end
 
-      sig { returns(String) }
+      #: -> String
       def migrate_command
         "#{RbConfig.ruby} bin/rails db:migrate"
       end
 
-      sig { returns(T.nilable(String)) }
+      #: -> String?
       def migration_version
         File.basename(T.must(@path)).split("_").first
       end
 
-      sig { params(node: Prism::Node, name: String, command: String).void }
+      #: (Prism::Node node, name: String, command: String) -> void
       def add_migrate_code_lens(node, name:, command:)
         return unless @path
 
@@ -261,7 +253,7 @@ module RubyLsp
         )
       end
 
-      sig { params(node: Prism::Node, name: String, command: String, kind: Symbol).void }
+      #: (Prism::Node node, name: String, command: String, kind: Symbol) -> void
       def add_test_code_lens(node, name:, command:, kind:)
         return unless @path
         return unless @global_state.test_library == "rails"

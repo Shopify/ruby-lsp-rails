@@ -7,15 +7,8 @@ module RubyLsp
       extend T::Sig
       include Requests::Support::Common
 
-      sig do
-        override.params(
-          client: RunnerClient,
-          response_builder: ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem],
-          node_context: NodeContext,
-          dispatcher: Prism::Dispatcher,
-          uri: URI::Generic,
-        ).void
-      end
+      # @override
+      #: (RunnerClient client, ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def initialize(client, response_builder, node_context, dispatcher, uri)
         @response_builder = response_builder
         @client = client
@@ -26,7 +19,7 @@ module RubyLsp
         )
       end
 
-      sig { params(node: Prism::CallNode).void }
+      #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         call_node = @node_context.call_node
         return unless call_node
@@ -39,7 +32,7 @@ module RubyLsp
 
       private
 
-      sig { params(node: Prism::CallNode, receiver: Prism::ConstantReadNode).void }
+      #: (node: Prism::CallNode, receiver: Prism::ConstantReadNode) -> void
       def handle_active_record_where_completions(node:, receiver:)
         resolved_class = @client.model(receiver.name.to_s)
         return if resolved_class.nil?
@@ -70,7 +63,7 @@ module RubyLsp
         end
       end
 
-      sig { params(arguments: T::Array[Prism::Node]).returns(T::Hash[String, Prism::Node]) }
+      #: (arguments: Array[Prism::Node]) -> Hash[String, Prism::Node]
       def index_call_node_args(arguments:)
         indexed_call_node_args = {}
         arguments.each do |argument|
