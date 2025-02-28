@@ -72,7 +72,6 @@ module RubyLsp
     # Note: Complex routing configurations may not be supported.
     #
     class CodeLens
-      extend T::Sig
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
 

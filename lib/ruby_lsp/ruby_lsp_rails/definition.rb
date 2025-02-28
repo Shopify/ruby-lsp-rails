@@ -28,7 +28,6 @@ module RubyLsp
     # - If using `constraints`, the route can only be found if the constraints are met.
     # - Changes to routes won't be picked up until the server is restarted.
     class Definition
-      extend T::Sig
       include Requests::Support::Common
 
       #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void

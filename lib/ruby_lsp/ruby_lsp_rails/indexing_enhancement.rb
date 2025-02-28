@@ -4,8 +4,6 @@
 module RubyLsp
   module Rails
     class IndexingEnhancement < RubyIndexer::Enhancement
-      extend T::Sig
-
       # @override
       #: (Prism::CallNode call_node) -> void
       def on_call_node_enter(call_node)

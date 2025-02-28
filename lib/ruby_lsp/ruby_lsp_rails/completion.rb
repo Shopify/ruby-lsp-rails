@@ -4,7 +4,6 @@
 module RubyLsp
   module Rails
     class Completion
-      extend T::Sig
       include Requests::Support::Common
 
       # @override

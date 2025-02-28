@@ -15,7 +15,6 @@ module RubyLsp
     # # ^ hovering here will show information about the User model
     # ```
     class Hover
-      extend T::Sig
       include Requests::Support::Common
 
       #: (RunnerClient client, ResponseBuilders::Hover response_builder, NodeContext node_context, GlobalState global_state, Prism::Dispatcher dispatcher) -> void
