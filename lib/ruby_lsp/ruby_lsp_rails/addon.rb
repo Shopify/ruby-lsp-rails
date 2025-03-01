@@ -94,14 +94,6 @@ module RubyLsp
       end
 
       # @override
-      #: (ResponseBuilders::Hover response_builder, NodeContext node_context, Prism::Dispatcher dispatcher) -> void
-      def create_hover_listener(response_builder, node_context, dispatcher)
-        return unless @global_state
-
-        Hover.new(@rails_runner_client, response_builder, node_context, @global_state, dispatcher)
-      end
-
-      # @override
       #: (ResponseBuilders::DocumentSymbol response_builder, Prism::Dispatcher dispatcher) -> Object
       def create_document_symbol_listener(response_builder, dispatcher)
         DocumentSymbol.new(response_builder, dispatcher)
