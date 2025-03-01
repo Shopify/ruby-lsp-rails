@@ -73,12 +73,6 @@ module RubyLsp
       end
 
       # @override
-      #: -> void
-      def deactivate
-        @rails_runner_client.shutdown
-      end
-
-      # @override
       #: -> String
       def version
         VERSION
