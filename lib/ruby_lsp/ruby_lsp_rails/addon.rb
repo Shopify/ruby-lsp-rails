@@ -84,15 +84,6 @@ module RubyLsp
         VERSION
       end
 
-      # Creates a new CodeLens listener. This method is invoked on every CodeLens request
-      # @override
-      #: (ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens] response_builder, URI::Generic uri, Prism::Dispatcher dispatcher) -> void
-      def create_code_lens_listener(response_builder, uri, dispatcher)
-        return unless @global_state
-
-        CodeLens.new(@rails_runner_client, @global_state, response_builder, uri, dispatcher)
-      end
-
       # @override
       #: (ResponseBuilders::Hover response_builder, NodeContext node_context, Prism::Dispatcher dispatcher) -> void
       def create_hover_listener(response_builder, node_context, dispatcher)
