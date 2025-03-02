@@ -108,14 +108,6 @@ module RubyLsp
       end
 
       # @override
-      #: (ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, URI::Generic uri, NodeContext node_context, Prism::Dispatcher dispatcher) -> void
-      def create_definition_listener(response_builder, uri, node_context, dispatcher)
-        return unless @global_state
-
-        Definition.new(@rails_runner_client, response_builder, node_context, @global_state.index, dispatcher)
-      end
-
-      # @override
       #: (ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def create_completion_listener(response_builder, node_context, dispatcher, uri)
         Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
