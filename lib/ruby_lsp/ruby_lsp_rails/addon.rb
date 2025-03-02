@@ -102,12 +102,6 @@ module RubyLsp
       end
 
       # @override
-      #: (ResponseBuilders::DocumentSymbol response_builder, Prism::Dispatcher dispatcher) -> Object
-      def create_document_symbol_listener(response_builder, dispatcher)
-        DocumentSymbol.new(response_builder, dispatcher)
-      end
-
-      # @override
       #: (ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, URI::Generic uri, NodeContext node_context, Prism::Dispatcher dispatcher) -> void
       def create_definition_listener(response_builder, uri, node_context, dispatcher)
         return unless @global_state
