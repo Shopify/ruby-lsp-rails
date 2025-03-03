@@ -1,7 +1,12 @@
 # typed: true
 # frozen_string_literal: true
 
-require "test_helper"
+# Configure Rails Environment
+ENV["RAILS_ENV"] = "test"
+require_relative "../dummy/config/environment"
+
+require "minitest/autorun"
+require "mocha/minitest"
 require "ruby_lsp/ruby_lsp_rails/server"
 
 class ServerTest < ActiveSupport::TestCase
@@ -246,7 +251,7 @@ class ServerTest < ActiveSupport::TestCase
       end
     end
 
-    T.unsafe(server).print_it!
+    server.print_it!
 
     assert_match("Content-Length: 70\r\n\r\n", stderr.string)
     assert_match(
