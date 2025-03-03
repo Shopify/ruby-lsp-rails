@@ -115,12 +115,6 @@ module RubyLsp
         Definition.new(@rails_runner_client, response_builder, node_context, @global_state.index, dispatcher)
       end
 
-      # @override
-      #: (ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
-      def create_completion_listener(response_builder, node_context, dispatcher, uri)
-        Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
-      end
-
       #: (Array[{uri: String, type: Integer}] changes) -> void
       def workspace_did_change_watched_files(changes)
         if changes.any? { |c| c[:uri].end_with?("db/schema.rb") || c[:uri].end_with?("structure.sql") }
