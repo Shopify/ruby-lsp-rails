@@ -78,12 +78,6 @@ module RubyLsp
         @rails_runner_client.shutdown
       end
 
-      # @override
-      #: -> String
-      def version
-        VERSION
-      end
-
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
       # @override
       #: (ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens] response_builder, URI::Generic uri, Prism::Dispatcher dispatcher) -> void
