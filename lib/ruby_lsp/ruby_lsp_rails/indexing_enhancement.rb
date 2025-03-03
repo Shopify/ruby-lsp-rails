@@ -21,14 +21,6 @@ module RubyLsp
         end
       end
 
-      # @override
-      #: (Prism::CallNode call_node) -> void
-      def on_call_node_leave(call_node)
-        if call_node.name == :class_methods && call_node.block
-          @listener.pop_namespace_stack
-        end
-      end
-
       private
 
       #: (RubyIndexer::Entry::Namespace owner, Prism::CallNode call_node) -> void
