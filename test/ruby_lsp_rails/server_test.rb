@@ -9,6 +9,12 @@ require "minitest/autorun"
 require "mocha/minitest"
 require "ruby_lsp/ruby_lsp_rails/server"
 
+if defined?(T)
+  puts "T is defined, indicating that sorbet-runtime was loaded"
+  puts "This test should run without sorbet-runtime"
+  exit(1)
+end
+
 class ServerTest < ActiveSupport::TestCase
   setup do
     @stdout = StringIO.new
