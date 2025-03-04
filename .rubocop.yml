@@ -1,9 +1,11 @@
 inherit_gem:
   rubocop-shopify: rubocop.yml
 
+plugins:
+ - rubocop-minitest
+
 require:
  - rubocop-sorbet
- - rubocop-minitest
  - rubocop-rake
 
 AllCops:
