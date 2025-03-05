@@ -20,6 +20,8 @@ module RubyLsp
             ["active", "boolean", "true", false],
           ],
           primary_keys: ["id"],
+          foreign_keys: ["country_id"],
+          indexes: [{ name: "index_users_on_country_id", columns: ["country_id"], unique: false }],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -41,21 +43,25 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          **id**: integer (PK)
+          ### *Columns*
+          - **id**: integer (PK)
 
-          **first_name**: string - default: ""
+          - **first_name**: string - default: ""
 
-          **last_name**: string
+          - **last_name**: string
 
-          **age**: integer - default: 0
+          - **age**: integer - default: 0
 
-          **created_at**: datetime - not null
+          - **created_at**: datetime - not null
 
-          **updated_at**: datetime - not null
+          - **updated_at**: datetime - not null
 
-          **country_id**: integer - not null
+          - **country_id**: integer (FK) - not null
 
-          **active**: boolean - default: true - not null
+          - **active**: boolean - default: true - not null
+
+          ### *Indexes*
+          - **index_users_on_country_id** (country_id)
         CONTENT
       end
 
@@ -73,6 +79,8 @@ module RubyLsp
             ["active", "boolean", "true", false],
           ],
           primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [{ name: "index_users_on_country_id", columns: ["country_id"], unique: true }],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -96,21 +104,25 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          **id**: integer (PK)
+          ### *Columns*
+          - **id**: integer (PK)
 
-          **first_name**: string - default: ""
+          - **first_name**: string - default: ""
 
-          **last_name**: string
+          - **last_name**: string
 
-          **age**: integer - default: 0
+          - **age**: integer - default: 0
 
-          **created_at**: datetime - not null
+          - **created_at**: datetime - not null
 
-          **updated_at**: datetime - not null
+          - **updated_at**: datetime - not null
 
-          **country_id**: integer - not null
+          - **country_id**: integer - not null
 
-          **active**: boolean - default: true - not null
+          - **active**: boolean - default: true - not null
+
+          ### *Indexes*
+          - **index_users_on_country_id** (country_id) (unique)
         CONTENT
       end
 
@@ -125,6 +137,8 @@ module RubyLsp
             ["updated_at", "datetime"],
           ],
           primary_keys: ["order_id", "product_id"],
+          foreign_keys: [],
+          indexes: [],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -146,15 +160,16 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          **order_id**: integer (PK)
+          ### *Columns*
+          - **order_id**: integer (PK)
 
-          **product_id**: integer (PK)
+          - **product_id**: integer (PK)
 
-          **note**: string - not null
+          - **note**: string - not null
 
-          **created_at**: datetime - not null
+          - **created_at**: datetime - not null
 
-          **updated_at**: datetime - not null
+          - **updated_at**: datetime - not null
         CONTENT
       end
 
@@ -163,6 +178,8 @@ module RubyLsp
           schema_file: "#{dummy_root}/db/structure.sql",
           columns: [],
           primary_keys: [],
+          foreign_keys: [],
+          indexes: [],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)
@@ -185,6 +202,8 @@ module RubyLsp
           schema_file: nil,
           columns: [],
           primary_keys: [],
+          foreign_keys: [],
+          indexes: [],
         }
 
         RunnerClient.any_instance.stubs(model: expected_response)

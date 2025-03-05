@@ -57,17 +57,38 @@ module RubyLsp
           category: :documentation,
         ) if schema_file
 
-        @response_builder.push(
-          model[:columns].map do |name, type, default_value, nullable|
-            primary_key_suffix = " (PK)" if model[:primary_keys].include?(name)
-            suffixes = []
-            suffixes << "default: #{format_default(default_value, type)}" if default_value
-            suffixes << "not null" unless nullable || primary_key_suffix
-            suffix_string = " - #{suffixes.join(" - ")}" if suffixes.any?
-            "**#{name}**: #{type}#{primary_key_suffix}#{suffix_string}\n"
-          end.join("\n"),
-          category: :documentation,
-        )
+        if model[:columns].any?
+          @response_builder.push(
+            "### *Columns*",
+            category: :documentation,
+          )
+          @response_builder.push(
+            model[:columns].map do |name, type, default_value, nullable|
+              primary_key_suffix = " (PK)" if model[:primary_keys].include?(name)
+              foreign_key_suffix = " (FK)" if model[:foreign_keys].include?(name)
+              suffixes = []
+              suffixes << "default: #{format_default(default_value, type)}" if default_value
+              suffixes << "not null" unless nullable || primary_key_suffix
+              suffix_string = " - #{suffixes.join(" - ")}" if suffixes.any?
+              "- **#{name}**: #{type}#{primary_key_suffix}#{foreign_key_suffix}#{suffix_string}\n"
+            end.join("\n"),
+            category: :documentation,
+          )
+        end
+
+        if model[:indexes].any?
+          @response_builder.push(
+            "### *Indexes*",
+            category: :documentation,
+          )
+          @response_builder.push(
+            model[:indexes].map do |index|
+              uniqueness = index[:unique] ? " (unique)" : ""
+              "- **#{index[:name]}** (#{index[:columns].join(",")})#{uniqueness}"
+            end.join("\n"),
+            category: :documentation,
+          )
+        end
       end
 
       #: (String default_value, String type) -> String

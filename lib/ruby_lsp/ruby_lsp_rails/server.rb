@@ -364,6 +364,8 @@ module RubyLsp
         info = {
           columns: const.columns.map { |column| [column.name, column.type, column.default, column.null] },
           primary_keys: Array(const.primary_key),
+          foreign_keys: collect_model_foreign_keys(const),
+          indexes: collect_model_indexes(const),
         }
 
         if ActiveRecord::Tasks::DatabaseTasks.respond_to?(:schema_dump_path)
@@ -434,6 +436,29 @@ module RubyLsp
         with_notification_error_handling("clear_file_system_resolver_hooks") do
           ::ActionView::PathRegistry.file_system_resolver_hooks.clear
         end
+      end
+
+      def collect_model_foreign_keys(model)
+        return [] unless model.connection.respond_to?(:supports_foreign_keys?) &&
+          model.connection.supports_foreign_keys?
+
+        model.connection.foreign_keys(model.table_name).map do |key_definition|
+          key_definition.options[:column]
+        end
+      rescue NotImplementedError
+        []
+      end
+
+      def collect_model_indexes(model)
+        model.connection.indexes(model.table_name).map do |index_definition|
+          {
+            name: index_definition.name,
+            columns: index_definition.columns,
+            unique: index_definition.unique,
+          }
+        end
+      rescue NotImplementedError
+        []
       end
     end
   end
