@@ -43,8 +43,12 @@ module RubyLsp
           ["country_id", "integer", nil, false],
           ["active", "boolean", "1", false],
         ]
+        foreign_keys = ["country_id"]
+        indexes = [{ name: "index_users_on_country_id", columns: ["country_id"], unique: false }]
         response = T.must(@client.model("User"))
         assert_equal(columns, response.fetch(:columns))
+        assert_equal(foreign_keys, response.fetch(:foreign_keys))
+        assert_equal(indexes, response.fetch(:indexes))
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
