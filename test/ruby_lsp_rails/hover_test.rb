@@ -43,7 +43,7 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          ### *Columns*
+          ### Columns
           - **id**: integer (PK)
 
           - **first_name**: string - default: ""
@@ -60,7 +60,7 @@ module RubyLsp
 
           - **active**: boolean - default: true - not null
 
-          ### *Indexes*
+          ### Indexes
           - **index_users_on_country_id** (country_id)
         CONTENT
       end
@@ -104,7 +104,7 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          ### *Columns*
+          ### Columns
           - **id**: integer (PK)
 
           - **first_name**: string - default: ""
@@ -121,7 +121,7 @@ module RubyLsp
 
           - **active**: boolean - default: true - not null
 
-          ### *Indexes*
+          ### Indexes
           - **index_users_on_country_id** (country_id) (unique)
         CONTENT
       end
@@ -160,7 +160,7 @@ module RubyLsp
 
           [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
 
-          ### *Columns*
+          ### Columns
           - **order_id**: integer (PK)
 
           - **product_id**: integer (PK)

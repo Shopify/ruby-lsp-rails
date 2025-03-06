@@ -59,7 +59,7 @@ module RubyLsp
 
         if model[:columns].any?
           @response_builder.push(
-            "### *Columns*",
+            "### Columns",
             category: :documentation,
           )
           @response_builder.push(
@@ -78,7 +78,7 @@ module RubyLsp
 
         if model[:indexes].any?
           @response_builder.push(
-            "### *Indexes*",
+            "### Indexes",
             category: :documentation,
           )
           @response_builder.push(
