@@ -445,11 +445,11 @@ module RubyLsp
         model.connection.foreign_keys(model.table_name).map do |key_definition|
           key_definition.options[:column]
         end
-      rescue NotImplementedError
-        []
       end
 
       def collect_model_indexes(model)
+        return [] unless database_supports_indexing?(model)
+
         model.connection.indexes(model.table_name).map do |index_definition|
           {
             name: index_definition.name,
@@ -457,8 +457,15 @@ module RubyLsp
             unique: index_definition.unique,
           }
         end
+      end
+
+      def database_supports_indexing?(model)
+        return @database_supports_indexing if instance_variable_defined?(:@database_supports_indexing)
+
+        model.connection.indexes(model.table_name)
+        @database_supports_indexing = true
       rescue NotImplementedError
-        []
+        @database_supports_indexing = false
       end
     end
   end
