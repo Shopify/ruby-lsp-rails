@@ -31,7 +31,9 @@ module RubyLsp
         entries = @index.resolve(node.slice, @nesting)
         return unless entries
 
-        name = T.must(entries.first).name
+        # TODO: figure out why this is now untyped, seems wrong
+        # name = T.must(entries.first).name
+        name = entries.first.name
         generate_column_content(name)
       end
 
@@ -40,7 +42,8 @@ module RubyLsp
         entries = @index.resolve(node.name.to_s, @nesting)
         return unless entries
 
-        generate_column_content(T.must(entries.first).name)
+        # generate_column_content(T.must(entries.first).name)
+        generate_column_content(entries.first.name)
       end
 
       private

@@ -13,6 +13,7 @@ require_relative "hover"
 require_relative "code_lens"
 require_relative "document_symbol"
 require_relative "definition"
+require_relative "discover_tests"
 require_relative "completion"
 require_relative "indexing_enhancement"
 
@@ -123,8 +124,9 @@ module RubyLsp
 
       # @overridable
       #: (ResponseBuilders::TestCollection response_builder, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
-      def create_discover_tests_listener
+      def create_discover_tests_listener(response_builder, dispatcher, uri)
         # TODO
+        DiscoverTests.new(response_builder, dispatcher, uri)
       end
 
       #: (Array[{uri: String, type: Integer}] changes) -> void
