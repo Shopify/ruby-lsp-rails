@@ -33,16 +33,30 @@ module RubyLsp
 
       test "#model returns information for the requested model" do
         # These columns are from the schema in the dummy app: test/dummy/db/schema.rb
-        columns = [
-          ["id", "integer", nil, false],
-          ["first_name", "string", "", true],
-          ["last_name", "string", nil, true],
-          ["age", "integer", "0", true],
-          ["created_at", "datetime", nil, false],
-          ["updated_at", "datetime", nil, false],
-          ["country_id", "integer", nil, false],
-          ["active", "boolean", "1", false],
-        ]
+        # The default values behavior changed in https://github.com/rails/rails/pull/54683
+        columns = if Gem::Version.new(::Rails.version) < Gem::Version.new("8.1.0.alpha")
+          [
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", "0", true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", "1", false],
+          ]
+        else
+          [
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", 0, true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", true, false],
+          ]
+        end
         foreign_keys = ["country_id"]
         indexes = [{ name: "index_users_on_country_id", columns: ["country_id"], unique: false }]
         response = T.must(@client.model("User"))
