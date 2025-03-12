@@ -19,9 +19,9 @@ module RubyLsp
           :on_class_node_leave,
           :on_module_node_enter,
           :on_module_node_leave,
-          :on_def_node_enter, # for 'classic' tests... do we need to handle here?
+          # :on_def_node_enter, # for 'classic' tests... do we need to handle here?
           :on_call_node_enter, # e.g. `test "..."`
-          :on_call_node_leave,
+          # :on_call_node_leave,
         )
       end
 
@@ -58,13 +58,16 @@ module RubyLsp
 
         args = node.arguments&.arguments
         return unless args
+
         return unless args.first.is_a?(Prism::StringNode)
 
-        description = T.must(args[0]).unescaped # right way to access?
+        name = T.must(args[0]).unescaped # right way to access?
+
+        current_group_name = RubyIndexer::Index.actual_nesting(@nesting, nil).join("::")
 
         test_item = Requests::Support::TestItem.new(
-          description,
-          description,
+          "#{current_group_name}##{name}",
+          name,
           @uri,
           range_from_node(node),
           tags: [:active_support_declarative],

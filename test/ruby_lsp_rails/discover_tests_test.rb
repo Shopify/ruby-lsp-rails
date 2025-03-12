@@ -78,9 +78,16 @@ module RubyLsp
     end
 
     test "recognizes plain test cases" do
-      skip "not yet"
-
       source = <<~RUBY
+        # module Minitest
+        #   class Test; end
+        # end
+
+        # module ActiveSupport
+        #   class TestCase < Minitest::Test
+        #   end
+        # end
+
         class MyTest < ActiveSupport::TestCase
           def test_foo
           end
@@ -88,6 +95,7 @@ module RubyLsp
       RUBY
 
       with_active_support_declarative_tests(source) do |items|
+        # binding.irb
         assert_equal(1, items.size)
       end
     end
