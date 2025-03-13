@@ -13,6 +13,7 @@ require_relative "hover"
 require_relative "code_lens"
 require_relative "document_symbol"
 require_relative "definition"
+require_relative "discover_tests"
 require_relative "completion"
 require_relative "indexing_enhancement"
 
@@ -119,6 +120,11 @@ module RubyLsp
       #: (ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def create_completion_listener(response_builder, node_context, dispatcher, uri)
         Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
+      end
+
+      #: (ResponseBuilders::TestCollection response_builder, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
+      def create_discover_tests_listener(response_builder, dispatcher, uri)
+        DiscoverTests.new(response_builder, dispatcher, uri)
       end
 
       #: (Array[{uri: String, type: Integer}] changes) -> void
