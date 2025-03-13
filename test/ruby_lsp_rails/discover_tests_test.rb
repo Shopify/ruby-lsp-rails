@@ -77,16 +77,12 @@ module RubyLsp
       end
     end
 
-    test "recognizes plain test cases" do
+    test "recognizes tests defined with def" do
       source = <<~RUBY
-        # module Minitest
-        #   class Test; end
-        # end
-
-        # module ActiveSupport
-        #   class TestCase < Minitest::Test
-        #   end
-        # end
+        # TODO: why is this needed if already defined by `with_active_support_declarative_tests` ?
+        module Minitest
+          class Test; end
+        end
 
         class MyTest < ActiveSupport::TestCase
           def test_foo
@@ -95,13 +91,12 @@ module RubyLsp
       RUBY
 
       with_active_support_declarative_tests(source) do |items|
-        # binding.irb
         assert_equal(1, items.size)
+        assert_equal([:minitest], items[0][:tags]) # wrong?
       end
     end
 
     def with_active_support_declarative_tests(source, &block)
-      puts "a1"
       with_server(source) do |server, uri|
         server.global_state.index.index_single(uri, <<~RUBY)
           module Minitest
