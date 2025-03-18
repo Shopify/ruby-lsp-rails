@@ -25,6 +25,7 @@ module RubyLsp
       #: (Prism::ClassNode node) -> void
       def on_class_node_enter(node)
         name = constant_name(node.constant_path)
+        return unless name
 
         @nesting << name
       end
@@ -37,6 +38,7 @@ module RubyLsp
       #: (Prism::ModuleNode node) -> void
       def on_module_node_enter(node)
         name = constant_name(node.constant_path)
+        return unless name
 
         @nesting << name
       end

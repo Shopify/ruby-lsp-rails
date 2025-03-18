@@ -122,6 +122,7 @@ module RubyLsp
         Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
       end
 
+      # @override
       #: (ResponseBuilders::TestCollection response_builder, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def create_discover_tests_listener(response_builder, dispatcher, uri)
         DiscoverTests.new(response_builder, dispatcher, uri)

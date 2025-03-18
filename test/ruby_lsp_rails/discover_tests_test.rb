@@ -126,7 +126,7 @@ module RubyLsp
     end
 
     def get_response(server)
-      result = nil
+      result = T.let(nil, T.untyped)
       until result.is_a?(RubyLsp::Result)
         result = server.pop_response
         if result.is_a?(Error)
