@@ -186,7 +186,7 @@
 #    s = "This is line 1\nThis is line 2\n"
 #    Base64.encode64(s) # => "VGhpcyBpcyBsaW5lIDEKVGhpcyBpcyBsaW5lIDIK\n"
 #
-# source://base64/lib/base64.rb#184
+# source://base64//lib/base64.rb#184
 module Base64
   private
 
@@ -208,7 +208,7 @@ module Base64
   #   Base64.decode64("MDEyMzQ1Njc=")  # => "01234567"
   #   Base64.decode64("MDEyMzQ1Njc==") # => "01234567"
   #
-  # source://base64/lib/base64.rb#241
+  # source://base64//lib/base64.rb#241
   def decode64(str); end
 
   # Returns a string containing the RFC-2045-compliant \Base64-encoding of +bin+.
@@ -240,7 +240,7 @@ module Base64
   #   s = "This is line 1\nThis is line 2\n"
   #   Base64.encode64(s) # => "VGhpcyBpcyBsaW5lIDEKVGhpcyBpcyBsaW5lIDIK\n"
   #
-  # source://base64/lib/base64.rb#219
+  # source://base64//lib/base64.rb#219
   def encode64(bin); end
 
   # Returns a string containing the decoding of an RFC-2045-compliant
@@ -263,7 +263,7 @@ module Base64
   #   Base64.strict_decode64("MDEyMzQ1Njc=")  # => "01234567"
   #   Base64.strict_decode64("MDEyMzQ1Njc==") # Raises ArgumentError
   #
-  # source://base64/lib/base64.rb#297
+  # source://base64//lib/base64.rb#297
   def strict_decode64(str); end
 
   # Returns a string containing the RFC-2045-compliant \Base64-encoding of +bin+.
@@ -294,7 +294,7 @@ module Base64
   #   s = "This is line 1\nThis is line 2\n"
   #   Base64.strict_encode64(s) # => "VGhpcyBpcyBsaW5lIDEKVGhpcyBpcyBsaW5lIDIK"
   #
-  # source://base64/lib/base64.rb#273
+  # source://base64//lib/base64.rb#273
   def strict_encode64(bin); end
 
   # Returns the decoding of an RFC-4648-compliant \Base64-encoded string +str+:
@@ -313,7 +313,7 @@ module Base64
   #   Base64.urlsafe_decode64("MDEyMzQ1Njc=") # => "01234567"
   #   Base64.urlsafe_decode64("MDEyMzQ1Njc==") # Raises ArgumentError.
   #
-  # source://base64/lib/base64.rb#351
+  # source://base64//lib/base64.rb#351
   def urlsafe_decode64(str); end
 
   # Returns the RFC-4648-compliant \Base64-encoding of +bin+.
@@ -343,7 +343,7 @@ module Base64
   #   Base64.urlsafe_encode64('*' * 46)
   #   # => "KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKg=="
   #
-  # source://base64/lib/base64.rb#328
+  # source://base64//lib/base64.rb#328
   def urlsafe_encode64(bin, padding: T.unsafe(nil)); end
 
   class << self
@@ -365,7 +365,7 @@ module Base64
     #   Base64.decode64("MDEyMzQ1Njc=")  # => "01234567"
     #   Base64.decode64("MDEyMzQ1Njc==") # => "01234567"
     #
-    # source://base64/lib/base64.rb#241
+    # source://base64//lib/base64.rb#241
     def decode64(str); end
 
     # Returns a string containing the RFC-2045-compliant \Base64-encoding of +bin+.
@@ -397,7 +397,7 @@ module Base64
     #   s = "This is line 1\nThis is line 2\n"
     #   Base64.encode64(s) # => "VGhpcyBpcyBsaW5lIDEKVGhpcyBpcyBsaW5lIDIK\n"
     #
-    # source://base64/lib/base64.rb#219
+    # source://base64//lib/base64.rb#219
     def encode64(bin); end
 
     # Returns a string containing the decoding of an RFC-2045-compliant
@@ -420,7 +420,7 @@ module Base64
     #   Base64.strict_decode64("MDEyMzQ1Njc=")  # => "01234567"
     #   Base64.strict_decode64("MDEyMzQ1Njc==") # Raises ArgumentError
     #
-    # source://base64/lib/base64.rb#297
+    # source://base64//lib/base64.rb#297
     def strict_decode64(str); end
 
     # Returns a string containing the RFC-2045-compliant \Base64-encoding of +bin+.
@@ -451,7 +451,7 @@ module Base64
     #   s = "This is line 1\nThis is line 2\n"
     #   Base64.strict_encode64(s) # => "VGhpcyBpcyBsaW5lIDEKVGhpcyBpcyBsaW5lIDIK"
     #
-    # source://base64/lib/base64.rb#273
+    # source://base64//lib/base64.rb#273
     def strict_encode64(bin); end
 
     # Returns the decoding of an RFC-4648-compliant \Base64-encoded string +str+:
@@ -470,7 +470,7 @@ module Base64
     #   Base64.urlsafe_decode64("MDEyMzQ1Njc=") # => "01234567"
     #   Base64.urlsafe_decode64("MDEyMzQ1Njc==") # Raises ArgumentError.
     #
-    # source://base64/lib/base64.rb#351
+    # source://base64//lib/base64.rb#351
     def urlsafe_decode64(str); end
 
     # Returns the RFC-4648-compliant \Base64-encoding of +bin+.
@@ -500,10 +500,10 @@ module Base64
     #   Base64.urlsafe_encode64('*' * 46)
     #   # => "KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKg=="
     #
-    # source://base64/lib/base64.rb#328
+    # source://base64//lib/base64.rb#328
     def urlsafe_encode64(bin, padding: T.unsafe(nil)); end
   end
 end
 
-# source://base64/lib/base64.rb#186
+# source://base64//lib/base64.rb#186
 Base64::VERSION = T.let(T.unsafe(nil), String)
