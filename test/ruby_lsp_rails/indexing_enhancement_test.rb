@@ -31,7 +31,7 @@ module RubyLsp
 
       test "ClassMethods module inside concerns are automatically extended" do
         @index.index_single(@indexable_path, <<~RUBY)
-          module Verifiable
+          module Auditable
             extend ActiveSupport::Concern
 
             module ClassMethods
@@ -40,19 +40,19 @@ module RubyLsp
           end
 
           class Post
-            include Verifiable
+            include Auditable
           end
         RUBY
 
         ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
 
-        assert_includes(ancestors, "Verifiable::ClassMethods")
+        assert_includes(ancestors, "Auditable::ClassMethods")
         refute_nil(@index.resolve_method("all_verified", "Post::<Class:Post>"))
       end
 
       test "class_methods blocks inside concerns are automatically extended via a ClassMethods module" do
         @index.index_single(@indexable_path, <<~RUBY)
-          module Verifiable
+          module Auditable
             extend ActiveSupport::Concern
 
             class_methods do
@@ -61,32 +61,32 @@ module RubyLsp
           end
 
           class Post
-            include Verifiable
+            include Auditable
           end
         RUBY
 
         ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
 
-        assert_includes(ancestors, "Verifiable::ClassMethods")
+        assert_includes(ancestors, "Auditable::ClassMethods")
         refute_nil(@index.resolve_method("all_verified", "Post::<Class:Post>"))
       end
 
       test "ignores `class_methods` calls without a block" do
         @index.index_single(@indexable_path, <<~RUBY)
-          module Verifiable
+          module Auditable
             extend ActiveSupport::Concern
 
             class_methods
           end
 
           class Post
-            include Verifiable
+            include Auditable
           end
         RUBY
 
         ancestors = @index.linearized_ancestors_of("Post::<Class:Post>")
 
-        refute_includes(ancestors, "Verifiable::ClassMethods")
+        refute_includes(ancestors, "Auditable::ClassMethods")
       end
 
       test "associations" do
