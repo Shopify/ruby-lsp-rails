@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     ruby-lsp-rails (0.4.0)
-      ruby-lsp (>= 0.23.0, < 0.24.0)
+      ruby-lsp (>= 0.23.14, < 0.24.0)
 
 GEM
   remote: https://rubygems.org/
@@ -104,7 +104,7 @@ GEM
     json (2.10.1)
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
-    logger (1.6.6)
+    logger (1.7.0)
     loofah (2.24.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -150,7 +150,7 @@ GEM
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
-    prism (1.3.0)
+    prism (1.4.0)
     psych (5.2.3)
       date
       stringio
@@ -199,7 +199,7 @@ GEM
     rbi (0.2.4)
       prism (~> 1.0)
       sorbet-runtime (>= 0.5.9204)
-    rbs (3.8.1)
+    rbs (3.9.2)
       logger
     rdoc (6.12.0)
       psych (>= 4.0.0)
@@ -230,7 +230,7 @@ GEM
       rubocop (~> 1.62)
     rubocop-sorbet (0.8.9)
       rubocop (>= 1)
-    ruby-lsp (0.23.11)
+    ruby-lsp (0.23.14)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 4)

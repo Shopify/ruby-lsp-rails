@@ -36,7 +36,7 @@ module RubyLsp
         resolved_class = @client.model(receiver.name.to_s)
         return if resolved_class.nil?
 
-        arguments = T.must(@node_context.call_node).arguments&.arguments
+        arguments = @node_context.call_node.arguments&.arguments
         indexed_call_node_args = T.let({}, T::Hash[String, Prism::Node])
 
         if arguments
