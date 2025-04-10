@@ -49,10 +49,10 @@ module RubyLsp
           assert_equal(1, items.length)
           test_class = items.first
           assert_equal("EmptyTest", test_class[:label])
-          assert_equal(1, test_class[:children].length)
+          assert_equal(2, test_class[:children].length)
 
           test_labels = test_class[:children].map { |i| i[:label] }
-          refute_includes(test_labels, "")
+          assert_includes(test_labels, "<empty test name>")
           assert_all_items_tagged_with(items, :rails)
         end
       end

@@ -43,7 +43,7 @@ module RubyLsp
         return unless first_arg.is_a?(Prism::StringNode)
 
         test_name = first_arg.content
-        return if test_name.empty?
+        test_name = "<empty test name>" if test_name.empty?
 
         add_test_item(node, test_name)
       end
