@@ -4,3 +4,4 @@
 --ignore=vendor/
 --ignore=test/dummy
 --enable-experimental-rbs-signatures
+--enable-experimental-rbs-assertions

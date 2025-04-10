@@ -13,6 +13,7 @@ require_relative "hover"
 require_relative "code_lens"
 require_relative "document_symbol"
 require_relative "definition"
+require_relative "rails_test_style"
 require_relative "completion"
 require_relative "indexing_enhancement"
 
@@ -82,6 +83,14 @@ module RubyLsp
       #: -> String
       def version
         VERSION
+      end
+
+      # @override
+      #: (ResponseBuilders::TestCollection response_builder, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
+      def create_discover_tests_listener(response_builder, dispatcher, uri)
+        return unless @global_state
+
+        RailsTestStyle.new(@rails_runner_client, response_builder, @global_state, dispatcher, uri)
       end
 
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
