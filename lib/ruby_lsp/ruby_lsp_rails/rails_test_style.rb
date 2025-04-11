@@ -48,16 +48,6 @@ module RubyLsp
         add_test_item(node, test_name)
       end
 
-      #: (Prism::DefNode node) -> void
-      def on_def_node_enter(node)
-        return if @visibility_stack.last != :public
-
-        name = node.name.to_s
-        return unless name.start_with?("test_")
-
-        add_test_item(node, name)
-      end
-
       private
 
       #: (Array[String] attached_ancestors, String fully_qualified_name) -> bool
