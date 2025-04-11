@@ -16,23 +16,6 @@ module RubyLsp
         )
       end
 
-      #: (Prism::ClassNode node) -> void
-      def on_class_node_enter(node)
-        with_test_ancestor_tracking(node) do |name, ancestors|
-          if declarative_minitest?(ancestors, name)
-            test_item = Requests::Support::TestItem.new(
-              name,
-              name,
-              @uri,
-              range_from_node(node),
-              framework: :rails,
-            )
-
-            @response_builder.add(test_item)
-          end
-        end
-      end
-
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         return unless node.name == :test
