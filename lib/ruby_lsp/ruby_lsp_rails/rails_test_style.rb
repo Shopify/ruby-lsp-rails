@@ -33,21 +33,6 @@ module RubyLsp
         end
       end
 
-      #: (Prism::CallNode node) -> void
-      def on_call_node_enter(node)
-        return unless node.name == :test
-        return unless node.block
-
-        arguments = node.arguments&.arguments
-        first_arg = arguments&.first
-        return unless first_arg.is_a?(Prism::StringNode)
-
-        test_name = first_arg.content
-        test_name = "<empty test name>" if test_name.empty?
-
-        add_test_item(node, test_name)
-      end
-
       #: (Prism::DefNode node) -> void
       def on_def_node_enter(node)
         return if @visibility_stack.last != :public
