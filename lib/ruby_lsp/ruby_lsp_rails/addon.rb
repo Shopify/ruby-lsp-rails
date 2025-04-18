@@ -93,6 +93,12 @@ module RubyLsp
         RailsTestStyle.new(@rails_runner_client, response_builder, @global_state, dispatcher, uri)
       end
 
+      # @override
+      #: (Array[Hash[Symbol, untyped]]) -> Array[String]
+      def resolve_test_commands(items)
+        RailsTestStyle.resolve_test_commands(items)
+      end
+
       # Creates a new CodeLens listener. This method is invoked on every CodeLens request
       # @override
       #: (ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens] response_builder, URI::Generic uri, Prism::Dispatcher dispatcher) -> void

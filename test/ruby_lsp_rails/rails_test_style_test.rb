@@ -133,6 +133,96 @@ module RubyLsp
         end
       end
 
+      test "resolve test command entire files" do
+        Dir.stubs(:glob).returns(["/other/test/fake_test.rb", "/other/test/fake_test2.rb"])
+
+        with_server do |server|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          server.process_message({
+            id: 1,
+            method: "rubyLsp/resolveTestCommands",
+            params: {
+              items: [
+                {
+                  id: "file:///test/server_test.rb",
+                  uri: "file:///test/server_test.rb",
+                  label: "/test/server_test.rb",
+                  tags: ["test_file", "framework:rails"],
+                  children: [],
+                },
+                {
+                  id: "file:///other/test",
+                  uri: "file:///other/test",
+                  label: "/other/test",
+                  tags: ["test_dir", "framework:rails"],
+                  children: [],
+                },
+              ],
+            },
+          })
+
+          result = pop_result(server)
+          response = result.response
+
+          assert_equal(
+            [
+              "#{RailsTestStyle::BASE_COMMAND} /test/server_test.rb /other/test/fake_test.rb /other/test/fake_test2.rb",
+            ],
+            response[:commands],
+          )
+        end
+      end
+
+      test "resolve test command group test" do
+        with_server do |server|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          server.process_message({
+            id: 1,
+            method: "rubyLsp/resolveTestCommands",
+            params: {
+              items: [
+                {
+                  id: "GroupTest",
+                  uri: "file:///test/group_test.rb",
+                  label: "GroupTest",
+                  range: {
+                    start: { line: 0, character: 0 },
+                    end: { line: 30, character: 3 },
+                  },
+                  tags: ["framework:rails", "test_group"],
+                  children: [
+                    {
+                      id: "GroupTest#test_example",
+                      uri: "file:///test/group_test.rb",
+                      label: "test_example",
+                      range: {
+                        start: { line: 1, character: 2 },
+                        end: { line: 10, character: 3 },
+                      },
+                      tags: ["framework:rails"],
+                      children: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          })
+
+          result = pop_result(server)
+          response = result.response
+
+          assert_equal(
+            [
+              "#{RailsTestStyle::BASE_COMMAND} /test/group_test.rb --name \"/GroupTest(#|::)/\"",
+              "#{RailsTestStyle::BASE_COMMAND} /test/group_test.rb:2",
+            ],
+            response[:commands],
+          )
+        end
+      end
+
       private
 
       def with_active_support_declarative_tests(source, file: "/fake.rb", &block)
