@@ -134,7 +134,12 @@ module RubyLsp
       end
 
       test "resolve test command entire files" do
-        Dir.stubs(:glob).returns(["/other/test/fake_test.rb", "/other/test/fake_test2.rb"])
+        base_dir = Gem.win_platform? ? "D:/other/test" : "/other/test"
+        test_paths = [
+          File.join(base_dir, "fake_test.rb"),
+          File.join(base_dir, "fake_test2.rb"),
+        ]
+        Dir.stubs(:glob).returns(test_paths)
 
         with_server do |server|
           sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
@@ -167,7 +172,7 @@ module RubyLsp
 
           assert_equal(
             [
-              "#{RailsTestStyle::BASE_COMMAND} /test/server_test.rb /other/test/fake_test.rb /other/test/fake_test2.rb",
+              "#{RailsTestStyle::BASE_COMMAND} /test/server_test.rb #{test_paths.join(" ")}",
             ],
             response[:commands],
           )
