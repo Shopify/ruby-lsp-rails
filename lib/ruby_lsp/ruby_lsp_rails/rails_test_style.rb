@@ -90,8 +90,9 @@ module RubyLsp
 
         test_name = first_arg.content
         test_name = "<empty test name>" if test_name.empty?
+        rails_normalized_name = "test_#{test_name.gsub(/\s+/, "_")}"
 
-        add_test_item(node, test_name)
+        add_test_item(node, rails_normalized_name)
       end
 
       #: (Prism::DefNode node) -> void

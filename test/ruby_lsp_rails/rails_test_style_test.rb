@@ -26,8 +26,8 @@ module RubyLsp
           assert_equal(2, test_class[:children].length)
 
           test_labels = test_class[:children].map { |i| i[:label] }
-          assert_includes(test_labels, "first test")
-          assert_includes(test_labels, "second test")
+          assert_includes(test_labels, "test_first_test")
+          assert_includes(test_labels, "test_second_test")
           assert_all_items_tagged_with(items, :rails)
         end
       end
@@ -52,7 +52,7 @@ module RubyLsp
           assert_equal(2, test_class[:children].length)
 
           test_labels = test_class[:children].map { |i| i[:label] }
-          assert_includes(test_labels, "<empty test name>")
+          assert_includes(test_labels, "test_<empty_test_name>")
           assert_all_items_tagged_with(items, :rails)
         end
       end
@@ -110,11 +110,11 @@ module RubyLsp
       test "handles tests with special characters in name" do
         source = <<~RUBY
           class SpecialCharsTest < ActiveSupport::TestCase
-            test "test with spaces and punctuation!" do
+            test "spaces and punctuation!" do
               assert true
             end
 
-            test "test with unicode: 你好" do
+            test "unicode: 你好" do
               assert true
             end
           end
@@ -127,8 +127,8 @@ module RubyLsp
           assert_equal(2, test_class[:children].length)
 
           test_labels = test_class[:children].map { |i| i[:label] }
-          assert_includes(test_labels, "test with spaces and punctuation!")
-          assert_includes(test_labels, "test with unicode: 你好")
+          assert_includes(test_labels, "test_spaces_and_punctuation!")
+          assert_includes(test_labels, "test_unicode:_你好")
           assert_all_items_tagged_with(items, :rails)
         end
       end
