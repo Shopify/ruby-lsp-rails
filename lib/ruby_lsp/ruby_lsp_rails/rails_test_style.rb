@@ -90,6 +90,10 @@ module RubyLsp
 
         test_name = first_arg.content
         test_name = "<empty test name>" if test_name.empty?
+
+        # Rails' `test "foo bar"` helper defines a method `def test_foo_bar`. We normalize test names
+        # the same way (spaces to underscores, prefix with `test_`) to match the actual method names
+        # Rails uses at runtime, ensuring proper test discovery and execution.
         rails_normalized_name = "test_#{test_name.gsub(/\s+/, "_")}"
 
         add_test_item(node, rails_normalized_name)
