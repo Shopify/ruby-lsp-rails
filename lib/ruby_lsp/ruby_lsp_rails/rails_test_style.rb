@@ -4,6 +4,52 @@
 module RubyLsp
   module Rails
     class RailsTestStyle < Listeners::TestDiscovery
+      BASE_COMMAND = "#{RbConfig.ruby} bin/rails test" #: String
+
+      class << self
+        #: (Array[Hash[Symbol, untyped]]) -> Array[String]
+        def resolve_test_commands(items)
+          commands = []
+          queue = items.dup
+
+          full_files = []
+
+          until queue.empty?
+            item = T.must(queue.shift)
+            tags = Set.new(item[:tags])
+            next unless tags.include?("framework:rails")
+
+            children = item[:children]
+            uri = URI(item[:uri])
+            path = uri.full_path
+            next unless path
+
+            if tags.include?("test_dir")
+              if children.empty?
+                full_files.concat(Dir.glob(
+                  "#{path}/**/{*_test,test_*}.rb",
+                  File::Constants::FNM_EXTGLOB | File::Constants::FNM_PATHNAME,
+                ))
+              end
+            elsif tags.include?("test_file")
+              full_files << path if children.empty?
+            elsif tags.include?("test_group")
+              commands << "#{BASE_COMMAND} #{path} --name \"/#{Shellwords.escape(item[:id])}(#|::)/\""
+            else
+              full_files << "#{path}:#{item.dig(:range, :start, :line) + 1}"
+            end
+
+            queue.concat(children)
+          end
+
+          unless full_files.empty?
+            commands << "#{BASE_COMMAND} #{full_files.join(" ")}"
+          end
+
+          commands
+        end
+      end
+
       #: (RunnerClient client, ResponseBuilders::TestCollection response_builder, GlobalState global_state, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def initialize(client, response_builder, global_state, dispatcher, uri)
         super(response_builder, global_state, dispatcher, uri)
@@ -45,7 +91,12 @@ module RubyLsp
         test_name = first_arg.content
         test_name = "<empty test name>" if test_name.empty?
 
-        add_test_item(node, test_name)
+        # Rails' `test "foo bar"` helper defines a method `def test_foo_bar`. We normalize test names
+        # the same way (spaces to underscores, prefix with `test_`) to match the actual method names
+        # Rails uses at runtime, ensuring proper test discovery and execution.
+        rails_normalized_name = "test_#{test_name.gsub(/\s+/, "_")}"
+
+        add_test_item(node, rails_normalized_name)
       end
 
       #: (Prism::DefNode node) -> void
