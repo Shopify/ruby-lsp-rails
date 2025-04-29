@@ -228,6 +228,21 @@ module RubyLsp
         end
       end
 
+      test "tests with backslashes" do
+        source = File.read(File.join(__dir__, "..", "fixtures", "test_with_escaped_quotes.rb"))
+
+        with_active_support_declarative_tests(source) do |items|
+          assert_equal(1, items.length)
+          test_class = items.first
+          assert_equal("SampleTest", test_class[:label])
+          assert_equal(1, test_class[:children].length)
+
+          assert_equal(["SampleTest#test_hello_\"oh_noes\""], test_class[:children].map { |i| i[:id] })
+          assert_equal(["test_hello_\"oh_noes\""], test_class[:children].map { |i| i[:label] })
+          assert_all_items_tagged_with(items, :rails)
+        end
+      end
+
       private
 
       def with_active_support_declarative_tests(source, file: "/fake.rb", &block)

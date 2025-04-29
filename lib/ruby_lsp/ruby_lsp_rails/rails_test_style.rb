@@ -88,7 +88,7 @@ module RubyLsp
         first_arg = arguments&.first
         return unless first_arg.is_a?(Prism::StringNode)
 
-        test_name = first_arg.content
+        test_name = first_arg.unescaped
         test_name = "<empty test name>" if test_name.empty?
 
         # Rails' `test "foo bar"` helper defines a method `def test_foo_bar`. We normalize test names
