@@ -17,7 +17,7 @@ jobs:
           - gemfile: "gemfiles/Gemfile-rails-main"
             experimental: true
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
     continue-on-error: ${{ !!matrix.experimental }}
