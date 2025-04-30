@@ -38,7 +38,9 @@ jobs:
           cache-version: 7
 
       - name: Run tests
-        run: bundle exec rake
+        run: |
+          bundle exec rails db:setup
+          bundle exec rake
   lint:
     runs-on: ubuntu-latest
     steps:
