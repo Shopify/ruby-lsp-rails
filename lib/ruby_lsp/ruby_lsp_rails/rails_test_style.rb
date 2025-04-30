@@ -15,7 +15,7 @@ module RubyLsp
           full_files = []
 
           until queue.empty?
-            item = T.must(queue.shift)
+            item = queue.shift #: as !nil
             tags = Set.new(item[:tags])
             next unless tags.include?("framework:rails")
 

@@ -49,8 +49,8 @@ module RubyLsp
 
       #: (Thread::Queue outgoing_queue, RubyLsp::GlobalState global_state) -> void
       def initialize(outgoing_queue, global_state)
-        @outgoing_queue = T.let(outgoing_queue, Thread::Queue)
-        @mutex = T.let(Mutex.new, Mutex)
+        @outgoing_queue = outgoing_queue #: Thread::Queue
+        @mutex = Mutex.new #: Mutex
         # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
         # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
         # set its own session ID
@@ -78,21 +78,21 @@ module RubyLsp
           )
         end
 
-        @stdin = T.let(stdin, IO)
-        @stdout = T.let(stdout, IO)
-        @stderr = T.let(stderr, IO)
+        @stdin = stdin #: IO
+        @stdout = stdout #: IO
+        @stderr = stderr #: IO
         @stdin.sync = true
         @stdout.sync = true
         @stderr.sync = true
-        @wait_thread = T.let(wait_thread, Process::Waiter)
+        @wait_thread = wait_thread #: Process::Waiter
 
         # We set binmode for Windows compatibility
         @stdin.binmode
         @stdout.binmode
         @stderr.binmode
 
-        initialize_response = T.must(read_response)
-        @rails_root = T.let(initialize_response[:root], String)
+        initialize_response = read_response #: as !nil
+        @rails_root = initialize_response[:root] #: String
         log_message("Finished booting Ruby LSP Rails server")
 
         unless ENV["RAILS_ENV"] == "test"
@@ -106,20 +106,17 @@ module RubyLsp
 
         # Responsible for transmitting notifications coming from the server to the outgoing queue, so that we can do
         # things such as showing progress notifications initiated by the server
-        @notifier_thread = T.let(
-          Thread.new do
-            until @stderr.closed?
-              notification = read_notification
+        @notifier_thread = Thread.new do
+          until @stderr.closed?
+            notification = read_notification
 
-              unless @outgoing_queue.closed? || !notification
-                @outgoing_queue << notification
-              end
+            unless @outgoing_queue.closed? || !notification
+              @outgoing_queue << notification
             end
-          rescue IOError
-            # The server was shutdown and stderr is already closed
-          end,
-          Thread,
-        )
+          end
+        rescue IOError
+          # The server was shutdown and stderr is already closed
+        end #: Thread
       rescue StandardError
         raise InitializationError, @stderr.read
       end
@@ -298,9 +295,9 @@ module RubyLsp
           raise EmptyMessageError unless content_length
 
           @stdout.read(content_length)
-        end
+        end #: as !nil
 
-        response = JSON.parse(T.must(raw_response), symbolize_names: true)
+        response = JSON.parse(raw_response, symbolize_names: true)
 
         if response[:error]
           log_message(
@@ -319,7 +316,10 @@ module RubyLsp
       #: -> void
       def force_kill
         # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
-        Process.kill(T.must(Signal.list["KILL"]), @wait_thread.pid)
+        Process.kill(
+          Signal.list["KILL"], #: as !nil
+          @wait_thread.pid,
+        )
       end
 
       #: (::String message, ?type: ::Integer) -> void

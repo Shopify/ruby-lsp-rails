@@ -28,24 +28,25 @@ module RubyLsp
 
         # We first initialize the client as a NullClient, so that we can start the server in a background thread. Until
         # the real client is initialized, features that depend on it will not be blocked by using the NullClient
-        @rails_runner_client = T.let(NullClient.new, RunnerClient)
-        @global_state = T.let(nil, T.nilable(GlobalState))
-        @outgoing_queue = T.let(nil, T.nilable(Thread::Queue))
-        @settings = T.let(
-          {
-            enablePendingMigrationsPrompt: true,
-          },
-          T::Hash[Symbol, T.untyped],
-        )
-        @addon_mutex = T.let(Mutex.new, Mutex)
-        @client_mutex = T.let(Mutex.new, Mutex)
+        @rails_runner_client = NullClient.new #: RunnerClient
+        @global_state = nil #: GlobalState?
+        @outgoing_queue = nil #: Thread::Queue?
+        @settings = {
+          enablePendingMigrationsPrompt: true,
+        } #: Hash[Symbol, untyped],
+
+        @addon_mutex = Mutex.new #: Mutex
+        @client_mutex = Mutex.new #: Mutex
         @client_mutex.lock
 
         Thread.new do
           @addon_mutex.synchronize do
             # We need to ensure the Rails client is fully loaded before we activate the server addons
             @client_mutex.synchronize do
-              @rails_runner_client = RunnerClient.create_client(T.must(@outgoing_queue), T.must(@global_state))
+              @rails_runner_client = RunnerClient.create_client(
+                @outgoing_queue, #: as !nil
+                @global_state, #: as !nil
+              )
             end
             offer_to_run_pending_migrations
           end

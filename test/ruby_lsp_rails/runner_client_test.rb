@@ -17,7 +17,7 @@ module RubyLsp
             },
           },
         })
-        @client = T.let(RunnerClient.new(@outgoing_queue, @global_state), RunnerClient)
+        @client = RunnerClient.new(@outgoing_queue, @global_state) #: RunnerClient
       end
 
       teardown do
@@ -59,7 +59,7 @@ module RubyLsp
         end
         foreign_keys = ["country_id"]
         indexes = [{ name: "index_users_on_country_id", columns: ["country_id"], unique: false }]
-        response = T.must(@client.model("User"))
+        response = @client.model("User") #: as !nil
         assert_equal(columns, response.fetch(:columns))
         assert_equal(foreign_keys, response.fetch(:foreign_keys))
         assert_equal(indexes, response.fetch(:indexes))
@@ -76,16 +76,18 @@ module RubyLsp
         outgoing_queue = Thread::Queue.new
         client = RunnerClient.create_client(outgoing_queue, @global_state)
 
-        assert_instance_of(NullClient, client)
-        assert_nil(client.model("User"))
-        assert_predicate(client, :stopped?)
-        log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::WARNING)
+        begin
+          assert_instance_of(NullClient, client)
+          assert_nil(client.model("User"))
+          assert_predicate(client, :stopped?)
+          log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::WARNING)
 
-        assert_instance_of(RubyLsp::Notification, log)
-        assert_match("Ruby LSP Rails failed to locate bin/rails in the current directory", log.params.message)
-      ensure
-        T.must(outgoing_queue).close
-        FileUtils.mv("bin/rails_backup", "bin/rails")
+          assert_instance_of(RubyLsp::Notification, log)
+          assert_match("Ruby LSP Rails failed to locate bin/rails in the current directory", log.params.message)
+        ensure
+          outgoing_queue.close
+          FileUtils.mv("bin/rails_backup", "bin/rails")
+        end
       end
 
       test "failing to spawn server creates a null client" do
@@ -94,17 +96,19 @@ module RubyLsp
         outgoing_queue = Thread::Queue.new
         client = RunnerClient.create_client(outgoing_queue, @global_state)
 
-        assert_instance_of(NullClient, client)
-        assert_nil(client.model("User"))
-        assert_predicate(client, :stopped?)
+        begin
+          assert_instance_of(NullClient, client)
+          assert_nil(client.model("User"))
+          assert_predicate(client, :stopped?)
 
-        log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::ERROR)
+          log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::ERROR)
 
-        assert_instance_of(RubyLsp::Notification, log)
-        assert_match("Ruby LSP Rails failed to initialize server", log.params.message)
-      ensure
-        T.must(outgoing_queue).close
-        FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
+          assert_instance_of(RubyLsp::Notification, log)
+          assert_match("Ruby LSP Rails failed to initialize server", log.params.message)
+        ensure
+          outgoing_queue.close
+          FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
+        end
       end
 
       test "is resilient to extra output being printed during boot" do
@@ -115,12 +119,12 @@ module RubyLsp
 
         outgoing_queue = Thread::Queue.new
         client = RunnerClient.create_client(outgoing_queue, @global_state)
-        response = client.model("User")
+        response = client.model("User") #: as !nil
 
         begin
-          assert(T.must(response).key?(:columns))
+          assert(response.key?(:columns))
         ensure
-          T.must(outgoing_queue).close
+          outgoing_queue.close
           FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
         end
       end

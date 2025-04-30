@@ -19,7 +19,8 @@ module RubyLsp
           parts = first_argument.parts
 
           if parts.all? { |part| part.is_a?(Prism::StringNode) }
-            T.cast(parts, T::Array[Prism::StringNode]).map(&:content).join
+            parts #: as Array[Prism::StringNode]
+              .map(&:content).join
           end
         when Prism::StringNode
           first_argument.content

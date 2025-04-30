@@ -37,7 +37,7 @@ module RubyLsp
         return if resolved_class.nil?
 
         arguments = @node_context.call_node.arguments&.arguments
-        indexed_call_node_args = T.let({}, T::Hash[String, Prism::Node])
+        indexed_call_node_args = {} #: Hash[String, Prism::Node]
 
         if arguments
           indexed_call_node_args = index_call_node_args(arguments: arguments)

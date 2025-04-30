@@ -15,7 +15,7 @@ module RubyLsp
       #: (ResponseBuilders::DocumentSymbol response_builder, Prism::Dispatcher dispatcher) -> void
       def initialize(response_builder, dispatcher)
         @response_builder = response_builder
-        @namespace_stack = T.let([], T::Array[String])
+        @namespace_stack = [] #: Array[String]
 
         dispatcher.register(
           self,
@@ -45,14 +45,16 @@ module RubyLsp
         return if receiver && !receiver.is_a?(Prism::SelfNode)
 
         message = node.message
+        return unless message
+
         case message
         when *Support::Callbacks::ALL, "validate"
-          handle_all_arg_types(node, T.must(message))
+          handle_all_arg_types(node, message)
         when "validates", "validates!", "validates_each", "belongs_to", "has_one", "has_many",
           "has_and_belongs_to_many", "attr_readonly", "scope"
-          handle_symbol_and_string_arg_types(node, T.must(message))
+          handle_symbol_and_string_arg_types(node, message)
         when "validates_with"
-          handle_class_arg_types(node, T.must(message))
+          handle_class_arg_types(node, message)
         end
       end
 
@@ -113,7 +115,9 @@ module RubyLsp
             append_document_symbol(
               name: "#{message} :#{name}",
               range: range_from_location(argument.location),
-              selection_range: range_from_location(T.must(argument.value_loc)),
+              selection_range: range_from_location(
+                argument.value_loc, #: as !nil
+              ),
             )
           when Prism::StringNode
             name = argument.content
@@ -172,7 +176,9 @@ module RubyLsp
             append_document_symbol(
               name: "#{message} :#{name}",
               range: range_from_location(argument.location),
-              selection_range: range_from_location(T.must(argument.value_loc)),
+              selection_range: range_from_location(
+                argument.value_loc, #: as !nil
+              ),
             )
           when Prism::StringNode
             name = argument.content
