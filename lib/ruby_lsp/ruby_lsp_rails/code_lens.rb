@@ -80,10 +80,10 @@ module RubyLsp
         @client = client
         @global_state = global_state
         @response_builder = response_builder
-        @path = T.let(uri.to_standardized_path, T.nilable(String))
-        @group_id = T.let(1, Integer)
-        @group_id_stack = T.let([], T::Array[Integer])
-        @constant_name_stack = T.let([], T::Array[[String, T.nilable(String)]])
+        @path = uri.to_standardized_path #: String?
+        @group_id = 1 #: Integer
+        @group_id_stack = [] #: Array[Integer]
+        @constant_name_stack = [] #: Array[[String, String?]]
 
         dispatcher.register(
           self,
@@ -209,7 +209,7 @@ module RubyLsp
 
       #: (Prism::DefNode node) -> void
       def add_route_code_lens_to_action(node)
-        class_name, _ = T.must(@constant_name_stack.last)
+        class_name, _ = @constant_name_stack.last #: as !nil
         route = @client.route(controller: class_name, action: node.name.to_s)
         return unless route
 
@@ -236,7 +236,9 @@ module RubyLsp
 
       #: -> String?
       def migration_version
-        File.basename(T.must(@path)).split("_").first
+        File.basename(
+          @path, #: as !nil
+        ).split("_").first
       end
 
       #: (Prism::Node node, name: String, command: String) -> void

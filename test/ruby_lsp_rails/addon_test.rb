@@ -64,33 +64,35 @@ module RubyLsp
           addon.rails_runner_client
         end.join
 
-        addon.handle_window_show_message_response("Run Migrations")
+        begin
+          addon.handle_window_show_message_response("Run Migrations")
 
-        progress_request = pop_message(outgoing_queue) { |message| message.is_a?(Request) }
-        assert_instance_of(Request, progress_request)
+          progress_request = pop_message(outgoing_queue) { |message| message.is_a?(Request) }
+          assert_instance_of(Request, progress_request)
 
-        progress_begin = pop_message(outgoing_queue) do |message|
-          message.is_a?(Notification) && message.method == "$/progress"
+          progress_begin = pop_message(outgoing_queue) do |message|
+            message.is_a?(Notification) && message.method == "$/progress"
+          end
+          assert_equal("begin", progress_begin.params.value.kind)
+
+          report_log = pop_message(outgoing_queue) do |message|
+            message.is_a?(Notification) && message.method == "window/logMessage"
+          end
+          assert_equal("Ran migrations!", report_log.params.message)
+
+          progress_report = pop_message(outgoing_queue) do |message|
+            message.is_a?(Notification) && message.method == "$/progress"
+          end
+          assert_equal("report", progress_report.params.value.kind)
+          assert_equal("Ran migrations!", progress_report.params.value.message)
+
+          progress_end = pop_message(outgoing_queue) do |message|
+            message.is_a?(Notification) && message.method == "$/progress"
+          end
+          assert_equal("end", progress_end.params.value.kind)
+        ensure
+          outgoing_queue.close
         end
-        assert_equal("begin", progress_begin.params.value.kind)
-
-        report_log = pop_message(outgoing_queue) do |message|
-          message.is_a?(Notification) && message.method == "window/logMessage"
-        end
-        assert_equal("Ran migrations!", report_log.params.message)
-
-        progress_report = pop_message(outgoing_queue) do |message|
-          message.is_a?(Notification) && message.method == "$/progress"
-        end
-        assert_equal("report", progress_report.params.value.kind)
-        assert_equal("Ran migrations!", progress_report.params.value.message)
-
-        progress_end = pop_message(outgoing_queue) do |message|
-          message.is_a?(Notification) && message.method == "$/progress"
-        end
-        assert_equal("end", progress_end.params.value.kind)
-      ensure
-        T.must(outgoing_queue).close
       end
 
       test "migration dialog respects enabled setting" do
@@ -101,25 +103,28 @@ module RubyLsp
           initializationOptions: { addonSettings: { "Ruby LSP Rails": { enablePendingMigrationsPrompt: false } } },
         })
 
-        refute(T.must(global_state.settings_for_addon("Ruby LSP Rails"))[:enablePendingMigrationsPrompt])
+        begin
+          settings = global_state.settings_for_addon("Ruby LSP Rails") #: as !nil
+          refute(settings[:enablePendingMigrationsPrompt])
 
-        addon = Addon.new
-        addon.activate(global_state, outgoing_queue)
+          addon = Addon.new
+          addon.activate(global_state, outgoing_queue)
 
-        # Wait until activation is done
-        Thread.new do
-          addon.rails_runner_client
-        end.join
+          # Wait until activation is done
+          Thread.new do
+            addon.rails_runner_client
+          end.join
 
-        RunnerClient.any_instance.expects(:pending_migrations_message).never
-        addon.workspace_did_change_watched_files([
-          {
-            uri: "file://#{dummy_root}/db/migrate/20210901000000_create_foos.rb",
-            type: RubyLsp::Constant::FileChangeType::CREATED,
-          },
-        ])
-      ensure
-        T.must(outgoing_queue).close
+          RunnerClient.any_instance.expects(:pending_migrations_message).never
+          addon.workspace_did_change_watched_files([
+            {
+              uri: "file://#{dummy_root}/db/migrate/20210901000000_create_foos.rb",
+              type: RubyLsp::Constant::FileChangeType::CREATED,
+            },
+          ])
+        ensure
+          outgoing_queue.close
+        end
       end
     end
   end

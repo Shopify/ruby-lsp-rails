@@ -1,4 +1,4 @@
-# typed: false
+# typed: strict
 # frozen_string_literal: true
 
 require "json"
@@ -7,14 +7,17 @@ require "delegate"
 
 module RubyLsp
   module Rails
+    # @requires_ancestor: ServerComponent
     module Common
       class Progress
+        #: (IO | StringIO, String, bool) -> void
         def initialize(stderr, id, supports_progress)
           @stderr = stderr
           @id = id
           @supports_progress = supports_progress
         end
 
+        #: (percentage: Integer?, message: String?) -> void
         def report(percentage: nil, message: nil)
           return unless @supports_progress
           return unless percentage || message
@@ -37,23 +40,27 @@ module RubyLsp
 
       # Log a message to the editor's output panel. The type is the number of the message type, which can be found in
       # the specification https://microsoft.github.io/language-server-protocol/specification/#messageType
+      #: (String, type: Integer) -> void
       def log_message(message, type: 4)
         send_notification({ method: "window/logMessage", params: { type: type, message: message } })
       end
 
       # Sends an error result to a request, if the request failed. DO NOT INVOKE THIS METHOD FOR NOTIFICATIONS! Use
       # `log_message` instead, otherwise the client/server communication will go out of sync
+      #: (String) -> void
       def send_error_response(message)
         send_message({ error: message })
       end
 
       # Sends a result back to the client
+      #: (Hash[Symbol | String, untyped]?) -> void
       def send_result(result)
         send_message({ result: result })
       end
 
       # Handle possible errors for a request. This should only be used for requests, which means messages that return a
       # response back to the client. Errors are returned as an error object back to the client
+      #: (String) { () -> void } -> void
       def with_request_error_handling(request_name, &block)
         block.call
       rescue ActiveRecord::ConnectionNotEstablished
@@ -67,6 +74,7 @@ module RubyLsp
 
       # Handle possible errors for a notification. This should only be used for notifications, which means messages that
       # do not return a response back to the client. Errors are logged to the editor's output panel
+      #: (String) { () -> void } -> void
       def with_notification_error_handling(notification_name, &block)
         block.call
       rescue ActiveRecord::ConnectionNotEstablished
@@ -78,8 +86,9 @@ module RubyLsp
         log_message("Request #{notification_name} failed:\n#{e.full_message(highlight: false)}")
       end
 
+      #: (String, String, percentage: Integer?, message: String?) -> void
       def begin_progress(id, title, percentage: nil, message: nil)
-        return unless @capabilities[:supports_progress]
+        return unless capabilities[:supports_progress]
 
         # This is actually a request, but it is sent asynchronously and we do not return the response back to the
         # server, so we consider it a notification from the perspective of the client/runtime server dynamic
@@ -103,8 +112,9 @@ module RubyLsp
         })
       end
 
+      #: (String, percentage: Integer?, message: String?) -> void
       def report_progress(id, percentage: nil, message: nil)
-        return unless @capabilities[:supports_progress]
+        return unless capabilities[:supports_progress]
 
         send_notification({
           method: "$/progress",
@@ -119,8 +129,9 @@ module RubyLsp
         })
       end
 
+      #: (String) -> void
       def end_progress(id)
-        return unless @capabilities[:supports_progress]
+        return unless capabilities[:supports_progress]
 
         send_notification({
           method: "$/progress",
@@ -131,9 +142,10 @@ module RubyLsp
         })
       end
 
+      #: (String, String, percentage: Integer?, message: String?) { (Progress) -> void } -> void
       def with_progress(id, title, percentage: nil, message: nil, &block)
-        progress_block = Progress.new(@stderr, id, @capabilities[:supports_progress])
-        return block.call(progress_block) unless @capabilities[:supports_progress]
+        progress_block = Progress.new(stderr, id, capabilities[:supports_progress])
+        return block.call(progress_block) unless capabilities[:supports_progress]
 
         begin_progress(id, title, percentage: percentage, message: message)
         block.call(progress_block)
@@ -143,86 +155,113 @@ module RubyLsp
       private
 
       # Write a response message back to the client
+      #: (Hash[String | Symbol, untyped]) -> void
       def send_message(message)
         json_message = message.to_json
-        @stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
       end
 
       # Write a notification to the client to be transmitted to the editor
+      #: (Hash[String | Symbol, untyped]) -> void
       def send_notification(message)
         json_message = message.to_json
-        @stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
       end
     end
 
-    class ServerAddon
+    class ServerComponent
+      #: IO | StringIO
+      attr_reader :stdout
+
+      #: IO | StringIO
+      attr_reader :stderr
+
+      #: Hash[Symbol | String, untyped]
+      attr_reader :capabilities
+
+      #: (IO | StringIO, IO | StringIO, Hash[Symbol | String, untyped]) -> void
+      def initialize(stdout, stderr, capabilities)
+        @stdout = stdout
+        @stderr = stderr
+        @capabilities = capabilities
+      end
+    end
+
+    class ServerAddon < ServerComponent
       include Common
 
-      @server_addon_classes = []
-      @server_addons = {}
+      @server_addon_classes = [] #: Array[singleton(ServerAddon)]
+      @server_addons = {} #: Hash[String, ServerAddon]
 
       class << self
         # We keep track of runtime server add-ons the same way we track other add-ons, by storing classes that inherit
         # from the base one
+        #: (singleton(ServerAddon)) -> void
         def inherited(child)
           @server_addon_classes << child
           super
         end
 
         # Delegate `request` with `params` to the server add-on with the given `name`
+        #: (String, String, Hash[Symbol | String, untyped]) -> void
         def delegate(name, request, params)
           @server_addons[name]&.execute(request, params)
         end
 
         # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
+        #: (IO | StringIO, IO | StringIO, Hash[Symbol | String, untyped]) -> void
         def finalize_registrations!(stdout, stderr, capabilities)
           until @server_addon_classes.empty?
-            addon = @server_addon_classes.shift.new(stdout, stderr, capabilities)
+            addon = @server_addon_classes.shift #: as !nil
+              .new(stdout, stderr, capabilities)
             @server_addons[addon.name] = addon
           end
         end
       end
 
-      def initialize(stdout, stderr, capabilities)
-        @stdout = stdout
-        @stderr = stderr
-        @capabilities = capabilities
-      end
-
+      #: -> String
       def name
         raise NotImplementedError, "Not implemented!"
       end
 
+      #: (String, Hash[String | Symbol, untyped]) -> untyped
       def execute(request, params)
         raise NotImplementedError, "Not implemented!"
       end
     end
 
     class IOWrapper < SimpleDelegator
+      #: (untyped) -> void
       def puts(*args)
         args.each { |arg| log("#{arg}\n") }
       end
 
+      #: (untyped) -> void
       def print(*args)
         args.each { |arg| log(arg.to_s) }
       end
 
       private
 
+      #: (untyped) -> void
       def log(message)
         json_message = { method: "window/logMessage", params: { type: 4, message: message } }.to_json
-        write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+
+        self #: as untyped # rubocop:disable Style/RedundantSelf
+          .write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
       end
     end
 
-    class Server
+    class Server < ServerComponent
       include Common
 
+      #: (IO | StringIO, IO | StringIO, bool, Hash[Symbol | String, untyped]) -> void
       def initialize(stdout: $stdout, stderr: $stderr, override_default_output_device: true, capabilities: {})
         # Grab references to the original pipes so that we can change the default output device further down
-        @stdin = $stdin
-        @stdout = stdout
-        @stderr = stderr
+
+        @stdin = $stdin #: IO
+        super(stdout, stderr, capabilities)
+
         @stdin.sync = true
         @stdout.sync = true
         @stderr.sync = true
@@ -230,31 +269,31 @@ module RubyLsp
         @stdout.binmode
         @stderr.binmode
 
-        # A hash containing the capabilities of the editor that may be relevant for the runtime server
-        @capabilities = capabilities
-
         # # Set the default output device to be $stderr. This means that using `puts` by itself will default to printing
         # # to $stderr and only explicit `$stdout.puts` will go to $stdout. This reduces the chance that output coming
         # # from the Rails app will be accidentally sent to the client
         $> = IOWrapper.new(@stderr) if override_default_output_device
 
-        @running = true
+        @running = true #: bool
+        @database_supports_indexing = nil #: bool?
       end
 
+      #: -> void
       def start
         load_routes
         clear_file_system_resolver_hooks
         send_result({ message: "ok", root: ::Rails.root.to_s })
 
         while @running
-          headers = @stdin.gets("\r\n\r\n")
-          json = @stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i)
+          headers = @stdin.gets("\r\n\r\n") #: as String
+          json = @stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i) #: as String
 
           request = JSON.parse(json, symbolize_names: true)
           execute(request.fetch(:method), request[:params])
         end
       end
 
+      #: (String, Hash[Symbol | String, untyped]) -> void
       def execute(request, params)
         case request
         when "shutdown"
@@ -306,6 +345,7 @@ module RubyLsp
 
       private
 
+      #: (Hash[Symbol | String, untyped]) -> Hash[Symbol | String, untyped]?
       def resolve_route_info(requirements)
         if requirements[:controller]
           requirements[:controller] = requirements.fetch(:controller).underscore.delete_suffix("_controller")
@@ -334,6 +374,7 @@ module RubyLsp
       # We also check that it's enabled.
       if ActionDispatch::Routing::Mapper.respond_to?(:route_source_locations) &&
           ActionDispatch::Routing::Mapper.route_source_locations
+        #: (String) -> Hash[Symbol | String, untyped]?
         def route_location(name)
           # In Rails 8, Rails.application.routes.named_routes is not populated by default
           if ::Rails.application.respond_to?(:reload_routes_unless_loaded)
@@ -352,11 +393,13 @@ module RubyLsp
           { location: ::Rails.root.join(route.source_location).to_s }
         end
       else
+        #: (String) -> Hash[Symbol | String, untyped]?
         def route_location(name)
           nil
         end
       end
 
+      #: (String) -> Hash[Symbol | String, untyped]?
       def resolve_database_info_from_model(model_name)
         const = ActiveSupport::Inflector.safe_constantize(model_name)
         return unless active_record_model?(const)
@@ -375,28 +418,33 @@ module RubyLsp
         info
       end
 
+      #: (Hash[Symbol | String, untyped]) -> Hash[Symbol | String, untyped]?
       def resolve_association_target(params)
         const = ActiveSupport::Inflector.safe_constantize(params[:model_name])
         return unless active_record_model?(const)
 
         association_klass = const.reflect_on_association(params[:association_name].intern).klass
         source_location = Object.const_source_location(association_klass.to_s)
+        return unless source_location
 
-        { location: source_location.first + ":" + source_location.second.to_s }
+        { location: "#{source_location[0]}:#{source_location[1]}" }
       rescue NameError
         nil
       end
 
+      #: (Module?) -> bool
       def active_record_model?(const)
         !!(
           const &&
             defined?(ActiveRecord) &&
             const.is_a?(Class) &&
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
-          !const.abstract_class?
+          !const #: as singleton(ActiveRecord::Base)
+            .abstract_class?
         )
       end
 
+      #: -> String?
       def pending_migrations_message
         # `check_all_pending!` is only available since Rails 7.1
         return unless defined?(ActiveRecord) && ActiveRecord::Migration.respond_to?(:check_all_pending!)
@@ -407,6 +455,7 @@ module RubyLsp
         e.message
       end
 
+      #: -> Hash[Symbol | String, untyped]
       def run_migrations
         # Running migrations invokes `load` which will repeatedly load the same files. It's not designed to be invoked
         # multiple times within the same process. To avoid any memory bloat, we run migrations in a separate process
@@ -418,6 +467,7 @@ module RubyLsp
         { message: stdout, status: status.exitstatus }
       end
 
+      #: -> void
       def load_routes
         with_notification_error_handling("initial_load_routes") do
           # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
@@ -430,6 +480,7 @@ module RubyLsp
       # watches files. Since the Rails application is already booted by the time we reach this script, we can't no-op
       # the file watcher implementation. Instead, we clear the hooks to prevent the registered file watchers from being
       # instantiated
+      #: -> void
       def clear_file_system_resolver_hooks
         return unless defined?(::ActionView::PathRegistry)
 
@@ -438,6 +489,7 @@ module RubyLsp
         end
       end
 
+      #: (singleton(ActiveRecord::Base)) -> Array[String]
       def collect_model_foreign_keys(model)
         return [] unless model.connection.respond_to?(:supports_foreign_keys?) &&
           model.connection.supports_foreign_keys?
@@ -447,6 +499,7 @@ module RubyLsp
         end
       end
 
+      #: (singleton(ActiveRecord::Base)) -> Array[Hash[Symbol, untyped]]
       def collect_model_indexes(model)
         return [] unless database_supports_indexing?(model)
 
@@ -459,8 +512,9 @@ module RubyLsp
         end
       end
 
+      #: (singleton(ActiveRecord::Base)) -> bool
       def database_supports_indexing?(model)
-        return @database_supports_indexing if instance_variable_defined?(:@database_supports_indexing)
+        return @database_supports_indexing unless @database_supports_indexing.nil?
 
         model.connection.indexes(model.table_name)
         @database_supports_indexing = true

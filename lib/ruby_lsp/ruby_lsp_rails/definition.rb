@@ -35,7 +35,7 @@ module RubyLsp
         @client = client
         @response_builder = response_builder
         @node_context = node_context
-        @nesting = T.let(node_context.nesting, T::Array[String])
+        @nesting = node_context.nesting #: Array[String]
         @index = index
 
         dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
@@ -121,7 +121,9 @@ module RubyLsp
 
       #: (Prism::CallNode node) -> void
       def handle_route(node)
-        result = @client.route_location(T.must(node.message))
+        result = @client.route_location(
+          node.message, #: as !nil
+        )
         return unless result
 
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))

@@ -21,8 +21,8 @@ module RubyLsp
       def initialize(client, response_builder, node_context, global_state, dispatcher)
         @client = client
         @response_builder = response_builder
-        @nesting = T.let(node_context.nesting, T::Array[String])
-        @index = T.let(global_state.index, RubyIndexer::Index)
+        @nesting = node_context.nesting #: Array[String]
+        @index = global_state.index #: RubyIndexer::Index
         dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter)
       end
 
