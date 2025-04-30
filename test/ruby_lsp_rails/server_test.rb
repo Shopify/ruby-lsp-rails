@@ -1,19 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
-# Configure Rails Environment
-ENV["RAILS_ENV"] = "test"
-require_relative "../dummy/config/environment"
-
-require "minitest/autorun"
-require "mocha/minitest"
+require "test_helper"
 require "ruby_lsp/ruby_lsp_rails/server"
-
-if defined?(T)
-  puts "T is defined, indicating that sorbet-runtime was loaded"
-  puts "This test should run without sorbet-runtime"
-  exit(1)
-end
 
 class ServerTest < ActiveSupport::TestCase
   setup do
@@ -257,7 +246,8 @@ class ServerTest < ActiveSupport::TestCase
       end
     end
 
-    server.print_it!
+    server #: as untyped
+      .print_it!
 
     assert_match("Content-Length: 70\r\n\r\n", stderr.string)
     assert_match(
