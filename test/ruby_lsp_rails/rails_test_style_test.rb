@@ -243,6 +243,49 @@ module RubyLsp
         end
       end
 
+      test "pushes code lenses to response builder" do
+        source = <<~RUBY
+          class SampleTest < ActiveSupport::TestCase
+            test "first test" do
+              assert true
+            end
+
+            test "second test" do
+              assert true
+            end
+          end
+        RUBY
+
+        with_server(source, URI("/fake.rb")) do |server, uri|
+          server.global_state.index.index_single(URI("/other_file.rb"), <<~RUBY)
+            module Minitest
+              class Test; end
+            end
+
+            module ActiveSupport
+              module Testing
+                module Declarative
+                end
+              end
+
+              class TestCase < Minitest::Test
+                extend Testing::Declarative
+              end
+            end
+          RUBY
+
+          server.global_state.stubs(:enabled_feature?).returns(true)
+
+          server.process_message(id: 1, method: "textDocument/codeLens", params: {
+            textDocument: { uri: uri },
+          })
+
+          result = pop_result(server)
+          items = result.response
+          assert_equal(9, items.length)
+        end
+      end
+
       private
 
       def with_active_support_declarative_tests(source, file: "/fake.rb", &block)
