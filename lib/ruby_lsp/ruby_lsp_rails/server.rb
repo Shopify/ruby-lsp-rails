@@ -17,7 +17,7 @@ module RubyLsp
           @supports_progress = supports_progress
         end
 
-        #: (percentage: Integer?, message: String?) -> void
+        #: (?percentage: Integer?, ?message: String?) -> void
         def report(percentage: nil, message: nil)
           return unless @supports_progress
           return unless percentage || message
@@ -40,7 +40,7 @@ module RubyLsp
 
       # Log a message to the editor's output panel. The type is the number of the message type, which can be found in
       # the specification https://microsoft.github.io/language-server-protocol/specification/#messageType
-      #: (String, type: Integer) -> void
+      #: (String, ?type: Integer) -> void
       def log_message(message, type: 4)
         send_notification({ method: "window/logMessage", params: { type: type, message: message } })
       end
@@ -86,7 +86,7 @@ module RubyLsp
         log_message("Request #{notification_name} failed:\n#{e.full_message(highlight: false)}")
       end
 
-      #: (String, String, percentage: Integer?, message: String?) -> void
+      #: (String, String, ?percentage: Integer?, ?message: String?) -> void
       def begin_progress(id, title, percentage: nil, message: nil)
         return unless capabilities[:supports_progress]
 
@@ -112,7 +112,7 @@ module RubyLsp
         })
       end
 
-      #: (String, percentage: Integer?, message: String?) -> void
+      #: (String, ?percentage: Integer?, ?message: String?) -> void
       def report_progress(id, percentage: nil, message: nil)
         return unless capabilities[:supports_progress]
 
@@ -142,7 +142,7 @@ module RubyLsp
         })
       end
 
-      #: (String, String, percentage: Integer?, message: String?) { (Progress) -> void } -> void
+      #: (String, String, ?percentage: Integer?, ?message: String?) { (Progress) -> void } -> void
       def with_progress(id, title, percentage: nil, message: nil, &block)
         progress_block = Progress.new(stderr, id, capabilities[:supports_progress])
         return block.call(progress_block) unless capabilities[:supports_progress]
@@ -231,12 +231,12 @@ module RubyLsp
     end
 
     class IOWrapper < SimpleDelegator
-      #: (untyped) -> void
+      #: (*untyped) -> void
       def puts(*args)
         args.each { |arg| log("#{arg}\n") }
       end
 
-      #: (untyped) -> void
+      #: (*untyped) -> void
       def print(*args)
         args.each { |arg| log(arg.to_s) }
       end
@@ -255,7 +255,7 @@ module RubyLsp
     class Server < ServerComponent
       include Common
 
-      #: (IO | StringIO, IO | StringIO, bool, Hash[Symbol | String, untyped]) -> void
+      #: (?stdout: IO | StringIO, ?stderr: IO | StringIO, ?override_default_output_device: bool, ?capabilities: Hash[Symbol | String, untyped]) -> void
       def initialize(stdout: $stdout, stderr: $stderr, override_default_output_device: true, capabilities: {})
         # Grab references to the original pipes so that we can change the default output device further down
 
