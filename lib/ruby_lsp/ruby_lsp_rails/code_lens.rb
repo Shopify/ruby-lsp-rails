@@ -75,7 +75,7 @@ module RubyLsp
       include Requests::Support::Common
       include ActiveSupportTestCaseHelper
 
-      #: (RunnerClient client, GlobalState global_state, ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens] response_builder, URI::Generic uri, Prism::Dispatcher dispatcher) -> void
+      #: (RunnerClient, GlobalState, ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens], URI::Generic, Prism::Dispatcher) -> void
       def initialize(client, global_state, response_builder, uri, dispatcher)
         @client = client
         @global_state = global_state
@@ -98,8 +98,10 @@ module RubyLsp
 
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
-        content = extract_test_case_name(node)
+        # Remove this method once the rollout is complete
+        return if @global_state.enabled_feature?(:fullTestDiscovery)
 
+        content = extract_test_case_name(node)
         return unless content
 
         line_number = node.location.start_line
@@ -110,12 +112,15 @@ module RubyLsp
       # Although uncommon, Rails tests can be written with the classic "def test_name" syntax.
       #: (Prism::DefNode node) -> void
       def on_def_node_enter(node)
-        method_name = node.name.to_s
+        # Remove this entire unless block once the rollout is complete
+        unless @global_state.enabled_feature?(:fullTestDiscovery)
+          method_name = node.name.to_s
 
-        if method_name.start_with?("test_")
-          line_number = node.location.start_line
-          command = "#{test_command} #{@path}:#{line_number}"
-          add_test_code_lens(node, name: method_name, command: command, kind: :example)
+          if method_name.start_with?("test_")
+            line_number = node.location.start_line
+            command = "#{test_command} #{@path}:#{line_number}"
+            add_test_code_lens(node, name: method_name, command: command, kind: :example)
+          end
         end
 
         if controller?
@@ -134,7 +139,8 @@ module RubyLsp
         # back in a controller context. This part is used in other places in the LSP
         @constant_name_stack << [class_name, superclass_name]
 
-        if class_name.end_with?("Test")
+        # Remove this entire if block once the rollout is complete
+        if class_name.end_with?("Test") && !@global_state.enabled_feature?(:fullTestDiscovery)
           fully_qualified_name = @constant_name_stack.map(&:first).join("::")
           command = "#{test_command} #{@path} --name \"/#{Shellwords.escape(fully_qualified_name)}(#|::)/\""
           add_test_code_lens(node, name: class_name, command: command, kind: :group)
@@ -155,6 +161,8 @@ module RubyLsp
         if class_name.end_with?("Test")
           @group_id_stack.pop
         end
+        # Remove everything but the `@constant_name_stack.pop` once the rollout is complete
+        return if @global_state.enabled_feature?(:fullTestDiscovery)
 
         @constant_name_stack.pop
       end

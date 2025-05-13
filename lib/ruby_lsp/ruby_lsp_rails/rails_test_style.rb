@@ -75,6 +75,7 @@ module RubyLsp
             )
 
             @response_builder.add(test_item)
+            @response_builder.add_code_lens(test_item)
           end
         end
       end
@@ -127,13 +128,15 @@ module RubyLsp
         test_item = group_test_item
         return unless test_item
 
-        test_item.add(Requests::Support::TestItem.new(
+        example_item = Requests::Support::TestItem.new(
           "#{test_item.id}##{test_name}",
           test_name,
           @uri,
           range_from_node(node),
           framework: :rails,
-        ))
+        )
+        test_item.add(example_item)
+        @response_builder.add_code_lens(example_item)
       end
 
       #: -> Requests::Support::TestItem?
