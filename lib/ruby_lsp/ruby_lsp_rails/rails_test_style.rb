@@ -50,8 +50,8 @@ module RubyLsp
         end
       end
 
-      #: (RunnerClient client, ResponseBuilders::TestCollection response_builder, GlobalState global_state, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
-      def initialize(client, response_builder, global_state, dispatcher, uri)
+      #: (ResponseBuilders::TestCollection response_builder, GlobalState global_state, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
+      def initialize(response_builder, global_state, dispatcher, uri)
         super(response_builder, global_state, dispatcher, uri)
 
         dispatcher.register(
