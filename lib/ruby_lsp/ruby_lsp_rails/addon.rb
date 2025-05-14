@@ -91,7 +91,7 @@ module RubyLsp
       def create_discover_tests_listener(response_builder, dispatcher, uri)
         return unless @global_state
 
-        RailsTestStyle.new(@rails_runner_client, response_builder, @global_state, dispatcher, uri)
+        RailsTestStyle.new(response_builder, @global_state, dispatcher, uri)
       end
 
       # @override
