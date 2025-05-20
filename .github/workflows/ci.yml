@@ -35,7 +35,7 @@ jobs:
           bundler: latest
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          cache-version: 7
+          cache-version: 8
 
       - name: Run tests
         run: |
