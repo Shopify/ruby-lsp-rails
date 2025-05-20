@@ -54,6 +54,8 @@ module RubyLsp
       def initialize(response_builder, global_state, dispatcher, uri)
         super(response_builder, global_state, dispatcher, uri)
 
+        @parent_stack = [@response_builder] #: Array[(Requests::Support::TestItem | ResponseBuilders::TestCollection)?]
+
         dispatcher.register(
           self,
           :on_class_node_enter,
@@ -74,10 +76,30 @@ module RubyLsp
               framework: :rails,
             )
 
-            @response_builder.add(test_item)
+            last_test_group.add(test_item)
             @response_builder.add_code_lens(test_item)
+            @parent_stack << test_item
+          else
+            @parent_stack << nil
           end
         end
+      end
+
+      #: (Prism::ClassNode node) -> void
+      def on_class_node_leave(node)
+        @parent_stack.pop
+        super
+      end
+
+      #: (Prism::ModuleNode node) -> void
+      def on_module_node_enter(node)
+        @parent_stack << nil
+      end
+
+      #: (Prism::ModuleNode node) -> void
+      def on_module_node_leave(node)
+        @parent_stack.pop
+        super
       end
 
       #: (Prism::CallNode node) -> void
@@ -125,28 +147,24 @@ module RubyLsp
 
       #: (Prism::Node node, String test_name) -> void
       def add_test_item(node, test_name)
-        test_item = group_test_item
-        return unless test_item
+        parent = @parent_stack.last
+        return unless parent.is_a?(Requests::Support::TestItem)
 
         example_item = Requests::Support::TestItem.new(
-          "#{test_item.id}##{test_name}",
+          "#{parent.id}##{test_name}",
           test_name,
           @uri,
           range_from_node(node),
           framework: :rails,
         )
-        test_item.add(example_item)
+        parent.add(example_item)
         @response_builder.add_code_lens(example_item)
       end
 
-      #: -> Requests::Support::TestItem?
-      def group_test_item
-        current_group_name = RubyIndexer::Index.actual_nesting(@nesting, nil).join("::")
-
-        # If we're finding a test method, but for the wrong framework, then the group test item will not have been
-        # previously pushed and thus we return early and avoid adding items for a framework this listener is not
-        # interested in
-        @response_builder[current_group_name]
+      #: -> (Requests::Support::TestItem | ResponseBuilders::TestCollection)
+      def last_test_group
+        index = @parent_stack.rindex { |i| i } #: as !nil
+        @parent_stack[index] #: as Requests::Support::TestItem | ResponseBuilders::TestCollection
       end
     end
   end
