@@ -286,6 +286,38 @@ module RubyLsp
         end
       end
 
+      test "nested test groups" do
+        source = <<~RUBY
+          class SampleTest < ActiveSupport::TestCase
+            class InnerTest < ActiveSupport::TestCase
+              test "first" do
+              end
+            end
+
+            class AnotherGroupTest < ActiveSupport::TestCase
+              test "second" do
+              end
+            end
+          end
+        RUBY
+
+        with_active_support_declarative_tests(source) do |items|
+          assert_equal(["SampleTest"], items.map { |i| i[:id] })
+          assert_equal(
+            ["SampleTest::InnerTest", "SampleTest::AnotherGroupTest"],
+            items.dig(0, :children).map { |i| i[:label] },
+          )
+          assert_equal(
+            ["SampleTest::InnerTest#test_first"],
+            items.dig(0, :children, 0, :children).map { |i| i[:id] },
+          )
+          assert_equal(
+            ["SampleTest::AnotherGroupTest#test_second"],
+            items.dig(0, :children, 1, :children).map { |i| i[:id] },
+          )
+        end
+      end
+
       private
 
       def with_active_support_declarative_tests(source, file: "/fake.rb", &block)
