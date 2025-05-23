@@ -17,7 +17,7 @@ gem "rubocop-sorbet", "~> 0.8", require: false
 gem "sorbet-static-and-runtime", platforms: :ruby
 gem "tapioca", "~> 0.13", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
-gem "rails", "8.0.0"
+gem "rails", "~> 8.0.0"
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
