@@ -24,3 +24,14 @@ module RubyLsp
     end
   end
 end
+
+# Workaround while Tapioca doesn't handle the RBS based syntax
+module RubyLsp
+  module ResponseBuilders
+    class CollectionResponseBuilder
+      extend T::Generic
+
+      Elem = type_member
+    end
+  end
+end
