@@ -221,6 +221,69 @@ module RubyLsp
         assert_empty(response)
       end
 
+      test "recognizes mailbox before_processing callback" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 1, character: 20 })
+          class FooMailbox < ApplicationMailbox
+            before_processing :bar
+
+            private
+              def bar; end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        response = response.first
+
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(4, response.range.start.line)
+        assert_equal(4, response.range.start.character)
+        assert_equal(4, response.range.end.line)
+        assert_equal(16, response.range.end.character)
+      end
+
+      test "recognizes mailbox around_processing callback" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 1, character: 20 })
+          class FooMailbox < ApplicationMailbox
+            around_processing :baz
+
+            private
+              def baz; end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        response = response.first
+
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(4, response.range.start.line)
+        assert_equal(4, response.range.start.character)
+        assert_equal(4, response.range.end.line)
+        assert_equal(16, response.range.end.character)
+      end
+
+      test "recognizes mailbox after_processing callback" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 1, character: 20 })
+          class FooMailbox < ApplicationMailbox
+            after_processing :qux
+
+            private
+              def qux; end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        response = response.first
+
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(4, response.range.start.line)
+        assert_equal(4, response.range.start.character)
+        assert_equal(4, response.range.end.line)
+        assert_equal(16, response.range.end.character)
+      end
+
       private
 
       def generate_definitions_for_source(source, position)
