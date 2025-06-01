@@ -218,6 +218,109 @@ module RubyLsp
         refute_match(/Schema/, response.contents.value)
       end
 
+      test "returns has_many association information" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/membership.rb:5",
+          name: "Bar",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 1, character: 11 })
+          class Foo < ApplicationRecord
+            has_many :bars
+          end
+
+          class Bar < ApplicationRecord
+            belongs_to :foo
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Bar
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L5,1-7,4)
+        CONTENT
+      end
+
+      test "returns belongs_to association information" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/membership.rb:1",
+          name: "Foo",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 5, character: 14 })
+          class Foo < ApplicationRecord
+            has_many :bars
+          end
+
+          class Bar < ApplicationRecord
+            belongs_to :foo
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Foo
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L1,1-3,4)
+        CONTENT
+      end
+
+      test "returns has_one association information" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/membership.rb:5",
+          name: "Bar",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 1, character: 10 })
+          class Foo < ApplicationRecord
+            has_one :bar
+          end
+
+          class Bar < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Bar
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L5,1-6,4)
+        CONTENT
+      end
+
+      test "returns has_and_belongs_to association information" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/membership.rb:5",
+          name: "Bar",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 1, character: 26 })
+          class Foo < ApplicationRecord
+            has_and_belongs_to_many :bars
+          end
+
+          class Bar < ApplicationRecord
+            has_and_belongs_to_many :foos
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Bar
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L5,1-7,4)
+        CONTENT
+      end
+
       private
 
       def hover_on_source(source, position)
