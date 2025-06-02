@@ -3,10 +3,10 @@ inherit_gem:
 
 plugins:
  - rubocop-minitest
+ - rubocop-rake
 
 require:
  - rubocop-sorbet
- - rubocop-rake
 
 AllCops:
   NewCops: disable
