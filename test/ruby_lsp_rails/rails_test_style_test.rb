@@ -318,6 +318,25 @@ module RubyLsp
         end
       end
 
+      test "namespaced test" do
+        source = <<~RUBY
+          module Foo
+            class SampleTest < ActiveSupport::TestCase
+              test "do something" do
+              end
+            end
+          end
+        RUBY
+
+        with_active_support_declarative_tests(source) do |items|
+          assert_equal(["Foo::SampleTest"], items.map { |i| i[:id] })
+          assert_equal(
+            ["Foo::SampleTest#test_do_something"],
+            items.dig(0, :children).map { |i| i[:id] },
+          )
+        end
+      end
+
       private
 
       def with_active_support_declarative_tests(source, file: "/fake.rb", &block)
