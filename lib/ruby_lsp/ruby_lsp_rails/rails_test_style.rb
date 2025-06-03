@@ -92,12 +92,6 @@ module RubyLsp
       end
 
       #: (Prism::ModuleNode node) -> void
-      def on_module_node_enter(node)
-        @parent_stack << nil
-        super
-      end
-
-      #: (Prism::ModuleNode node) -> void
       def on_module_node_leave(node)
         @parent_stack.pop
         super
