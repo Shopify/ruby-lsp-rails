@@ -97,12 +97,6 @@ module RubyLsp
         super
       end
 
-      #: (Prism::ModuleNode node) -> void
-      def on_module_node_leave(node)
-        @parent_stack.pop
-        super
-      end
-
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         return unless node.name == :test
