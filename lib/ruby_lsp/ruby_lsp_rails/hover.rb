@@ -29,18 +29,20 @@ module RubyLsp
       #: (Prism::ConstantPathNode node) -> void
       def on_constant_path_node_enter(node)
         entries = @index.resolve(node.slice, @nesting)
-        return unless entries
+        item = entries&.first
+        return unless item
 
-        name = entries.first.name
+        name = item.name
         generate_column_content(name)
       end
 
       #: (Prism::ConstantReadNode node) -> void
       def on_constant_read_node_enter(node)
         entries = @index.resolve(node.name.to_s, @nesting)
-        return unless entries
+        item = entries&.first
+        return unless item
 
-        generate_column_content(entries.first.name)
+        generate_column_content(item.name)
       end
 
       private

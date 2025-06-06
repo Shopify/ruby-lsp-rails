@@ -53,10 +53,10 @@ module RubyLsp
       #: (ResponseBuilders::TestCollection response_builder, GlobalState global_state, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def initialize(response_builder, global_state, dispatcher, uri)
         @parent_stack = [response_builder] #: Array[(Requests::Support::TestItem | ResponseBuilders::TestCollection)?]
-        super(response_builder, global_state, dispatcher, uri)
+        super(response_builder, global_state, uri)
 
-        dispatcher.register(
-          self,
+        register_events(
+          dispatcher,
           :on_class_node_enter,
           :on_call_node_enter,
           :on_def_node_enter,
