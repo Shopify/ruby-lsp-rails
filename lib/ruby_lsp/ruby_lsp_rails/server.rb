@@ -401,7 +401,7 @@ module RubyLsp
 
       #: (String) -> Hash[Symbol | String, untyped]?
       def resolve_database_info_from_model(model_name)
-        const = ActiveSupport::Inflector.safe_constantize(model_name)
+        const = ActiveSupport::Inflector.safe_constantize(model_name) # rubocop:disable Sorbet/ConstantsFromStrings
         return unless active_record_model?(const)
 
         info = {
@@ -420,7 +420,7 @@ module RubyLsp
 
       #: (Hash[Symbol | String, untyped]) -> Hash[Symbol | String, untyped]?
       def resolve_association_target(params)
-        const = ActiveSupport::Inflector.safe_constantize(params[:model_name])
+        const = ActiveSupport::Inflector.safe_constantize(params[:model_name]) # rubocop:disable Sorbet/ConstantsFromStrings
         return unless active_record_model?(const)
 
         association_klass = const.reflect_on_association(params[:association_name].intern).klass

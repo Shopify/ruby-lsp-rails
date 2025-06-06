@@ -17,5 +17,8 @@ module URI
 
     sig { returns(T.nilable(String)) }
     def to_standardized_path; end
+
+    sig { returns(T.nilable(String)) }
+    def full_path; end
   end
 end
