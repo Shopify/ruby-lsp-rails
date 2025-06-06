@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby-lsp-rails (0.4.5)
+    ruby-lsp-rails (0.4.6)
       ruby-lsp (>= 0.24.0, < 0.25.0)
 
 GEM
