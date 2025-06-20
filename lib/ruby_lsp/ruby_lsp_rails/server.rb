@@ -68,8 +68,10 @@ module RubyLsp
         send_error_response("Request #{request_name} failed because database connection was not established.")
       rescue ActiveRecord::NoDatabaseError
         send_error_response("Request #{request_name} failed because the database does not exist.")
-      rescue => e
-        send_error_response("Request #{request_name} failed:\n#{e.full_message(highlight: false)}")
+      rescue NotImplementedError, LoadError, SyntaxError, SystemExit, SystemStackError => e
+        send_error_response("Request #{request_name} failed with #{e.class}:\n#{e.full_message(highlight: false)}")
+      rescue StandardError => e
+        send_error_response("Request #{request_name} failed with StandardError:\n#{e.full_message(highlight: false)}")
       end
 
       # Handle possible errors for a notification. This should only be used for notifications, which means messages that
@@ -82,8 +84,10 @@ module RubyLsp
         log_message("Request #{notification_name} failed because database connection was not established.")
       rescue ActiveRecord::NoDatabaseError
         log_message("Request #{notification_name} failed because the database does not exist.")
-      rescue => e
-        log_message("Request #{notification_name} failed:\n#{e.full_message(highlight: false)}")
+      rescue NotImplementedError, LoadError, SyntaxError, SystemExit, SystemStackError => e
+        log_message("Request #{notification_name} failed with #{e.class}:\n#{e.full_message(highlight: false)}")
+      rescue StandardError => e
+        log_message("Request #{notification_name} failed with StandardError:\n#{e.full_message(highlight: false)}")
       end
 
       #: (String, String, ?percentage: Integer?, ?message: String?) -> void
