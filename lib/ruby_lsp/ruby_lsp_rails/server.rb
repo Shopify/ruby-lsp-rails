@@ -306,7 +306,7 @@ module RubyLsp
           with_request_error_handling(request) do
             send_result(resolve_database_info_from_model(params.fetch(:name)))
           end
-        when "association_target_location"
+        when "association_target"
           with_request_error_handling(request) do
             send_result(resolve_association_target(params))
           end
@@ -431,7 +431,7 @@ module RubyLsp
         source_location = Object.const_source_location(association_klass.to_s)
         return unless source_location
 
-        { location: "#{source_location[0]}:#{source_location[1]}" }
+        { location: "#{source_location[0]}:#{source_location[1]}", name: association_klass.name }
       rescue NameError
         nil
       end

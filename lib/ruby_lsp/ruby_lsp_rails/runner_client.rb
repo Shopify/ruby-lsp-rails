@@ -144,9 +144,9 @@ module RubyLsp
       end
 
       #: (model_name: String, association_name: String) -> Hash[Symbol, untyped]?
-      def association_target_location(model_name:, association_name:)
+      def association_target(model_name:, association_name:)
         make_request(
-          "association_target_location",
+          "association_target",
           model_name: model_name,
           association_name: association_name,
         )

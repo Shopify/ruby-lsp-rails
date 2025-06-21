@@ -55,43 +55,51 @@ class ServerTest < ActiveSupport::TestCase
 
   test "resolve association returns the location of the target class of a has_many association" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "Organization", association_name: :memberships },
     )
     location = response[:result][:location]
+    name = response[:result][:name]
+    assert_equal "Membership", name
     assert_match %r{test/dummy/app/models/membership.rb:3$}, location
   end
 
   test "resolve association returns the location of the target class of a belongs_to association" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "Membership", association_name: :organization },
     )
     location = response[:result][:location]
+    name = response[:result][:name]
+    assert_equal "Organization", name
     assert_match %r{test/dummy/app/models/organization.rb:3$}, location
   end
 
   test "resolve association returns the location of the target class of a has_one association" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "User", association_name: :profile },
     )
     location = response[:result][:location]
+    name = response[:result][:name]
+    assert_equal "Profile", name
     assert_match %r{test/dummy/app/models/profile.rb:3$}, location
   end
 
   test "resolve association returns the location of the target class of a has_and_belongs_to_many association" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "Profile", association_name: :labels },
     )
     location = response[:result][:location]
+    name = response[:result][:name]
+    assert_equal "Label", name
     assert_match %r{test/dummy/app/models/label.rb:3$}, location
   end
 
   test "resolve association handles invalid model name" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "NotHere", association_name: :labels },
     )
     assert_nil(response.fetch(:result))
@@ -99,7 +107,7 @@ class ServerTest < ActiveSupport::TestCase
 
   test "resolve association handles invalid association name" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "Membership", association_name: :labels },
     )
     assert_nil(response.fetch(:result))
@@ -107,10 +115,12 @@ class ServerTest < ActiveSupport::TestCase
 
   test "resolve association handles class_name option" do
     @server.execute(
-      "association_target_location",
+      "association_target",
       { model_name: "User", association_name: :location },
     )
     location = response[:result][:location]
+    name = response[:result][:name]
+    assert_equal "Country", name
     assert_match %r{test/dummy/app/models/country.rb:3$}, location
   end
 
