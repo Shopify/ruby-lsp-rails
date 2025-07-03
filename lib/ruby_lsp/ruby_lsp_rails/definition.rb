@@ -108,12 +108,23 @@ module RubyLsp
         return unless first_argument.is_a?(Prism::SymbolNode)
 
         association_name = first_argument.unescaped
+        handle_association_name(association_name)
 
+        through_association_name = node.arguments.arguments
+          .filter_map { |arg| arg.elements if arg.is_a?(Prism::KeywordHashNode) }
+          .flatten
+          .find { |elem| elem.key.value == "through" }
+          &.value
+          &.unescaped
+        handle_association_name(through_association_name) if through_association_name
+      end
+
+      #: (String association_name) -> void
+      def handle_association_name(association_name)
         result = @client.association_target_location(
           model_name: @nesting.join("::"),
           association_name: association_name,
         )
-
         return unless result
 
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
