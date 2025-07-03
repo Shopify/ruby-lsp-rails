@@ -52,6 +52,32 @@ module RubyLsp
         assert_equal(2, response[0].range.end.line)
       end
 
+      test "recognizes has_many :through model associations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 4, character: 29 })
+          # typed: false
+
+          class Organization < ActiveRecord::Base
+            has_many :memberships
+            has_many :users, through: :memberships
+          end
+        RUBY
+
+        assert_equal(2, response.size)
+
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "user.rb")).to_s,
+          response[0].uri,
+        )
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "membership.rb")).to_s,
+          response[1].uri,
+        )
+        assert_equal(2, response[0].range.start.line)
+        assert_equal(2, response[0].range.end.line)
+        assert_equal(2, response[1].range.start.line)
+        assert_equal(2, response[1].range.end.line)
+      end
+
       test "recognizes belongs_to model associations" do
         response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 14 })
           # typed: false
@@ -90,6 +116,32 @@ module RubyLsp
         assert_equal(2, response[0].range.end.line)
       end
 
+      test "recognizes has_one :through model associations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 4, character: 35 })
+          # typed: false
+
+          class User < ActiveRecord::Base
+            belongs_to :location, class_name: "Country"
+            has_one :country_flag, through: :location, source: :flag
+          end
+        RUBY
+
+        assert_equal(2, response.size)
+
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "flag.rb")).to_s,
+          response[0].uri,
+        )
+        assert_equal(
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "country.rb")).to_s,
+          response[1].uri,
+        )
+        assert_equal(2, response[0].range.start.line)
+        assert_equal(2, response[0].range.end.line)
+        assert_equal(2, response[1].range.start.line)
+        assert_equal(2, response[1].range.end.line)
+      end
+
       test "recognizes has_and_belongs_to_many model associations" do
         response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 27 })
           # typed: false
@@ -110,11 +162,11 @@ module RubyLsp
       end
 
       test "handles class_name argument for associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 11 })
+        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 14 })
           # typed: false
 
           class User < ActiveRecord::Base
-            has_one :location, class_name: "Country"
+            belongs_to :location, class_name: "Country"
           end
         RUBY
 
