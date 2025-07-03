@@ -2,11 +2,9 @@ inherit_gem:
   rubocop-shopify: rubocop.yml
 
 plugins:
- - rubocop-minitest
- - rubocop-rake
-
-require:
- - rubocop-sorbet
+  - rubocop-minitest
+  - rubocop-rake
+  - rubocop-sorbet
 
 AllCops:
   NewCops: disable
@@ -16,7 +14,7 @@ AllCops:
 
 Naming/FileName:
   Exclude:
-  - "lib/ruby-lsp-rails.rb"
+    - "lib/ruby-lsp-rails.rb"
 
 Sorbet/FalseSigil:
   Enabled: false
