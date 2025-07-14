@@ -256,7 +256,7 @@ module RubyLsp
           end
         RUBY
 
-        with_server(source, URI("/fake.rb")) do |server, uri|
+        with_server(source, URI("/test/foo_test.rb")) do |server, uri|
           server.global_state.index.index_single(URI("/other_file.rb"), <<~RUBY)
             module Minitest
               class Test; end
