@@ -3,6 +3,5 @@
 --ignore=tmp/
 --ignore=vendor/
 --ignore=test/dummy
---enable-experimental-rbs-signatures
---enable-experimental-rbs-assertions
+--enable-experimental-rbs-comments
 --enable-experimental-requires-ancestor
