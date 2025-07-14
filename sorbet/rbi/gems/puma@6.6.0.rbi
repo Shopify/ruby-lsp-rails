@@ -1276,11 +1276,6 @@ Puma::Const::WRITE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 #
 # The following hooks have been updated:
 #
-#     | DSL Method         |  Options Key            | Fork Block Location |
-#     | on_worker_boot     | :before_worker_boot     | inside, before      |
-#     | on_worker_shutdown | :before_worker_shutdown | inside, after       |
-#     | on_refork          | :before_refork          | inside              |
-#     | after_refork       | :after_refork           | inside              |
 #
 # source://puma//lib/puma/dsl.rb#52
 class Puma::DSL
@@ -1343,7 +1338,7 @@ class Puma::DSL
   #   end
   # @note Cluster mode only.
   #
-  # source://puma//lib/puma/dsl.rb#806
+  # source://puma//lib/puma/dsl.rb#812
   def after_worker_boot(&block); end
 
   # Code to run in the master after a worker has been started. The worker's
@@ -2498,14 +2493,28 @@ Puma::HAS_UNIX_SOCKET = T.let(T.unsafe(nil), TrueClass)
 Puma::HTTP_STATUS_CODES = T.let(T.unsafe(nil), Hash)
 
 class Puma::HttpParser
+  # source://puma//lib/puma.rb#12
   def initialize; end
 
+  # source://puma//lib/puma.rb#12
   def body; end
+
+  # source://puma//lib/puma.rb#12
   def error?; end
+
+  # source://puma//lib/puma.rb#12
   def execute(_arg0, _arg1, _arg2); end
+
+  # source://puma//lib/puma.rb#12
   def finish; end
+
+  # source://puma//lib/puma.rb#12
   def finished?; end
+
+  # source://puma//lib/puma.rb#12
   def nread; end
+
+  # source://puma//lib/puma.rb#12
   def reset; end
 end
 
@@ -2521,9 +2530,10 @@ class Puma::IOBuffer < ::StringIO
   # source://puma//lib/puma/io_buffer.rb#7
   def initialize; end
 
+  # source://puma//lib/puma/io_buffer.rb#39
   def append(*_arg0); end
 
-  # source://puma//lib/puma/io_buffer.rb#15
+  # source://puma//lib/puma/io_buffer.rb#35
   def clear; end
 
   # @return [Boolean]
@@ -3007,6 +3017,7 @@ end
 # source://puma//lib/puma/minissl.rb#14
 module Puma::MiniSSL
   class << self
+    # source://puma//lib/puma.rb#12
     def check; end
   end
 end
@@ -3207,17 +3218,35 @@ class Puma::MiniSSL::ContextBuilder
 end
 
 class Puma::MiniSSL::Engine
+  # source://puma//lib/puma.rb#12
   def extract; end
+
+  # source://puma//lib/puma.rb#12
   def init?; end
+
+  # source://puma//lib/puma.rb#12
   def inject(_arg0); end
+
+  # source://puma//lib/puma.rb#12
   def peercert; end
+
+  # source://puma//lib/puma.rb#12
   def read; end
+
+  # source://puma//lib/puma.rb#12
   def shutdown; end
+
+  # source://puma//lib/puma.rb#12
   def ssl_vers_st; end
+
+  # source://puma//lib/puma.rb#12
   def write(_arg0); end
 
   class << self
+    # source://puma//lib/puma.rb#12
     def client; end
+
+    # source://puma//lib/puma.rb#12
     def server(_arg0); end
   end
 end
@@ -3237,6 +3266,7 @@ Puma::MiniSSL::OPENSSL_NO_TLS1_1 = T.let(T.unsafe(nil), FalseClass)
 Puma::MiniSSL::OPENSSL_VERSION = T.let(T.unsafe(nil), String)
 
 class Puma::MiniSSL::SSLContext
+  # source://puma//lib/puma.rb#12
   def initialize(_arg0); end
 end
 
@@ -3281,7 +3311,7 @@ class Puma::MiniSSL::Socket
   # source://puma//lib/puma/minissl.rb#23
   def initialize(socket, engine); end
 
-  # source://puma//lib/puma/minissl.rb#120
+  # source://puma//lib/puma/minissl.rb#144
   def <<(data); end
 
   # source://puma//lib/puma/minissl.rb#167
@@ -3329,7 +3359,7 @@ class Puma::MiniSSL::Socket
   # source://puma//lib/puma/minissl.rb#48
   def ssl_version_state; end
 
-  # source://puma//lib/puma/minissl.rb#120
+  # source://puma//lib/puma/minissl.rb#143
   def syswrite(data); end
 
   # source://puma//lib/puma/minissl.rb#31
@@ -4547,7 +4577,7 @@ class Puma::Util::HeaderHash < ::Hash
 
   # @return [Boolean]
   #
-  # source://puma//lib/puma/util.rb#116
+  # source://puma//lib/puma/util.rb#120
   def has_key?(k); end
 
   # @return [Boolean]
@@ -4557,12 +4587,12 @@ class Puma::Util::HeaderHash < ::Hash
 
   # @return [Boolean]
   #
-  # source://puma//lib/puma/util.rb#116
+  # source://puma//lib/puma/util.rb#122
   def key?(k); end
 
   # @return [Boolean]
   #
-  # source://puma//lib/puma/util.rb#116
+  # source://puma//lib/puma/util.rb#121
   def member?(k); end
 
   # source://puma//lib/puma/util.rb#129
