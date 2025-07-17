@@ -324,7 +324,7 @@ DEPENDENCIES
   rubocop-shopify (~> 2.15)
   rubocop-sorbet (~> 0.8)
   ruby-lsp-rails!
-  sorbet-static-and-runtime
+  sorbet-static
   sqlite3
   tapioca (~> 0.13)
   tzinfo
