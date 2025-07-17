@@ -55,7 +55,13 @@ module RubyLsp
           "before_perform",
         ].freeze
 
-        ALL = (MODELS + CONTROLLERS + JOBS).freeze #: Array[String]
+        MAILBOX = [
+          "after_processing",
+          "before_processing",
+          "around_processing",
+        ].freeze
+
+        ALL = (MODELS + CONTROLLERS + JOBS + MAILBOX).freeze #: Array[String]
       end
     end
   end
