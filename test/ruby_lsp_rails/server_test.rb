@@ -258,6 +258,38 @@ class ServerTest < ActiveSupport::TestCase
     $> = original_stdout
   end
 
+  test "forked processes are named based on caller" do
+    skip("Fork is not supported on Windows") if Gem.win_platform?
+
+    File.write("my_addon.rb", <<~RUBY)
+      class MyServerAddon < RubyLsp::Rails::ServerAddon
+        def name
+          "MyAddon"
+        end
+
+        def execute(request, params)
+          pid = fork do
+            # We can't directly send a message in theses tests because we're using a StringIO as stdout instead of the
+            # actual pipe, which means that the child process doesn't have access to the same object
+            File.write("process_name.txt", $0)
+          end
+
+          Process.wait(pid)
+          send_message({ process_name: File.read("process_name.txt") })
+          File.delete("process_name.txt")
+        end
+      end
+    RUBY
+
+    addon_path = File.expand_path("my_addon.rb")
+    @server.execute("server_addon/register", server_addon_path: addon_path)
+    @server.execute("server_addon/delegate", server_addon_name: "MyAddon", request_name: "dsl")
+
+    assert_equal(response, { process_name: "ruby-lsp-rails: #{addon_path}" })
+  ensure
+    FileUtils.rm("my_addon.rb")
+  end
+
   private
 
   def response
