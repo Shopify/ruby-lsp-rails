@@ -21,9 +21,15 @@ module RubyLsp
       def initialize(client, response_builder, node_context, global_state, dispatcher)
         @client = client
         @response_builder = response_builder
+        @node_context = node_context
         @nesting = node_context.nesting #: Array[String]
         @index = global_state.index #: RubyIndexer::Index
-        dispatcher.register(self, :on_constant_path_node_enter, :on_constant_read_node_enter)
+        dispatcher.register(
+          self,
+          :on_constant_path_node_enter,
+          :on_constant_read_node_enter,
+          :on_symbol_node_enter,
+        )
       end
 
       #: (Prism::ConstantPathNode node) -> void
@@ -43,6 +49,11 @@ module RubyLsp
         return unless item
 
         generate_column_content(item.name)
+      end
+
+      #: (Prism::SymbolNode node) -> void
+      def on_symbol_node_enter(node)
+        handle_possible_dsl(node)
       end
 
       private
@@ -102,6 +113,55 @@ module RubyLsp
           default_value.inspect
         else
           default_value
+        end
+      end
+
+      #: (Prism::SymbolNode node) -> void
+      def handle_possible_dsl(node)
+        node = @node_context.call_node
+        return unless node
+        return unless self_receiver?(node)
+
+        message = node.message
+
+        return unless message
+
+        if Support::Associations::ALL.include?(message)
+          handle_association(node)
+        end
+      end
+
+      #: (Prism::CallNode node) -> void
+      def handle_association(node)
+        first_argument = node.arguments&.arguments&.first
+        return unless first_argument.is_a?(Prism::SymbolNode)
+
+        association_name = first_argument.unescaped
+
+        result = @client.association_target(
+          model_name: @nesting.join("::"),
+          association_name: association_name,
+        )
+
+        return unless result
+
+        generate_hover(result[:name])
+      end
+
+      # Copied from `RubyLsp::Listeners::Hover#generate_hover`
+      #: (String name) -> void
+      def generate_hover(name)
+        entries = @index.resolve(name, @node_context.nesting)
+        return unless entries
+
+        # We should only show hover for private constants if the constant is defined in the same namespace as the
+        # reference
+        first_entry = entries.first #: as !nil
+        full_name = first_entry.name
+        return if first_entry.private? && full_name != "#{@node_context.fully_qualified_name}::#{name}"
+
+        categorized_markdown_from_index_entries(full_name, entries).each do |category, content|
+          @response_builder.push(content, category: category)
         end
       end
     end

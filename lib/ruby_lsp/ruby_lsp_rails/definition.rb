@@ -109,7 +109,7 @@ module RubyLsp
 
         association_name = first_argument.unescaped
 
-        result = @client.association_target_location(
+        result = @client.association_target(
           model_name: @nesting.join("::"),
           association_name: association_name,
         )
