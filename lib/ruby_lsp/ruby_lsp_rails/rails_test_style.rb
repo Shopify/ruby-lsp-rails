@@ -4,7 +4,7 @@
 module RubyLsp
   module Rails
     class RailsTestStyle < Listeners::TestDiscovery
-      BASE_COMMAND = "#{RbConfig.ruby} bin/rails test" #: String
+      BASE_COMMAND = "bundle exec ruby -r#{Listeners::TestStyle::MINITEST_REPORTER_PATH} bin/rails test" #: String
 
       class << self
         #: (Array[Hash[Symbol, untyped]]) -> Array[String]
