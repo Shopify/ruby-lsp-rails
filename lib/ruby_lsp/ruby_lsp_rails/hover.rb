@@ -51,11 +51,6 @@ module RubyLsp
         generate_column_content(item.name)
       end
 
-      #: (Prism::SymbolNode node) -> void
-      def on_symbol_node_enter(node)
-        handle_possible_dsl(node)
-      end
-
       private
 
       #: (String name) -> void
