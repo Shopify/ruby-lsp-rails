@@ -4,14 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Ruby LSP Rails is a Ruby Language Server Protocol (LSP) add-on that provides Rails-specific editor features. It's designed to work with the Ruby LSP to enhance Rails development experience in supported editors.
+Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features. It's designed to work with the Ruby LSP to enhance Rails development experience in supported editors.
 
 ## Development Commands
 
 ### Testing
-- `bundle exec rake` - Run full test suite (sets up dummy app database and runs all tests)
+- `bundle exec rake test` - Run full test suite
 - `bin/rails test test/my_test.rb` - Run a specific test file
-- `bundle exec rake test` - Alternative way to run tests
 
 ### Linting and Code Quality
 - `bin/rubocop` - Run RuboCop linting
@@ -21,16 +20,16 @@ Ruby LSP Rails is a Ruby Language Server Protocol (LSP) add-on that provides Rai
 - `bin/rails server` - Start Rails server for the dummy app in test/dummy
 
 ### Database
-- Database setup is handled automatically when running the full test suite
+- Database setup is handled by `bundle exec rails db:setup`
 - The dummy Rails app is located in `test/dummy/` and is used for testing
 
 ## Architecture
 
 ### Core Components
 
-**Main Entry Point**: `lib/ruby-lsp-rails.rb` - Simple entry point that requires the version file
+**Main Entry Point**: `lib/ruby_lsp/ruby_lsp_rails/addon.rb`
 
-**Addon System**: `lib/ruby_lsp/ruby_lsp_rails/addon.rb` - Main addon class that extends RubyLsp::Addon
+**Add-on System**: `lib/ruby_lsp/ruby_lsp_rails/addon.rb` - Main add-on class that extends RubyLsp::Addon
 - Manages lifecycle (activate/deactivate)
 - Coordinates feature listeners (hover, completion, definition, etc.)
 - Handles Rails-specific functionality like migration prompts
@@ -42,9 +41,12 @@ Ruby LSP Rails is a Ruby Language Server Protocol (LSP) add-on that provides Rai
 - Handles route information and migration status
 - Communicates via JSON-RPC over stdin/stdout
 
+**Client Component**: `lib/ruby_lsp/ruby_lsp_rails/runner_client.rb`
+- Client for communicating with server process
+
 **Feature Modules**:
 - `hover.rb` - Provides hover information for Rails concepts
-- `definition.rb` - Go-to-definition for Rails constructs  
+- `definition.rb` - Go-to-definition for Rails constructs
 - `completion.rb` - Rails-specific autocompletion
 - `code_lens.rb` - Code lens features
 - `document_symbol.rb` - Document symbol provider
@@ -54,7 +56,6 @@ Ruby LSP Rails is a Ruby Language Server Protocol (LSP) add-on that provides Rai
 - `support/associations.rb` - ActiveRecord associations handling
 - `support/callbacks.rb` - Rails callbacks support
 - `support/location_builder.rb` - Location utilities
-- `runner_client.rb` - Client for communicating with server process
 
 ### Test Structure
 
@@ -63,7 +64,7 @@ Ruby LSP Rails is a Ruby Language Server Protocol (LSP) add-on that provides Rai
 - Database migrations and schema
 - Used to test Rails-specific features in realistic environment
 
-**Test Files**: Located in `test/ruby_lsp_rails/` with corresponding `_test.rb` files for each feature module
+**Test Files**: Located in `test/ruby_lsp_rails/`
 
 ### Type System
 
