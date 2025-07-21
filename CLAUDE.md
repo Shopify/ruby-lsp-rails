@@ -59,7 +59,7 @@ Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features
 
 ### Test Structure
 
-**Dummy Rails App**: `test/dummy/` contains a minimal Rails 8.0 application for testing
+**Dummy Rails App**: `test/dummy/` contains a minimal Rails application for testing
 - Standard Rails structure with models, controllers, views
 - Database migrations and schema
 - Used to test Rails-specific features in realistic environment
