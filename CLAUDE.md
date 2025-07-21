@@ -67,7 +67,7 @@ Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features
 
 The project uses Sorbet for static typing:
 - `# typed: strict` annotations on most files
-- Type signatures using RBI format
+- Type signatures using Sorbet RBS comments (https://sorbet.org/docs/rbs-support)
 - Sorbet configuration in `sorbet/config`
 - Generated RBI files in `sorbet/rbi/`
 
