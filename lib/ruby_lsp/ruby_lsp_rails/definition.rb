@@ -51,23 +51,6 @@ module RubyLsp
         handle_possible_dsl(node)
       end
 
-      #: ((Prism::SymbolNode | Prism::StringNode) node) -> void
-      def handle_possible_dsl(node)
-        node = @node_context.call_node
-        return unless node
-        return unless self_receiver?(node)
-
-        message = node.message
-
-        return unless message
-
-        if Support::Associations::ALL.include?(message)
-          handle_association(node)
-        elsif Support::Callbacks::ALL.include?(message)
-          handle_callback(node)
-        end
-      end
-
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         return unless self_receiver?(node)
@@ -83,23 +66,63 @@ module RubyLsp
 
       private
 
-      #: (Prism::CallNode node) -> void
-      def handle_callback(node)
-        arguments = node.arguments&.arguments
-        return unless arguments&.any?
+      #: ((Prism::SymbolNode | Prism::StringNode) node) -> void
+      def handle_possible_dsl(node)
+        call_node = @node_context.call_node
+        return unless call_node
+        return unless self_receiver?(call_node)
 
-        arguments.each do |argument|
-          name = case argument
-          when Prism::SymbolNode
-            argument.value
-          when Prism::StringNode
-            argument.content
-          end
+        message = call_node.message
 
-          next unless name
+        return unless message
 
-          collect_definitions(name)
+        arguments = call_node.arguments&.arguments
+        return unless arguments
+
+        if Support::Associations::ALL.include?(message)
+          handle_association(call_node)
+        elsif Support::Callbacks::ALL.include?(message)
+          handle_callback(node, call_node, arguments)
+          handle_if_unless_conditional(node, call_node, arguments)
+        elsif Support::Validations::ALL.include?(message)
+          handle_validation(node, call_node, arguments)
+          handle_if_unless_conditional(node, call_node, arguments)
         end
+      end
+
+      #: ((Prism::SymbolNode | Prism::StringNode) node, Prism::CallNode call_node, Array[Prism::Node] arguments) -> void
+      def handle_callback(node, call_node, arguments)
+        focus_argument = arguments.find { |argument| argument == node }
+
+        name = case focus_argument
+        when Prism::SymbolNode
+          focus_argument.value
+        when Prism::StringNode
+          focus_argument.content
+        end
+
+        return unless name
+
+        collect_definitions(name)
+      end
+
+      #: ((Prism::SymbolNode | Prism::StringNode) node, Prism::CallNode call_node, Array[Prism::Node] arguments) -> void
+      def handle_validation(node, call_node, arguments)
+        message = call_node.message
+        return unless message
+
+        focus_argument = arguments.find { |argument| argument == node }
+        return unless focus_argument
+
+        return unless node.is_a?(Prism::SymbolNode)
+
+        name = node.value
+        return unless name
+
+        # validates_with uses constants, not symbols - skip (handled by constant resolution)
+        return if message == "validates_with"
+
+        collect_definitions(name)
       end
 
       #: (Prism::CallNode node) -> void
@@ -140,6 +163,36 @@ module RubyLsp
             range: range_from_location(target_method.location),
           )
         end
+      end
+
+      #: ((Prism::SymbolNode | Prism::StringNode) node, Prism::CallNode call_node, Array[Prism::Node] arguments) -> void
+      def handle_if_unless_conditional(node, call_node, arguments)
+        keyword_arguments = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) } #: as Prism::KeywordHashNode?
+        return unless keyword_arguments
+
+        element = keyword_arguments.elements.find do |element|
+          next false unless element.is_a?(Prism::AssocNode)
+
+          key = element.key
+          next false unless key.is_a?(Prism::SymbolNode)
+
+          key_value = key.value
+          next false unless key_value == "if" || key_value == "unless"
+
+          value = element.value
+          next false unless value.is_a?(Prism::SymbolNode)
+
+          value == node
+        end #: as Prism::AssocNode?
+
+        return unless element
+
+        value = element.value #: as Prism::SymbolNode
+        method_name = value.value
+
+        return unless method_name
+
+        collect_definitions(method_name)
       end
     end
   end
