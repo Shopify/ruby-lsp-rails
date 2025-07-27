@@ -333,6 +333,17 @@ module RubyLsp
           with_request_error_handling(request) do
             send_result(resolve_route_info(params))
           end
+        when "i18n"
+          with_request_error_handling(request) do
+            result = resolve_i18n_key(params.fetch(:key))
+            send_result(result)
+          end
+        when "reload_i18n"
+          with_progress("rails-reload-i18n", "Reloading Ruby LSP Rails I18n") do
+            with_notification_error_handling(request) do
+              I18n.reload! if defined?(I18n) && I18n.respond_to?(:reload!)
+            end
+          end
         when "server_addon/register"
           with_notification_error_handling(request) do
             require params[:server_addon_path]
@@ -537,6 +548,16 @@ module RubyLsp
         @database_supports_indexing = true
       rescue NotImplementedError
         @database_supports_indexing = false
+      end
+
+      #: (String) -> Hash[Symbol, String]
+      def resolve_i18n_key(key)
+        locales = I18n.available_locales
+        result = {}
+        locales.each.map do |locale|
+          result[locale] = I18n.t(key, locale: locale, default: "⚠️ translation missing")
+        end
+        result
       end
     end
   end
