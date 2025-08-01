@@ -7,30 +7,31 @@ module RubyLsp
   module Rails
     class DefinitionTest < ActiveSupport::TestCase
       test "recognizes model callback with multiple symbol arguments" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 18 })
+        source = <<~RUBY
           # typed: false
 
           class TestModel
             before_create :foo, :baz
-
             def foo; end
             def baz; end
           end
         RUBY
+        response = generate_definitions_for_source(source, { line: 3, character: 18 })
+        assert_equal(1, response.size)
 
-        assert_equal(2, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(4, response[0].range.start.line)
+        assert_equal(2, response[0].range.start.character)
+        assert_equal(4, response[0].range.end.line)
+        assert_equal(14, response[0].range.end.character)
 
+        response = generate_definitions_for_source(source, { line: 3, character: 24 })
+        assert_equal(1, response.size)
         assert_equal("file:///fake.rb", response[0].uri)
         assert_equal(5, response[0].range.start.line)
         assert_equal(2, response[0].range.start.character)
         assert_equal(5, response[0].range.end.line)
         assert_equal(14, response[0].range.end.character)
-
-        assert_equal("file:///fake.rb", response[1].uri)
-        assert_equal(6, response[1].range.start.line)
-        assert_equal(2, response[1].range.start.character)
-        assert_equal(6, response[1].range.end.line)
-        assert_equal(14, response[1].range.end.character)
       end
 
       test "recognizes has_many model associations" do
@@ -149,7 +150,7 @@ module RubyLsp
       end
 
       test "recognizes job callback with string and symbol arguments" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 18 })
+        source = <<~RUBY
           # typed: false
 
           class TestJob
@@ -159,20 +160,54 @@ module RubyLsp
             def baz; end
           end
         RUBY
+        response = generate_definitions_for_source(source, { line: 3, character: 20 })
 
-        assert_equal(2, response.size)
-
+        assert_equal(1, response.size)
         assert_equal("file:///fake.rb", response[0].uri)
         assert_equal(5, response[0].range.start.line)
         assert_equal(2, response[0].range.start.character)
         assert_equal(5, response[0].range.end.line)
         assert_equal(14, response[0].range.end.character)
 
-        assert_equal("file:///fake.rb", response[1].uri)
-        assert_equal(6, response[1].range.start.line)
-        assert_equal(2, response[1].range.start.character)
-        assert_equal(6, response[1].range.end.line)
-        assert_equal(14, response[1].range.end.character)
+        response = generate_definitions_for_source(source, { line: 3, character: 25 })
+
+        assert_equal(1, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(6, response[0].range.start.line)
+        assert_equal(2, response[0].range.start.character)
+        assert_equal(6, response[0].range.end.line)
+        assert_equal(14, response[0].range.end.character)
+      end
+
+      test "recognizes job callback with symbol argument and conditional" do
+        source = <<~RUBY
+          # typed: false
+
+          class TestJob
+            before_create :foo, -> () {}, if: :bar?
+
+            def foo; end
+            def bar?; end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 3, character: 18 })
+
+        assert_equal(1, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(5, response[0].range.start.line)
+        assert_equal(2, response[0].range.start.character)
+        assert_equal(5, response[0].range.end.line)
+        assert_equal(14, response[0].range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 3, character: 38 })
+
+        assert_equal(1, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(6, response[0].range.start.line)
+        assert_equal(2, response[0].range.start.character)
+        assert_equal(6, response[0].range.end.line)
+        assert_equal(15, response[0].range.end.character)
       end
 
       test "provides the definition of a route" do
@@ -282,6 +317,154 @@ module RubyLsp
         assert_equal(4, response.range.start.character)
         assert_equal(4, response.range.end.line)
         assert_equal(16, response.range.end.character)
+      end
+
+      test "recognizes validate method with symbol argument" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 1, character: 12 })
+          class FooModel < ApplicationRecord
+            validate :custom_validation
+
+          private
+            def custom_validation; end
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        response = response.first
+
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(4, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(4, response.range.end.line)
+        assert_equal(28, response.range.end.character)
+      end
+
+      test "recognizes validate method with multiple symbol arguments" do
+        source = <<~RUBY
+          class FooModel < ApplicationRecord
+            validate :first_validation, :second_validation
+
+          private
+            def first_validation; end
+            def second_validation; end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 1, character: 12 })
+
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(4, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(4, response.range.end.line)
+        assert_equal(27, response.range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 1, character: 33 })
+
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(5, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(5, response.range.end.line)
+        assert_equal(28, response.range.end.character)
+      end
+
+      test "recognizes validates attribute symbol with multiple attributes and conditional options" do
+        source = <<~RUBY
+          class FooModel < ApplicationRecord
+            validates :email, :name, presence: true, if: :foo?, unless: :bar?
+
+            def email; end
+            def name; end
+            def foo?; end
+            def bar?; end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 1, character: 13 })
+
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(3, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(3, response.range.end.line)
+        assert_equal(16, response.range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 1, character: 21 })
+
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(4, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(4, response.range.end.line)
+        assert_equal(15, response.range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 1, character: 50 })
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(5, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(5, response.range.end.line)
+        assert_equal(15, response.range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 1, character: 65 })
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(6, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(6, response.range.end.line)
+        assert_equal(15, response.range.end.character)
+      end
+
+      test "does not find definition for validates attribute symbol without getter method" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 1, character: 12 })
+          class FooModel < ApplicationRecord
+            validates :email, presence: true
+            # No email method defined
+          end
+        RUBY
+
+        assert_empty(response)
+      end
+
+      test "recognizes validates_each attribute symbols that have getter methods" do
+        source = <<~RUBY
+          class FooModel < ApplicationRecord
+            validates_each :email, :name do |record, attr, value|
+              record.errors.add(attr, "is invalid") if value.blank?
+            end
+
+            def email; end
+            def name; end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 1, character: 17 })
+
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(5, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(5, response.range.end.line)
+        assert_equal(16, response.range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 1, character: 26 })
+
+        assert_equal(1, response.size)
+        response = response.first
+        assert_equal("file:///fake.rb", response.uri)
+        assert_equal(6, response.range.start.line)
+        assert_equal(2, response.range.start.character)
+        assert_equal(6, response.range.end.line)
+        assert_equal(15, response.range.end.character)
       end
 
       private
