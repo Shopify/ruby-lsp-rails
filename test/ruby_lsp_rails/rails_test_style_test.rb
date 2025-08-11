@@ -22,12 +22,12 @@ module RubyLsp
         with_active_support_declarative_tests(source) do |items|
           assert_equal(1, items.length)
           test_class = items.first
-          assert_equal("SampleTest", test_class[:label])
+          assert_equal("SampleTest", test_class[:id])
           assert_equal(2, test_class[:children].length)
 
-          test_labels = test_class[:children].map { |i| i[:label] }
-          assert_includes(test_labels, "test_first_test")
-          assert_includes(test_labels, "test_second_test")
+          test_labels = test_class[:children].map { |i| i[:id] }
+          assert_includes(test_labels, "SampleTest#test_first_test")
+          assert_includes(test_labels, "SampleTest#test_second_test")
           assert_all_items_tagged_with(items, :rails)
         end
       end
@@ -48,11 +48,11 @@ module RubyLsp
         with_active_support_declarative_tests(source) do |items|
           assert_equal(1, items.length)
           test_class = items.first
-          assert_equal("EmptyTest", test_class[:label])
+          assert_equal("EmptyTest", test_class[:id])
           assert_equal(2, test_class[:children].length)
 
-          test_labels = test_class[:children].map { |i| i[:label] }
-          assert_includes(test_labels, "test_<empty_test_name>")
+          test_labels = test_class[:children].map { |i| i[:id] }
+          assert_includes(test_labels, "EmptyTest#test_<empty_test_name>")
           assert_all_items_tagged_with(items, :rails)
         end
       end
@@ -123,12 +123,12 @@ module RubyLsp
         with_active_support_declarative_tests(source) do |items|
           assert_equal(1, items.length)
           test_class = items.first
-          assert_equal("SpecialCharsTest", test_class[:label])
+          assert_equal("SpecialCharsTest", test_class[:id])
           assert_equal(2, test_class[:children].length)
 
-          test_labels = test_class[:children].map { |i| i[:label] }
-          assert_includes(test_labels, "test_spaces_and_punctuation!")
-          assert_includes(test_labels, "test_unicode:_你好")
+          test_labels = test_class[:children].map { |i| i[:id] }
+          assert_includes(test_labels, "SpecialCharsTest#test_spaces_and_punctuation!")
+          assert_includes(test_labels, "SpecialCharsTest#test_unicode:_你好")
           assert_all_items_tagged_with(items, :rails)
         end
       end
@@ -234,11 +234,11 @@ module RubyLsp
         with_active_support_declarative_tests(source) do |items|
           assert_equal(1, items.length)
           test_class = items.first
-          assert_equal("SampleTest", test_class[:label])
+          assert_equal("SampleTest", test_class[:id])
           assert_equal(1, test_class[:children].length)
 
           assert_equal(["SampleTest#test_hello_\"oh_noes\""], test_class[:children].map { |i| i[:id] })
-          assert_equal(["test_hello_\"oh_noes\""], test_class[:children].map { |i| i[:label] })
+          assert_equal(["hello \"oh noes\""], test_class[:children].map { |i| i[:label] })
           assert_all_items_tagged_with(items, :rails)
         end
       end
@@ -305,7 +305,7 @@ module RubyLsp
           assert_equal(["SampleTest"], items.map { |i| i[:id] })
           assert_equal(
             ["SampleTest::InnerTest", "SampleTest::AnotherGroupTest"],
-            items.dig(0, :children).map { |i| i[:label] },
+            items.dig(0, :children).map { |i| i[:id] },
           )
           assert_equal(
             ["SampleTest::InnerTest#test_first"],
@@ -334,6 +334,24 @@ module RubyLsp
             ["Foo::SampleTest#test_do_something"],
             items.dig(0, :children).map { |i| i[:id] },
           )
+        end
+      end
+
+      test "labels include only unformatted descriptions" do
+        source = <<~RUBY
+          class SampleTest < ActiveSupport::TestCase
+            class InnerGroup < ActiveSupport::TestCase
+              test "first test" do
+                assert true
+              end
+            end
+          end
+        RUBY
+
+        with_active_support_declarative_tests(source) do |items|
+          assert_equal(["SampleTest"], items.map { |i| i[:label] })
+          assert_equal(["InnerGroup"], items.dig(0, :children).map { |i| i[:label] })
+          assert_equal(["first test"], items.dig(0, :children, 0, :children).map { |i| i[:label] })
         end
       end
 

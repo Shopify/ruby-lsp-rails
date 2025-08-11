@@ -67,9 +67,11 @@ module RubyLsp
       def on_class_node_enter(node)
         with_test_ancestor_tracking(node) do |name, ancestors|
           if declarative_minitest?(ancestors, name)
+            label = constant_name(node.constant_path) || name_with_dynamic_reference(node.constant_path)
+
             test_item = Requests::Support::TestItem.new(
               name,
-              name,
+              label,
               @uri,
               range_from_node(node),
               framework: :rails,
@@ -119,7 +121,7 @@ module RubyLsp
         # Rails uses at runtime, ensuring proper test discovery and execution.
         rails_normalized_name = "test_#{test_name.gsub(/\s+/, "_")}"
 
-        add_test_item(node, rails_normalized_name)
+        add_test_item(node, rails_normalized_name, test_name)
       end
 
       #: (Prism::DefNode node) -> void
@@ -129,7 +131,7 @@ module RubyLsp
         name = node.name.to_s
         return unless name.start_with?("test_")
 
-        add_test_item(node, name)
+        add_test_item(node, name, name)
       end
 
       private
@@ -145,14 +147,14 @@ module RubyLsp
         false
       end
 
-      #: (Prism::Node node, String test_name) -> void
-      def add_test_item(node, test_name)
+      #: (Prism::Node, String, String) -> void
+      def add_test_item(node, test_id, label)
         parent = @parent_stack.last
         return unless parent.is_a?(Requests::Support::TestItem)
 
         example_item = Requests::Support::TestItem.new(
-          "#{parent.id}##{test_name}",
-          test_name,
+          "#{parent.id}##{test_id}",
+          label,
           @uri,
           range_from_node(node),
           framework: :rails,
