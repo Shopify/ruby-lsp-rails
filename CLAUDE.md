@@ -14,6 +14,7 @@ Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features
 - `bin/rails test test/my_test.rb` - Run a specific test file
 
 ### Linting and Code Quality
+
 - `bin/rubocop` - Run RuboCop linting
 - `bundle exec srb tc` - Run Sorbet type checking
 
