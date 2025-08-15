@@ -9,6 +9,7 @@ Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features
 ## Development Commands
 
 ### Testing
+
 - `bundle exec rake test` - Run full test suite
 - `bin/rails test test/my_test.rb` - Run a specific test file
 
