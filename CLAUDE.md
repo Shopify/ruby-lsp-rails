@@ -24,9 +24,7 @@ Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features
 
 ### Core Components
 
-**Main Entry Point**: `lib/ruby_lsp/ruby_lsp_rails/addon.rb`
-
-**Add-on System**: `lib/ruby_lsp/ruby_lsp_rails/addon.rb` - Main add-on class that extends RubyLsp::Addon
+**Add-on entry point**: `lib/ruby_lsp/ruby_lsp_rails/addon.rb`
 - Manages lifecycle (activate/deactivate)
 - Coordinates feature listeners (hover, completion, definition, etc.)
 - Handles Rails-specific functionality like migration prompts
