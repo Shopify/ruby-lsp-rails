@@ -19,6 +19,7 @@ Ruby LSP Rails is a Ruby LSP add-on that provides Rails-specific editor features
 - `bundle exec srb tc` - Run Sorbet type checking
 
 ### Database
+
 - Database setup is handled by `bundle exec rails db:setup`
 - The dummy Rails app is located in `test/dummy/` and is used for testing
 
