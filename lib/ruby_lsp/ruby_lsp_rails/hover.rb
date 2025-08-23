@@ -29,6 +29,7 @@ module RubyLsp
           :on_constant_path_node_enter,
           :on_constant_read_node_enter,
           :on_symbol_node_enter,
+          :on_string_node_enter,
         )
       end
 
@@ -53,6 +54,11 @@ module RubyLsp
 
       #: (Prism::SymbolNode node) -> void
       def on_symbol_node_enter(node)
+        handle_possible_dsl(node)
+      end
+
+      #: (Prism::StringNode node) -> void
+      def on_string_node_enter(node)
         handle_possible_dsl(node)
       end
 
@@ -116,28 +122,67 @@ module RubyLsp
         end
       end
 
-      #: (Prism::SymbolNode node) -> void
+      #: ((Prism::SymbolNode | Prism::StringNode) node) -> void
       def handle_possible_dsl(node)
-        node = @node_context.call_node
-        return unless node
-        return unless self_receiver?(node)
+        call_node = @node_context.call_node
+        return unless call_node
+        return unless self_receiver?(call_node)
 
-        message = node.message
-
+        message = call_node.message
         return unless message
 
         if Support::Associations::ALL.include?(message)
-          handle_association(node)
+          handle_association(node, call_node)
         end
       end
 
-      #: (Prism::CallNode node) -> void
-      def handle_association(node)
-        first_argument = node.arguments&.arguments&.first
-        return unless first_argument.is_a?(Prism::SymbolNode)
+      #: ((Prism::SymbolNode | Prism::StringNode) node, Prism::CallNode call_node) -> void
+      def handle_association(node, call_node)
+        arguments = call_node.arguments&.arguments
+        return unless arguments
 
-        association_name = first_argument.unescaped
+        first_argument = arguments.first
+        return unless first_argument.is_a?(Prism::SymbolNode) || first_argument.is_a?(Prism::StringNode)
 
+        association_name = extract_string_from_node(first_argument)
+        return unless association_name
+
+        through_element = find_through_association_element(arguments)
+        clicked_symbol = extract_string_from_node(node)
+        return unless clicked_symbol
+
+        if through_element
+          through_association_name = extract_string_from_node(through_element.value)
+
+          if clicked_symbol == association_name
+            handle_association_name(association_name)
+          elsif through_association_name && clicked_symbol == through_association_name
+            handle_association_name(through_association_name)
+          end
+        else
+          handle_association_name(association_name)
+        end
+      end
+
+      #: (Array[Prism::Node]) -> Prism::AssocNode?
+      def find_through_association_element(arguments)
+        result = arguments
+          .filter_map { |arg| arg.elements if arg.is_a?(Prism::KeywordHashNode) }
+          .flatten
+          .find do |elem|
+            next false unless elem.is_a?(Prism::AssocNode)
+
+            key = elem.key
+            next false unless key.is_a?(Prism::SymbolNode)
+
+            key.value == "through"
+          end
+
+        result if result.is_a?(Prism::AssocNode)
+      end
+
+      #: (String association_name) -> void
+      def handle_association_name(association_name)
         result = @client.association_target(
           model_name: @nesting.join("::"),
           association_name: association_name,
@@ -162,6 +207,16 @@ module RubyLsp
 
         categorized_markdown_from_index_entries(full_name, entries).each do |category, content|
           @response_builder.push(content, category: category)
+        end
+      end
+
+      #: (Prism::Node) -> String?
+      def extract_string_from_node(node)
+        case node
+        when Prism::SymbolNode
+          node.unescaped
+        when Prism::StringNode
+          node.content
         end
       end
     end

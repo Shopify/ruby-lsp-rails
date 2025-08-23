@@ -321,6 +321,162 @@ module RubyLsp
         CONTENT
       end
 
+      test "returns main association on has_many :through association" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/user.rb:2",
+          name: "User",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 2, character: 14 })
+          class Organization < ApplicationRecord
+            has_many :memberships
+            has_many :users, through: :memberships
+          end
+
+          class User < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          User
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L6,1-7,4)
+        CONTENT
+      end
+
+      test "returns through association on has_many :through association" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/membership.rb:3",
+          name: "Membership",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 2, character: 31 })
+          class Organization < ApplicationRecord
+            has_many :memberships
+            has_many :users, through: :memberships
+          end
+
+          class Membership < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Membership
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L6,1-7,4)
+        CONTENT
+      end
+
+      test "returns main association on has_one :through association" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/flag.rb:2",
+          name: "Flag",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 2, character: 13 })
+          class User < ApplicationRecord
+            belongs_to :location, class_name: "Country"
+            has_one :country_flag, through: :location, source: :flag
+          end
+
+          class Flag < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Flag
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L6,1-7,4)
+        CONTENT
+      end
+
+      test "returns through association on has_one :through association" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/country.rb:2",
+          name: "Country",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 2, character: 37 })
+          class User < ApplicationRecord
+            belongs_to :location, class_name: "Country"
+            has_one :country_flag, through: :location, source: :flag
+          end
+
+          class Country < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Country
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L6,1-7,4)
+        CONTENT
+      end
+
+      test "returns string main association on has_many :through association" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/user.rb:2",
+          name: "User",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 2, character: 14 })
+          class Organization < ApplicationRecord
+            has_many :memberships
+            has_many "users", through: :memberships
+          end
+
+          class User < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          User
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L6,1-7,4)
+        CONTENT
+      end
+
+      test "returns string through association on has_many :through association" do
+        expected_response = {
+          location: "#{dummy_root}/app/models/membership.rb:3",
+          name: "Membership",
+        }
+        RunnerClient.any_instance.stubs(association_target: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 2, character: 32 })
+          class Organization < ApplicationRecord
+            has_many "memberships"
+            has_many :users, through: "memberships"
+          end
+
+          class Membership < ApplicationRecord
+          end
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          Membership
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L6,1-7,4)
+        CONTENT
+      end
+
       private
 
       def hover_on_source(source, position)
