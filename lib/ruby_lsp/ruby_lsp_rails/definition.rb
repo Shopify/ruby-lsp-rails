@@ -80,7 +80,7 @@ module RubyLsp
         return unless arguments
 
         if Support::Associations::ALL.include?(message)
-          handle_association(call_node)
+          handle_association(node, call_node)
         elsif Support::Callbacks::ALL.include?(message)
           handle_callback(node, call_node, arguments)
           handle_if_unless_conditional(node, call_node, arguments)
@@ -125,18 +125,57 @@ module RubyLsp
         collect_definitions(name)
       end
 
-      #: (Prism::CallNode node) -> void
-      def handle_association(node)
-        first_argument = node.arguments&.arguments&.first
-        return unless first_argument.is_a?(Prism::SymbolNode)
+      #: ((Prism::SymbolNode | Prism::StringNode) node, Prism::CallNode call_node) -> void
+      def handle_association(node, call_node)
+        arguments = call_node.arguments&.arguments
+        return unless arguments
 
-        association_name = first_argument.unescaped
+        first_argument = arguments.first
+        return unless first_argument.is_a?(Prism::SymbolNode) || first_argument.is_a?(Prism::StringNode)
 
+        association_name = extract_string_from_node(first_argument)
+        return unless association_name
+
+        through_element = find_through_association_element(arguments)
+        clicked_symbol = extract_string_from_node(node)
+        return unless clicked_symbol
+
+        if through_element
+          through_association_name = extract_string_from_node(through_element.value)
+
+          if clicked_symbol == association_name
+            handle_association_name(association_name)
+          elsif through_association_name && clicked_symbol == through_association_name
+            handle_association_name(through_association_name)
+          end
+        else
+          handle_association_name(association_name)
+        end
+      end
+
+      #: (Array[Prism::Node]) -> Prism::AssocNode?
+      def find_through_association_element(arguments)
+        result = arguments
+          .filter_map { |arg| arg.elements if arg.is_a?(Prism::KeywordHashNode) }
+          .flatten
+          .find do |elem|
+            next false unless elem.is_a?(Prism::AssocNode)
+
+            key = elem.key
+            next false unless key.is_a?(Prism::SymbolNode)
+
+            key.value == "through"
+          end
+
+        result if result.is_a?(Prism::AssocNode)
+      end
+
+      #: (String association_name) -> void
+      def handle_association_name(association_name)
         result = @client.association_target(
           model_name: @nesting.join("::"),
           association_name: association_name,
         )
-
         return unless result
 
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
@@ -193,6 +232,16 @@ module RubyLsp
         return unless method_name
 
         collect_definitions(method_name)
+      end
+
+      #: (Prism::Node) -> String?
+      def extract_string_from_node(node)
+        case node
+        when Prism::SymbolNode
+          node.unescaped
+        when Prism::StringNode
+          node.content
+        end
       end
     end
   end
