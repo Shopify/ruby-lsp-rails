@@ -228,6 +228,136 @@ module RubyLsp
         end
       end
 
+      test "resolve test escapes file paths in groups" do
+        with_server do |server|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          server.process_message({
+            id: 1,
+            method: "rubyLsp/resolveTestCommands",
+            params: {
+              items: [
+                {
+                  id: "GroupTest",
+                  uri: "file:///test/group(v2)_test.rb",
+                  label: "GroupTest",
+                  range: {
+                    start: { line: 0, character: 0 },
+                    end: { line: 30, character: 3 },
+                  },
+                  tags: ["framework:rails", "test_group"],
+                  children: [],
+                },
+              ],
+            },
+          })
+
+          result = pop_result(server)
+          response = result.response
+
+          assert_equal(
+            ["#{RailsTestStyle::BASE_COMMAND} /test/group\\(v2\\)_test.rb --name \"/GroupTest(#|::)/\""],
+            response[:commands],
+          )
+        end
+      end
+
+      test "resolve test escapes single file paths" do
+        with_server do |server|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          server.process_message({
+            id: 1,
+            method: "rubyLsp/resolveTestCommands",
+            params: {
+              items: [
+                {
+                  id: "file:///test/example(v2)_test.rb",
+                  uri: "file:///test/example(v2)_test.rb",
+                  label: "/test/example(v2)_test.rb",
+                  tags: ["framework:rails", "test_file"],
+                  children: [],
+                },
+              ],
+            },
+          })
+
+          result = pop_result(server)
+          response = result.response
+
+          assert_equal(
+            ["#{RailsTestStyle::BASE_COMMAND} /test/example\\(v2\\)_test.rb"],
+            response[:commands],
+          )
+        end
+      end
+
+      test "resolve test escapes file paths inside directories" do
+        Dir.stubs(:glob).returns(["/test/example(v2)_test.rb"])
+
+        with_server do |server|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          server.process_message({
+            id: 1,
+            method: "rubyLsp/resolveTestCommands",
+            params: {
+              items: [
+                {
+                  id: "file:///test",
+                  uri: "file:///test",
+                  label: "/test",
+                  tags: ["test_dir", "framework:rails"],
+                  children: [],
+                },
+              ],
+            },
+          })
+
+          result = pop_result(server)
+          response = result.response
+
+          assert_equal(
+            ["#{RailsTestStyle::BASE_COMMAND} /test/example\\(v2\\)_test.rb"],
+            response[:commands],
+          )
+        end
+      end
+
+      test "resolve test escapes file paths for specific examples" do
+        with_server do |server|
+          sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          server.process_message({
+            id: 1,
+            method: "rubyLsp/resolveTestCommands",
+            params: {
+              items: [
+                {
+                  id: "ExampleTest#test_something",
+                  uri: "file:///test/example(v2)_test.rb",
+                  label: "test something",
+                  tags: ["framework:rails"],
+                  range: {
+                    start: { line: 10, character: 0 },
+                    end: { line: 15, character: 3 },
+                  },
+                  children: [],
+                },
+              ],
+            },
+          })
+
+          result = pop_result(server)
+          response = result.response
+
+          assert_equal(
+            ["#{RailsTestStyle::BASE_COMMAND} /test/example\\(v2\\)_test.rb:11"],
+            response[:commands],
+          )
+        end
+      end
+
       test "tests with backslashes" do
         source = File.read(File.join(__dir__, "..", "fixtures", "test_with_escaped_quotes.rb"))
 
