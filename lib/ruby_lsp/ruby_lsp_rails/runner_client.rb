@@ -27,7 +27,7 @@ module RubyLsp
           end
         rescue StandardError => e
           unless outgoing_queue.closed?
-            bt_matcher = Regexp.new("from (?<path>#{Regexp.escape(global_state.workspace_uri.path)}/.*):(?<line>[0-9]+):")
+            bt_matcher = Regexp.new("(?<path>#{Regexp.escape(global_state.workspace_uri.path)}/.*):(?<line>[0-9]+):")
             message_matcher = Regexp.new(".+:[0-9]+:in.*: ?(?<message>.*) \\(RubyLsp::Rails::RunnerClient::InitializationError\\)")
 
             m = bt_matcher.match(e.full_message)
