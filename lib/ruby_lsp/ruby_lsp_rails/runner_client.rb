@@ -27,6 +27,33 @@ module RubyLsp
           end
         rescue StandardError => e
           unless outgoing_queue.closed?
+            bt_matcher = Regexp.new("from (?<path>#{Regexp.escape(global_state.workspace_uri.path)}/.*):(?<line>[0-9]+):")
+            message_matcher = Regexp.new(".+:[0-9]+:in.*: ?(?<message>.*) \\(RubyLsp::Rails::RunnerClient::InitializationError\\)")
+
+            m = bt_matcher.match(e.full_message)
+
+            unless m.nil?
+              outgoing_queue << RubyLsp::Notification.publish_diagnostics(
+                URI::File.build([nil, m["path"]]),
+                [
+                  Interface::Diagnostic.new(
+                    range: Interface::Range.new(
+                      start: Interface::Position.new(
+                        line: m["line"].to_i - 1,
+                        character: 0,
+                      ),
+                      end: Interface::Position.new(
+                        line: m["line"].to_i - 1,
+                        character: 0,
+                      ),
+                    ),
+                    message: message_matcher.match(e.full_message)&.[]("message") || e.full_message.split("\n")[0],
+                    severity: Constant::DiagnosticSeverity::ERROR,
+                    source: "Ruby LSP",
+                  ),
+                ],
+              )
+            end
             outgoing_queue << RubyLsp::Notification.window_log_message(
               <<~MESSAGE.chomp,
                 Ruby LSP Rails failed to initialize server: #{e.full_message}
