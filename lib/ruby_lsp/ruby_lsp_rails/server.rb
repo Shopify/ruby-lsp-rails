@@ -310,6 +310,10 @@ module RubyLsp
           with_request_error_handling(request) do
             send_result(resolve_association_target(params))
           end
+        when "fixtures"
+          with_request_error_handling(request) do
+            send_result(resolve_fixtures(params.fetch(:name)))
+          end
         when "pending_migrations_message"
           with_request_error_handling(request) do
             send_result({ pending_migrations_message: pending_migrations_message })
@@ -433,6 +437,32 @@ module RubyLsp
 
         { location: "#{source_location[0]}:#{source_location[1]}", name: association_klass.name }
       rescue NameError
+        nil
+      end
+
+      #: (String) -> Hash[Symbol | String, untyped]?
+      def resolve_fixtures(fixture_name)
+        return unless defined?(ActiveRecord::FixtureSet)
+        return unless ActiveRecord::FixtureSet.respond_to?(:all_loaded_fixtures)
+
+        all_fixtures = ActiveRecord::FixtureSet.all_loaded_fixtures
+        return unless all_fixtures
+
+        return unless defined?(ActiveSupport::TestCase)
+
+        fixture_sets = ActiveSupport::TestCase.fixture_sets
+        return unless fixture_sets
+
+        table_name = fixture_sets[fixture_name]
+        return unless table_name
+
+        fixture_set = all_fixtures[table_name]
+        return unless fixture_set
+
+        fixture_names = fixture_set.fixtures.keys
+
+        { fixture_names: fixture_names }
+      rescue StandardError
         nil
       end
 

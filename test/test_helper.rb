@@ -13,9 +13,13 @@ require "ruby_lsp/internal"
 require "ruby_lsp/test_helper"
 require "ruby_lsp/ruby_lsp_rails/addon"
 
+ActiveRecord::Tasks::DatabaseTasks.fixtures_path = File.expand_path("fixtures", __dir__)
+
 module ActiveSupport
   class TestCase
     include RubyLsp::TestHelper
+
+    fixtures :all
 
     def dummy_root
       File.expand_path("#{__dir__}/dummy")

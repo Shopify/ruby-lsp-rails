@@ -56,6 +56,62 @@ module RubyLsp
         assert_equal(0, response.size)
       end
 
+      test "on_call_node_enter provides fixture name completions when typing partial fixture name" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 9 })
+          # typed: false
+          users(:b
+        RUBY
+
+        assert_equal(1, response.size)
+        assert_equal("bob", response[0].label)
+        assert_equal("bob", response[0].filter_text)
+        assert_equal("users fixture", response[0].label_details.description)
+        assert_equal(":bob", response[0].text_edit.new_text)
+      end
+
+      test "on_call_node_enter provides all fixture name completions when no prefix" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 8 })
+          # typed: false
+          users(:
+        RUBY
+
+        assert_equal(3, response.size)
+        fixture_names = response.map(&:label).sort
+        assert_equal(["alice", "bob", "joe"], fixture_names)
+        response.each do |item|
+          assert_equal("users fixture", item.label_details.description)
+        end
+      end
+
+      test "on_call_node_enter provides fixture completions for posts" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 8 })
+          # typed: false
+          posts(:
+        RUBY
+
+        assert_equal(2, response.size)
+        fixture_names = response.map(&:label).sort
+        assert_equal(["first_post", "second_post"], fixture_names)
+      end
+
+      test "on_call_node_enter does not provide fixture completions when call has a receiver" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 17 })
+          # typed: false
+          SomeClass.users(:
+        RUBY
+
+        assert_equal(0, response.size)
+      end
+
+      test "on_call_node_enter does not provide fixture completions when call has no arguments" do
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 5 })
+          # typed: false
+          users
+        RUBY
+
+        assert_equal(0, response.size)
+      end
+
       private
 
       def generate_completions_for_source(source, position)

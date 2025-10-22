@@ -143,6 +143,17 @@ module RubyLsp
         nil
       end
 
+      #: (String name) -> Hash[Symbol, untyped]?
+      def fixtures(name)
+        make_request("fixtures", name: name)
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to get fixture information",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
       #: (model_name: String, association_name: String) -> Hash[Symbol, untyped]?
       def association_target(model_name:, association_name:)
         make_request(
