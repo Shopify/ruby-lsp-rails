@@ -1,0 +1,18 @@
+bob:
+  first_name: Bob
+  last_name: Smith
+  age: 30
+  country_id: <%= ActiveRecord::FixtureSet.identify(:usa) %>
+
+joe:
+  first_name: Joe
+  last_name: Johnson
+  age: 25
+  country_id: <%= ActiveRecord::FixtureSet.identify(:usa) %>
+
+alice:
+  first_name: Alice
+  last_name: Williams
+  age: 28
+  country_id: <%= ActiveRecord::FixtureSet.identify(:usa) %>
+

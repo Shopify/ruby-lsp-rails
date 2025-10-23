@@ -5,6 +5,8 @@ require "test_helper"
 require "ruby_lsp/ruby_lsp_rails/server"
 
 class ServerTest < ActiveSupport::TestCase
+  fixtures :all
+
   setup do
     @stdout = StringIO.new
     @stderr = StringIO.new
@@ -266,6 +268,28 @@ class ServerTest < ActiveSupport::TestCase
     )
   ensure
     $> = original_stdout
+  end
+
+  test "resolve fixtures returns fixture names for users" do
+    # Debug: Check what's available
+    puts "all_loaded_fixtures: #{ActiveRecord::FixtureSet.all_loaded_fixtures.keys.inspect}"
+    puts "fixture_sets: #{ActiveSupport::TestCase.fixture_sets.inspect}"
+    puts "fixtures_path: #{ActiveRecord::Tasks::DatabaseTasks.fixtures_path}"
+
+    @server.execute("fixtures", { name: "users" })
+    result = response.fetch(:result)
+
+    assert_not_nil result
+    fixture_names = result[:fixture_names]
+    assert_equal 3, fixture_names.size
+    assert_includes fixture_names, "bob"
+    assert_includes fixture_names, "joe"
+    assert_includes fixture_names, "alice"
+  end
+
+  test "resolve fixtures returns nil for non-existent fixture" do
+    @server.execute("fixtures", { name: "non_existent" })
+    assert_nil response.fetch(:result)
   end
 
   private

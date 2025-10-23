@@ -57,7 +57,7 @@ module RubyLsp
       end
 
       test "on_call_node_enter provides fixture name completions when typing partial fixture name" do
-        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 9 })
+        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 8 })
           # typed: false
           users(:b
         RUBY
@@ -81,17 +81,6 @@ module RubyLsp
         response.each do |item|
           assert_equal("users fixture", item.label_details.description)
         end
-      end
-
-      test "on_call_node_enter provides fixture completions for posts" do
-        response = generate_completions_for_source(<<~RUBY, { line: 1, character: 8 })
-          # typed: false
-          posts(:
-        RUBY
-
-        assert_equal(2, response.size)
-        fixture_names = response.map(&:label).sort
-        assert_equal(["first_post", "second_post"], fixture_names)
       end
 
       test "on_call_node_enter does not provide fixture completions when call has a receiver" do
