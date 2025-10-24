@@ -149,6 +149,27 @@ module RubyLsp
         @client.delegate_request(server_addon_name: "My Add-on", request_name: "do_something", id: 5)
       end
 
+      test "RUBY_LSP_RAILS_RUNNER environment variable is accessible in spawned server process" do
+        File.write("env_check_addon.rb", <<~RUBY)
+          class EnvCheckAddon < RubyLsp::Rails::ServerAddon
+            def name
+              "EnvCheck"
+            end
+
+            def execute(request, params)
+              send_result({ env_var: ENV["RUBY_LSP_RAILS_RUNNER"] })
+            end
+          end
+        RUBY
+
+        @client.register_server_addon(File.expand_path("env_check_addon.rb"))
+        response = @client.delegate_request(server_addon_name: "EnvCheck", request_name: "check") #: as !nil
+
+        assert_equal("true", response[:env_var])
+      ensure
+        FileUtils.rm_f("env_check_addon.rb")
+      end
+
       test "server add-ons can log messages with the editor" do
         File.write("server_addon.rb", <<~RUBY)
           class TapiocaServerAddon < RubyLsp::Rails::ServerAddon

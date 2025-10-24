@@ -68,6 +68,7 @@ module RubyLsp
 
         stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
           Open3.popen3(
+            { "RUBY_LSP_RAILS_RUNNER" => "true" },
             "bundle",
             "exec",
             "rails",
