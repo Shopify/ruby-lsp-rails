@@ -145,6 +145,7 @@ module RubyLsp
 
         return unless result
 
+        generate_column_content(result[:name])
         generate_hover(result[:name])
       end
 
