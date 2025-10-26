@@ -4,6 +4,7 @@
 require "json"
 require "open3"
 require "delegate"
+require "rake"
 
 module RubyLsp
   module Rails
@@ -285,6 +286,7 @@ module RubyLsp
       #: -> void
       def start
         load_routes
+        load_fixtures
         clear_file_system_resolver_hooks
         send_result({ message: "ok", root: ::Rails.root.to_s })
 
@@ -450,20 +452,27 @@ module RubyLsp
         return unless ActiveRecord::FixtureSet.respond_to?(:all_loaded_fixtures)
 
         all_fixtures = ActiveRecord::FixtureSet.all_loaded_fixtures
+
         return unless all_fixtures
 
-        return unless defined?(ActiveSupport::TestCase)
+        # return unless defined?(ActiveSupport::TestCase)
+        #
+        # fixture_sets = ActiveSupport::TestCase.fixture_sets
+        # log_message("all_loaded_fixture_sets: #{all_fixture_sets.inspect}")
+        #
+        # return unless fixture_sets
+        #
+        # table_name = fixture_sets[fixture_name]
+        # log_message("table name: #{failure_sets[fixtue_name].inspect}")
+        #
+        # return unless table_name
 
-        fixture_sets = ActiveSupport::TestCase.fixture_sets
-        return unless fixture_sets
-
-        table_name = fixture_sets[fixture_name]
-        return unless table_name
-
-        fixture_set = all_fixtures[table_name]
+        fixture_set = all_fixtures[fixture_name]
+        log_message("fixture_set: #{fixture_set.inspect}")
         return unless fixture_set
 
         fixture_names = fixture_set.fixtures.keys
+        log_message("fixture_names: #{fixture_names}")
 
         { fixture_names: fixture_names }
       rescue StandardError
@@ -511,6 +520,18 @@ module RubyLsp
           # Load routes if they haven't been loaded yet (see https://github.com/rails/rails/pull/51614).
           routes_reloader = ::Rails.application.routes_reloader
           routes_reloader.execute_unless_loaded if routes_reloader&.respond_to?(:execute_unless_loaded)
+        end
+      end
+
+      #: -> void
+      def load_fixtures
+        return unless defined?(ActiveRecord::FixtureSet)
+
+        with_notification_error_handling("load_fixtures") do
+          log_message("Loading fixtures")
+          ::Rails.application.load_tasks
+          Rake::Task["db:fixtures:load"].invoke
+          log_message("Fixtures loaded successfully")
         end
       end
 
