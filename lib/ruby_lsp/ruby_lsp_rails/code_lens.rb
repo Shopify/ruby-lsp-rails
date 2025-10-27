@@ -73,6 +73,7 @@ module RubyLsp
     #
     class CodeLens
       include Requests::Support::Common
+      include Inflections
       include ActiveSupportTestCaseHelper
 
       #: (RunnerClient, GlobalState, ResponseBuilders::CollectionResponseBuilder[Interface::CodeLens], URI::Generic, Prism::Dispatcher) -> void
@@ -191,13 +192,9 @@ module RubyLsp
       def add_jump_to_view(node)
         class_name = @constant_name_stack.map(&:first).join("::")
         action_name = node.name
-        controller_name = class_name
-          .delete_suffix("Controller")
-          .gsub(/([a-z])([A-Z])/, "\\1_\\2")
-          .gsub("::", "/")
-          .downcase
+        controller_name = underscore(class_name.delete_suffix("Controller"))
 
-        view_uris = Dir.glob("#{@client.rails_root}/app/views/#{controller_name}/#{action_name}*").filter_map do |path|
+        view_uris = Dir.glob("#{@client.views_dir}/#{controller_name}/#{action_name}*").filter_map do |path|
           # it's possible we could have a directory with the same name as the action, so we need to skip those
           next if File.directory?(path)
 

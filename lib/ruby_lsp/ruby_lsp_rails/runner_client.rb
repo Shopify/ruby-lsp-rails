@@ -261,6 +261,10 @@ module RubyLsp
         true
       end
 
+      def views_dir
+        File.join(@rails_root, "app/views")
+      end
+
       private
 
       #: (String request, **untyped params) -> Hash[Symbol, untyped]?

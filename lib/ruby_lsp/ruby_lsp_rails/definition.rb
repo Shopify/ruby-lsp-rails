@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "pathname"
+
 module RubyLsp
   module Rails
     # ![Definition demo](../../definition.gif)
@@ -29,11 +31,13 @@ module RubyLsp
     # - Changes to routes won't be picked up until the server is restarted.
     class Definition
       include Requests::Support::Common
+      include Inflections
 
       #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
-      def initialize(client, response_builder, node_context, index, dispatcher)
+      def initialize(client, response_builder, uri, node_context, index, dispatcher)
         @client = client
         @response_builder = response_builder
+        @path = uri.to_standardized_path #: String?
         @node_context = node_context
         @nesting = node_context.nesting #: Array[String]
         @index = index
@@ -49,6 +53,7 @@ module RubyLsp
       #: (Prism::StringNode node) -> void
       def on_string_node_enter(node)
         handle_possible_dsl(node)
+        handle_possible_render(node)
       end
 
       #: (Prism::CallNode node) -> void
@@ -142,6 +147,47 @@ module RubyLsp
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
+      def handle_possible_render(node)
+        return unless @path&.end_with?(".html.erb")
+
+        call_node = @node_context.call_node
+        return unless call_node
+        return unless self_receiver?(call_node)
+
+        message = call_node.message
+        return unless message == "render"
+
+        arguments = call_node.arguments&.arguments
+        return unless arguments
+
+        argument = view_template_argument(arguments, node)
+        return unless argument
+
+        template = node.content
+        template_options = view_template_options(arguments)
+
+        formats_pattern = template_options[:formats] ? "{#{template_options[:formats].join(",")}}" : "html"
+        variants_pattern = "{#{template_options[:variants].map { |variant| "+#{variant}" }.join(",")},}" if template_options[:variants]
+        handlers_pattern = template_options[:handlers] ? "{#{template_options[:handlers].join(",")}}" : "*"
+
+        extension_pattern = "#{formats_pattern}#{variants_pattern}.#{handlers_pattern}"
+
+        template_pattern = if argument == "template"
+          File.join(@client.views_dir, "#{template}.#{extension_pattern}")
+        elsif template.include?("/")
+          *partial_dir, partial_name = template.split("/")
+
+          File.join(@client.views_dir, *partial_dir, "_#{partial_name}.#{extension_pattern}")
+        else
+          File.join(@client.views_dir, "{#{view_prefixes.join(",")}}", "_#{template}.#{extension_pattern}")
+        end
+
+        template_path = Dir.glob(template_pattern).first
+        return unless template_path
+
+        @response_builder << Support::LocationBuilder.line_location_from_s("#{template_path}:1")
+      end
+
       #: (Prism::CallNode node) -> void
       def handle_route(node)
         result = @client.route_location(
@@ -193,6 +239,50 @@ module RubyLsp
         return unless method_name
 
         collect_definitions(method_name)
+      end
+
+      def view_template_argument(arguments, node)
+        return "partial" if arguments.first == node
+
+        kwargs = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+        return unless kwargs
+
+        kwarg = kwargs.elements.find do |pair|
+          ["partial", "layout", "spacer_template", "template"].include?(pair.key.value) && pair.value == node
+        end
+
+        kwarg&.key&.value
+      end
+
+      def view_template_options(arguments)
+        kwargs = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
+        return {} unless kwargs
+
+        kwargs.elements.each_with_object({}) do |pair, options|
+          next unless ["formats", "variants", "handlers"].include?(pair.key.value)
+
+          value = [pair.value.value] if pair.value.is_a?(Prism::SymbolNode)
+          value = pair.value.elements.map(&:value) if pair.value.is_a?(Prism::ArrayNode)
+
+          options[pair.key.value.to_sym] = value
+        end
+      end
+
+      # Resolve available directories from which the controller can render relative
+      # partials based on its ancestry chain.
+      def view_prefixes
+        controller_dir = Pathname(@path).dirname.relative_path_from(@client.views_dir).to_s
+        controller_class = "#{camelize(controller_dir)}Controller"
+        controller_ancestors = [controller_class]
+
+        controller_entry = @index.resolve(controller_class, [])&.find(&:parent_class)
+        while controller_entry
+          controller_entry = @index.resolve(controller_entry.parent_class, controller_entry.nesting)&.find(&:parent_class)
+          break unless controller_entry && not_in_dependencies?(controller_entry.file_path)
+          controller_ancestors << controller_entry.name
+        end
+
+        controller_ancestors.map { |ancestor| underscore(ancestor.delete_suffix("Controller")) }
       end
     end
   end
