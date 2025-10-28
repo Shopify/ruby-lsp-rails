@@ -300,6 +300,10 @@ module RubyLsp
 
         @running = true #: bool
         @database_supports_indexing = nil #: bool?
+
+        @after_reload_mutex = Mutex.new #: Mutex
+        @after_reload_tasks = [] #: Array[Hash[Symbol | String, untyped]]
+        @after_reload_worker = nil #: Thread?
       end
 
       #: -> void
@@ -311,9 +315,35 @@ module RubyLsp
         while @running
           headers = @stdin.gets("\r\n\r\n") #: as String
           json = @stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i) #: as String
+          message = JSON.parse(json, symbolize_names: true)
 
-          request = JSON.parse(json, symbolize_names: true)
-          execute(request.fetch(:method), request[:params])
+          if message.dig(:params, :after_reload)
+            @after_reload_mutex.synchronize do
+              @after_reload_tasks << message
+            end
+
+            if @after_reload_worker
+              log_message("Killing reload worker and batching tasks")
+              @after_reload_worker.kill
+            end
+
+            @after_reload_worker = Thread.new do
+              sleep(0.1)
+              reload
+
+              # Drain the queue of work now that we finished reloading
+              @after_reload_mutex.synchronize do
+                log_message("Draining tasks")
+
+                until @after_reload_tasks.empty?
+                  task = @after_reload_tasks.shift #: as !nil
+                  execute(task.fetch(:method), task[:params])
+                end
+              end
+            end
+          else
+            execute(message.fetch(:method), message[:params])
+          end
         end
       end
 
@@ -339,11 +369,7 @@ module RubyLsp
             send_result(run_migrations)
           end
         when "reload"
-          with_progress("rails-reload", "Reloading Ruby LSP Rails instance") do
-            with_notification_error_handling(request) do
-              ::Rails.application.reloader.reload!
-            end
-          end
+          reload
         when "route_location"
           with_request_error_handling(request) do
             send_result(route_location(params.fetch(:name)))
@@ -368,6 +394,15 @@ module RubyLsp
       end
 
       private
+
+      #: () -> void
+      def reload
+        with_progress("rails-reload", "Reloading Ruby LSP Rails instance") do
+          with_notification_error_handling("reload") do
+            ::Rails.application.reloader.reload!
+          end
+        end
+      end
 
       #: (Hash[Symbol | String, untyped]) -> Hash[Symbol | String, untyped]?
       def resolve_route_info(requirements)
