@@ -10,8 +10,9 @@ module RubyLsp
     # @requires_ancestor: ServerComponent
     module Common
       class Progress
-        #: (IO | StringIO, String, bool) -> void
-        def initialize(stderr, id, supports_progress)
+        #: (Mutex, IO | StringIO, String, bool) -> void
+        def initialize(mutex, stderr, id, supports_progress)
+          @mutex = mutex
           @stderr = stderr
           @id = id
           @supports_progress = supports_progress
@@ -34,7 +35,9 @@ module RubyLsp
             },
           }.to_json
 
-          @stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+          @mutex.synchronize do
+            @stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+          end
         end
       end
 
@@ -148,7 +151,7 @@ module RubyLsp
 
       #: (String, String, ?percentage: Integer?, ?message: String?) { (Progress) -> void } -> void
       def with_progress(id, title, percentage: nil, message: nil, &block)
-        progress_block = Progress.new(stderr, id, capabilities[:supports_progress])
+        progress_block = Progress.new(mutex, stderr, id, capabilities[:supports_progress])
         return block.call(progress_block) unless capabilities[:supports_progress]
 
         begin_progress(id, title, percentage: percentage, message: message)
@@ -162,18 +165,25 @@ module RubyLsp
       #: (Hash[String | Symbol, untyped]) -> void
       def send_message(message)
         json_message = message.to_json
-        stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        mutex.synchronize do
+          stdout.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        end
       end
 
       # Write a notification to the client to be transmitted to the editor
       #: (Hash[String | Symbol, untyped]) -> void
       def send_notification(message)
         json_message = message.to_json
-        stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        mutex.synchronize do
+          stderr.write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        end
       end
     end
 
     class ServerComponent
+      #: Mutex
+      attr_reader :mutex
+
       #: IO | StringIO
       attr_reader :stdout
 
@@ -183,8 +193,9 @@ module RubyLsp
       #: Hash[Symbol | String, untyped]
       attr_reader :capabilities
 
-      #: (IO | StringIO, IO | StringIO, Hash[Symbol | String, untyped]) -> void
-      def initialize(stdout, stderr, capabilities)
+      #: (Mutex, IO | StringIO, IO | StringIO, Hash[Symbol | String, untyped]) -> void
+      def initialize(mutex, stdout, stderr, capabilities)
+        @mutex = mutex
         @stdout = stdout
         @stderr = stderr
         @capabilities = capabilities
@@ -213,11 +224,11 @@ module RubyLsp
         end
 
         # Instantiate all server addons and store them in a hash for easy access after we have discovered the classes
-        #: (IO | StringIO, IO | StringIO, Hash[Symbol | String, untyped]) -> void
-        def finalize_registrations!(stdout, stderr, capabilities)
+        #: (Mutex, IO | StringIO, IO | StringIO, Hash[Symbol | String, untyped]) -> void
+        def finalize_registrations!(mutex, stdout, stderr, capabilities)
           until @server_addon_classes.empty?
             addon = @server_addon_classes.shift #: as !nil
-              .new(stdout, stderr, capabilities)
+              .new(mutex, stdout, stderr, capabilities)
             @server_addons[addon.name] = addon
           end
         end
@@ -235,6 +246,12 @@ module RubyLsp
     end
 
     class IOWrapper < SimpleDelegator
+      #: (IO | StringIO, Mutex) -> void
+      def initialize(io, mutex)
+        super(io)
+        @mutex = mutex
+      end
+
       #: (*untyped) -> void
       def puts(*args)
         args.each { |arg| log("#{arg}\n") }
@@ -251,8 +268,10 @@ module RubyLsp
       def log(message)
         json_message = { method: "window/logMessage", params: { type: 4, message: message } }.to_json
 
-        self #: as untyped # rubocop:disable Style/RedundantSelf
-          .write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        @mutex.synchronize do
+          self #: as untyped # rubocop:disable Style/RedundantSelf
+            .write("Content-Length: #{json_message.bytesize}\r\n\r\n#{json_message}")
+        end
       end
     end
 
@@ -264,7 +283,8 @@ module RubyLsp
         # Grab references to the original pipes so that we can change the default output device further down
 
         @stdin = $stdin #: IO
-        super(stdout, stderr, capabilities)
+        @mutex = Mutex.new #: Mutex
+        super(@mutex, stdout, stderr, capabilities)
 
         @stdin.sync = true
         @stdout.sync = true
@@ -276,7 +296,7 @@ module RubyLsp
         # # Set the default output device to be $stderr. This means that using `puts` by itself will default to printing
         # # to $stderr and only explicit `$stdout.puts` will go to $stdout. This reduces the chance that output coming
         # # from the Rails app will be accidentally sent to the client
-        $> = IOWrapper.new(@stderr) if override_default_output_device
+        $> = IOWrapper.new(@stderr, @mutex) if override_default_output_device
 
         @running = true #: bool
         @database_supports_indexing = nil #: bool?
@@ -335,7 +355,7 @@ module RubyLsp
         when "server_addon/register"
           with_notification_error_handling(request) do
             require params[:server_addon_path]
-            ServerAddon.finalize_registrations!(@stdout, @stderr, @capabilities)
+            ServerAddon.finalize_registrations!(@mutex, @stdout, @stderr, @capabilities)
           end
         when "server_addon/delegate"
           server_addon_name = params[:server_addon_name]
