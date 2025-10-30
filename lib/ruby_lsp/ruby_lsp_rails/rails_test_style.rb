@@ -26,17 +26,19 @@ module RubyLsp
 
             if tags.include?("test_dir")
               if children.empty?
-                full_files.concat(Dir.glob(
-                  "#{path}/**/{*_test,test_*}.rb",
-                  File::Constants::FNM_EXTGLOB | File::Constants::FNM_PATHNAME,
-                ))
+                full_files.concat(
+                  Dir.glob(
+                    "#{path}/**/{*_test,test_*}.rb",
+                    File::Constants::FNM_EXTGLOB | File::Constants::FNM_PATHNAME,
+                  ).map! { |f| Shellwords.escape(f) },
+                )
               end
             elsif tags.include?("test_file")
-              full_files << path if children.empty?
+              full_files << Shellwords.escape(path) if children.empty?
             elsif tags.include?("test_group")
-              commands << "#{BASE_COMMAND} #{path} --name \"/#{Shellwords.escape(item[:id])}(#|::)/\""
+              commands << "#{BASE_COMMAND} #{Shellwords.escape(path)} --name \"/#{Shellwords.escape(item[:id])}(#|::)/\""
             else
-              full_files << "#{path}:#{item.dig(:range, :start, :line) + 1}"
+              full_files << "#{Shellwords.escape(path)}:#{item.dig(:range, :start, :line) + 1}"
             end
 
             queue.concat(children)
