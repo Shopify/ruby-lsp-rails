@@ -60,7 +60,7 @@ module RubyLsp
         foreign_keys = ["country_id"]
         indexes = [
           { name: "users_unique_complex", columns: "COALESCE(country_id, 0), ltrim(first_name)", unique: true },
-          { name: "index_users_on_country_id", columns: ["country_id"], unique: false }
+          { name: "index_users_on_country_id", columns: ["country_id"], unique: false },
         ]
         response = @client.model("User") #: as !nil
         assert_equal(columns, response.fetch(:columns))
