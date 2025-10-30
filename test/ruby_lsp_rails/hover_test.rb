@@ -338,7 +338,7 @@ module RubyLsp
           foreign_keys: ["country_id"],
           indexes: [
             { name: "index_users_on_country_id", columns: ["country_id"], unique: false },
-            { name: "users_unique_complex", columns: "COALESCE(country_id, 0), ltrim(first_name)", unique: true }
+            { name: "users_unique_complex", columns: "COALESCE(country_id, 0), ltrim(first_name)", unique: true },
           ],
         }
 

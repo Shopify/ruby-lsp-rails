@@ -98,13 +98,13 @@ module RubyLsp
             model[:indexes].map do |index|
               uniqueness = index[:unique] ? " (unique)" : ""
               columns = case index[:columns]
-                        when Array
-                          index[:columns].join(",")
-                        when String
-                          index[:columns]
-                        else
-                          index[:name]
-                        end
+              when Array
+                index[:columns].join(",")
+              when String
+                index[:columns]
+              else
+                index[:name]
+              end
               "- **#{index[:name]}** (#{columns})#{uniqueness}"
             end.join("\n"),
             category: :documentation,
