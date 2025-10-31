@@ -194,7 +194,14 @@ module RubyLsp
         action_name = node.name
         controller_name = underscore(class_name.delete_suffix("Controller"))
 
-        view_uris = Dir.glob("#{@client.views_dir}/#{controller_name}/#{action_name}*").filter_map do |path|
+        controller_info = @client.controller(class_name)
+        return unless controller_info
+
+        view_paths = controller_info[:view_paths].select do |path|
+          path.start_with?(@client.rails_root)
+        end
+
+        view_uris = Dir.glob("{#{view_paths.join(",")}}/#{controller_name}/#{action_name}*").filter_map do |path|
           # it's possible we could have a directory with the same name as the action, so we need to skip those
           next if File.directory?(path)
 

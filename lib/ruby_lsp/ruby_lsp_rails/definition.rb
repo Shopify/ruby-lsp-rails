@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "pathname"
-
 module RubyLsp
   module Rails
     # ![Definition demo](../../definition.gif)
@@ -33,8 +31,8 @@ module RubyLsp
       include Requests::Support::Common
       include Inflections
 
-      #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
-      def initialize(client, response_builder, uri, node_context, index, dispatcher)
+      #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, URI::Generic uri, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
+      def initialize(client, response_builder, uri, node_context, index, dispatcher) # rubocop:disable Metrics/ParameterLists
         @client = client
         @response_builder = response_builder
         @path = uri.to_standardized_path #: String?
@@ -147,6 +145,7 @@ module RubyLsp
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
+      #: (Prism::StringNode node) -> void
       def handle_possible_render(node)
         return unless @path&.end_with?(".html.erb")
 
@@ -154,8 +153,7 @@ module RubyLsp
         return unless call_node
         return unless self_receiver?(call_node)
 
-        message = call_node.message
-        return unless message == "render"
+        return unless call_node.message == "render"
 
         arguments = call_node.arguments&.arguments
         return unless arguments
@@ -163,29 +161,21 @@ module RubyLsp
         argument = view_template_argument(arguments, node)
         return unless argument
 
-        template = node.content
-        template_options = view_template_options(arguments)
+        controller_name = controller_for_template(@path)
+        return unless controller_name
 
-        formats_pattern = template_options[:formats] ? "{#{template_options[:formats].join(",")}}" : "html"
-        variants_pattern = "{#{template_options[:variants].map { |variant| "+#{variant}" }.join(",")},}" if template_options[:variants]
-        handlers_pattern = template_options[:handlers] ? "{#{template_options[:handlers].join(",")}}" : "*"
+        template_name = node.content
+        template_details = view_template_details(arguments)
 
-        extension_pattern = "#{formats_pattern}#{variants_pattern}.#{handlers_pattern}"
+        template = @client.find_template(
+          controller_name: controller_name,
+          template_name: template_name,
+          partial: argument != "template",
+          details: template_details,
+        )
+        return unless template
 
-        template_pattern = if argument == "template"
-          File.join(@client.views_dir, "#{template}.#{extension_pattern}")
-        elsif template.include?("/")
-          *partial_dir, partial_name = template.split("/")
-
-          File.join(@client.views_dir, *partial_dir, "_#{partial_name}.#{extension_pattern}")
-        else
-          File.join(@client.views_dir, "{#{view_prefixes.join(",")}}", "_#{template}.#{extension_pattern}")
-        end
-
-        template_path = Dir.glob(template_pattern).first
-        return unless template_path
-
-        @response_builder << Support::LocationBuilder.line_location_from_s("#{template_path}:1")
+        @response_builder << Support::LocationBuilder.line_location_from_s("#{template[:path]}:1")
       end
 
       #: (Prism::CallNode node) -> void
@@ -241,48 +231,69 @@ module RubyLsp
         collect_definitions(method_name)
       end
 
+      #: (Array[Prism::Node] arguments, Prism::StringNode node) -> String?
       def view_template_argument(arguments, node)
         return "partial" if arguments.first == node
 
-        kwargs = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
-        return unless kwargs
+        keyword_arguments = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) } #: as Prism::KeywordHashNode?
+        return unless keyword_arguments
 
-        kwarg = kwargs.elements.find do |pair|
-          ["partial", "layout", "spacer_template", "template"].include?(pair.key.value) && pair.value == node
-        end
+        element = keyword_arguments.elements.find do |element|
+          next unless element.is_a?(Prism::AssocNode)
 
-        kwarg&.key&.value
+          key = element.key
+          next unless key.is_a?(Prism::SymbolNode)
+
+          next unless element.value == node
+
+          ["partial", "layout", "spacer_template", "template"].include?(key.value)
+        end #: as Prism::AssocNode?
+
+        return unless element
+
+        key = element.key #: as Prism::SymbolNode
+        key.value
       end
 
-      def view_template_options(arguments)
-        kwargs = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) }
-        return {} unless kwargs
+      #: (Array[Prism::Node] arguments) -> Hash[String, (String | Array[String])]
+      def view_template_details(arguments)
+        keyword_arguments = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) } #: as Prism::KeywordHashNode?
+        return {} unless keyword_arguments
 
-        kwargs.elements.each_with_object({}) do |pair, options|
-          next unless ["formats", "variants", "handlers"].include?(pair.key.value)
+        keyword_arguments.elements.each_with_object({}) do |element, options|
+          next unless element.is_a?(Prism::AssocNode)
 
-          value = [pair.value.value] if pair.value.is_a?(Prism::SymbolNode)
-          value = pair.value.elements.map(&:value) if pair.value.is_a?(Prism::ArrayNode)
+          key = element.key
+          next unless key.is_a?(Prism::SymbolNode)
 
-          options[pair.key.value.to_sym] = value
+          key_value = key.value
+          next unless ["formats", "variants", "handlers"].include?(key_value)
+
+          value = element.value
+
+          if value.is_a?(Prism::SymbolNode)
+            options[key_value] = value.value
+          elsif value.is_a?(Prism::ArrayNode) && value.elements.all?(Prism::SymbolNode)
+            elements = value.elements #: as Array[Prism::SymbolNode]
+            options[key_value] = elements.map(&:value)
+          end
         end
       end
 
-      # Resolve available directories from which the controller can render relative
-      # partials based on its ancestry chain.
-      def view_prefixes
-        controller_dir = Pathname(@path).dirname.relative_path_from(@client.views_dir).to_s
-        controller_class = "#{camelize(controller_dir)}Controller"
-        controller_ancestors = [controller_class]
+      #: (String template_path) -> String?
+      def controller_for_template(template_path)
+        controller_info = @client.controller("ActionController::Base")
+        return unless controller_info
 
-        controller_entry = @index.resolve(controller_class, [])&.find(&:parent_class)
-        while controller_entry
-          controller_entry = @index.resolve(controller_entry.parent_class, controller_entry.nesting)&.find(&:parent_class)
-          break unless controller_entry && not_in_dependencies?(controller_entry.file_path)
-          controller_ancestors << controller_entry.name
-        end
+        view_paths = controller_info[:view_paths]
+        template_directory = File.dirname(template_path)
 
-        controller_ancestors.map { |ancestor| underscore(ancestor.delete_suffix("Controller")) }
+        view_path = view_paths.find { |path| template_directory.start_with?(path + "/") }
+        return unless view_path
+
+        controller_path = template_directory.delete_prefix(view_path + "/")
+
+        camelize(controller_path) + "Controller"
       end
     end
   end

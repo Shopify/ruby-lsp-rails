@@ -4,15 +4,15 @@
 module RubyLsp
   module Rails
     module Inflections
-      #: String -> String
+      #: (String) -> String
       def camelize(string)
         string
-          .gsub(/_([a-z])/) { $1.upcase }
-          .gsub(/(^|\/)[a-z]/) { $&.upcase }
+          .gsub(%r{(?:^|_|/)[a-z]}, &:upcase)
+          .tr("_", "")
           .gsub("/", "::")
       end
 
-      #: String -> String
+      #: (String) -> String
       def underscore(string)
         string
           .gsub(/([a-z])([A-Z])/, "\\1_\\2")

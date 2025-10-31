@@ -160,6 +160,34 @@ module RubyLsp
       end
 
       #: (String name) -> Hash[Symbol, untyped]?
+      def controller(name)
+        make_request("controller", name: name)
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to get controller view paths",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
+      #: (controller_name: String, template_name: String, partial: bool, details: Hash[String, String | Array[String]]) -> Hash[Symbol, untyped]?
+      def find_template(controller_name:, template_name:, partial:, details:)
+        make_request(
+          "find_template",
+          controller_name: controller_name,
+          template_name: template_name,
+          partial: partial,
+          details: details,
+        )
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to find view template for controller",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
+      #: (String name) -> Hash[Symbol, untyped]?
       def route_location(name)
         make_request("route_location", name: name)
       rescue MessageError
@@ -259,10 +287,6 @@ module RubyLsp
       #: -> bool
       def connected?
         true
-      end
-
-      def views_dir
-        File.join(@rails_root, "app/views")
       end
 
       private

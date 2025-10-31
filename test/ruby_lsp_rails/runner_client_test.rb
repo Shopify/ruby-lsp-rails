@@ -66,6 +66,21 @@ module RubyLsp
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
+      test "#controller returns information for requested controller" do
+        response = @client.controller("ActionController::Base") #: as !nil
+        assert_equal("#{dummy_root}/app/views", response.fetch(:view_paths).first)
+      end
+
+      test "#find_template returns resolved template path" do
+        response = @client.find_template(
+          controller_name: "UsersController",
+          template_name: "users/index",
+          partial: false,
+          details: {},
+        ) #: as !nil
+        assert_equal("#{dummy_root}/app/views/users/index.html.erb", response.fetch(:path))
+      end
+
       test "returns nil if the request returns a nil response" do
         assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
       end

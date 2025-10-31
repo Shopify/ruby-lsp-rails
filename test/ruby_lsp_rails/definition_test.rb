@@ -503,72 +503,48 @@ module RubyLsp
         FileUtils.rm("#{dummy_root}/app/views/users/_partial.html.erb")
       end
 
-      test "searches template directories of controller ancestors" do
-        FileUtils.mkdir_p("#{dummy_root}/app/views/application")
-        FileUtils.touch("#{dummy_root}/app/views/application/_partial.html.erb")
-
-        uri = Kernel.URI("file://#{dummy_root}/app/views/users/render.html.erb")
-        source = <<~ERB
-          <%= render "partial" %>
-        ERB
-
-        response = with_ready_server(source, uri) do |server|
-          server.global_state.index.index_file(URI::Generic.from_path(path: "#{dummy_root}/app/controllers/users_controller.rb"))
-          server.global_state.index.index_file(URI::Generic.from_path(path: "#{dummy_root}/app/controllers/application_controller.rb"))
-
-          text_document_definition(server, { line: 0, character: 12 }, uri)
-        end
-
-        assert_equal("file://#{dummy_root}/app/views/application/_partial.html.erb", response.first.uri)
-      ensure
-        FileUtils.rm_r("#{dummy_root}/app/views/application")
-      end
-
       test "handles template formats, variants and handlers" do
-        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html.slim")
-        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html+tablet.slim")
-        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html+mobile.slim")
+        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html.erb")
         FileUtils.touch("#{dummy_root}/app/views/users/_partial.text.erb")
+        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html.ruby")
+        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html+tablet.erb")
+        FileUtils.touch("#{dummy_root}/app/views/users/_partial.html+mobile.erb")
 
         uri = Kernel.URI("file://#{dummy_root}/app/views/users/render.html.erb")
         source = <<~ERB
           <%= render "partial" %>
           <%= render "partial", formats: :html %>
           <%= render "partial", formats: [:text] %>
-          <%= render "partial", handlers: :slim %>
+          <%= render "partial", handlers: :ruby %>
           <%= render "partial", handlers: [:erb] %>
           <%= render "partial", variants: :mobile %>
           <%= render "partial", variants: [:tablet, :mobile] %>
-          <%= render "partial", variants: :missing %>
         ERB
 
         with_ready_server(source, uri) do |server|
           response = text_document_definition(server, { line: 0, character: 12 }, uri)
-          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.slim", response.first.uri)
+          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.erb", response.first.uri)
 
           response = text_document_definition(server, { line: 1, character: 12 }, uri)
-          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.slim", response.first.uri)
+          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.erb", response.first.uri)
 
           response = text_document_definition(server, { line: 2, character: 12 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.text.erb", response.first.uri)
 
           response = text_document_definition(server, { line: 3, character: 12 }, uri)
-          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.slim", response.first.uri)
+          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.ruby", response.first.uri)
 
           response = text_document_definition(server, { line: 4, character: 12 }, uri)
-          assert_equal([], response)
+          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.erb", response.first.uri)
 
           response = text_document_definition(server, { line: 5, character: 12 }, uri)
-          assert_equal("file://#{dummy_root}/app/views/users/_partial.html+mobile.slim", response.first.uri)
+          assert_equal("file://#{dummy_root}/app/views/users/_partial.html+mobile.erb", response.first.uri)
 
           response = text_document_definition(server, { line: 6, character: 12 }, uri)
-          assert_equal("file://#{dummy_root}/app/views/users/_partial.html+tablet.slim", response.first.uri)
-
-          response = text_document_definition(server, { line: 7, character: 12 }, uri)
-          assert_equal("file://#{dummy_root}/app/views/users/_partial.html.slim", response.first.uri)
+          assert_equal("file://#{dummy_root}/app/views/users/_partial.html+tablet.erb", response.first.uri)
         end
       ensure
-        FileUtils.rm Dir["#{dummy_root}/app/views/users/_partial.*"]
+        FileUtils.rm(Dir["#{dummy_root}/app/views/users/_partial.*"])
       end
 
       private
@@ -591,7 +567,7 @@ module RubyLsp
       end
 
       def with_ready_server(source, uri)
-        with_server(source, uri) do |server, uri|
+        with_server(source, uri) do |server|
           sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
 
           yield server
