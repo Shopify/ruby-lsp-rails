@@ -22,15 +22,17 @@ module RubyLsp
       def on_call_node_enter(node)
         call_node = @node_context.call_node
         return unless call_node
-
+        
         receiver = call_node.receiver
         if call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
           handle_active_record_where_completions(node: node, receiver: receiver)
+        elsif receiver.nil? && call_node.arguments
+          handle_fixture_completions(call_node: call_node)
         end
       end
 
       private
-
+      
       #: (node: Prism::CallNode, receiver: Prism::ConstantReadNode) -> void
       def handle_active_record_where_completions(node:, receiver:)
         resolved_class = @client.model(receiver.name.to_s)
@@ -78,6 +80,41 @@ module RubyLsp
           end
         end
         indexed_call_node_args
+      end
+
+      #: (call_node: Prism::CallNode) -> void
+      def handle_fixture_completions(call_node:)
+        arguments = call_node.arguments&.arguments
+        return unless arguments && !arguments.empty?
+
+        first_arg = arguments.first
+        return unless first_arg.is_a?(Prism::SymbolNode)
+
+        fixture_name = call_node.name.to_s
+
+        resolved_fixtures = @client.fixtures(fixture_name)
+        return if resolved_fixtures.nil?
+
+        fixture_names = resolved_fixtures[:fixture_names]
+        return unless fixture_names
+
+        range = range_from_location(first_arg.location)
+        current_input = first_arg.value.to_s
+
+        fixture_names.each do |name|
+          name_str = name.to_s
+          next unless name_str.start_with?(current_input)
+
+          @response_builder << Interface::CompletionItem.new(
+            label: name_str,
+            filter_text: name_str,
+            label_details: Interface::CompletionItemLabelDetails.new(
+              description: "#{fixture_name} fixture",
+            ),
+            text_edit: Interface::TextEdit.new(range: range, new_text: ":#{name_str}"),
+            kind: Constant::CompletionItemKind::VALUE,
+          )
+        end
       end
     end
   end

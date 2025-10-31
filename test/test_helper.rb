@@ -17,6 +17,8 @@ module ActiveSupport
   class TestCase
     include RubyLsp::TestHelper
 
+    fixtures :all
+
     def dummy_root
       File.expand_path("#{__dir__}/dummy")
     end
