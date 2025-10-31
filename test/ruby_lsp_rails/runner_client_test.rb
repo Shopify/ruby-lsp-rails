@@ -65,7 +65,7 @@ module RubyLsp
         response = @client.model("User") #: as !nil
         assert_equal(columns, response.fetch(:columns))
         assert_equal(foreign_keys, response.fetch(:foreign_keys))
-        assert_equal(indexes, response.fetch(:indexes))
+        assert_equal(indexes.sort_by { |i| i[:name] }, response.fetch(:indexes).sort_by { |i| i[:name] })
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
