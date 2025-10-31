@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_10_25_225348) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_16_140957) do
   create_table "composite_primary_keys", primary_key: ["order_id", "product_id"], force: :cascade do |t|
     t.integer "order_id"
     t.integer "product_id"
@@ -55,6 +55,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_10_25_225348) do
     t.datetime "updated_at", null: false
     t.integer "country_id", null: false
     t.boolean "active", default: true, null: false
+    t.index "COALESCE(country_id, 0), ltrim(first_name)", name: "users_unique_complex", unique: true
     t.index ["country_id"], name: "index_users_on_country_id"
   end
 
