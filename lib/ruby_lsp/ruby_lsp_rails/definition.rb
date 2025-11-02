@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "pathname"
+
 module RubyLsp
   module Rails
     # ![Definition demo](../../definition.gif)
@@ -280,20 +282,27 @@ module RubyLsp
         end
       end
 
+      # Determine controller name for given template path by matching segments
+      # of its directory path to controller paths and checking if the controllers'
+      # view paths complete the rest of the template directory path.
+      #
       #: (String template_path) -> String?
       def controller_for_template(template_path)
-        controller_info = @client.controller("ActionController::Base")
-        return unless controller_info
+        template_directory = Pathname(template_path).dirname.relative_path_from(@client.rails_root)
+        directory_segments = template_directory.each_filename.to_a
+        possible_controller_paths = (1..directory_segments.count).map do |n|
+          directory_segments.last(n).join("/")
+        end
 
-        view_paths = controller_info[:view_paths]
-        template_directory = File.dirname(template_path)
+        controller_path = possible_controller_paths.find do |controller_path|
+          controller_name = camelize(controller_path) + "Controller"
+          view_paths = @client.controller(controller_name)&.dig(:view_paths) || []
+          view_paths.any? do |view_path|
+            File.join(view_path, controller_path) == File.dirname(template_path)
+          end
+        end
 
-        view_path = view_paths.find { |path| template_directory.start_with?(path + "/") }
-        return unless view_path
-
-        controller_path = template_directory.delete_prefix(view_path + "/")
-
-        camelize(controller_path) + "Controller"
+        camelize(controller_path) + "Controller" if controller_path
       end
     end
   end

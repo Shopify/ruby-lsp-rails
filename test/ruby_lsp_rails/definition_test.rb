@@ -503,6 +503,27 @@ module RubyLsp
         FileUtils.rm("#{dummy_root}/app/views/users/_partial.html.erb")
       end
 
+      test "handles custom view paths" do
+        FileUtils.mkdir_p("#{dummy_root}/app/custom/views/admin")
+        FileUtils.touch("#{dummy_root}/app/custom/views/admin/_partial.html.erb")
+        File.write("#{dummy_root}/app/controllers/admin_controller.rb", <<~RUBY)
+          class AdminController < ApplicationController
+            prepend_view_path "#{dummy_root}/app/custom/views"
+          end
+        RUBY
+
+        uri = Kernel.URI("file://#{dummy_root}/app/custom/views/admin/render.html.erb")
+        source = <<~ERB
+          <%= render "partial" %>
+        ERB
+
+        response = generate_definitions_for_source(source, { line: 0, character: 12 }, uri)
+        assert_equal("file://#{dummy_root}/app/custom/views/admin/_partial.html.erb", response.first.uri)
+      ensure
+        FileUtils.rm_r("#{dummy_root}/app/custom/views/admin")
+        FileUtils.rm("#{dummy_root}/app/controllers/admin_controller.rb")
+      end
+
       test "handles template formats, variants and handlers" do
         FileUtils.touch("#{dummy_root}/app/views/users/_partial.html.erb")
         FileUtils.touch("#{dummy_root}/app/views/users/_partial.text.erb")
