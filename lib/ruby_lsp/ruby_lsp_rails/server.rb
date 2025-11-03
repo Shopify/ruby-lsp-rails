@@ -442,10 +442,6 @@ module RubyLsp
         nil
       end
 
-      # TODO: @kumarpit might just be a good idea to return the entire fixture set here?
-      # This wouldn't work no? The addon runs on a seperate rails runner process, which doesn't
-      # have the fixtures loaded on it...in fact, fixtures wouldn't be loaded anywhere until the developer
-      # runs a test...
       #: (String) -> Hash[Symbol | String, untyped]?
       def resolve_fixtures(fixture_name)
         return unless defined?(ActiveRecord::FixtureSet)
@@ -468,11 +464,9 @@ module RubyLsp
         # return unless table_name
 
         fixture_set = all_fixtures[fixture_name]
-        log_message("fixture_set: #{fixture_set.inspect}")
         return unless fixture_set
 
         fixture_names = fixture_set.fixtures.keys
-        log_message("fixture_names: #{fixture_names}")
 
         { fixture_names: fixture_names }
       rescue StandardError

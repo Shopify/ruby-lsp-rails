@@ -21,18 +21,18 @@ module RubyLsp
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         call_node = @node_context.call_node
-        return unless call_node
-        
-        receiver = call_node.receiver
-        if call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
+        # return unless call_node
+
+        receiver = call_node&.receiver
+        if call_node && call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
           handle_active_record_where_completions(node: node, receiver: receiver)
-        elsif receiver.nil? && call_node.arguments
-          handle_fixture_completions(call_node: call_node)
+        elsif receiver.nil? && node.arguments
+          handle_fixture_completions(call_node: node)
         end
       end
 
       private
-      
+
       #: (node: Prism::CallNode, receiver: Prism::ConstantReadNode) -> void
       def handle_active_record_where_completions(node:, receiver:)
         resolved_class = @client.model(receiver.name.to_s)
@@ -64,24 +64,6 @@ module RubyLsp
         end
       end
 
-      #: (arguments: Array[Prism::Node]) -> Hash[String, Prism::Node]
-      def index_call_node_args(arguments:)
-        indexed_call_node_args = {}
-        arguments.each do |argument|
-          next unless argument.is_a?(Prism::KeywordHashNode)
-
-          argument.elements.each do |e|
-            next unless e.is_a?(Prism::AssocNode)
-
-            key = e.key
-            if key.is_a?(Prism::SymbolNode)
-              indexed_call_node_args[key.value] = e.value
-            end
-          end
-        end
-        indexed_call_node_args
-      end
-
       #: (call_node: Prism::CallNode) -> void
       def handle_fixture_completions(call_node:)
         arguments = call_node.arguments&.arguments
@@ -99,15 +81,12 @@ module RubyLsp
         return unless fixture_names
 
         range = range_from_location(first_arg.location)
-        current_input = first_arg.value.to_s
 
         fixture_names.each do |name|
           name_str = name.to_s
-          next unless name_str.start_with?(current_input)
-
           @response_builder << Interface::CompletionItem.new(
             label: name_str,
-            filter_text: name_str,
+            filter_text: ":#{name_str}",
             label_details: Interface::CompletionItemLabelDetails.new(
               description: "#{fixture_name} fixture",
             ),
@@ -115,6 +94,24 @@ module RubyLsp
             kind: Constant::CompletionItemKind::VALUE,
           )
         end
+      end
+
+      #: (arguments: Array[Prism::Node]) -> Hash[String, Prism::Node]
+      def index_call_node_args(arguments:)
+        indexed_call_node_args = {}
+        arguments.each do |argument|
+          next unless argument.is_a?(Prism::KeywordHashNode)
+
+          argument.elements.each do |e|
+            next unless e.is_a?(Prism::AssocNode)
+
+            key = e.key
+            if key.is_a?(Prism::SymbolNode)
+              indexed_call_node_args[key.value] = e.value
+            end
+          end
+        end
+        indexed_call_node_args
       end
     end
   end
