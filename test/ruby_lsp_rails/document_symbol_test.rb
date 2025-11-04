@@ -439,6 +439,36 @@ module RubyLsp
         assert_empty(response[0].children)
       end
 
+      test "adds symbols for table names in schema.rb" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+          ActiveRecord::Schema[8.1].define(version: 2025_10_07_010540) do
+            create_table "action_text_rich_texts", force: :cascade do |t|
+              t.text "body"
+              t.datetime "created_at", null: false
+              t.string "name", null: false
+              t.bigint "record_id", null: false
+              t.string "record_type", null: false
+              t.datetime "updated_at", null: false
+              t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+            end
+
+            create_table "active_storage_attachments", force: :cascade do |t|
+              t.bigint "blob_id", null: false
+              t.datetime "created_at", null: false
+              t.string "name", null: false
+              t.bigint "record_id", null: false
+              t.string "record_type", null: false
+              t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+              t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+            end
+          end
+        RUBY
+
+        assert_equal(2, response.size)
+        assert_equal("action_text_rich_texts", response[0].name)
+        assert_equal("active_storage_attachments", response[1].name)
+      end
+
       private
 
       def generate_document_symbols_for_source(source)
