@@ -294,6 +294,7 @@ module RubyLsp
 
           request = JSON.parse(json, symbolize_names: true)
           execute(request.fetch(:method), request[:params])
+          disconnect_from_database
         end
       end
 
@@ -490,6 +491,18 @@ module RubyLsp
 
         with_notification_error_handling("clear_file_system_resolver_hooks") do
           ::ActionView::PathRegistry.file_system_resolver_hooks.clear
+        end
+      end
+
+      # Keeping a connection to the database prevents it from being dropped in development. We don't actually need to
+      # to reuse database connections for the LSP server, the performance benefit of doing so only matters in production
+      # where there is latency, locally we're fine with the small overhead of establishing a new connection on each request.
+      #: -> void
+      def disconnect_from_database
+        return unless defined?(::ActiveRecord::Base)
+
+        with_notification_error_handling("disconnect_from_database") do
+          ActiveRecord::Base.connection_handler.clear_all_connections!(:all)
         end
       end
 
