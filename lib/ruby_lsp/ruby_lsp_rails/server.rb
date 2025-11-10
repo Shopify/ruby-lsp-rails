@@ -462,7 +462,7 @@ module RubyLsp
         details = params[:details].transform_values { |value| Array(value).map(&:to_sym) }
 
         lookup_context = const.new.lookup_context
-        prefixes = path.include?("/") || !partial ? [] : lookup_context.prefixes
+        prefixes = path.include?("/") || !partial || const.abstract? ? [] : lookup_context.prefixes
 
         # Disable the lookup cache to ensure template changes are reflected
         template = lookup_context.disable_cache do

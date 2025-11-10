@@ -524,6 +524,21 @@ module RubyLsp
         FileUtils.rm("#{dummy_root}/app/controllers/admin_controller.rb")
       end
 
+      test "handles template directories not matching any controller path" do
+        FileUtils.mkdir_p("#{dummy_root}/app/views/components")
+        FileUtils.touch("#{dummy_root}/app/views/components/_foo.html.erb")
+
+        uri = Kernel.URI("file://#{dummy_root}/app/views/components/_bar.html.erb")
+        source = <<~ERB
+          <%= render "components/foo" %>
+        ERB
+
+        response = generate_definitions_for_source(source, { line: 0, character: 12 }, uri)
+        assert_equal("file://#{dummy_root}/app/views/components/_foo.html.erb", response.first.uri)
+      ensure
+        FileUtils.rm_r("#{dummy_root}/app/views/components")
+      end
+
       test "handles template formats, variants and handlers" do
         FileUtils.touch("#{dummy_root}/app/views/users/_partial.html.erb")
         FileUtils.touch("#{dummy_root}/app/views/users/_partial.text.erb")

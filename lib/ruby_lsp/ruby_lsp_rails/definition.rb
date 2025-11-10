@@ -302,7 +302,11 @@ module RubyLsp
           end
         end
 
-        camelize(controller_path) + "Controller" if controller_path
+        if controller_path
+          camelize(controller_path) + "Controller"
+        else
+          "ActionController::Base"
+        end
       end
     end
   end
