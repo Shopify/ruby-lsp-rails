@@ -29,6 +29,11 @@ module RubyLsp
 
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
+        message = node.message
+        return unless message
+
+        handle_schema_table(node)
+
         return if @namespace_stack.empty?
 
         content = extract_test_case_name(node)
@@ -43,9 +48,6 @@ module RubyLsp
 
         receiver = node.receiver
         return if receiver && !receiver.is_a?(Prism::SelfNode)
-
-        message = node.message
-        return unless message
 
         case message
         when *Support::Callbacks::ALL, "validate"
@@ -210,6 +212,38 @@ module RubyLsp
               selection_range: range_from_location(argument.location),
             )
           end
+        end
+      end
+
+      #: (Prism::CallNode node) -> void
+      def handle_schema_table(node)
+        return unless node.message == "create_table"
+
+        table_name_argument = node.arguments&.arguments&.first
+
+        return unless table_name_argument
+
+        case table_name_argument
+        when Prism::SymbolNode
+          name = table_name_argument.value
+          return unless name
+
+          append_document_symbol(
+            name: name,
+            range: range_from_location(table_name_argument.location),
+            selection_range: range_from_location(
+              table_name_argument.value_loc, #: as !nil
+            ),
+          )
+        when Prism::StringNode
+          name = table_name_argument.content
+          return if name.empty?
+
+          append_document_symbol(
+            name: name,
+            range: range_from_location(table_name_argument.location),
+            selection_range: range_from_location(table_name_argument.content_loc),
+          )
         end
       end
 
