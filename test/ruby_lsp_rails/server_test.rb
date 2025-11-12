@@ -53,6 +53,91 @@ class ServerTest < ActiveSupport::TestCase
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :schema_dump_path, :old_schema_dump_path)
   end
 
+  test "returns views paths for requested controller" do
+    @server.execute("controller", { name: "ActionController::Base" })
+    assert_equal("#{dummy_root}/app/views", response.fetch(:result)[:view_paths].first)
+  end
+
+  test "returns nil for API controller" do
+    @server.execute("controller", { name: "ActionController::API" })
+    assert_nil(response.fetch(:result))
+  end
+
+  test "resolves relative view partial path" do
+    FileUtils.touch("#{dummy_root}/app/views/users/_user.html.erb")
+    @server.execute("find_template", {
+      controller_name: "UsersController",
+      template_name: "user",
+      partial: true,
+      details: {},
+    })
+    assert_equal("#{dummy_root}/app/views/users/_user.html.erb", response.fetch(:result)[:path])
+  ensure
+    FileUtils.rm("#{dummy_root}/app/views/users/_user.html.erb")
+  end
+
+  test "resolves absolute view partial path" do
+    FileUtils.touch("#{dummy_root}/app/views/users/_user.html.erb")
+    @server.execute("find_template", {
+      controller_name: "UsersController",
+      template_name: "users/user",
+      partial: true,
+      details: {},
+    })
+    assert_equal("#{dummy_root}/app/views/users/_user.html.erb", response.fetch(:result)[:path])
+  ensure
+    FileUtils.rm("#{dummy_root}/app/views/users/_user.html.erb")
+  end
+
+  test "resolves view template path" do
+    @server.execute("find_template", {
+      controller_name: "UsersController",
+      template_name: "users/index",
+      partial: false,
+      details: {},
+    })
+    assert_equal("#{dummy_root}/app/views/users/index.html.erb", response.fetch(:result)[:path])
+  end
+
+  test "searches template directories of controller ancestors" do
+    FileUtils.mkdir_p("#{dummy_root}/app/views/application")
+    FileUtils.touch("#{dummy_root}/app/views/application/_partial.html.erb")
+    @server.execute("find_template", {
+      controller_name: "UsersController",
+      template_name: "partial",
+      partial: true,
+      details: {},
+    })
+    assert_equal("#{dummy_root}/app/views/application/_partial.html.erb", response.fetch(:result)[:path])
+  ensure
+    FileUtils.rm_r("#{dummy_root}/app/views/application")
+  end
+
+  test "applies view template details" do
+    FileUtils.touch("#{dummy_root}/app/views/users/_user.html.erb")
+    FileUtils.touch("#{dummy_root}/app/views/users/_user.text.erb")
+    @server.execute("find_template", {
+      controller_name: "UsersController",
+      template_name: "user",
+      partial: true,
+      details: { formats: "text" },
+    })
+    assert_equal("#{dummy_root}/app/views/users/_user.text.erb", response.fetch(:result)[:path])
+  ensure
+    FileUtils.rm("#{dummy_root}/app/views/users/_user.html.erb")
+    FileUtils.rm("#{dummy_root}/app/views/users/_user.text.erb")
+  end
+
+  test "returns nil for missing view template" do
+    @server.execute("find_template", {
+      controller_name: "UsersController",
+      template_name: "users/missing",
+      partial: false,
+      details: {},
+    })
+    assert_nil(response.fetch(:result))
+  end
+
   test "resolve association returns the location of the target class of a has_many association" do
     @server.execute(
       "association_target",

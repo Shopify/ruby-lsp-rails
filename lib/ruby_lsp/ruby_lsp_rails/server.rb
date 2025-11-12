@@ -311,6 +311,14 @@ module RubyLsp
           with_request_error_handling(request) do
             send_result(resolve_association_target(params))
           end
+        when "controller"
+          with_request_error_handling(request) do
+            send_result(controller_info(params.fetch(:name)))
+          end
+        when "find_template"
+          with_request_error_handling(request) do
+            send_result(lookup_view_template(params))
+          end
         when "pending_migrations_message"
           with_request_error_handling(request) do
             send_result({ pending_migrations_message: pending_migrations_message })
@@ -437,6 +445,36 @@ module RubyLsp
         nil
       end
 
+      #: (String controller_name) -> Hash[Symbol | String, untyped]?
+      def controller_info(controller_name)
+        const = ActiveSupport::Inflector.safe_constantize(controller_name) # rubocop:disable Sorbet/ConstantsFromStrings
+        return unless controller?(const)
+
+        { view_paths: const.view_paths.map(&:to_s) }
+      end
+
+      #: (Hash[Symbol | String, untyped]) -> Hash[Symbol | String, untyped]?
+      def lookup_view_template(params)
+        const = ActiveSupport::Inflector.safe_constantize(params[:controller_name]) # rubocop:disable Sorbet/ConstantsFromStrings
+        return unless controller?(const)
+
+        path = params[:template_name]
+        partial = params[:partial]
+        details = params[:details].transform_values { |value| Array(value).map(&:to_sym) }
+
+        lookup_context = const.new.lookup_context
+        prefixes = path.include?("/") || !partial || const.abstract? ? [] : lookup_context.prefixes
+
+        # Disable the lookup cache to ensure template changes are reflected
+        template = lookup_context.disable_cache do
+          lookup_context.find_template(path, prefixes, partial, [], details)
+        end
+
+        { path: template.identifier }
+      rescue ActionView::MissingTemplate
+        nil
+      end
+
       #: (Module?) -> bool
       def active_record_model?(const)
         !!(
@@ -446,6 +484,16 @@ module RubyLsp
             ActiveRecord::Base > const && # We do this 'backwards' in case the class overwrites `<`
           !const #: as singleton(ActiveRecord::Base)
             .abstract_class?
+        )
+      end
+
+      #: (Module?) -> bool
+      def controller?(const)
+        !!(
+          const &&
+            defined?(ActionController) &&
+            const.is_a?(Class) &&
+            ActionController::Base >= const
         )
       end
 
