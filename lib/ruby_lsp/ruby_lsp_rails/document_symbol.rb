@@ -24,12 +24,16 @@ module RubyLsp
           :on_class_node_leave,
           :on_module_node_enter,
           :on_module_node_leave,
-          :on_constant_path_node_enter,
         )
       end
 
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
+        message = node.message
+        return unless message
+
+        handle_schema_table(node)
+
         return if @namespace_stack.empty?
 
         content = extract_test_case_name(node)
@@ -45,9 +49,6 @@ module RubyLsp
         receiver = node.receiver
         return if receiver && !receiver.is_a?(Prism::SelfNode)
 
-        message = node.message
-        return unless message
-
         case message
         when *Support::Callbacks::ALL, "validate"
           handle_all_arg_types(node, message)
@@ -56,8 +57,6 @@ module RubyLsp
           handle_symbol_and_string_arg_types(node, message)
         when "validates_with"
           handle_class_arg_types(node, message)
-        when "create_table"
-          handle_create_table(node)
         end
       end
 
@@ -79,14 +78,6 @@ module RubyLsp
       #: (Prism::ModuleNode node) -> void
       def on_module_node_leave(node)
         remove_from_namespace_stack(node)
-      end
-
-      def on_constant_path_node_enter(node)
-        return if node.is_a?(Prism::SelfNode) || node.parent.is_a?(Prism::SelfNode)
-
-        return unless node.parent.name == :ActiveRecord && node.name == :Schema
-
-        @namespace_stack << node.full_name
       end
 
       private
@@ -224,8 +215,10 @@ module RubyLsp
         end
       end
 
-      #: (Prism::CallNode node, String message) -> void
-      def handle_create_table(node)
+      #: (Prism::CallNode node) -> void
+      def handle_schema_table(node)
+        return unless node.message == "create_table"
+
         table_name_argument = node.arguments.arguments.first
 
         append_document_symbol(
