@@ -219,12 +219,17 @@ module RubyLsp
       def handle_schema_table(node)
         return unless node.message == "create_table"
 
-        table_name_argument = node.arguments.arguments.first
+        table_name_argument = node.arguments&.arguments&.first
+
+        return unless table_name_argument
+
+        return unless table_name_argument.is_a?(Prism::StringNode) ||
+          table_name_argument.is_a?(Prism::SymbolNode)
 
         append_document_symbol(
-          name: table_name_argument.content,
+          name: table_name_argument.unescaped,
           range: range_from_location(table_name_argument.location),
-          selection_range: range_from_location(table_name_argument.content_loc),
+          selection_range: range_from_location(table_name_argument.location),
         )
       end
 
