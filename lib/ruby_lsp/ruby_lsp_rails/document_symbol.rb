@@ -223,14 +223,28 @@ module RubyLsp
 
         return unless table_name_argument
 
-        return unless table_name_argument.is_a?(Prism::StringNode) ||
-          table_name_argument.is_a?(Prism::SymbolNode)
+        case table_name_argument
+        when Prism::SymbolNode
+          name = table_name_argument.value
+          return unless name
 
-        append_document_symbol(
-          name: table_name_argument.unescaped,
-          range: range_from_location(table_name_argument.location),
-          selection_range: range_from_location(table_name_argument.location),
-        )
+          append_document_symbol(
+            name: name,
+            range: range_from_location(table_name_argument.location),
+            selection_range: range_from_location(
+              table_name_argument.value_loc, #: as !nil
+            ),
+          )
+        when Prism::StringNode
+          name = table_name_argument.content
+          return if name.empty?
+
+          append_document_symbol(
+            name: name,
+            range: range_from_location(table_name_argument.location),
+            selection_range: range_from_location(table_name_argument.content_loc),
+          )
+        end
       end
 
       #: (name: String, range: RubyLsp::Interface::Range, selection_range: RubyLsp::Interface::Range) -> void
