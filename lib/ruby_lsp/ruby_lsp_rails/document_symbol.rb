@@ -16,10 +16,12 @@ module RubyLsp
       def initialize(response_builder, dispatcher)
         @response_builder = response_builder
         @namespace_stack = [] #: Array[String]
+        @inside_schema = false #: bool
 
         dispatcher.register(
           self,
           :on_call_node_enter,
+          :on_call_node_leave,
           :on_class_node_enter,
           :on_class_node_leave,
           :on_module_node_enter,
@@ -31,6 +33,8 @@ module RubyLsp
       def on_call_node_enter(node)
         message = node.message
         return unless message
+
+        @inside_schema = true if node_is_schema_define?(node)
 
         handle_schema_table(node)
 
@@ -58,6 +62,11 @@ module RubyLsp
         when "validates_with"
           handle_class_arg_types(node, message)
         end
+      end
+
+      #: (Prism::CallNode node) -> void
+      def on_call_node_leave(node)
+        @inside_schema = false if node_is_schema_define?(node)
       end
 
       #: (Prism::ClassNode node) -> void
@@ -217,6 +226,7 @@ module RubyLsp
 
       #: (Prism::CallNode node) -> void
       def handle_schema_table(node)
+        return unless @inside_schema
         return unless node.message == "create_table"
 
         table_name_argument = node.arguments&.arguments&.first
@@ -255,6 +265,19 @@ module RubyLsp
           range: range,
           selection_range: selection_range,
         )
+      end
+
+      #: (Prism::CallNode node) -> bool
+      def node_is_schema_define?(node)
+        return false if node.message != "define"
+
+        schema_node = node.receiver
+        return false unless schema_node.is_a?(Prism::CallNode)
+
+        active_record_node = schema_node.receiver
+        return false unless active_record_node.is_a?(Prism::ConstantPathNode)
+
+        constant_name(active_record_node) == "ActiveRecord::Schema"
       end
     end
   end

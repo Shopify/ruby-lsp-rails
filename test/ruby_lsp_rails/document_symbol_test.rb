@@ -469,6 +469,23 @@ module RubyLsp
         assert_equal("active_storage_attachments", response[1].name)
       end
 
+      test "should not add create_table symbol unless inside migration block" do
+        response = generate_document_symbols_for_source(<<~RUBY)
+            create_table "action_text_rich_texts", force: :cascade do |t|
+              t.text "body"
+              t.datetime "created_at", null: false
+              t.string "name", null: false
+              t.bigint "record_id", null: false
+              t.string "record_type", null: false
+              t.datetime "updated_at", null: false
+              t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+            end
+          end
+        RUBY
+
+        assert_equal(0, response.size)
+      end
+
       private
 
       def generate_document_symbols_for_source(source)
