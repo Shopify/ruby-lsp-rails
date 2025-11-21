@@ -542,6 +542,25 @@ module RubyLsp
   end
 end
 
+# Patch fork to name processes based on the caller's file path. This is useful for figuring out what is creating more
+# child processes from the runtime server, so that we can optimize and more easily debug orphaned processes
+# @requires_ancestor: Kernel
+module ForkHook
+  #: (*untyped) -> Integer?
+  def _fork(*args)
+    pid = super
+
+    if pid == 0
+      fork_caller = caller_locations(1, 1)&.first
+      Process.setproctitle("ruby-lsp-rails: #{fork_caller.path}") if fork_caller
+    end
+
+    pid
+  end
+
+  Process.singleton_class.prepend(self)
+end
+
 if ARGV.first == "start"
   RubyLsp::Rails::Server.new(capabilities: JSON.parse(ARGV[1], symbolize_names: true)).start
 end
