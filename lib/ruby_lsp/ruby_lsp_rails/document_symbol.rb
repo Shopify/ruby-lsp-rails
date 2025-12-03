@@ -64,11 +64,6 @@ module RubyLsp
         end
       end
 
-      #: (Prism::CallNode node) -> void
-      def on_call_node_leave(node)
-        @inside_schema = false if node_is_schema_define?(node)
-      end
-
       #: (Prism::ClassNode node) -> void
       def on_class_node_enter(node)
         add_to_namespace_stack(node)
