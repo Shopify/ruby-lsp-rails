@@ -307,6 +307,10 @@ module RubyLsp
           with_request_error_handling(request) do
             send_result(resolve_database_info_from_model(params.fetch(:name)))
           end
+        when "db_configs"
+          with_request_error_handling(request) do
+            send_result(resolve_database_configurations)
+          end
         when "association_target"
           with_request_error_handling(request) do
             send_result(resolve_association_target(params))
@@ -421,6 +425,18 @@ module RubyLsp
         end
 
         info
+      end
+
+      #: -> Hash[Symbol | String, untyped]?
+      def resolve_database_configurations
+        return unless defined?(ActiveRecord)
+
+        ActiveRecord::Base.connection_handler.connection_pools.each_with_object({}) do |pool, hash|
+          hash[pool.db_config.name] = {
+            migrations_paths: Array(pool.migrations_paths),
+            adapter_class: pool.db_config.adapter_class.name,
+          }
+        end
       end
 
       #: (Hash[Symbol | String, untyped]) -> Hash[Symbol | String, untyped]?

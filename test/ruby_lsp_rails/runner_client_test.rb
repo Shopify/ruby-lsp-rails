@@ -132,6 +132,18 @@ module RubyLsp
         end
       end
 
+      test "fetches database configurations" do
+        assert_equal(
+          {
+            primary: {
+              migrations_paths: ["db/migrate"],
+              adapter_class: "ActiveRecord::ConnectionAdapters::SQLite3Adapter",
+            },
+          },
+          @client.db_configs,
+        )
+      end
+
       test "delegate notification" do
         @client.expects(:send_notification).with(
           "server_addon/delegate",
