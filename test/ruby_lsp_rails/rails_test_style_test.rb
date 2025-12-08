@@ -293,7 +293,9 @@ module RubyLsp
       end
 
       test "resolve test escapes file paths inside directories" do
-        Dir.stubs(:glob).returns(["/test/example(v2)_test.rb"])
+        base_dir = Gem.win_platform? ? "D:/test" : "/test"
+        test_path = File.join(base_dir, "example(v2)_test.rb")
+        Dir.stubs(:glob).returns([test_path])
 
         with_server do |server|
           sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
@@ -318,7 +320,7 @@ module RubyLsp
           response = result.response
 
           assert_equal(
-            ["#{RailsTestStyle::BASE_COMMAND} /test/example\\(v2\\)_test.rb"],
+            ["#{RailsTestStyle::BASE_COMMAND} #{Shellwords.escape(test_path)}"],
             response[:commands],
           )
         end
