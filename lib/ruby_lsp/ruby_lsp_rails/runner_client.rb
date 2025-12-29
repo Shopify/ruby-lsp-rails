@@ -159,6 +159,20 @@ module RubyLsp
         nil
       end
 
+      def controller_action_target(controller:, action:)
+        make_request(
+          "controller_action_target",
+          controller: controller,
+          action: action,
+          )
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to get controller action location",
+          type: RubyLsp::Constant::MessageType::ERROR,
+          )
+        nil
+    end
+
       #: (String name) -> Hash[Symbol, untyped]?
       def route_location(name)
         make_request("route_location", name: name)

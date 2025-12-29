@@ -311,6 +311,10 @@ module RubyLsp
           with_request_error_handling(request) do
             send_result(resolve_association_target(params))
           end
+        when "controller_action_target"
+          with_request_error_handling(request) do
+            send_result(resolve_controller_action_target(params))
+          end
         when "pending_migrations_message"
           with_request_error_handling(request) do
             send_result({ pending_migrations_message: pending_migrations_message })
@@ -435,6 +439,35 @@ module RubyLsp
         { location: "#{source_location[0]}:#{source_location[1]}", name: association_klass.name }
       rescue NameError
         nil
+      end
+
+      #: (Hash[Symbol | String, untyped]) -> Array[Hash[Symbol | String, untyped]]
+      def resolve_controller_action_target(params)
+        controller, action = params.values_at(:controller, :action)
+        return unless controller && action
+
+        results = []
+
+        ::Rails.application.routes.routes.each do |route|
+          reqs = route.requirements
+          next unless reqs[:controller]&.ends_with?(controller) && reqs[:action] == action
+
+          controller_class = "#{reqs[:controller].camelize}Controller".safe_constantize # rubocop:disable Sorbet/ConstantsFromStrings
+          next unless controller_class
+
+          method = controller_class.instance_method(reqs[:action])
+          file, line = method.source_location
+          next unless file && line
+
+          results << {
+            location: "#{file}:#{line}",
+            name: "#{controller_class.name}##{reqs[:action]}",
+          }
+        rescue NameError
+          next
+        end
+
+        results
       end
 
       #: (Module?) -> bool
