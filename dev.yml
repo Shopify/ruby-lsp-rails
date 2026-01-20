@@ -1,11 +1,14 @@
 name: ruby-lsp-rails
 
+nix: true
 type: ruby
 
 up:
   - ruby
   - bundler:
       gemfile: Gemfile
+  - packages:
+      - libyaml
 
 commands:
   style: bin/rubocop
