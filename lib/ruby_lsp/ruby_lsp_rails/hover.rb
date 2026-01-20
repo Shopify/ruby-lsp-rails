@@ -165,17 +165,10 @@ module RubyLsp
       #: (Prism::StringNode node) -> void
       def handle_possible_i18n(node)
         call_node = @node_context.call_node
-        return unless call_node
+        return unless i18n_translate?(call_node)
 
-        receiver = call_node.receiver
-        return unless receiver.is_a?(Prism::ConstantReadNode)
-        return unless receiver.name == :I18n
-
-        message = call_node.message
-        return unless message == "t"
-
-        first_argument = call_node.arguments&.arguments&.first
-        return unless first_argument.is_a?(Prism::StringNode)
+        first_argument = call_node #: as !nil
+          .arguments&.arguments&.first
         return unless first_argument == node
 
         i18n_key = first_argument.unescaped
@@ -185,6 +178,18 @@ module RubyLsp
         return unless result
 
         generate_i18n_hover(result)
+      end
+
+      #: (Prism::CallNode? call_node) -> bool
+      def i18n_translate?(call_node)
+        return false unless call_node
+
+        receiver = call_node.receiver
+        return false unless receiver.is_a?(Prism::ConstantReadNode)
+        return false unless receiver.name == :I18n
+
+        message = call_node.message
+        message == "t" || message == "translate"
       end
 
       # Copied from `RubyLsp::Listeners::Hover#generate_hover`
