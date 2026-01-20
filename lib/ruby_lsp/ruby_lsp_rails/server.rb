@@ -552,12 +552,9 @@ module RubyLsp
 
       #: (String) -> Hash[Symbol, String]
       def resolve_i18n_key(key)
-        locales = I18n.available_locales
-        result = {}
-        locales.each.map do |locale|
+        I18n.available_locales.each_with_object({}) do |locale, result|
           result[locale] = I18n.t(key, locale: locale, default: "⚠️ translation missing")
         end
-        result
       end
     end
   end
