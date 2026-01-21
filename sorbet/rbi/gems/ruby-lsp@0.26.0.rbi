@@ -2187,7 +2187,6 @@ class RubyLsp::Addon
   end
 end
 
-# source://ruby-lsp//lib/ruby_lsp/addon.rb#32
 class RubyLsp::Addon::AddonNotFoundError < ::StandardError; end
 
 # source://ruby-lsp//lib/ruby_lsp/addon.rb#34

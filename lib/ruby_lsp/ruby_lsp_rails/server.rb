@@ -437,7 +437,7 @@ module RubyLsp
         nil
       end
 
-      #: (Module?) -> bool
+      #: (Module[top]?) -> bool
       def active_record_model?(const)
         !!(
           const &&
