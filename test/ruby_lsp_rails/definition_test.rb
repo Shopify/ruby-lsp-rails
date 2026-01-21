@@ -467,10 +467,75 @@ module RubyLsp
         assert_equal(15, response.range.end.character)
       end
 
+      test "finds the controller action definition when only one controller matches" do
+        source = <<~RUBY
+          Rails.application.routes.draw do
+            # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+            resources :users do
+              get :archive, on: :collection, to: "users#archive"
+              get :unarchive, on: :collection, to: "users#unarchive"
+            end
+
+            scope module: "admin" do
+              resources :users do
+                get :archive, on: :collection, to: "users#archive"
+              end
+            end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 4, character: 45 }, uri: URI("file:///config/routes.rb"))
+
+        assert_equal(1, response.size)
+
+        location = response.first
+
+        expected_path = File.expand_path("test/dummy/app/controllers/users_controller.rb")
+        assert_equal("file://#{expected_path}", location.uri)
+        assert_equal(7, location.range.start.line)
+        assert_equal(7, location.range.end.line)
+      end
+
+      test "finds all matching controller actions when multiple controllers exist in different namespaces" do
+        source = <<~RUBY
+          Rails.application.routes.draw do
+            # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+            resources :users do
+              get :archive, on: :collection, to: "users#archive"
+              get :unarchive, on: :collection, to: "users#unarchive"
+            end
+
+            scope module: "admin" do
+              resources :users do
+                get :archive, on: :collection, to: "users#archive"
+              end
+            end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 3, character: 45 }, uri: URI("file:///config/routes.rb"))
+
+        assert_equal(2, response.size)
+
+        location = response.first
+
+        expected_path = File.expand_path("test/dummy/app/controllers/users_controller.rb")
+        assert_equal("file://#{expected_path}", location.uri)
+        assert_equal(5, location.range.start.line)
+        assert_equal(5, location.range.end.line)
+
+        location = response.second
+
+        expected_path = File.expand_path("test/dummy/app/controllers/admin/users_controller.rb")
+        assert_equal("file://#{expected_path}", location.uri)
+        assert_equal(6, location.range.start.line)
+        assert_equal(6, location.range.end.line)
+      end
+
       private
 
-      def generate_definitions_for_source(source, position)
-        with_server(source) do |server, uri|
+      def generate_definitions_for_source(source, position, uri: nil)
+        with_server(source, *[uri].compact) do |server, uri|
           sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
 
           server.process_message(

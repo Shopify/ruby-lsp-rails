@@ -31,12 +31,13 @@ module RubyLsp
       include Requests::Support::Common
 
       #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
-      def initialize(client, response_builder, node_context, index, dispatcher)
+      def initialize(client, response_builder, node_context, index, uri, dispatcher)
         @client = client
         @response_builder = response_builder
         @node_context = node_context
         @nesting = node_context.nesting #: Array[String]
         @index = index
+        @uri = uri
 
         dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
       end
@@ -87,6 +88,8 @@ module RubyLsp
         elsif Support::Validations::ALL.include?(message)
           handle_validation(node, call_node, arguments)
           handle_if_unless_conditional(node, call_node, arguments)
+        elsif Support::Routes::ALL.include?(message)
+          handle_controller_action(node)
         end
       end
 
@@ -123,6 +126,28 @@ module RubyLsp
         return if message == "validates_with"
 
         collect_definitions(name)
+      end
+
+      #: ((Prism::SymbolNode | Prism::StringNode) node) -> void
+      def handle_controller_action(node)
+        return unless @uri.path.match?(Support::Routes::ROUTE_FILES_PATTERN)
+        return unless node.is_a?(Prism::StringNode)
+
+        content = node.content
+        return unless content.include?("#")
+
+        controller, action = content.split("#", 2)
+
+        results = @client.controller_action_target(
+          controller: controller,
+          action: action,
+        )
+
+        return unless results&.any?
+
+        results.each do |result|
+          @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
+        end
       end
 
       #: (Prism::CallNode node) -> void

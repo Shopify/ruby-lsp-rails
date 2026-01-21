@@ -8,6 +8,7 @@ require_relative "support/active_support_test_case_helper"
 require_relative "support/associations"
 require_relative "support/callbacks"
 require_relative "support/validations"
+require_relative "support/routes"
 require_relative "support/location_builder"
 require_relative "runner_client"
 require_relative "hover"
@@ -129,7 +130,7 @@ module RubyLsp
       def create_definition_listener(response_builder, uri, node_context, dispatcher)
         return unless @global_state
 
-        Definition.new(@rails_runner_client, response_builder, node_context, @global_state.index, dispatcher)
+        Definition.new(@rails_runner_client, response_builder, node_context, @global_state.index, uri, dispatcher)
       end
 
       # @override
