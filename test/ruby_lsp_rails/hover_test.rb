@@ -384,6 +384,50 @@ module RubyLsp
         CONTENT
       end
 
+      test "returns I18n translation information" do
+        expected_response = {
+          en: "hello",
+          es: "hola",
+          fr: "bonjour",
+        }
+
+        RunnerClient.any_instance.stubs(i18n: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 0, character: 9 })
+          I18n.t("foo")
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```yaml
+          en: hello
+          es: hola
+          fr: bonjour
+          ```
+        CONTENT
+      end
+
+      test "returns I18n translation information for translate method" do
+        expected_response = {
+          en: "hello",
+          es: "hola",
+          fr: "bonjour",
+        }
+
+        RunnerClient.any_instance.stubs(i18n: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 0, character: 16 })
+          I18n.translate("foo")
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```yaml
+          en: hello
+          es: hola
+          fr: bonjour
+          ```
+        CONTENT
+      end
+
       private
 
       def hover_on_source(source, position)

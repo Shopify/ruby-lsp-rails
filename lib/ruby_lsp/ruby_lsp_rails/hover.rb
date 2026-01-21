@@ -29,6 +29,7 @@ module RubyLsp
           :on_constant_path_node_enter,
           :on_constant_read_node_enter,
           :on_symbol_node_enter,
+          :on_string_node_enter,
         )
       end
 
@@ -54,6 +55,11 @@ module RubyLsp
       #: (Prism::SymbolNode node) -> void
       def on_symbol_node_enter(node)
         handle_possible_dsl(node)
+      end
+
+      #: (Prism::StringNode node) -> void
+      def on_string_node_enter(node)
+        handle_possible_i18n(node)
       end
 
       private
@@ -156,6 +162,36 @@ module RubyLsp
         generate_hover(result[:name])
       end
 
+      #: (Prism::StringNode node) -> void
+      def handle_possible_i18n(node)
+        call_node = @node_context.call_node
+        return unless i18n_translate?(call_node)
+
+        first_argument = call_node #: as !nil
+          .arguments&.arguments&.first
+        return unless first_argument == node
+
+        i18n_key = first_argument.unescaped
+        return if i18n_key.empty?
+
+        result = @client.i18n(i18n_key)
+        return unless result
+
+        generate_i18n_hover(result)
+      end
+
+      #: (Prism::CallNode? call_node) -> bool
+      def i18n_translate?(call_node)
+        return false unless call_node
+
+        receiver = call_node.receiver
+        return false unless receiver.is_a?(Prism::ConstantReadNode)
+        return false unless receiver.name == :I18n
+
+        message = call_node.message
+        message == "t" || message == "translate"
+      end
+
       # Copied from `RubyLsp::Listeners::Hover#generate_hover`
       #: (String name) -> void
       def generate_hover(name)
@@ -171,6 +207,16 @@ module RubyLsp
         categorized_markdown_from_index_entries(full_name, entries).each do |category, content|
           @response_builder.push(content, category: category)
         end
+      end
+
+      #: (Hash[Symbol, String] translations) -> void
+      def generate_i18n_hover(translations)
+        content = translations.map { |lang, translation| "#{lang}: #{translation}" }.join("\n")
+        content = "```yaml\n#{content}\n```"
+        @response_builder.push(
+          content,
+          category: :documentation,
+        )
       end
     end
   end

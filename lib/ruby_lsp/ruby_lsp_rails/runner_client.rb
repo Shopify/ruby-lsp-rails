@@ -181,6 +181,17 @@ module RubyLsp
         nil
       end
 
+      #: (String key) -> Hash[Symbol, untyped]?
+      def i18n(key)
+        make_request("i18n", key: key)
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to get i18n information",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
       # Delegates a notification to a server add-on
       #: (server_addon_name: String, request_name: String, **untyped params) -> void
       def delegate_notification(server_addon_name:, request_name:, **params)
@@ -235,6 +246,18 @@ module RubyLsp
       rescue MessageError
         log_message(
           "Ruby LSP Rails failed to trigger reload",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
+      #: -> void
+      def trigger_i18n_reload
+        log_message("Reloading I18n translations")
+        send_notification("reload_i18n")
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to trigger I18n reload",
           type: RubyLsp::Constant::MessageType::ERROR,
         )
         nil

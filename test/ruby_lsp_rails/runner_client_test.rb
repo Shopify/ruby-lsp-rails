@@ -69,6 +69,24 @@ module RubyLsp
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
+      test "#i18n returns translations for the requested key" do
+        RunnerClient.any_instance.stubs(model: "hello")
+        translations = @client.i18n("hello") #: as !nil
+        assert_instance_of(Hash, translations)
+        assert_equal("Hello world", translations[:en])
+        assert_equal("Hola mundo", translations[:es])
+        assert_equal("Bonjour le monde", translations[:fr])
+      end
+
+      test "#i18n returns translation missing for a key" do
+        RunnerClient.any_instance.stubs(model: "hello")
+        translations = @client.i18n("missing_key") #: as !nil
+        assert_instance_of(Hash, translations)
+        assert_equal("⚠️ translation missing", translations[:en])
+        assert_equal("⚠️ translation missing", translations[:es])
+        assert_equal("⚠️ translation missing", translations[:fr])
+      end
+
       test "returns nil if the request returns a nil response" do
         assert_nil @client.model("ApplicationRecord") # ApplicationRecord is abstract
       end
