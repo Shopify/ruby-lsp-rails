@@ -6,6 +6,6 @@
 require "rails/all"
 require "ruby_lsp/internal"
 require "ruby_lsp/test_helper"
-require "minitest/unit"
+require "minitest"
 require "mocha/minitest"
 require "spoom/backtrace_filter/minitest"

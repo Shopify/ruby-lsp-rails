@@ -11,8 +11,9 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         gemfile:
           - Gemfile
+          - gemfiles/Gemfile-rails-8-0
           - gemfiles/Gemfile-rails-main
-        ruby: ["3.3", "3.4"]
+        ruby: ["3.3", "3.4", "4.0"]
         include:
           - gemfile: "gemfiles/Gemfile-rails-main"
             experimental: true
@@ -26,8 +27,8 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Remove Gemfile.lock
-        if: (matrix.gemfile == 'Gemfile') && (matrix.ruby == 'head')
-        run: "rm ${{ matrix.gemfile }}.lock"
+        shell: bash
+        run: "rm -Rf ${{ matrix.gemfile }}.lock"
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@80740b3b13bf9857e28854481ca95a84e78a2bdf # v1.284.0
@@ -58,3 +59,19 @@ jobs:
 
       - name: Lint Ruby files
         run: bin/rubocop
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: always()
+    steps:
+      - name: Check test matrix status
+        if: needs.test.result != 'success'
+        run: exit 1
+
+      - name: Check lint status
+        if: needs.lint.result != 'success'
+        run: exit 1
+
+      - name: All checks passed
+        run: echo "All checks passed successfully!"

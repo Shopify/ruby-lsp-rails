@@ -53,7 +53,6 @@ class WebSocket::Extensions
   def reserved?(ext); end
 end
 
-# source://websocket-extensions//lib/websocket/extensions.rb#6
 class WebSocket::Extensions::ExtensionError < ::ArgumentError; end
 
 # source://websocket-extensions//lib/websocket/extensions.rb#8
@@ -105,7 +104,6 @@ WebSocket::Extensions::Parser::NUMBER = T.let(T.unsafe(nil), Regexp)
 # source://websocket-extensions//lib/websocket/extensions/parser.rb#10
 WebSocket::Extensions::Parser::PARAM = T.let(T.unsafe(nil), Regexp)
 
-# source://websocket-extensions//lib/websocket/extensions/parser.rb#15
 class WebSocket::Extensions::Parser::ParseError < ::ArgumentError; end
 
 # source://websocket-extensions//lib/websocket/extensions/parser.rb#9

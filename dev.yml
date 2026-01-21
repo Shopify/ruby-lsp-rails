@@ -9,6 +9,11 @@ up:
       gemfile: Gemfile
   - packages:
       - libyaml
+  - database:
+      bootstrap: bin/rails db:setup
+      migrate: bin/rails db:migrate
+      vendor: sqlite3
+      database: test/dummy/storage/development.sqlite3
 
 commands:
   style: bin/rubocop
