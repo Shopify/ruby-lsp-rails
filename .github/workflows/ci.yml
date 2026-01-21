@@ -59,3 +59,19 @@ jobs:
 
       - name: Lint Ruby files
         run: bin/rubocop
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: always()
+    steps:
+      - name: Check test matrix status
+        if: needs.test.result != 'success'
+        run: exit 1
+
+      - name: Check lint status
+        if: needs.lint.result != 'success'
+        run: exit 1
+
+      - name: All checks passed
+        run: echo "All checks passed successfully!"
