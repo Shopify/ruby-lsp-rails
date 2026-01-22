@@ -16,8 +16,4 @@ class User < ApplicationRecord
   def foo
     puts "test"
   end
-
-  def hello
-    I18n.t("hello")
-  end
 end
