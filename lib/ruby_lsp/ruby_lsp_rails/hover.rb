@@ -57,11 +57,6 @@ module RubyLsp
         handle_possible_dsl(node)
       end
 
-      #: (Prism::StringNode node) -> void
-      def on_string_node_enter(node)
-        handle_possible_i18n(node)
-      end
-
       private
 
       #: (String name) -> void
