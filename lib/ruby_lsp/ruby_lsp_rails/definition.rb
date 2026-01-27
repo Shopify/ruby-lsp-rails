@@ -30,13 +30,14 @@ module RubyLsp
     class Definition
       include Requests::Support::Common
 
-      #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
-      def initialize(client, response_builder, node_context, index, dispatcher)
+      #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
+      def initialize(client, response_builder, node_context, index, dispatcher, uri)
         @client = client
         @response_builder = response_builder
         @node_context = node_context
         @nesting = node_context.nesting #: Array[String]
         @index = index
+        @uri = uri
 
         dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
       end
@@ -80,7 +81,7 @@ module RubyLsp
         return unless arguments
 
         if Support::Associations::ALL.include?(message)
-          handle_association(call_node)
+          handle_association(node, arguments)
         elsif Support::Callbacks::ALL.include?(message)
           handle_callback(node, call_node, arguments)
           handle_if_unless_conditional(node, call_node, arguments)
@@ -88,6 +89,107 @@ module RubyLsp
           handle_validation(node, call_node, arguments)
           handle_if_unless_conditional(node, call_node, arguments)
         end
+      end
+
+      #: ((Prism::SymbolNode | Prism::StringNode) node, Array[Prism::Node] arguments) -> void
+      def handle_association(node, arguments)
+        association_name_node = arguments.first
+        through_node = extract_option_value(arguments, "through")
+        class_name_node = extract_option_value(arguments, "class_name")
+
+        case node
+        when association_name_node
+          handle_association_name(association_name_node, class_name_node)
+        when through_node
+          handle_through_option(node)
+        when class_name_node
+          goto_class(node.content)
+        end
+      end
+
+      #: (Array[Prism::Node] arguments, String option_name) -> Prism::Node?
+      def extract_option_value(arguments, option_name)
+        keyword_hash = arguments.find { |arg| arg.is_a?(Prism::KeywordHashNode) } #: as Prism::KeywordHashNode?
+        return unless keyword_hash
+
+        assoc = keyword_hash.elements.find do |element|
+          element.is_a?(Prism::AssocNode) &&
+            element.key.is_a?(Prism::SymbolNode) &&
+            element.key.value == option_name
+        end #: as Prism::AssocNode?
+
+        assoc&.value
+      end
+
+      #: (Prism::SymbolNode node, Prism::Node? class_name_node) -> void
+      def handle_association_name(node, class_name_node)
+        # If class_name is specified, use it directly from the index
+        if class_name_node.is_a?(Prism::StringNode)
+          goto_class(class_name_node.content)
+          return
+        end
+
+        # Otherwise, ask Rails for the associated model
+        result = @client.association_target(
+          model_name: @nesting.join("::"),
+          association_name: node.unescaped,
+        )
+
+        return unless result
+
+        @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
+      end
+
+      #: (String class_name) -> void
+      def goto_class(class_name)
+        entries = @index[class_name]
+        return unless entries
+
+        entries.each do |entry|
+          @response_builder << Interface::Location.new(
+            uri: entry.uri.to_s,
+            range: range_from_location(entry.location),
+            )
+        end
+      end
+
+      #: ((Prism::SymbolNode | Prism::StringNode) node) -> void
+      def handle_through_option(node)
+        return unless node.is_a?(Prism::SymbolNode)
+
+        association_call = find_association_in_nesting_nodes(node.unescaped)
+        return unless association_call
+
+        @response_builder << Interface::Location.new(
+          uri: @uri.to_s,
+          range: range_from_location(association_call.location),
+        )
+      end
+
+      #: (String association_name) -> Prism::CallNode?
+      def find_association_in_nesting_nodes(association_name)
+        nesting_nodes = @node_context.instance_variable_get(:@nesting_nodes) #: as Array[Prism::Node]
+
+        nesting_nodes.each do |nesting_node|
+          body = case nesting_node
+          when Prism::ClassNode, Prism::ModuleNode
+            nesting_node.body
+          end
+
+          next unless body.is_a?(Prism::StatementsNode)
+
+          match = body.body.find do |statement|
+            next unless statement.is_a?(Prism::CallNode)
+            next unless Support::Associations::ALL.include?(statement.message)
+
+            first_arg = statement.arguments&.arguments&.first
+            first_arg.is_a?(Prism::SymbolNode) && first_arg.unescaped == association_name
+          end #: as Prism::CallNode?
+
+          return match if match
+        end
+
+        nil
       end
 
       #: ((Prism::SymbolNode | Prism::StringNode) node, Prism::CallNode call_node, Array[Prism::Node] arguments) -> void
@@ -123,23 +225,6 @@ module RubyLsp
         return if message == "validates_with"
 
         collect_definitions(name)
-      end
-
-      #: (Prism::CallNode node) -> void
-      def handle_association(node)
-        first_argument = node.arguments&.arguments&.first
-        return unless first_argument.is_a?(Prism::SymbolNode)
-
-        association_name = first_argument.unescaped
-
-        result = @client.association_target(
-          model_name: @nesting.join("::"),
-          association_name: association_name,
-        )
-
-        return unless result
-
-        @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
       #: (Prism::CallNode node) -> void
