@@ -7,11 +7,13 @@ module RubyLsp
       include Requests::Support::Common
 
       # @override
-      #: (RunnerClient client, ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
-      def initialize(client, response_builder, node_context, dispatcher, uri)
+      #: (RunnerClient client, ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
+      def initialize(client, response_builder, node_context, index, dispatcher, uri)
         @response_builder = response_builder
         @client = client
         @node_context = node_context
+        @index = index
+        @path = uri.to_standardized_path #: String?
         dispatcher.register(
           self,
           :on_call_node_enter,
@@ -21,11 +23,12 @@ module RubyLsp
       #: (Prism::CallNode node) -> void
       def on_call_node_enter(node)
         call_node = @node_context.call_node
-        return unless call_node
+        receiver = call_node&.receiver
 
-        receiver = call_node.receiver
-        if call_node.name == :where && receiver.is_a?(Prism::ConstantReadNode)
+        if call_node&.name == :where && receiver.is_a?(Prism::ConstantReadNode)
           handle_active_record_where_completions(node: node, receiver: receiver)
+        elsif active_record_migration?
+          handle_active_record_migration_completions(node: node)
         end
       end
 
@@ -62,6 +65,45 @@ module RubyLsp
         end
       end
 
+      #: (node: Prism::CallNode) -> void
+      def handle_active_record_migration_completions(node:)
+        return if @path.nil?
+
+        db_configs = @client.db_configs
+        return if db_configs.nil?
+
+        db_config = db_configs.values.find do |config|
+          config[:migrations_paths].any? do |path|
+            File.join(@client.rails_root, path) == File.dirname(@path)
+          end
+        end
+        return if db_config.nil?
+
+        range = range_from_location(node.location)
+
+        @index.method_completion_candidates(node.message, db_config[:adapter_class]).each do |entry|
+          next unless entry.public?
+
+          entry_name = entry.name
+          owner_name = entry.owner&.name
+
+          label_details = Interface::CompletionItemLabelDetails.new(
+            description: entry.file_name,
+            detail: entry.decorated_parameters,
+          )
+          @response_builder << Interface::CompletionItem.new(
+            label: entry_name,
+            filter_text: entry_name,
+            label_details: label_details,
+            text_edit: Interface::TextEdit.new(range: range, new_text: entry_name),
+            kind: Constant::CompletionItemKind::METHOD,
+            data: {
+              owner_name: owner_name,
+            },
+          )
+        end
+      end
+
       #: (arguments: Array[Prism::Node]) -> Hash[String, Prism::Node]
       def index_call_node_args(arguments:)
         indexed_call_node_args = {}
@@ -79,6 +121,28 @@ module RubyLsp
         end
         indexed_call_node_args
       end
+
+      # Checks that we're on instance level of a `ActiveRecord::Migration` subclass.
+      #
+      #: -> bool
+      def active_record_migration?
+        nesting_nodes = @node_context.instance_variable_get(:@nesting_nodes).reverse
+        class_node = nesting_nodes.find { |node| node.is_a?(Prism::ClassNode) }
+        return false unless class_node
+
+        superclass = class_node.superclass
+        return false unless superclass.is_a?(Prism::CallNode)
+
+        receiver = superclass.receiver
+        return false unless receiver.is_a?(Prism::ConstantPathNode)
+        return false unless receiver.slice == "ActiveRecord::Migration"
+
+        def_node = nesting_nodes.find { |n| n.is_a?(Prism::DefNode) }
+        return false if def_node.receiver
+
+        true
+      end
+
     end
   end
 end
