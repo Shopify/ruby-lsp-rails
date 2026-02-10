@@ -135,7 +135,9 @@ module RubyLsp
       # @override
       #: (ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def create_completion_listener(response_builder, node_context, dispatcher, uri)
-        Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
+        return unless @global_state
+
+        Completion.new(@rails_runner_client, response_builder, node_context, @global_state.index, dispatcher, uri)
       end
 
       #: (Array[{uri: String, type: Integer}] changes) -> void

@@ -133,6 +133,17 @@ module RubyLsp
         nil
       end
 
+      #: -> Hash[Symbol, untyped]?
+      def db_configs
+        make_request("db_configs")
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to get database configurations",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
       #: (String name) -> Hash[Symbol, untyped]?
       def model(name)
         make_request("model", name: name)
