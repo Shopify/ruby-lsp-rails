@@ -16,6 +16,7 @@ require_relative "document_symbol"
 require_relative "definition"
 require_relative "rails_test_style"
 require_relative "completion"
+require_relative "rename"
 require_relative "indexing_enhancement"
 
 module RubyLsp
@@ -136,6 +137,14 @@ module RubyLsp
       #: (ResponseBuilders::CollectionResponseBuilder[Interface::CompletionItem] response_builder, NodeContext node_context, Prism::Dispatcher dispatcher, URI::Generic uri) -> void
       def create_completion_listener(response_builder, node_context, dispatcher, uri)
         Completion.new(@rails_runner_client, response_builder, node_context, dispatcher, uri)
+      end
+
+      # @override
+      #: (String fully_qualified_name, String new_name, Array[(Interface::RenameFile | Interface::TextDocumentEdit)] document_changes) -> void
+      def collect_file_renames(fully_qualified_name, new_name, document_changes)
+        return unless @global_state
+
+        Rename.new(@global_state.index, fully_qualified_name, new_name, document_changes)
       end
 
       #: (Array[{uri: String, type: Integer}] changes) -> void
