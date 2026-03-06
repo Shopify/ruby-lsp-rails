@@ -320,15 +320,25 @@ module RubyLsp
             send_result(run_migrations)
           end
         when "reload"
-          with_progress("rails-reload", "Reloading Ruby LSP Rails instance") do
-            begin
-              ::Rails.application.reloader.reload!
-              send_result({ success: true })
-            rescue StandardError => e
-              log_message(
-                "Request reload failed with #{e.class}:\n#{e.full_message(highlight: false)}",
-              )
-              send_result({ success: false })
+          # Respond immediately so callers are not blocked while the app reloads.
+          # Reload runs in a background thread to keep the server responsive to
+          # other requests (model, route, association, etc.).
+          # If a reload is already in progress, we mark that another reload is needed.
+          # When the current reload finishes, it checks the flag and reloads once more
+          # to pick up any changes that arrived mid-reload. This means N rapid reloads
+          # result in at most 2 actual reloads (first + one catch-up).
+          send_result({ success: true })
+          if @reload_thread&.alive?
+            @reload_needed = true
+          else
+            @reload_thread = Thread.new do
+              loop do
+                @reload_needed = false
+                with_notification_error_handling("reload") do
+                  ::Rails.application.reloader.reload!
+                end
+                break unless @reload_needed
+              end
             end
           end
         when "route_location"
