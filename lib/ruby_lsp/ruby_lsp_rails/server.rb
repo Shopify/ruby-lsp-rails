@@ -321,8 +321,14 @@ module RubyLsp
           end
         when "reload"
           with_progress("rails-reload", "Reloading Ruby LSP Rails instance") do
-            with_notification_error_handling(request) do
+            begin
               ::Rails.application.reloader.reload!
+              send_result({ success: true })
+            rescue StandardError => e
+              log_message(
+                "Request reload failed with #{e.class}:\n#{e.full_message(highlight: false)}",
+              )
+              send_result({ success: false })
             end
           end
         when "route_location"
