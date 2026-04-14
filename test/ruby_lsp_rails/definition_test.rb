@@ -548,35 +548,35 @@ module RubyLsp
 
         uri = Kernel.URI("file://#{dummy_root}/app/views/users/render.html.erb")
         source = <<~ERB
-          <%= render "partial" %>
-          <%= render "partial", formats: :html %>
-          <%= render "partial", formats: [:text] %>
-          <%= render "partial", handlers: :ruby %>
-          <%= render "partial", handlers: [:erb] %>
-          <%= render "partial", variants: :mobile %>
-          <%= render "partial", variants: [:tablet, :mobile] %>
+          <%= render partial: "partial" %>
+          <%= render partial: "partial", formats: :html %>
+          <%= render partial: "partial", formats: [:text] %>
+          <%= render partial: "partial", handlers: :ruby %>
+          <%= render partial: "partial", handlers: [:erb] %>
+          <%= render partial: "partial", variants: :mobile %>
+          <%= render partial: "partial", variants: [:tablet, :mobile] %>
         ERB
 
         with_ready_server(source, uri) do |server|
-          response = text_document_definition(server, { line: 0, character: 12 }, uri)
+          response = text_document_definition(server, { line: 0, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.html.erb", response.first.uri)
 
-          response = text_document_definition(server, { line: 1, character: 12 }, uri)
+          response = text_document_definition(server, { line: 1, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.html.erb", response.first.uri)
 
-          response = text_document_definition(server, { line: 2, character: 12 }, uri)
+          response = text_document_definition(server, { line: 2, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.text.erb", response.first.uri)
 
-          response = text_document_definition(server, { line: 3, character: 12 }, uri)
+          response = text_document_definition(server, { line: 3, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.html.ruby", response.first.uri)
 
-          response = text_document_definition(server, { line: 4, character: 12 }, uri)
+          response = text_document_definition(server, { line: 4, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.html.erb", response.first.uri)
 
-          response = text_document_definition(server, { line: 5, character: 12 }, uri)
+          response = text_document_definition(server, { line: 5, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.html+mobile.erb", response.first.uri)
 
-          response = text_document_definition(server, { line: 6, character: 12 }, uri)
+          response = text_document_definition(server, { line: 6, character: 22 }, uri)
           assert_equal("file://#{dummy_root}/app/views/users/_partial.html+tablet.erb", response.first.uri)
         end
       ensure

@@ -498,7 +498,7 @@ module RubyLsp
         )
       end
 
-      #: (Module?) -> bool
+      #: (Module[top]?) -> bool
       def controller?(const)
         !!(
           const &&

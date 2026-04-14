@@ -157,22 +157,22 @@ module RubyLsp
 
         return unless call_node.message == "render"
 
-        arguments = call_node.arguments&.arguments
-        return unless arguments
-
-        argument = view_template_argument(arguments, node)
+        argument = call_node.arguments&.arguments&.first
         return unless argument
+
+        template_argument = view_template_argument(argument, node)
+        return unless template_argument
 
         controller_name = controller_for_template(@path)
         return unless controller_name
 
         template_name = node.content
-        template_details = view_template_details(arguments)
+        template_details = view_template_details(argument)
 
         template = @client.find_template(
           controller_name: controller_name,
           template_name: template_name,
-          partial: argument != "template",
+          partial: template_argument != "template",
           details: template_details,
         )
         return unless template
@@ -233,14 +233,13 @@ module RubyLsp
         collect_definitions(method_name)
       end
 
-      #: (Array[Prism::Node] arguments, Prism::StringNode node) -> String?
-      def view_template_argument(arguments, node)
-        return "partial" if arguments.first == node
+      #: (Prism::Node argument, Prism::StringNode node) -> String?
+      def view_template_argument(argument, node)
+        return "partial" if argument == node
 
-        keyword_arguments = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) } #: as Prism::KeywordHashNode?
-        return unless keyword_arguments
+        return unless argument.is_a?(Prism::KeywordHashNode)
 
-        element = keyword_arguments.elements.find do |element|
+        element = argument.elements.find do |element|
           next unless element.is_a?(Prism::AssocNode)
 
           key = element.key
@@ -257,12 +256,11 @@ module RubyLsp
         key.value
       end
 
-      #: (Array[Prism::Node] arguments) -> Hash[String, (String | Array[String])]
-      def view_template_details(arguments)
-        keyword_arguments = arguments.find { |argument| argument.is_a?(Prism::KeywordHashNode) } #: as Prism::KeywordHashNode?
-        return {} unless keyword_arguments
+      #: (Prism::Node argument) -> Hash[String, (String | Array[String])]
+      def view_template_details(argument)
+        return {} unless argument.is_a?(Prism::KeywordHashNode)
 
-        keyword_arguments.elements.each_with_object({}) do |element, options|
+        argument.elements.each_with_object({}) do |element, options|
           next unless element.is_a?(Prism::AssocNode)
 
           key = element.key
