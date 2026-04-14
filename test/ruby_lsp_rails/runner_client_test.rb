@@ -58,11 +58,14 @@ module RubyLsp
           ]
         end
         foreign_keys = ["country_id"]
-        indexes = [{ name: "index_users_on_country_id", columns: ["country_id"], unique: false }]
+        indexes = [
+          { name: "users_unique_complex", columns: "COALESCE(country_id, 0), ltrim(first_name)", unique: true },
+          { name: "index_users_on_country_id", columns: ["country_id"], unique: false },
+        ]
         response = @client.model("User") #: as !nil
         assert_equal(columns, response.fetch(:columns))
         assert_equal(foreign_keys, response.fetch(:foreign_keys))
-        assert_equal(indexes, response.fetch(:indexes))
+        assert_equal(indexes.sort_by { |i| i[:name] }, response.fetch(:indexes).sort_by { |i| i[:name] })
         assert_match(%r{db/schema\.rb$}, response.fetch(:schema_file))
       end
 
@@ -79,6 +82,24 @@ module RubyLsp
           details: {},
         ) #: as !nil
         assert_equal("#{dummy_root}/app/views/users/index.html.erb", response.fetch(:path))
+      end
+
+      test "#i18n returns translations for the requested key" do
+        RunnerClient.any_instance.stubs(model: "hello")
+        translations = @client.i18n("hello") #: as !nil
+        assert_instance_of(Hash, translations)
+        assert_equal("Hello world", translations[:en])
+        assert_equal("Hola mundo", translations[:es])
+        assert_equal("Bonjour le monde", translations[:fr])
+      end
+
+      test "#i18n returns translation missing for a key" do
+        RunnerClient.any_instance.stubs(model: "hello")
+        translations = @client.i18n("missing_key") #: as !nil
+        assert_instance_of(Hash, translations)
+        assert_equal("⚠️ translation missing", translations[:en])
+        assert_equal("⚠️ translation missing", translations[:es])
+        assert_equal("⚠️ translation missing", translations[:fr])
       end
 
       test "returns nil if the request returns a nil response" do

@@ -863,8 +863,8 @@ class Puma::Configuration
   # source://puma//lib/puma/configuration.rb#289
   def rackup; end
 
-  # @param key [:Symbol] hook to run
   # @param arg [Launcher, Int] `:on_restart` passes Launcher
+  # @param key [:Symbol] hook to run
   #
   # source://puma//lib/puma/configuration.rb#320
   def run_hooks(key, arg, log_writer, hook_data = T.unsafe(nil)); end
@@ -1276,6 +1276,11 @@ Puma::Const::WRITE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 #
 # The following hooks have been updated:
 #
+#     | DSL Method         |  Options Key            | Fork Block Location |
+#     | on_worker_boot     | :before_worker_boot     | inside, before      |
+#     | on_worker_shutdown | :before_worker_shutdown | inside, after       |
+#     | on_refork          | :before_refork          | inside              |
+#     | after_refork       | :after_refork           | inside              |
 #
 # source://puma//lib/puma/dsl.rb#52
 class Puma::DSL
@@ -1412,16 +1417,16 @@ class Puma::DSL
   #
   # @example Backlog depth
   #   bind 'unix:///var/run/puma.sock?backlog=512'
+  # @example Disable optimization for low latency
+  #   bind 'tcp://0.0.0.0:9292?low_latency=false'
   # @example SSL cert
   #   bind 'ssl://127.0.0.1:9292?key=key.key&cert=cert.pem'
   # @example SSL cert for mutual TLS (mTLS)
   #   bind 'ssl://127.0.0.1:9292?key=key.key&cert=cert.pem&ca=ca.pem&verify_mode=force_peer'
-  # @example Disable optimization for low latency
-  #   bind 'tcp://0.0.0.0:9292?low_latency=false'
   # @example Socket permissions
   #   bind 'unix:///var/run/puma.sock?umask=0111'
-  # @see Puma::Runner#load_and_bind
   # @see Puma::Cluster#run
+  # @see Puma::Runner#load_and_bind
   #
   # source://puma//lib/puma/dsl.rb#286
   def bind(url); end
@@ -1443,10 +1448,10 @@ class Puma::DSL
   # To clear configured binds, the value only can be passed. This will clear
   # out any binds that may have been configured.
   #
-  # @example Use any systemd activated sockets as well as configured binds
-  #   bind_to_activated_sockets
   # @example Only bind to systemd activated sockets, ignoring other binds
   #   bind_to_activated_sockets 'only'
+  # @example Use any systemd activated sockets as well as configured binds
+  #   bind_to_activated_sockets
   #
   # source://puma//lib/puma/dsl.rb#318
   def bind_to_activated_sockets(bind = T.unsafe(nil)); end
@@ -1996,8 +2001,8 @@ class Puma::DSL
   #
   # @example
   #   raise_exception_on_sigterm false
-  # @see Puma::Launcher#setup_signals
   # @see Puma::Cluster#setup_signals
+  # @see Puma::Launcher#setup_signals
   #
   # source://puma//lib/puma/dsl.rb#1017
   def raise_exception_on_sigterm(answer = T.unsafe(nil)); end
@@ -2117,8 +2122,6 @@ class Puma::DSL
   #   verification_flags: flags,        # optional, not supported by JRuby
   #   reuse: true                       # optional
   #   }
-  # @example Using self-signed certificate with the +localhost+ gem:
-  #   ssl_bind '127.0.0.1', '9292'
   # @example Alternatively, you can provide +cert_pem+ and +key_pem+:
   #   ssl_bind '127.0.0.1', '9292', {
   #   cert_pem: File.read(path_to_cert),
@@ -2132,6 +2135,8 @@ class Puma::DSL
   #   ssl_cipher_list: cipher_list,     # optional
   #   verify_mode: verify_mode          # default 'none'
   #   }
+  # @example Using self-signed certificate with the +localhost+ gem:
+  #   ssl_bind '127.0.0.1', '9292'
   #
   # source://puma//lib/puma/dsl.rb#637
   def ssl_bind(host, port, opts = T.unsafe(nil)); end
@@ -2178,12 +2183,12 @@ class Puma::DSL
   #
   # @example Adds 'PROPFIND' to existing supported methods
   #   supported_http_methods(Puma::Const::SUPPORTED_HTTP_METHODS + ['PROPFIND'])
+  # @example Allows any method
+  #   supported_http_methods :any
   # @example Restricts methods to the array elements
   #   supported_http_methods %w[HEAD GET POST PUT DELETE OPTIONS PROPFIND]
   # @example Restricts methods to the methods in the IANA Registry
   #   supported_http_methods Puma::Const::IANA_HTTP_METHODS
-  # @example Allows any method
-  #   supported_http_methods :any
   # @note If the `methods` value is `:any`, no method check with be performed,
   #   similar to Puma v5 and earlier.
   #
@@ -3648,12 +3653,12 @@ module Puma::Request
   # Assembles the headers and prepares the body for actually sending the
   # response via `#fast_write_response`.
   #
-  # @param status [Integer] the status returned by the Rack application
+  # @param client [Puma::Client]
   # @param headers [Hash] the headers returned by the Rack application
+  # @param requests [Integer] number of inline requests handled
   # @param res_body [Array] the body returned by the Rack application or
   #   a call to `Server#lowlevel_error`
-  # @param requests [Integer] number of inline requests handled
-  # @param client [Puma::Client]
+  # @param status [Integer] the status returned by the Rack application
   # @return [Boolean, :async] keep-alive status or `:async`
   #
   # source://puma//lib/puma/request.rb#156
@@ -3665,10 +3670,10 @@ module Puma::Request
   # Writes to a socket (normally `Client#io`) using `#fast_write_str`.
   # Accumulates `body` items into `io_buffer`, then writes to socket.
   #
-  # @param socket [#write] the response socket
   # @param body [Enumerable, File] the body object
-  # @param io_buffer [Puma::IOBuffer] contains headers
   # @param chunked [Boolean]
+  # @param io_buffer [Puma::IOBuffer] contains headers
+  # @param socket [#write] the response socket
   # @raise [ConnectionError]
   #
   # source://puma//lib/puma/request.rb#316
@@ -3708,8 +3713,8 @@ module Puma::Request
   # Given a Hash +env+ for the request read from +client+, add
   # and fixup keys to comply with Rack's env guidelines.
   #
-  # @param env [Hash] see Puma::Client#env, from request
   # @param client [Puma::Client] only needed for Client#peerip
+  # @param env [Hash] see Puma::Client#env, from request
   #
   # source://puma//lib/puma/request.rb#407
   def normalize_env(env, client); end
@@ -3741,14 +3746,14 @@ module Puma::Request
 
   # Processes and write headers to the IOBuffer.
   #
-  # @param env [Hash] see Puma::Client#env, from request
-  # @param status [Integer] the status returned by the Rack application
-  # @param headers [Hash] the headers returned by the Rack application
   # @param content_length [Integer, nil] content length if it can be determined from the
   #   response body
-  # @param io_buffer [Puma::IOBuffer] modified inn place
+  # @param env [Hash] see Puma::Client#env, from request
   # @param force_keep_alive [Boolean] 'anded' with keep_alive, based on system
   #   status and `@max_fast_inline`
+  # @param headers [Hash] the headers returned by the Rack application
+  # @param io_buffer [Puma::IOBuffer] modified inn place
+  # @param status [Integer] the status returned by the Rack application
   # @return [Hash] resp_info
   # @version 5.0.3
   #

@@ -193,7 +193,6 @@ class WebSocket::Driver::CloseEvent < ::Struct
   end
 end
 
-# source://websocket-driver//lib/websocket/driver.rb#57
 class WebSocket::Driver::ConfigurationError < ::ArgumentError; end
 
 # source://websocket-driver//lib/websocket/driver.rb#48
@@ -796,7 +795,6 @@ class WebSocket::Driver::PongEvent < ::Struct
   end
 end
 
-# source://websocket-driver//lib/websocket/driver.rb#55
 class WebSocket::Driver::ProtocolError < ::StandardError; end
 
 # source://websocket-driver//lib/websocket/driver/proxy.rb#4
@@ -921,7 +919,6 @@ end
 # source://websocket-driver//lib/websocket/driver/stream_reader.rb#6
 WebSocket::Driver::StreamReader::MINIMUM_AUTOMATIC_PRUNE_OFFSET = T.let(T.unsafe(nil), Integer)
 
-# source://websocket-driver//lib/websocket/driver.rb#56
 class WebSocket::Driver::URIError < ::ArgumentError; end
 
 # source://websocket-driver//lib/websocket/http.rb#2
@@ -987,6 +984,9 @@ WebSocket::HTTP::Headers::CR = T.let(T.unsafe(nil), Integer)
 #       token          = 1*<any CHAR except CTLs or separators>
 #
 #       separators     = "(" | ")" | "<" | ">" | "@"
+#                      | "," | ";" | ":" | "\" | <">
+#                      | "/" | "[" | "]" | "?" | "="
+#                      | "{" | "}" | SP | HT
 #
 # Or, as redefined in RFC 7230:
 #

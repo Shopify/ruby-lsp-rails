@@ -2144,50 +2144,6 @@ class JSON::GeneratorError < ::JSON::JSONError
   def invalid_object; end
 end
 
-# source://json//lib/json/generic_object.rb#9
-class JSON::GenericObject < ::OpenStruct
-  # source://json//lib/json/generic_object.rb#67
-  def as_json(*_arg0); end
-
-  # source://json//lib/json/generic_object.rb#51
-  def to_hash; end
-
-  # source://json//lib/json/generic_object.rb#71
-  def to_json(*a); end
-
-  # source://json//lib/json/generic_object.rb#63
-  def |(other); end
-
-  class << self
-    # source://json//lib/json/generic_object.rb#11
-    def [](*_arg0); end
-
-    # source://json//lib/json/generic_object.rb#45
-    def dump(obj, *args); end
-
-    # source://json//lib/json/generic_object.rb#25
-    def from_hash(object); end
-
-    # Sets the attribute json_creatable
-    #
-    # @param value the value to set the attribute json_creatable to.
-    #
-    # source://json//lib/json/generic_object.rb#17
-    def json_creatable=(_arg0); end
-
-    # @return [Boolean]
-    #
-    # source://json//lib/json/generic_object.rb#13
-    def json_creatable?; end
-
-    # source://json//lib/json/generic_object.rb#19
-    def json_create(data); end
-
-    # source://json//lib/json/generic_object.rb#40
-    def load(source, proc = T.unsafe(nil), opts = T.unsafe(nil)); end
-  end
-end
-
 # source://json//lib/json/common.rb#341
 JSON::PARSE_L_OPTIONS = T.let(T.unsafe(nil), Hash)
 

@@ -14,10 +14,9 @@ gem "rubocop-shopify", "~> 2.15", require: false
 gem "rubocop-minitest", "~> 0.36", require: false
 gem "rubocop-rake", "~> 0.6", require: false
 gem "rubocop-sorbet", "~> 0.8", require: false
-gem "sorbet-static", platforms: :ruby
+gem "sorbet-static", "< 0.6.12889", platforms: :ruby
 gem "tapioca", "~> 0.13", require: false, platforms: :ruby
-gem "psych", "~> 5.1", require: false
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 8.1.0"
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"

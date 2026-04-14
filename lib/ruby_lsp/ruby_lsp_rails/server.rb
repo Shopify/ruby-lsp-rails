@@ -294,6 +294,7 @@ module RubyLsp
 
           request = JSON.parse(json, symbolize_names: true)
           execute(request.fetch(:method), request[:params])
+          disconnect_from_database
         end
       end
 
@@ -339,6 +340,17 @@ module RubyLsp
         when "route_info"
           with_request_error_handling(request) do
             send_result(resolve_route_info(params))
+          end
+        when "i18n"
+          with_request_error_handling(request) do
+            result = resolve_i18n_key(params.fetch(:key))
+            send_result(result)
+          end
+        when "reload_i18n"
+          with_progress("rails-reload-i18n", "Reloading Ruby LSP Rails I18n") do
+            with_notification_error_handling(request) do
+              I18n.reload! if defined?(I18n) && I18n.respond_to?(:reload!)
+            end
           end
         when "server_addon/register"
           with_notification_error_handling(request) do
@@ -474,7 +486,7 @@ module RubyLsp
         nil
       end
 
-      #: (Module?) -> bool
+      #: (Module[top]?) -> bool
       def active_record_model?(const)
         !!(
           const &&
@@ -541,6 +553,18 @@ module RubyLsp
         end
       end
 
+      # Keeping a connection to the database prevents it from being dropped in development. We don't actually need to
+      # to reuse database connections for the LSP server, the performance benefit of doing so only matters in production
+      # where there is latency, locally we're fine with the small overhead of establishing a new connection on each request.
+      #: -> void
+      def disconnect_from_database
+        return unless defined?(::ActiveRecord::Base)
+
+        with_notification_error_handling("disconnect_from_database") do
+          ActiveRecord::Base.connection_handler.clear_all_connections!(:all)
+        end
+      end
+
       #: (singleton(ActiveRecord::Base)) -> Array[String]
       def collect_model_foreign_keys(model)
         return [] unless model.connection.respond_to?(:supports_foreign_keys?) &&
@@ -572,6 +596,13 @@ module RubyLsp
         @database_supports_indexing = true
       rescue NotImplementedError
         @database_supports_indexing = false
+      end
+
+      #: (String) -> Hash[Symbol, String]
+      def resolve_i18n_key(key)
+        I18n.available_locales.each_with_object({}) do |locale, result|
+          result[locale] = I18n.t(key, locale: locale, default: "⚠️ translation missing")
+        end
       end
     end
   end

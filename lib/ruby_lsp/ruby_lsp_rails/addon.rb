@@ -151,6 +151,10 @@ module RubyLsp
 
           offer_to_run_pending_migrations
         end
+
+        if changes.any? { |c| %r{config/locales/.*\.yml}.match?(c[:uri]) }
+          @rails_runner_client.trigger_i18n_reload
+        end
       end
 
       # @override
@@ -232,7 +236,7 @@ module RubyLsp
                 id: "workspace/didChangeWatchedFilesRails",
                 method: "workspace/didChangeWatchedFiles",
                 register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
-                  watchers: [structure_sql_file_watcher, fixture_file_watcher],
+                  watchers: [structure_sql_file_watcher, fixture_file_watcher, i18n_file_watcher],
                 ),
               ),
             ],
@@ -252,6 +256,14 @@ module RubyLsp
       def fixture_file_watcher
         Interface::FileSystemWatcher.new(
           glob_pattern: "**/fixtures/**/*.{yml,yaml,yml.erb,yaml.erb}",
+          kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
+        )
+      end
+
+      #: -> Interface::FileSystemWatcher
+      def i18n_file_watcher
+        Interface::FileSystemWatcher.new(
+          glob_pattern: "**/config/locales/**/*.{yml,yaml}",
           kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
         )
       end

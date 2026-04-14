@@ -321,6 +321,113 @@ module RubyLsp
         CONTENT
       end
 
+      test "handles complex indexes with expressions" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["id", "integer", nil, false],
+            ["first_name", "string", "", true],
+            ["last_name", "string", nil, true],
+            ["age", "integer", "0", true],
+            ["created_at", "datetime", nil, false],
+            ["updated_at", "datetime", nil, false],
+            ["country_id", "integer", nil, false],
+            ["active", "boolean", "true", false],
+          ],
+          primary_keys: ["id"],
+          foreign_keys: ["country_id"],
+          indexes: [
+            { name: "index_users_on_country_id", columns: ["country_id"], unique: false },
+            { name: "users_unique_complex", columns: "COALESCE(country_id, 0), ltrim(first_name)", unique: true },
+          ],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```ruby
+          User
+          ```
+
+          **Definitions**: [fake.rb](file:///fake.rb#L1,1-2,4)
+
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
+
+          ### Columns
+          - **id**: integer (PK)
+
+          - **first_name**: string - default: ""
+
+          - **last_name**: string
+
+          - **age**: integer - default: 0
+
+          - **created_at**: datetime - not null
+
+          - **updated_at**: datetime - not null
+
+          - **country_id**: integer (FK) - not null
+
+          - **active**: boolean - default: true - not null
+
+          ### Indexes
+          - **index_users_on_country_id** (country_id)
+          - **users_unique_complex** (COALESCE(country_id, 0), ltrim(first_name)) (unique)
+        CONTENT
+      end
+
+      test "returns I18n translation information" do
+        expected_response = {
+          en: "hello",
+          es: "hola",
+          fr: "bonjour",
+        }
+
+        RunnerClient.any_instance.stubs(i18n: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 0, character: 9 })
+          I18n.t("foo")
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```yaml
+          en: hello
+          es: hola
+          fr: bonjour
+          ```
+        CONTENT
+      end
+
+      test "returns I18n translation information for translate method" do
+        expected_response = {
+          en: "hello",
+          es: "hola",
+          fr: "bonjour",
+        }
+
+        RunnerClient.any_instance.stubs(i18n: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 0, character: 16 })
+          I18n.translate("foo")
+        RUBY
+
+        assert_equal(<<~CONTENT.chomp, response.contents.value)
+          ```yaml
+          en: hello
+          es: hola
+          fr: bonjour
+          ```
+        CONTENT
+      end
+
       private
 
       def hover_on_source(source, position)
