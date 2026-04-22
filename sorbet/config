@@ -5,3 +5,4 @@
 --ignore=test/dummy
 --enable-experimental-rbs-comments
 --enable-experimental-requires-ancestor
+--parser=prism
