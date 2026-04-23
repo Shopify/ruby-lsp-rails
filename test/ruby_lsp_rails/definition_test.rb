@@ -110,8 +110,8 @@ module RubyLsp
         assert_equal(2, response[0].range.end.line)
       end
 
-      test "handles class_name argument for associations" do
-        response = generate_definitions_for_source(<<~RUBY, { line: 3, character: 11 })
+      test "handles clicking on class_name value for associations" do
+        source = <<~RUBY
           # typed: false
 
           class User < ActiveRecord::Base
@@ -119,10 +119,62 @@ module RubyLsp
           end
         RUBY
 
+        country_model = File.join(dummy_root, "app", "models", "country.rb")
+        response = generate_definitions_for_source(source, { line: 3, character: 35 }, index_files: [country_model])
+
+        assert_equal(1, response.size)
+        assert_equal(URI::Generic.from_path(path: country_model).to_s, response[0].uri)
+      end
+
+      test "handles clicking on association name when class_name is specified" do
+        source = <<~RUBY
+          # typed: false
+
+          class User < ActiveRecord::Base
+            has_one :location, class_name: "Country"
+          end
+        RUBY
+
+        country_model = File.join(dummy_root, "app", "models", "country.rb")
+        response = generate_definitions_for_source(source, { line: 3, character: 12 }, index_files: [country_model])
+
+        assert_equal(1, response.size)
+        assert_equal(URI::Generic.from_path(path: country_model).to_s, response[0].uri)
+      end
+
+      test "handles clicking on through option value" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 4, character: 30 })
+          # typed: false
+
+          class Organization < ActiveRecord::Base
+            has_many :memberships
+            has_many :users, through: :memberships
+          end
+        RUBY
+
+        assert_equal(1, response.size)
+
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(3, response[0].range.start.line)
+        assert_equal(2, response[0].range.start.character)
+        assert_equal(3, response[0].range.end.line)
+        assert_equal(23, response[0].range.end.character)
+      end
+
+      test "handles clicking on association name with through option" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 4, character: 14 })
+          # typed: false
+
+          class Organization < ActiveRecord::Base
+            has_many :memberships
+            has_many :users, through: :memberships
+          end
+        RUBY
+
         assert_equal(1, response.size)
 
         assert_equal(
-          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "country.rb")).to_s,
+          URI::Generic.from_path(path: File.join(dummy_root, "app", "models", "user.rb")).to_s,
           response[0].uri,
         )
         assert_equal(2, response[0].range.start.line)
@@ -469,9 +521,14 @@ module RubyLsp
 
       private
 
-      def generate_definitions_for_source(source, position)
+      def generate_definitions_for_source(source, position, index_files: [])
         with_server(source) do |server, uri|
           sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
+
+          index_files.each do |file_path|
+            file_uri = URI::Generic.from_path(path: file_path)
+            server.global_state.index.index_single(file_uri, File.read(file_path))
+          end
 
           server.process_message(
             id: 1,
