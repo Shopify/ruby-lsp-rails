@@ -56,20 +56,61 @@ module RubyLsp
         assert_equal(0, response.size)
       end
 
+      test "on_call_node_enter provides completion for migration files" do
+        source = <<~RUBY
+          # typed: false
+          class FooBar < ActiveRecord::Migration[8.0]
+            def change
+              create
+            end
+          end
+        RUBY
+        position = { line: 3, character: 10 }
+        uri = Kernel.URI("file://#{dummy_root}/db/migrate/123456789_foo_bar.rb")
+
+        response = with_ready_server(source, uri) do |server|
+          index_gem(server.global_state.index, "activerecord")
+          text_document_completion(server, uri, position)
+        end
+
+        assert_includes response.map(&:label), "create_table"
+      end
+
       private
 
-      def generate_completions_for_source(source, position)
-        with_server(source) do |server, uri|
+      def generate_completions_for_source(source, position, uri = Kernel.URI("file:///fake.rb"))
+        with_ready_server(source, uri) do |server, uri|
+          text_document_completion(server, uri, position)
+        end
+      end
+
+      def with_ready_server(source, uri)
+        with_server(source, uri) do |server|
           sleep(0.1) while RubyLsp::Addon.addons.first.instance_variable_get(:@rails_runner_client).is_a?(NullClient)
 
-          server.process_message(
-            id: 1,
-            method: "textDocument/completion",
-            params: { textDocument: { uri: uri }, position: position },
-          )
+          yield server
+        end
+      end
 
-          result = pop_result(server)
-          result.response
+      def text_document_completion(server, uri, position)
+        server.process_message(
+          id: 1,
+          method: "textDocument/completion",
+          params: { textDocument: { uri: uri }, position: position },
+        )
+
+        result = pop_result(server)
+        result.response
+      end
+
+      def index_gem(index, gem_name)
+        spec = Gem::Specification.find_by_name(gem_name)
+        spec.require_paths.each do |require_path|
+          load_path_entry = File.join(spec.full_gem_path, require_path)
+          Dir.glob(File.join(load_path_entry, "**", "*.rb")).map! do |path|
+            uri = URI::Generic.from_path(path: path, load_path_entry: load_path_entry)
+            index.index_file(uri)
+          end
         end
       end
     end
