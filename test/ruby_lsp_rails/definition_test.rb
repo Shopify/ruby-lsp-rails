@@ -467,6 +467,71 @@ module RubyLsp
         assert_equal(15, response.range.end.character)
       end
 
+      test "resolves callback methods defined in included modules and superclasses" do
+        source = <<~RUBY
+          # typed: false
+
+          module Foo
+            module Shared
+              def shared_callback; end
+            end
+
+            class BaseController
+              def base_callback; end
+            end
+
+            class UsersController < BaseController
+              include Shared
+
+              before_action :shared_callback
+              before_action :base_callback
+            end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 14, character: 22 })
+        assert_equal(1, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(4, response[0].range.start.line)
+        assert_equal(4, response[0].range.start.character)
+        assert_equal(4, response[0].range.end.line)
+        assert_equal(28, response[0].range.end.character)
+
+        response = generate_definitions_for_source(source, { line: 15, character: 22 })
+        assert_equal(1, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(8, response[0].range.start.line)
+        assert_equal(4, response[0].range.start.character)
+        assert_equal(8, response[0].range.end.line)
+        assert_equal(26, response[0].range.end.character)
+      end
+
+      test "resolves callbacks when the enclosing class uses a compact constant path" do
+        source = <<~RUBY
+          # typed: false
+
+          module Bar
+            class UsersController
+              def callback; end
+            end
+          end
+
+          module Foo
+            class Bar::UsersController
+              before_action :callback
+            end
+          end
+        RUBY
+
+        response = generate_definitions_for_source(source, { line: 10, character: 22 })
+        assert_equal(1, response.size)
+        assert_equal("file:///fake.rb", response[0].uri)
+        assert_equal(4, response[0].range.start.line)
+        assert_equal(4, response[0].range.start.character)
+        assert_equal(4, response[0].range.end.line)
+        assert_equal(21, response[0].range.end.character)
+      end
+
       private
 
       def generate_definitions_for_source(source, position)

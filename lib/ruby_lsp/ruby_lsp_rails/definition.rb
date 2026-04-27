@@ -30,13 +30,19 @@ module RubyLsp
     class Definition
       include Requests::Support::Common
 
-      #: (RunnerClient client, RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)] response_builder, NodeContext node_context, RubyIndexer::Index index, Prism::Dispatcher dispatcher) -> void
-      def initialize(client, response_builder, node_context, index, dispatcher)
+      #: (
+      #|   RunnerClient,
+      #|   RubyLsp::ResponseBuilders::CollectionResponseBuilder[(Interface::Location | Interface::LocationLink)],
+      #|   NodeContext,
+      #|   Rubydex::Graph,
+      #|   Prism::Dispatcher
+      #| ) -> void
+      def initialize(client, response_builder, node_context, graph, dispatcher)
         @client = client
         @response_builder = response_builder
         @node_context = node_context
         @nesting = node_context.nesting #: Array[String]
-        @index = index
+        @graph = graph
 
         dispatcher.register(self, :on_call_node_enter, :on_symbol_node_enter, :on_string_node_enter)
       end
@@ -154,14 +160,19 @@ module RubyLsp
 
       #: (String name) -> void
       def collect_definitions(name)
-        methods = @index.resolve_method(name, @nesting.join("::"))
-        return unless methods
+        return if @nesting.empty?
 
-        methods.each do |target_method|
-          @response_builder << Interface::Location.new(
-            uri: target_method.uri.to_s,
-            range: range_from_location(target_method.location),
-          )
+        owner = @graph.resolve_constant(
+          @nesting.last, #: as !nil
+          @nesting[0...-1], #: as !nil
+        )
+        return unless owner.is_a?(Rubydex::Namespace)
+
+        declaration = owner.find_member("#{name}()")
+        return unless declaration
+
+        declaration.definitions.each do |definition|
+          @response_builder << definition.to_lsp_selection_location
         end
       end
 
