@@ -22,10 +22,7 @@ module RubyLsp
 
       teardown do
         @client.shutdown
-
-        # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
-        # which makes this assertion flaky
-        assert_predicate(@client, :stopped?) unless Gem.win_platform?
+        assert_predicate(@client, :stopped?)
         @outgoing_queue.close
       end
 
