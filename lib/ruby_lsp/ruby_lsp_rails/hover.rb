@@ -23,7 +23,8 @@ module RubyLsp
         @response_builder = response_builder
         @node_context = node_context
         @nesting = node_context.nesting #: Array[String]
-        @index = global_state.index #: RubyIndexer::Index
+        @graph = global_state.graph #: Rubydex::Graph
+
         dispatcher.register(
           self,
           :on_constant_path_node_enter,
@@ -35,21 +36,21 @@ module RubyLsp
 
       #: (Prism::ConstantPathNode node) -> void
       def on_constant_path_node_enter(node)
-        entries = @index.resolve(node.slice, @nesting)
-        item = entries&.first
-        return unless item
+        name = constant_name(node)
+        return unless name
 
-        name = item.name
-        generate_column_content(name)
+        declaration = @graph.resolve_constant(name, @nesting)
+        return unless declaration
+
+        generate_column_content(declaration.name)
       end
 
       #: (Prism::ConstantReadNode node) -> void
       def on_constant_read_node_enter(node)
-        entries = @index.resolve(node.name.to_s, @nesting)
-        item = entries&.first
-        return unless item
+        declaration = @graph.resolve_constant(node.name.to_s, @nesting)
+        return unless declaration
 
-        generate_column_content(item.name)
+        generate_column_content(declaration.name)
       end
 
       #: (Prism::SymbolNode node) -> void
@@ -192,19 +193,14 @@ module RubyLsp
         message == "t" || message == "translate"
       end
 
-      # Copied from `RubyLsp::Listeners::Hover#generate_hover`
       #: (String name) -> void
       def generate_hover(name)
-        entries = @index.resolve(name, @node_context.nesting)
-        return unless entries
+        declaration = @graph.resolve_constant(name, @node_context.nesting)
+        return unless declaration
 
-        # We should only show hover for private constants if the constant is defined in the same namespace as the
-        # reference
-        first_entry = entries.first #: as !nil
-        full_name = first_entry.name
-        return if first_entry.private? && full_name != "#{@node_context.fully_qualified_name}::#{name}"
-
-        categorized_markdown_from_index_entries(full_name, entries).each do |category, content|
+        # [RUBYDEX] TODO: once we have visibility exposed from Rubydex, we should only show hover for private constants
+        # if the constant is defined in the same ancestor chain as the reference
+        categorized_markdown_from_definitions(declaration.name, declaration.definitions).each do |category, content|
           @response_builder.push(content, category: category)
         end
       end
