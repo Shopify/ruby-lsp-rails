@@ -22,10 +22,7 @@ module RubyLsp
 
       teardown do
         @client.shutdown
-
-        # On Windows, the server process sometimes takes a lot longer to shutdown and may end up getting force killed,
-        # which makes this assertion flaky
-        assert_predicate(@client, :stopped?) unless Gem.win_platform?
+        assert_predicate(@client, :stopped?)
         @outgoing_queue.close
       end
 
@@ -145,6 +142,7 @@ module RubyLsp
         begin
           assert(response.key?(:columns))
         ensure
+          client.shutdown
           outgoing_queue.close
           FileUtils.mv("test/dummy/config/application.rb.bak", "test/dummy/config/application.rb")
         end

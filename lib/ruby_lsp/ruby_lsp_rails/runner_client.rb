@@ -51,18 +51,6 @@ module RubyLsp
       def initialize(outgoing_queue, global_state)
         @outgoing_queue = outgoing_queue #: Thread::Queue
         @mutex = Mutex.new #: Mutex
-        # Spring needs a Process session ID. It uses this ID to "attach" itself to the parent process, so that when the
-        # parent ends, the spring process ends as well. If this is not set, Spring will throw an error while trying to
-        # set its own session ID
-        begin
-          Process.setpgrp
-          Process.setsid
-        rescue Errno::EPERM
-          # If we can't set the session ID, continue
-        rescue NotImplementedError
-          # setpgrp() may be unimplemented on some platform
-          # https://github.com/Shopify/ruby-lsp-rails/issues/348
-        end
 
         log_message("Ruby LSP Rails booting server")
 
@@ -96,27 +84,14 @@ module RubyLsp
         @rails_root = initialize_response[:root] #: String
         log_message("Finished booting Ruby LSP Rails server")
 
-        unless ENV["RAILS_ENV"] == "test"
-          at_exit do
-            if @wait_thread.alive?
-              sleep(0.5) # give the server a bit of time if we already issued a shutdown notification
-              force_kill
-            end
-          end
-        end
-
         # Responsible for transmitting notifications coming from the server to the outgoing queue, so that we can do
-        # things such as showing progress notifications initiated by the server
+        # things such as showing progress notifications initiated by the server. The loop exits naturally when the
+        # server closes its stderr write end (i.e., when the server process exits), at which point `read_notification`
+        # returns nil.
         @notifier_thread = Thread.new do
-          until @stderr.closed?
-            notification = read_notification
-
-            unless @outgoing_queue.closed? || !notification
-              @outgoing_queue << notification
-            end
+          while (notification = read_notification)
+            @outgoing_queue << notification unless @outgoing_queue.closed?
           end
-        rescue IOError
-          # The server was shutdown and stderr is already closed
         end #: Thread
       rescue StandardError
         raise InitializationError, @stderr.read
@@ -265,18 +240,25 @@ module RubyLsp
 
       #: -> void
       def shutdown
+        return if stopped?
+
         log_message("Ruby LSP Rails shutting down server")
         send_message("shutdown")
-        sleep(0.5) # give the server a bit of time to shutdown
-        [@stdin, @stdout, @stderr].each(&:close)
-      rescue IOError
-        # The server connection may have died
-        force_kill
+
+        @stdin.close unless @stdin.closed?
+
+        # Wait for the server to exit. Once it does, all handles it inherited (including its stderr write end) are
+        # released, which lets the notifier thread drain remaining bytes and observe EOF.
+        @wait_thread.join
+        @notifier_thread.join
+
+        @stdout.close unless @stdout.closed?
+        @stderr.close unless @stderr.closed?
       end
 
       #: -> bool
       def stopped?
-        [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive?
+        [@stdin, @stdout, @stderr].all?(&:closed?) && !@wait_thread.alive? && !@notifier_thread.alive?
       end
 
       #: -> bool
@@ -335,15 +317,6 @@ module RubyLsp
       rescue Errno::EPIPE
         # The server connection died
         nil
-      end
-
-      #: -> void
-      def force_kill
-        # Windows does not support the `TERM` signal, so we're forced to use `KILL` here
-        Process.kill(
-          Signal.list["KILL"], #: as !nil
-          @wait_thread.pid,
-        )
       end
 
       #: (::String message, ?type: ::Integer) -> void
