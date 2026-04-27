@@ -238,6 +238,8 @@ module RubyLsp
         nil
       end
 
+      SHUTDOWN_DIAGNOSTIC_TIMEOUT = 10 #: Integer
+
       #: -> void
       def shutdown
         return if stopped?
@@ -249,8 +251,15 @@ module RubyLsp
 
         # Wait for the server to exit. Once it does, all handles it inherited (including its stderr write end) are
         # released, which lets the notifier thread drain remaining bytes and observe EOF.
-        @wait_thread.join
-        @notifier_thread.join
+        unless @wait_thread.join(SHUTDOWN_DIAGNOSTIC_TIMEOUT)
+          dump_shutdown_diagnostics("wait_thread did not exit within #{SHUTDOWN_DIAGNOSTIC_TIMEOUT}s")
+          @wait_thread.join
+        end
+
+        unless @notifier_thread.join(SHUTDOWN_DIAGNOSTIC_TIMEOUT)
+          dump_shutdown_diagnostics("notifier_thread did not exit within #{SHUTDOWN_DIAGNOSTIC_TIMEOUT}s")
+          @notifier_thread.join
+        end
 
         @stdout.close unless @stdout.closed?
         @stderr.close unless @stderr.closed?
@@ -277,6 +286,23 @@ module RubyLsp
       # Notifications are like messages, but one-way, with no response sent back.
       #: (String request, **untyped params) -> void
       def send_notification(request, **params) = send_message(request, **params)
+
+      # Print state of the shutdown machinery to stderr so a stuck CI run leaves a forensic record before timing out at
+      # the job level. Prints once per stuck join — does not abort the wait. Visible in the parent process's stderr,
+      # which CI captures.
+      #: (String) -> void
+      def dump_shutdown_diagnostics(stage)
+        warn("[ruby-lsp-rails shutdown] #{stage}")
+        warn("  wait_thread alive=#{@wait_thread.alive?} status=#{@wait_thread.status.inspect}")
+        warn("  notifier_thread alive=#{@notifier_thread.alive?} status=#{@notifier_thread.status.inspect}")
+        warn("  stdin closed=#{@stdin.closed?} stdout closed=#{@stdout.closed?} stderr closed=#{@stderr.closed?}")
+
+        if @notifier_thread.alive?
+          backtrace = @notifier_thread.backtrace
+          warn("  notifier_thread backtrace:")
+          backtrace&.each { |line| warn("    #{line}") }
+        end
+      end
 
       # @overridable
       #: (String request, **untyped params) -> void
