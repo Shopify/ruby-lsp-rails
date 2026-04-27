@@ -5,13 +5,13 @@
 # Please instead update this file by running `bin/tapioca gem rubocop-rake`.
 
 
-# source://rubocop-rake//lib/rubocop/rake/version.rb#3
+# pkg:gem/rubocop-rake#lib/rubocop/rake/version.rb:3
 module RuboCop; end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/class_definition.rb#4
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/class_definition.rb:4
 module RuboCop::Cop; end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/class_definition.rb#5
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/class_definition.rb:5
 module RuboCop::Cop::Rake; end
 
 # Detects class or module definition in a task or namespace,
@@ -22,14 +22,14 @@ module RuboCop::Cop::Rake; end
 # @example
 #   # bad
 #   task :foo do
-#   class C
-#   end
+#     class C
+#     end
 #   end
 #
 #   # bad
 #   namespace :foo do
-#   module M
-#   end
+#     module M
+#     end
 #   end
 #
 #   # good - It is also defined to the top level,
@@ -39,16 +39,16 @@ module RuboCop::Cop::Rake; end
 #   task :foo do
 #   end
 #
-# source://rubocop-rake//lib/rubocop/cop/rake/class_definition_in_task.rb#31
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/class_definition_in_task.rb:31
 class RuboCop::Cop::Rake::ClassDefinitionInTask < ::RuboCop::Cop::Base
-  # source://rubocop-rake//lib/rubocop/cop/rake/class_definition_in_task.rb#34
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/class_definition_in_task.rb:34
   def on_class(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/class_definition_in_task.rb#41
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/class_definition_in_task.rb:41
   def on_module(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/class_definition_in_task.rb#32
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/class_definition_in_task.rb:32
 RuboCop::Cop::Rake::ClassDefinitionInTask::MSG = T.let(T.unsafe(nil), String)
 
 # Rake task definition should have a description with `desc` method.
@@ -75,34 +75,30 @@ RuboCop::Cop::Rake::ClassDefinitionInTask::MSG = T.let(T.unsafe(nil), String)
 #   task :do_something do
 #   end
 #
-# source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#30
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:30
 class RuboCop::Cop::Rake::Desc < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::Rake::Helper::OnTask
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#40
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:40
   def on_task(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#36
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:36
   def prerequisites(param0 = T.unsafe(nil)); end
 
   private
 
-  # @return [Boolean]
-  #
-  # source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#76
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:76
   def can_insert_desc_to?(parent); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#62
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:62
   def parent_and_task(task_node); end
 
-  # @return [Boolean]
-  #
-  # source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#50
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:50
   def task_with_desc?(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/desc.rb#34
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/desc.rb:34
 RuboCop::Cop::Rake::Desc::MSG = T.let(T.unsafe(nil), String)
 
 # If namespaces are defined with the same name, Rake executes the both namespaces
@@ -113,45 +109,43 @@ RuboCop::Cop::Rake::Desc::MSG = T.let(T.unsafe(nil), String)
 # @example
 #   # bad
 #   namespace :foo do
-#   task :bar do
-#   end
+#     task :bar do
+#     end
 #   end
 #   namespace :foo do
-#   task :hoge do
-#   end
+#     task :hoge do
+#     end
 #   end
 #
 #   # good
 #   namespace :foo do
-#   task :bar do
-#   end
-#   task :hoge do
-#   end
+#     task :bar do
+#     end
+#     task :hoge do
+#     end
 #   end
 #
-# source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#30
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:30
 class RuboCop::Cop::Rake::DuplicateNamespace < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::Rake::Helper::OnNamespace
 
-  # @return [DuplicateNamespace] a new instance of DuplicateNamespace
-  #
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#35
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:35
   def initialize(*_arg0); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#67
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:67
   def message_for_dup(previous:, current:, namespace:); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#53
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:53
   def namespaces(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#40
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:40
   def on_namespace(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#76
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:76
   def source_location(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/duplicate_namespace.rb#33
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_namespace.rb:33
 RuboCop::Cop::Rake::DuplicateNamespace::MSG = T.let(T.unsafe(nil), String)
 
 # If tasks are defined with the same name, Rake executes the both tasks
@@ -162,104 +156,98 @@ RuboCop::Cop::Rake::DuplicateNamespace::MSG = T.let(T.unsafe(nil), String)
 # @example
 #   # bad
 #   task :foo do
-#   p 'foo 1'
+#     p 'foo 1'
 #   end
 #   task :foo do
-#   p 'foo 2'
+#     p 'foo 2'
 #   end
 #
 #   # good
 #   task :foo do
-#   p 'foo 1'
-#   p 'foo 2'
+#     p 'foo 1'
+#     p 'foo 2'
 #   end
 #
-# source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#26
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:26
 class RuboCop::Cop::Rake::DuplicateTask < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::Rake::Helper::OnTask
 
-  # @return [DuplicateTask] a new instance of DuplicateTask
-  #
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#31
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:31
   def initialize(*_arg0); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#66
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:66
   def message_for_dup(previous:, current:, task_name:); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#52
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:52
   def namespaces(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#36
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:36
   def on_task(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#75
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:75
   def source_location(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/duplicate_task.rb#29
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/duplicate_task.rb:29
 RuboCop::Cop::Rake::DuplicateTask::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/class_definition.rb#6
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/class_definition.rb:6
 module RuboCop::Cop::Rake::Helper; end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/class_definition.rb#7
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/class_definition.rb:7
 module RuboCop::Cop::Rake::Helper::ClassDefinition
   extend ::RuboCop::AST::NodePattern::Macros
   extend ::RuboCop::Cop::Rake::Helper::ClassDefinition
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/class_definition.rb#11
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/class_definition.rb:11
   def class_definition?(param0 = T.unsafe(nil)); end
 
-  # @return [Boolean]
-  #
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/class_definition.rb#22
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/class_definition.rb:22
   def in_class_definition?(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/on_namespace.rb#7
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_namespace.rb:7
 module RuboCop::Cop::Rake::Helper::OnNamespace
   extend ::RuboCop::AST::NodePattern::Macros
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/on_namespace.rb#10
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_namespace.rb:10
   def namespace?(param0 = T.unsafe(nil)); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/on_namespace.rb#14
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_namespace.rb:14
   def on_send(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/on_task.rb#7
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_task.rb:7
 module RuboCop::Cop::Rake::Helper::OnTask
   extend ::RuboCop::AST::NodePattern::Macros
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/on_task.rb#16
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_task.rb:16
   def on_send(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/on_task.rb#12
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_task.rb:12
   def task?(param0 = T.unsafe(nil)); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/on_task.rb#10
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/on_task.rb:10
 RuboCop::Cop::Rake::Helper::OnTask::RESTRICT_ON_SEND = T.let(T.unsafe(nil), Array)
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/task_definition.rb#7
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/task_definition.rb:7
 module RuboCop::Cop::Rake::Helper::TaskDefinition
   extend ::RuboCop::AST::NodePattern::Macros
   extend ::RuboCop::Cop::Rake::Helper::TaskDefinition
 
-  # @return [Boolean]
-  #
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/task_definition.rb#19
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/task_definition.rb:19
   def in_task_or_namespace?(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/task_definition.rb#11
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/task_definition.rb:11
   def task_or_namespace?(param0 = T.unsafe(nil)); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/helper/task_name.rb#7
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/task_name.rb:7
 module RuboCop::Cop::Rake::Helper::TaskName
   extend ::RuboCop::Cop::Rake::Helper::TaskName
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/helper/task_name.rb#10
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/helper/task_name.rb:10
   def task_name(node); end
 end
 
@@ -271,16 +259,16 @@ end
 # @example
 #   # bad
 #   task :foo do
-#   def helper_method
-#   do_something
-#   end
+#     def helper_method
+#       do_something
+#     end
 #   end
 #
 #   # bad
 #   namespace :foo do
-#   def helper_method
-#   do_something
-#   end
+#     def helper_method
+#       do_something
+#     end
 #   end
 #
 #   # good - It is also defined to the top level,
@@ -290,39 +278,37 @@ end
 #   task :foo do
 #   end
 #
-# source://rubocop-rake//lib/rubocop/cop/rake/method_definition_in_task.rb#33
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/method_definition_in_task.rb:33
 class RuboCop::Cop::Rake::MethodDefinitionInTask < ::RuboCop::Cop::Base
-  # source://rubocop-rake//lib/rubocop/cop/rake/method_definition_in_task.rb#36
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/method_definition_in_task.rb:36
   def on_def(node); end
 
-  # source://rubocop-rake//lib/rubocop/cop/rake/method_definition_in_task.rb#43
+  # pkg:gem/rubocop-rake#lib/rubocop/cop/rake/method_definition_in_task.rb:43
   def on_defs(node); end
 end
 
-# source://rubocop-rake//lib/rubocop/cop/rake/method_definition_in_task.rb#34
+# pkg:gem/rubocop-rake#lib/rubocop/cop/rake/method_definition_in_task.rb:34
 RuboCop::Cop::Rake::MethodDefinitionInTask::MSG = T.let(T.unsafe(nil), String)
 
-# source://rubocop-rake//lib/rubocop/rake/version.rb#4
+# pkg:gem/rubocop-rake#lib/rubocop/rake/version.rb:4
 module RuboCop::Rake; end
 
-# source://rubocop-rake//lib/rubocop/rake.rb#8
+# pkg:gem/rubocop-rake#lib/rubocop/rake.rb:8
 class RuboCop::Rake::Error < ::StandardError; end
 
 # A plugin that integrates RuboCop Rake with RuboCop's plugin system.
 #
-# source://rubocop-rake//lib/rubocop/rake/plugin.rb#8
+# pkg:gem/rubocop-rake#lib/rubocop/rake/plugin.rb:8
 class RuboCop::Rake::Plugin < ::LintRoller::Plugin
-  # source://rubocop-rake//lib/rubocop/rake/plugin.rb#9
+  # pkg:gem/rubocop-rake#lib/rubocop/rake/plugin.rb:9
   def about; end
 
-  # source://rubocop-rake//lib/rubocop/rake/plugin.rb#22
+  # pkg:gem/rubocop-rake#lib/rubocop/rake/plugin.rb:22
   def rules(_context); end
 
-  # @return [Boolean]
-  #
-  # source://rubocop-rake//lib/rubocop/rake/plugin.rb#18
+  # pkg:gem/rubocop-rake#lib/rubocop/rake/plugin.rb:18
   def supported?(context); end
 end
 
-# source://rubocop-rake//lib/rubocop/rake/version.rb#5
+# pkg:gem/rubocop-rake#lib/rubocop/rake/version.rb:5
 RuboCop::Rake::VERSION = T.let(T.unsafe(nil), String)
