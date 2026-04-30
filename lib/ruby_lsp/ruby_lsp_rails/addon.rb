@@ -16,7 +16,6 @@ require_relative "document_symbol"
 require_relative "definition"
 require_relative "rails_test_style"
 require_relative "completion"
-require_relative "indexing_enhancement"
 
 module RubyLsp
   module Rails
