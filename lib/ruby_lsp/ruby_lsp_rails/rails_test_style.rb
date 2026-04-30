@@ -138,15 +138,16 @@ module RubyLsp
 
       private
 
-      #: (Array[String] attached_ancestors, String fully_qualified_name) -> bool
+      #: (Array[String], String) -> bool
       def declarative_minitest?(attached_ancestors, fully_qualified_name)
-        # The declarative test style is present as long as the class extends
-        # ActiveSupport::Testing::Declarative
-        name_parts = fully_qualified_name.split("::")
-        singleton_name = "#{name_parts.join("::")}::<Class:#{name_parts.last}>"
-        @index.linearized_ancestors_of(singleton_name).include?("ActiveSupport::Testing::Declarative")
-      rescue RubyIndexer::Index::NonExistingNamespaceError
-        false
+        # The declarative test style is present as long as the class extends ActiveSupport::Testing::Declarative
+        declaration = @graph[fully_qualified_name]
+        return false unless declaration.is_a?(Rubydex::Namespace)
+
+        singleton = declaration.singleton_class
+        return attached_ancestors.include?("ActiveSupport::TestCase") unless singleton
+
+        singleton.ancestors.map(&:name).include?("ActiveSupport::Testing::Declarative")
       end
 
       #: (Prism::Node, String, String) -> void

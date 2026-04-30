@@ -16,7 +16,7 @@ module RubyLsp
       def initialize(response_builder, global_state, uri)
         @response_builder = response_builder
         @uri = uri
-        @index = T.let(T.unsafe(nil), RubyIndexer::Index)
+        @graph = T.let(T.unsafe(nil), Rubydex::Graph)
         @visibility_stack = T.let([], T::Array[Symbol])
         @nesting = T.let([], T::Array[String])
       end

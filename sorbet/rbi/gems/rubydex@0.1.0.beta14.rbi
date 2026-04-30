@@ -71,6 +71,10 @@ class Rubydex::ConstantAlias < ::Rubydex::Declaration
   # pkg:gem/rubydex#lib/rubydex.rb:11
   sig { returns(T::Enumerable[Rubydex::ConstantReference]) }
   def references; end
+
+  # pkg:gem/rubydex#lib/rubydex.rb:11
+  sig { returns(T.nilable(Rubydex::Declaration)) }
+  def target; end
 end
 
 # pkg:gem/rubydex#lib/rubydex.rb:11
