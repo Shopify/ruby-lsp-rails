@@ -39,7 +39,7 @@ module RubyLsp
         @client_mutex = Mutex.new #: Mutex
         @client_mutex.lock
 
-        Thread.new do
+        @boot_thread = Thread.new do
           @addon_mutex.synchronize do
             # We need to ensure the Rails client is fully loaded before we activate the server addons
             @client_mutex.synchronize do
@@ -50,7 +50,7 @@ module RubyLsp
             end
             offer_to_run_pending_migrations
           end
-        end
+        end #: Thread
       end
 
       #: -> RunnerClient
@@ -77,6 +77,7 @@ module RubyLsp
       # @override
       #: -> void
       def deactivate
+        @boot_thread.join
         @rails_runner_client.shutdown
       end
 

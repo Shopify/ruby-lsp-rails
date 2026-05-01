@@ -289,8 +289,14 @@ module RubyLsp
         send_result({ message: "ok", root: ::Rails.root.to_s })
 
         while @running
-          headers = @stdin.gets("\r\n\r\n") #: as String
-          json = @stdin.read(headers[/Content-Length: (\d+)/i, 1].to_i) #: as String
+          headers = @stdin.gets("\r\n\r\n")
+          break unless headers
+
+          length = headers[/Content-Length: (\d+)/i, 1]
+          break unless length
+
+          json = @stdin.read(length.to_i)
+          break unless json
 
           request = JSON.parse(json, symbolize_names: true)
           execute(request.fetch(:method), request[:params])
@@ -562,4 +568,8 @@ end
 
 if ARGV.first == "start"
   RubyLsp::Rails::Server.new(capabilities: JSON.parse(ARGV[1], symbolize_names: true)).start
+
+  # Ensure that we exit the process after finishing the server loop. This prevents child processes that may have been
+  # spawned by the user's Rails application from keeping this process alive
+  exit!(0)
 end
