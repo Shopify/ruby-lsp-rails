@@ -389,7 +389,8 @@ module RubyLsp
         RUBY
 
         with_server(source, URI("/test/foo_test.rb")) do |server, uri|
-          server.global_state.index.index_single(URI("/other_file.rb"), <<~RUBY)
+          graph = server.global_state.graph
+          graph.index_source("file:///other_file.rb", <<~RUBY, "ruby")
             module Minitest
               class Test; end
             end
@@ -405,6 +406,7 @@ module RubyLsp
               end
             end
           RUBY
+          graph.resolve
 
           server.global_state.stubs(:enabled_feature?).returns(true)
 
@@ -491,7 +493,8 @@ module RubyLsp
 
       def with_active_support_declarative_tests(source, file: "/fake.rb", &block)
         with_server(source, URI(file)) do |server, uri|
-          server.global_state.index.index_single(uri, <<~RUBY)
+          graph = server.global_state.graph
+          graph.index_source("file:///active_support_helpers.rb", <<~RUBY, "ruby")
             module Minitest
               class Test; end
             end
@@ -507,6 +510,7 @@ module RubyLsp
               end
             end
           RUBY
+          graph.resolve
 
           server.process_message(id: 1, method: "rubyLsp/discoverTests", params: {
             textDocument: { uri: uri },
