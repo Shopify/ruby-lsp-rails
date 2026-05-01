@@ -1,17 +1,49 @@
-name: Release
+name: Release gem on RubyGems.org and create GitHub release
 
 on:
   push:
     tags:
-      - v*
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+.beta[0-9]*
 
 jobs:
-  publish:
+  release_gem:
+    name: Release gem on RubyGems.org
+    if: github.repository == 'Shopify/ruby-lsp-rails'
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      id-token: write
+
+    environment: release
+
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        name: Checkout
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@c4e5b1316158f92e3d49443a9d58b31d25ac0f8f # v1.306.0
+        with:
+          bundler-cache: true
+
+      - name: Release gem on RubyGems.org
+        uses: rubygems/release-gem@6317d8d1f7e28c24d28f6eff169ea854948bd9f7 # v1.2.0
+
+  release_github:
+    name: Create GitHub release
+    if: github.repository == 'Shopify/ruby-lsp-rails'
+    needs: release_gem
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Create release
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -23,5 +55,6 @@ jobs:
               repo: context.repo.repo,
               tag_name: "${{ github.ref }}",
               name: "${{ github.ref_name }}",
-              generate_release_notes: true
-            })
+              generate_release_notes: true,
+              prerelease: "${{ github.ref_name }}".includes(".beta")
+            });
