@@ -31,7 +31,7 @@ jobs:
         run: "rm -Rf ${{ matrix.gemfile }}.lock"
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@a99ac844649df2596b52b4db087cfa0881b172af # v1.311.0
+        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
         with:
           bundler: latest
           ruby-version: ${{ matrix.ruby }}
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@a99ac844649df2596b52b4db087cfa0881b172af # v1.311.0
+        uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
         with:
           bundler: latest
           bundler-cache: true
