@@ -214,10 +214,10 @@ module RubyLsp
         nil
       end
 
-      #: -> void
+      #: -> Hash[Symbol, untyped]?
       def trigger_reload
         log_message("Reloading Rails application")
-        send_notification("reload")
+        make_request("reload")
       rescue MessageError
         log_message(
           "Ruby LSP Rails failed to trigger reload",
