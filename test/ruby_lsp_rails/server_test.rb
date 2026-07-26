@@ -124,6 +124,14 @@ class ServerTest < ActiveSupport::TestCase
     assert_match %r{test/dummy/app/models/country.rb:3$}, location
   end
 
+  test "resolve database configurations" do
+    @server.execute("db_configs", {})
+    migrations_paths = response[:result][:primary][:migrations_paths]
+    adapter_class = response[:result][:primary][:adapter_class]
+    assert_includes migrations_paths, "#{dummy_root}/db/migrate"
+    assert_equal "ActiveRecord::ConnectionAdapters::SQLite3Adapter", adapter_class
+  end
+
   test "route location returns the location for a valid route" do
     @server.execute("route_location", { name: "user_path" })
     location = response[:result][:location]
