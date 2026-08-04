@@ -22,7 +22,13 @@ module RubyLsp
           # queue messages are not printed in the test logs
           warn("Ruby LSP Rails create_client start (pid=#{Process.pid}, cwd=#{Dir.pwd})")
 
-          if File.exist?("bin/rails")
+          # Check for bin/rails under the workspace path rather than the current working directory. The working
+          # directory is process global state and other threads may change it concurrently (e.g. RuboCop's config
+          # loader switches to a gem's directory while evaluating configurations inherited with inherit_gem),
+          # which would make a relative check fail even though the application is there
+          workspace_path = global_state.workspace_path
+
+          if File.exist?(File.join(workspace_path, "bin", "rails"))
             attempts = 1
 
             client = begin
@@ -50,12 +56,12 @@ module RubyLsp
             warn("Ruby LSP Rails create_client booted the server successfully (attempt #{attempts})")
             client
           else
-            warn("Ruby LSP Rails create_client: bin/rails NOT found (cwd=#{Dir.pwd})")
+            warn("Ruby LSP Rails create_client: bin/rails NOT found (workspace=#{workspace_path}, cwd=#{Dir.pwd})")
 
             unless outgoing_queue.closed?
               outgoing_queue << RubyLsp::Notification.window_log_message(
                 <<~MESSAGE.chomp,
-                  Ruby LSP Rails failed to locate bin/rails in the current directory: #{Dir.pwd}
+                  Ruby LSP Rails failed to locate bin/rails in the workspace: #{workspace_path}
                   Server dependent features will not be available
                 MESSAGE
                 type: RubyLsp::Constant::MessageType::WARNING,
@@ -103,6 +109,9 @@ module RubyLsp
         log_message("Ruby LSP Rails booting server")
 
         stdin, stdout, stderr, wait_thread = Bundler.with_original_env do
+          # Spawn the server with an explicit working directory. Relying on the inherited working directory is racy:
+          # it is process global state and other threads may change it concurrently (e.g. RuboCop's config loader
+          # switches to a gem's directory while evaluating configurations inherited with inherit_gem)
           Open3.popen3(
             { "RUBY_LSP_RAILS_RUNNER" => "true" },
             "bundle",
@@ -112,6 +121,7 @@ module RubyLsp
             "#{__dir__}/server.rb",
             "start",
             server_relevant_capabilities(global_state),
+            { chdir: global_state.workspace_path },
           )
         end
 

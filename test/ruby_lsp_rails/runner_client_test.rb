@@ -101,7 +101,7 @@ module RubyLsp
           log = pop_log_notification(outgoing_queue, RubyLsp::Constant::MessageType::WARNING)
 
           assert_instance_of(RubyLsp::Notification, log)
-          assert_match("Ruby LSP Rails failed to locate bin/rails in the current directory", log.params.message)
+          assert_match("Ruby LSP Rails failed to locate bin/rails in the workspace", log.params.message)
         ensure
           outgoing_queue.close
           FileUtils.mv("bin/rails_backup", "bin/rails")
