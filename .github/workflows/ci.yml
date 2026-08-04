@@ -49,6 +49,7 @@ jobs:
             echo "=== Watchdog: test suite hung; dumping native backtraces of all ruby processes ==="
             ps -ef | grep -i ruby | grep -v grep || true
             if ! command -v gdb >/dev/null && [ "$(uname)" = "Linux" ]; then
+              sudo apt-get update >/dev/null 2>&1 || true
               sudo apt-get install -y gdb >/dev/null 2>&1 || true
             fi
             for pid in $(pgrep -x ruby || true); do
@@ -119,6 +120,7 @@ jobs:
             echo "=== Watchdog: stress run hung; dumping native backtraces of all ruby processes ==="
             ps -ef | grep -i ruby | grep -v grep || true
             if ! command -v gdb >/dev/null && [ "$(uname)" = "Linux" ]; then
+              sudo apt-get update >/dev/null 2>&1 || true
               sudo apt-get install -y gdb >/dev/null 2>&1 || true
             fi
             for pid in $(pgrep -x ruby || true); do

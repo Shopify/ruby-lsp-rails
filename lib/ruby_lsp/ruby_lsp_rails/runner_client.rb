@@ -3,15 +3,45 @@
 
 require "json"
 require "open3"
+require "io/wait"
 
 module RubyLsp
   module Rails
     class RunnerClient
+      # Seconds to wait for the server to boot and answer the initialization handshake before killing it and
+      # retrying. Booting can hang forever (e.g. intermittent boot deadlock on Ruby 4.0.6, see PR #726), so we
+      # must not block indefinitely
+      BOOT_TIMEOUT = Integer(ENV.fetch("RUBY_LSP_RAILS_BOOT_TIMEOUT", "30")) #: Integer
+      # How many times create_client attempts to boot the server before giving up and returning a NullClient
+      MAX_BOOT_ATTEMPTS = 3 #: Integer
+
       class << self
         #: (Thread::Queue outgoing_queue, RubyLsp::GlobalState global_state) -> RunnerClient
         def create_client(outgoing_queue, global_state)
           if File.exist?("bin/rails")
-            new(outgoing_queue, global_state)
+            attempts = 1
+
+            begin
+              new(outgoing_queue, global_state)
+            rescue InitializationError => e
+              # Experiment diagnostics (PR #726): surface the boot failure reason directly on stderr, because the
+              # outgoing queue messages are not printed in the test logs
+              warn("Ruby LSP Rails server boot attempt #{attempts} failed. Error:\n#{e.message}")
+
+              raise if attempts >= MAX_BOOT_ATTEMPTS
+
+              attempts += 1
+
+              unless outgoing_queue.closed?
+                outgoing_queue << RubyLsp::Notification.window_log_message(
+                  "Ruby LSP Rails server boot attempt failed (#{e.message.to_s.lines.first&.chomp}). " \
+                    "Retrying (attempt #{attempts} of #{MAX_BOOT_ATTEMPTS})",
+                  type: RubyLsp::Constant::MessageType::WARNING,
+                )
+              end
+
+              retry
+            end
           else
             unless outgoing_queue.closed?
               outgoing_queue << RubyLsp::Notification.window_log_message(
@@ -26,6 +56,10 @@ module RubyLsp
             NullClient.new
           end
         rescue StandardError => e
+          # Experiment diagnostics (PR #726): surface the final boot failure reason directly on stderr, because the
+          # outgoing queue messages are not printed in the test logs
+          warn("Ruby LSP Rails giving up booting the server. Error:\n#{e.full_message}")
+
           unless outgoing_queue.closed?
             outgoing_queue << RubyLsp::Notification.window_log_message(
               <<~MESSAGE.chomp,
@@ -80,6 +114,13 @@ module RubyLsp
         @stdout.binmode
         @stderr.binmode
 
+        # Wait for the server to finish booting and reply to the handshake with a timeout, rather than blocking
+        # indefinitely: the boot can hang forever (e.g. intermittent boot deadlock on Ruby 4.0.6, see PR #726).
+        # On timeout, the rescue below kills the server process and create_client retries with a fresh one
+        unless @stdout.wait_readable(BOOT_TIMEOUT)
+          raise InitializationError, "Timed out after #{BOOT_TIMEOUT} seconds waiting for the server to boot"
+        end
+
         initialize_response = read_response #: as !nil
         @rails_root = initialize_response[:root] #: String
         log_message("Finished booting Ruby LSP Rails server")
@@ -93,8 +134,30 @@ module RubyLsp
             @outgoing_queue << notification unless @outgoing_queue.closed?
           end
         end #: Thread
-      rescue StandardError
-        raise InitializationError, @stderr.read
+      rescue StandardError => e
+        # Make sure a stuck server process doesn't outlive us. Killing it also guarantees that reading its stderr
+        # below sees EOF instead of blocking forever. The instance variables may be unset if Open3.popen3 itself
+        # failed
+        if instance_variable_defined?(:@wait_thread) && @wait_thread.alive?
+          begin
+            Process.kill(:KILL, @wait_thread.pid)
+          rescue Errno::ESRCH, Errno::EPERM
+            # The process is already gone
+          end
+
+          @wait_thread.join(5)
+        end
+
+        message = e.is_a?(InitializationError) ? e.message : e.full_message
+
+        if instance_variable_defined?(:@stderr)
+          # The server's stderr usually contains the actual boot failure reason (e.g. a crash report), so include it
+          stderr_output = @stderr.read
+          message = "#{message}\nServer stderr:\n#{stderr_output}" unless stderr_output.to_s.empty?
+          [@stdin, @stdout, @stderr].each { |io| io.close unless io.closed? }
+        end
+
+        raise InitializationError, message
       end
 
       #: (String server_addon_path) -> void
