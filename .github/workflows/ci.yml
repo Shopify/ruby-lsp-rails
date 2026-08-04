@@ -41,5 +41,20 @@ jobs:
         shell: bash
         run: |
           bundle exec rails db:setup
-          T="$(command -v timeout || command -v gtimeout)"
-          "$T" -s INT -k 60 900 bundle exec rake TESTOPTS="--verbose"
+          bundle exec rake TESTOPTS="--verbose" &
+          TEST_PID=$!
+          (
+            sleep 900
+            echo "=== Watchdog: sending SIGINT to test process after 15 minutes ==="
+            kill -INT "$TEST_PID" 2>/dev/null
+            sleep 60
+            echo "=== Watchdog: test process did not exit after SIGINT, sending SIGKILL ==="
+            kill -KILL "$TEST_PID" 2>/dev/null
+          ) &
+          WATCHDOG_PID=$!
+          set +e
+          wait "$TEST_PID"
+          STATUS=$?
+          set -e
+          kill "$WATCHDOG_PID" 2>/dev/null || true
+          exit "$STATUS"
