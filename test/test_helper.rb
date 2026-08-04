@@ -1,6 +1,10 @@
 # typed: true
 # frozen_string_literal: true
 
+# Flush test progress output immediately so CI logs show which test is
+# running when the suite hangs (Ruby 4.0.6 investigation).
+$stdout.sync = true
+
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
