@@ -75,3 +75,73 @@ jobs:
           set -e
           kill "$WATCHDOG_PID" 2>/dev/null || true
           exit "$STATUS"
+
+  # Boots the runner server through the full LSP addon activation path (the
+  # same code path the feature tests use) 120 times in a row, with nothing
+  # else in between — a focused reproducer for the intermittent Ruby 4.0.6
+  # boot deadlock. The in-process watchdog in boot_stress.rb dumps Ruby-level
+  # backtraces of every thread after 120s of no progress; the shell watchdog
+  # below adds native (gdb/lldb) backtraces of parent and children.
+  stress:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        ruby: ["4.0.6"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/Gemfile
+    name: Boot stress Ruby ${{ matrix.ruby }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Remove Gemfile.lock
+        shell: bash
+        run: "rm -Rf Gemfile.lock"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          bundler: latest
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          cache-version: 8
+
+      - name: Boot the runner server repeatedly through the LSP
+        shell: bash
+        run: |
+          bundle exec rails db:setup
+          bundle exec ruby -Itest test/stress/boot_stress.rb &
+          TEST_PID=$!
+          (
+            sleep 900
+            echo "=== Watchdog: stress run hung; dumping native backtraces of all ruby processes ==="
+            ps -ef | grep -i ruby | grep -v grep || true
+            if ! command -v gdb >/dev/null && [ "$(uname)" = "Linux" ]; then
+              sudo apt-get install -y gdb >/dev/null 2>&1 || true
+            fi
+            for pid in $(pgrep -x ruby || true); do
+              echo "--- ruby process $pid: $(ps -o args= -p "$pid" | head -c 300)"
+              if command -v gdb >/dev/null; then
+                sudo gdb -p "$pid" -batch \
+                  -ex 'set pagination off' \
+                  -ex 'thread apply all bt' 2>&1 || true
+              elif command -v lldb >/dev/null; then
+                sudo lldb -p "$pid" --batch \
+                  -o 'thread backtrace all' -o 'detach' 2>&1 || true
+              fi
+            done
+            echo "=== Watchdog: sending SIGINT to stress process ==="
+            kill -INT "$TEST_PID" 2>/dev/null
+            sleep 60
+            echo "=== Watchdog: stress process did not exit after SIGINT, sending SIGKILL ==="
+            kill -KILL "$TEST_PID" 2>/dev/null
+          ) &
+          WATCHDOG_PID=$!
+          set +e
+          wait "$TEST_PID"
+          STATUS=$?
+          set -e
+          kill "$WATCHDOG_PID" 2>/dev/null || true
+          exit "$STATUS"
