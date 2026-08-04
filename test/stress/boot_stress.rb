@@ -21,6 +21,32 @@ Thread.new do
     next unless Time.now - $last_progress > 120
 
     $stdout.puts "=== In-process watchdog: no boot progress for 120s; dumping all thread backtraces"
+
+    # Forensics on the Rails addon boot thread: was it never created, did it die with an exception (status nil),
+    # was it killed / did it finish normally (status false)? If it stored an exception, re-raise it via #value so
+    # we finally see WHY the boot failed
+    begin
+      addon = RubyLsp::Addon.addons.find { |a| a.is_a?(RubyLsp::Rails::Addon) }
+      if addon
+        client = addon.instance_variable_get(:@rails_runner_client)
+        boot_thread = addon.instance_variable_get(:@boot_thread)
+        $stdout.puts "--- Rails addon forensics: client=#{client.class} " \
+          "boot_thread=#{boot_thread.inspect} status=#{boot_thread&.status.inspect}"
+
+        if boot_thread && boot_thread.status.nil?
+          begin
+            boot_thread.value
+          rescue Exception => e # rubocop:disable Lint/RescueException
+            $stdout.puts "--- boot thread died with #{e.class}:\n#{e.full_message}"
+          end
+        end
+      else
+        $stdout.puts "--- Rails addon instance not found in RubyLsp::Addon.addons"
+      end
+    rescue Exception => e # rubocop:disable Lint/RescueException
+      $stdout.puts "--- forensics failed: #{e.class}: #{e.message}"
+    end
+
     Thread.list.each do |thread|
       $stdout.puts "--- Thread #{thread.inspect} status=#{thread.status.inspect}"
       $stdout.puts((thread.backtrace || ["<no Ruby backtrace>"]).join("\n"))

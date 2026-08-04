@@ -18,10 +18,14 @@ module RubyLsp
       class << self
         #: (Thread::Queue outgoing_queue, RubyLsp::GlobalState global_state) -> RunnerClient
         def create_client(outgoing_queue, global_state)
+          # Experiment diagnostics (PR #726): trace every path through this method on stderr, because the outgoing
+          # queue messages are not printed in the test logs
+          warn("Ruby LSP Rails create_client start (pid=#{Process.pid}, cwd=#{Dir.pwd})")
+
           if File.exist?("bin/rails")
             attempts = 1
 
-            begin
+            client = begin
               new(outgoing_queue, global_state)
             rescue InitializationError => e
               # Experiment diagnostics (PR #726): surface the boot failure reason directly on stderr, because the
@@ -42,7 +46,12 @@ module RubyLsp
 
               retry
             end
+
+            warn("Ruby LSP Rails create_client booted the server successfully (attempt #{attempts})")
+            client
           else
+            warn("Ruby LSP Rails create_client: bin/rails NOT found (cwd=#{Dir.pwd})")
+
             unless outgoing_queue.closed?
               outgoing_queue << RubyLsp::Notification.window_log_message(
                 <<~MESSAGE.chomp,
@@ -71,6 +80,11 @@ module RubyLsp
           end
 
           NullClient.new
+        rescue Exception => e # rubocop:disable Lint/RescueException
+          # Experiment diagnostics (PR #726): non-StandardError exceptions kill the boot thread silently, so log
+          # them before letting them propagate
+          warn("Ruby LSP Rails create_client saw non-standard exception #{e.class}:\n#{e.full_message}")
+          raise
         end
       end
 
