@@ -58,3 +58,64 @@ jobs:
           set -e
           kill "$WATCHDOG_PID" 2>/dev/null || true
           exit "$STATUS"
+
+  # Boots the exact same `rails runner .../server.rb start` subprocess the
+  # RunnerClient spawns, in a loop, without any LSP machinery. If the Rails
+  # boot deadlock reproduces here, we get a minimal repro plus an
+  # Interrupt backtrace from inside the hung process.
+  boot-loop:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        ruby: ["4.0.5", "4.0.6"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/Gemfile
+    name: Boot loop Ruby ${{ matrix.ruby }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Remove Gemfile.lock
+        shell: bash
+        run: "rm -Rf Gemfile.lock"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          bundler: latest
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          cache-version: 8
+
+      - name: Boot rails runner repeatedly
+        shell: bash
+        run: |
+          bundle exec rails db:setup
+          for i in $(seq 1 100); do
+            echo "=== Iteration $i"
+            printf '' | RUBY_LSP_RAILS_RUNNER=true bundle exec rails runner \
+              "lib/ruby_lsp/ruby_lsp_rails/server.rb" start &
+            BOOT_PID=$!
+            (
+              sleep 90
+              echo "=== HANG on iteration $i: sending SIGINT for a Ruby backtrace ==="
+              kill -INT "$BOOT_PID" 2>/dev/null
+              sleep 20
+              echo "=== Still alive after SIGINT, sending SIGABRT for a crash report ==="
+              kill -ABRT "$BOOT_PID" 2>/dev/null
+              sleep 20
+              kill -KILL "$BOOT_PID" 2>/dev/null
+            ) &
+            WATCHDOG_PID=$!
+            set +e
+            wait "$BOOT_PID"
+            STATUS=$?
+            set -e
+            kill "$WATCHDOG_PID" 2>/dev/null || true
+            if [ "$STATUS" -ne 0 ]; then
+              echo "=== Iteration $i exited with status $STATUS"
+              exit "$STATUS"
+            fi
+          done
