@@ -8,6 +8,8 @@ class ServerTest < ActiveSupport::TestCase
   setup do
     @stdout = StringIO.new
     @stderr = StringIO.new
+    RubyLsp::Rails::ServerAddon.instance_variable_set(:@server_addon_classes, [])
+    RubyLsp::Rails::ServerAddon.instance_variable_set(:@server_addons, {})
     @server = RubyLsp::Rails::Server.new(stdout: @stdout, stderr: @stderr, override_default_output_device: false)
   end
 
@@ -266,6 +268,76 @@ class ServerTest < ActiveSupport::TestCase
     )
   ensure
     $> = original_stdout
+  end
+
+  test "forked processes are named based on caller" do
+    skip("Fork is not supported on Windows") if Gem.win_platform?
+
+    # ps_output = `ps -p #{Process.pid} -o comm=`.strip
+    addon_path = File.expand_path("my_addon.rb")
+    File.write(addon_path, <<~RUBY)
+      class MyServerAddon < RubyLsp::Rails::ServerAddon
+        def name
+          "MyAddon"
+        end
+
+        def execute(request, params)
+          file = "process_name.txt"
+
+          # We can't directly send a message in these tests because we're using a StringIO as stdout instead of the
+          # actual pipe, which means that the child process doesn't have access to the same object
+          pid = fork { File.write(file, `ps -p \#{Process.pid} -o comm=`.strip) }
+          Process.wait(pid)
+
+          send_message({ process_name: File.read(file) })
+          File.delete(file)
+        end
+      end
+    RUBY
+
+    begin
+      @server.execute("server_addon/register", server_addon_path: addon_path)
+      @server.execute("server_addon/delegate", server_addon_name: "MyAddon", request_name: "dsl")
+      assert_equal(response, { process_name: "ruby-lsp-rails: #{addon_path}" })
+    ensure
+      FileUtils.rm(addon_path)
+    end
+  end
+
+  test "forked processes with no block are named based on caller" do
+    skip("Fork is not supported on Windows") if Gem.win_platform?
+
+    addon_path = File.expand_path("my_other_addon.rb")
+    File.write(addon_path, <<~RUBY)
+      class MyOtherServerAddon < RubyLsp::Rails::ServerAddon
+        def name
+          "MyOtherAddon"
+        end
+
+        def execute(request, params)
+          file = "other_process_name.txt"
+          pid = fork
+
+          if pid
+            Process.wait(pid)
+            send_message({ process_name: File.read(file) })
+            File.delete(file)
+          else
+            File.write(file, `ps -p \#{Process.pid} -o comm=`.strip)
+            # Exit from the child process or else we're stuck in the infinite loop of the server
+            exit!
+          end
+        end
+      end
+    RUBY
+
+    begin
+      @server.execute("server_addon/register", server_addon_path: addon_path)
+      @server.execute("server_addon/delegate", server_addon_name: "MyOtherAddon", request_name: "dsl")
+      assert_equal(response, { process_name: "ruby-lsp-rails: #{addon_path}" })
+    ensure
+      FileUtils.rm(addon_path)
+    end
   end
 
   private
