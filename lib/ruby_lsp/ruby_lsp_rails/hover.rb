@@ -73,7 +73,7 @@ module RubyLsp
         schema_file = model[:schema_file]
 
         @response_builder.push(
-          "[Schema](#{URI::Generic.from_path(path: schema_file)})\n",
+          "[Schema](#{schema_uri(schema_file, model[:table_name])})\n",
           category: :documentation,
         ) if schema_file
 
@@ -117,6 +117,24 @@ module RubyLsp
             category: :documentation,
           )
         end
+      end
+
+      #: (String schema_file, String? table_name) -> String
+      def schema_uri(schema_file, table_name)
+        location = table_name && table_location(schema_file, table_name)
+
+        fragment = if location
+          "L#{location.start_line},#{location.start_column + 1}-#{location.end_line},#{location.end_column + 1}"
+        end
+
+        URI::Generic.from_path(path: schema_file, fragment: fragment).to_s
+      end
+
+      #: (String schema_file, String table_name) -> Prism::Location?
+      def table_location(schema_file, table_name)
+        return unless File.extname(schema_file) == ".rb"
+
+        Support::SchemaTableLocationVisitor.find(schema_file, table_name)
       end
 
       #: (String default_value, String type) -> String

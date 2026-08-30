@@ -9,6 +9,7 @@ require_relative "support/associations"
 require_relative "support/callbacks"
 require_relative "support/validations"
 require_relative "support/location_builder"
+require_relative "support/schema_table_location_visitor"
 require_relative "runner_client"
 require_relative "hover"
 require_relative "code_lens"
@@ -149,6 +150,7 @@ module RubyLsp
       def workspace_did_change_watched_files(changes)
         if changes.any? { |c| c[:uri].end_with?("db/schema.rb") || c[:uri].end_with?("structure.sql") }
           @rails_runner_client.trigger_reload
+          Support::SchemaTableLocationVisitor.expire_cache
         end
 
         if changes.any? do |c|
