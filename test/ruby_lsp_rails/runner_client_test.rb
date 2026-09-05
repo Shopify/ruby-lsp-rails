@@ -61,6 +61,7 @@ module RubyLsp
           { name: "index_users_on_country_id", columns: ["country_id"], unique: false },
         ]
         response = @client.model("User") #: as !nil
+        assert_equal("users", response.fetch(:table_name))
         assert_equal(columns, response.fetch(:columns))
         assert_equal(foreign_keys, response.fetch(:foreign_keys))
         assert_equal(indexes.sort_by { |i| i[:name] }, response.fetch(:indexes).sort_by { |i| i[:name] })
