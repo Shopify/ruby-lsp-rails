@@ -62,6 +62,8 @@ module RubyLsp
         ]
         response = @client.model("User") #: as !nil
         assert_equal("users", response.fetch(:table_name))
+        assert_equal("", response.fetch(:base_table_name_prefix))
+        assert_equal("", response.fetch(:base_table_name_suffix))
         assert_equal(columns, response.fetch(:columns))
         assert_equal(foreign_keys, response.fetch(:foreign_keys))
         assert_equal(indexes.sort_by { |i| i[:name] }, response.fetch(:indexes).sort_by { |i| i[:name] })

@@ -6,9 +6,11 @@ module RubyLsp
     module Support
       class SchemaTableLocationVisitor < Prism::Visitor
         class << self
-          #: (String source, String table_name) -> Prism::Location?
-          def find(source, table_name)
-            table_locations(source)[table_name]
+          #: (String source, String table_name, base_prefix: String, base_suffix: String) -> Prism::Location?
+          def find(source, table_name, base_prefix:, base_suffix:)
+            schema_table_name = table_name.sub(/\A#{Regexp.escape(base_prefix)}(.+)#{Regexp.escape(base_suffix)}\z/, "\\1")
+
+            table_locations(source)[schema_table_name]
           end
 
           #: -> void

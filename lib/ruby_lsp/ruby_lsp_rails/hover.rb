@@ -73,7 +73,7 @@ module RubyLsp
         schema_file = model[:schema_file]
 
         @response_builder.push(
-          "[Schema](#{schema_uri(schema_file, model[:table_name])})\n",
+          "[Schema](#{schema_uri(schema_file, model)})\n",
           category: :documentation,
         ) if schema_file
 
@@ -119,9 +119,9 @@ module RubyLsp
         end
       end
 
-      #: (String schema_file, String? table_name) -> String
-      def schema_uri(schema_file, table_name)
-        location = table_name && table_location(schema_file, table_name)
+      #: (String schema_file, Hash[Symbol, untyped] model) -> String
+      def schema_uri(schema_file, model)
+        location = table_location(schema_file, model)
 
         fragment = if location
           "L#{location.start_line},#{location.start_column + 1}-#{location.end_line},#{location.end_column + 1}"
@@ -130,11 +130,18 @@ module RubyLsp
         URI::Generic.from_path(path: schema_file, fragment: fragment).to_s
       end
 
-      #: (String schema_file, String table_name) -> Prism::Location?
-      def table_location(schema_file, table_name)
+      #: (String schema_file, Hash[Symbol, untyped] model) -> Prism::Location?
+      def table_location(schema_file, model)
+        table_name = model[:table_name]
+        return unless table_name
         return unless File.extname(schema_file) == ".rb"
 
-        Support::SchemaTableLocationVisitor.find(File.read(schema_file), table_name)
+        Support::SchemaTableLocationVisitor.find(
+          File.read(schema_file),
+          table_name,
+          base_prefix: model[:base_table_name_prefix].to_s,
+          base_suffix: model[:base_table_name_suffix].to_s,
+        )
       rescue Errno::ENOENT, Errno::EACCES
         nil
       end
