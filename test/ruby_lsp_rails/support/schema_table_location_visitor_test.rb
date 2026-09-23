@@ -50,6 +50,18 @@ module RubyLsp
           assert_equal(8, location.end_line)
         end
 
+        test ".find stops traversing once it reaches a 'create_table' call node" do
+          source = <<~RUBY
+            create_table "users", force: :cascade do |t|
+              t.string "name"
+            end
+          RUBY
+
+          SchemaTableLocationVisitor.any_instance.expects(:visit_string_node).never
+
+          assert(SchemaTableLocationVisitor.find(source, "users"))
+        end
+
         test ".find returns nil if the table is not found" do
           assert_nil(SchemaTableLocationVisitor.find(schema_source, "non_existing_table"))
         end

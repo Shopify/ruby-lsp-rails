@@ -41,20 +41,21 @@ module RubyLsp
 
         #: (Prism::CallNode node) -> void
         def visit_call_node(node)
-          if node.message == "create_table"
-            first_argument = node.arguments&.arguments&.first
-
-            name = case first_argument
-            when Prism::StringNode
-              first_argument.unescaped
-            when Prism::SymbolNode
-              first_argument.unescaped
-            end
-
-            @tables[name] = node.location if name
+          unless node.message == "create_table"
+            super
+            return
           end
 
-          super
+          first_argument = node.arguments&.arguments&.first
+
+          name = case first_argument
+          when Prism::StringNode
+            first_argument.unescaped
+          when Prism::SymbolNode
+            first_argument.unescaped
+          end
+
+          @tables[name] = node.location if name
         end
       end
     end
