@@ -251,6 +251,7 @@ module RubyLsp
       test "handles `db/structure.sql` instead of `db/schema.rb`" do
         expected_response = {
           schema_file: "#{dummy_root}/db/structure.sql",
+          table_name: "users",
           columns: [],
           primary_keys: [],
           foreign_keys: [],
