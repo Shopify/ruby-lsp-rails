@@ -20,6 +20,7 @@ gem "tapioca", "~> 0.11", require: false, platforms: :ruby
 gem "psych", "~> 5.1", require: false
 gem "rails", "~> 8.0.0"
 gem "minitest", "< 6" # Remove when Rails 8.0.5 is released
+gem "json", "< 3" # Rails 8.0 passes the removed quirks_mode option to JSON.generate
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo"
