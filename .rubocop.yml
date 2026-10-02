@@ -4,7 +4,9 @@ inherit_gem:
 plugins:
   - rubocop-minitest
   - rubocop-rake
+<% unless Gem.win_platform? %>
   - rubocop-sorbet
+<% end %>
 
 AllCops:
   NewCops: disable
@@ -16,6 +18,7 @@ Naming/FileName:
   Exclude:
     - "lib/ruby-lsp-rails.rb"
 
+<% unless Gem.win_platform? %>
 Sorbet/FalseSigil:
   Enabled: false
 
@@ -36,6 +39,7 @@ Sorbet/StrictSigil:
     - "**/*.rake"
     - "test/**/*.rb"
     - "lib/ruby_lsp/ruby_lsp_rails/server.rb" # we can't assume sorbet-runtime is available
+<% end %>
 
 Layout/LeadingCommentSpace:
   AllowRBSInlineAnnotation: true

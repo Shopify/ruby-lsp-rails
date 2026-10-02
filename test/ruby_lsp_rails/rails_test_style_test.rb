@@ -139,10 +139,10 @@ module RubyLsp
           File.join(base_dir, "fake_test.rb"),
           File.join(base_dir, "fake_test2.rb"),
         ]
-        Dir.stubs(:glob).returns(test_paths)
 
         with_server do |server|
           wait_for_rails_runner_client_boot
+          Dir.stubs(:glob).returns(test_paths)
 
           server.process_message({
             id: 1,
@@ -295,10 +295,10 @@ module RubyLsp
       test "resolve test escapes file paths inside directories" do
         base_dir = Gem.win_platform? ? "D:/test" : "/test"
         test_path = File.join(base_dir, "example(v2)_test.rb")
-        Dir.stubs(:glob).returns([test_path])
 
         with_server do |server|
           wait_for_rails_runner_client_boot
+          Dir.stubs(:glob).returns([test_path])
 
           server.process_message({
             id: 1,
