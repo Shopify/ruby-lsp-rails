@@ -6,7 +6,7 @@ module RubyLsp
     # ![Hover demo](../../hover.gif)
     #
     # Augment [hover](https://microsoft.github.io/language-server-protocol/specification#textDocument_hover) with
-    # information about a model.
+    # information about models and controller actions.
     #
     # # Example
     #
@@ -29,9 +29,37 @@ module RubyLsp
           self,
           :on_constant_path_node_enter,
           :on_constant_read_node_enter,
+          :on_def_node_enter,
           :on_symbol_node_enter,
           :on_string_node_enter,
         )
+      end
+
+      #: (Prism::DefNode node) -> void
+      def on_def_node_enter(node)
+        class_name = @nesting.last
+        return unless class_name&.end_with?("Controller")
+
+        controller = @nesting.join("::")
+        route = @client.route(controller: controller, action: node.name.to_s)
+        return unless route
+
+        route_path, route_line = route[:source_location]
+        route_uri = URI::Generic.from_path(path: route_path)
+        route_file = route_path.delete_prefix("#{@client.rails_root}/")
+        details = [
+          "**Route**: `#{route[:verb]} #{route[:path]}` ([#{route_file}:#{route_line}](#{route_uri}#L#{route_line}))",
+        ]
+
+        views = controller_action_views(controller, node.name.to_s)
+        unless views.empty?
+          view_links = views.map do |view_name, view_uri|
+            "[#{view_name}](#{view_uri})"
+          end
+          details << "**Views**: #{view_links.join(", ")}"
+        end
+
+        @response_builder.push(details.join("\n\n"), category: :documentation)
       end
 
       #: (Prism::ConstantPathNode node) -> void
@@ -64,6 +92,21 @@ module RubyLsp
       end
 
       private
+
+      #: (String controller, String action) -> Array[[String, String]]
+      def controller_action_views(controller, action)
+        controller_path = controller
+          .delete_suffix("Controller")
+          .gsub(/([a-z])([A-Z])/, "\\1_\\2")
+          .gsub("::", "/")
+          .downcase
+
+        Dir.glob("#{@client.rails_root}/app/views/#{controller_path}/#{action}*").filter_map do |path|
+          next if File.directory?(path)
+
+          [File.basename(path), URI::Generic.from_path(path: path).to_s]
+        end
+      end
 
       #: (String name) -> void
       def generate_column_content(name)

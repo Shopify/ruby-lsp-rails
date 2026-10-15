@@ -428,10 +428,33 @@ module RubyLsp
         CONTENT
       end
 
+      test "returns route and view information when hovering a controller action" do
+        response = hover_on_source(<<~RUBY, { line: 1, character: 7 }, wait_for_runner: true)
+          class UsersController < ApplicationController
+            def index
+            end
+          end
+        RUBY
+
+        assert(response, "Expected controller route and view information in the hover response")
+
+        contents = response.contents.value
+        routes_uri = URI::Generic.from_path(path: "#{dummy_root}/config/routes.rb")
+        html_view_uri = URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.html.erb")
+        json_view_uri = URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.json.jbuilder")
+
+        assert_includes(contents, "GET /users(.:format)")
+        assert_includes(contents, "[config/routes.rb:5](#{routes_uri}#L5)")
+        assert_includes(contents, "[index.html.erb](#{html_view_uri})")
+        assert_includes(contents, "[index.json.jbuilder](#{json_view_uri})")
+      end
+
       private
 
-      def hover_on_source(source, position)
+      def hover_on_source(source, position, wait_for_runner: false)
         with_server(source, stub_no_typechecker: true) do |server, uri|
+          wait_for_rails_runner_client_boot if wait_for_runner
+
           server.process_message(
             id: 1,
             method: "textDocument/hover",
