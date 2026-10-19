@@ -65,6 +65,108 @@ module RubyLsp
         CONTENT
       end
 
+      test "schema link points to the model's table definition when the table name is known" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          table_name: "users",
+          columns: [],
+          primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_includes(
+          response.contents.value,
+          "[Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")}#L50,3-60,6)",
+        )
+      end
+
+      test "schema link finds the table when the model name still carries the configured prefix and suffix" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          table_name: "app_users_records",
+          base_table_name_prefix: "app_",
+          base_table_name_suffix: "_records",
+          columns: [],
+          primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_includes(
+          response.contents.value,
+          "[Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")}#L50,3-60,6)",
+        )
+      end
+
+      test "schema link falls back to the top of the file when the table can't be found in the schema" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          table_name: "non_existing_table",
+          columns: [],
+          primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_includes(
+          response.contents.value,
+          "[Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})",
+        )
+      end
+
+      test "schema link falls back to the top of the file when the schema file can't be read" do
+        expected_response = {
+          schema_file: "#{dummy_root}/db/does_not_exist.rb",
+          table_name: "users",
+          columns: [],
+          primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [],
+        }
+
+        RunnerClient.any_instance.stubs(model: expected_response)
+
+        response = hover_on_source(<<~RUBY, { line: 3, character: 0 })
+          class User < ApplicationRecord
+          end
+
+          User
+        RUBY
+
+        assert_includes(
+          response.contents.value,
+          "[Schema](#{URI::Generic.from_path(path: dummy_root + "/db/does_not_exist.rb")})",
+        )
+      end
+
       test "return column information for namespaced models" do
         expected_response = {
           schema_file: "#{dummy_root}/db/schema.rb",
@@ -176,6 +278,7 @@ module RubyLsp
       test "handles `db/structure.sql` instead of `db/schema.rb`" do
         expected_response = {
           schema_file: "#{dummy_root}/db/structure.sql",
+          table_name: "users",
           columns: [],
           primary_keys: [],
           foreign_keys: [],
