@@ -12,6 +12,7 @@ module RubyLsp
     # Currently supported targets:
     #
     # - Callbacks
+    # - I18n translations from YAML files loaded by the simple backend
     # - Named routes (e.g. `users_path`)
     #
     # # Example
@@ -55,6 +56,7 @@ module RubyLsp
       #: (Prism::StringNode node) -> void
       def on_string_node_enter(node)
         handle_possible_dsl(node)
+        handle_i18n_translation(node)
       end
 
       #: (Prism::CallNode node) -> void
@@ -156,6 +158,53 @@ module RubyLsp
         return unless result
 
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
+      end
+
+      #: (Prism::StringNode node) -> void
+      def handle_i18n_translation(node)
+        call_node = @node_context.call_node
+        return unless i18n_translate?(call_node)
+
+        arguments = call_node #: as !nil
+          .arguments&.arguments
+        return unless arguments
+        return unless arguments.first == node
+        return if i18n_lookup_options?(arguments)
+
+        key = node.unescaped
+        return if key.empty? || key.start_with?(".")
+
+        @client.i18n_locations(key)&.each do |location|
+          @response_builder << Support::LocationBuilder.line_location_from_s(location)
+        end
+      end
+
+      #: (Prism::CallNode? call_node) -> bool
+      def i18n_translate?(call_node)
+        return false unless call_node
+
+        receiver = call_node.receiver
+        return false unless receiver.is_a?(Prism::ConstantReadNode)
+        return false unless receiver.name == :I18n
+
+        message = call_node.message
+        message == "t" || message == "translate"
+      end
+
+      #: (Array[Prism::Node] arguments) -> bool
+      def i18n_lookup_options?(arguments)
+        arguments.drop(1).any? do |argument|
+          next false unless argument.is_a?(Prism::KeywordHashNode) || argument.is_a?(Prism::HashNode)
+
+          argument.elements.any? do |element|
+            next false unless element.is_a?(Prism::AssocNode)
+
+            key = element.key
+            next false unless key.is_a?(Prism::SymbolNode)
+
+            ["scope", "separator"].include?(key.value)
+          end
+        end
       end
 
       #: (String name) -> void
