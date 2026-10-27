@@ -83,7 +83,9 @@ module RubyLsp
         @stdout.binmode
         @stderr.binmode
 
-        initialize_response = read_response #: as !nil
+        initialize_response = read_response
+        raise InitializationError, "Invalid response from Ruby LSP Rails server" unless initialize_response.is_a?(Hash)
+
         @rails_root = initialize_response[:root] #: String
         log_message("Finished booting Ruby LSP Rails server")
 
@@ -165,6 +167,17 @@ module RubyLsp
       rescue MessageError
         log_message(
           "Ruby LSP Rails failed to get i18n information",
+          type: RubyLsp::Constant::MessageType::ERROR,
+        )
+        nil
+      end
+
+      #: (String key) -> Array[String]?
+      def i18n_locations(key)
+        make_array_request("i18n_locations", key: key)
+      rescue MessageError
+        log_message(
+          "Ruby LSP Rails failed to get i18n source locations",
           type: RubyLsp::Constant::MessageType::ERROR,
         )
         nil
@@ -273,6 +286,22 @@ module RubyLsp
 
       #: (String request, **untyped params) -> Hash[Symbol, untyped]?
       def make_request(request, **params)
+        response = send_and_read_response(request, **params)
+        return response if response.nil? || response.is_a?(Hash)
+
+        raise MessageError, "Unexpected response type from Ruby LSP Rails server"
+      end
+
+      #: (String request, **untyped params) -> Array[String]?
+      def make_array_request(request, **params)
+        response = send_and_read_response(request, **params)
+        return response if response.nil? || response.is_a?(Array)
+
+        raise MessageError, "Unexpected response type from Ruby LSP Rails server"
+      end
+
+      #: (String request, **untyped params) -> (Hash[Symbol, untyped] | Array[untyped] | nil)
+      def send_and_read_response(request, **params)
         send_message(request, **params)
         read_response
       end
@@ -296,7 +325,7 @@ module RubyLsp
       end
 
       # @overridable
-      #: -> Hash[Symbol, untyped]?
+      #: -> (Hash[Symbol, untyped] | Array[untyped] | nil)
       def read_response
         raw_response = @mutex.synchronize do
           content_length = read_content_length
@@ -405,7 +434,7 @@ module RubyLsp
       end
 
       # @override
-      #: -> Hash[Symbol, untyped]?
+      #: -> (Hash[Symbol, untyped] | Array[untyped] | nil)
       def read_response
         # no-op
       end

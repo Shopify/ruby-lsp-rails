@@ -225,6 +225,71 @@ module RubyLsp
         assert_equal(4, response[0].range.end.line)
       end
 
+      test "provides definitions for I18n translations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t("hello")
+        RUBY
+
+        actual_locations = response.map { |location| [location.uri, location.range.start.line] }.sort
+        assert_equal(expected_i18n_locations, actual_locations)
+      end
+
+      test "provides definitions for symbol I18n translations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t(:hello)
+        RUBY
+
+        actual_locations = response.map { |location| [location.uri, location.range.start.line] }.sort
+        assert_equal(expected_i18n_locations, actual_locations)
+      end
+
+      test "does not provide definitions for missing I18n translations" do
+        response = generate_definitions_for_source('I18n.t("missing.translation")', { line: 0, character: 12 })
+
+        assert_empty(response)
+      end
+
+      test "provides definitions for I18n.translate in ERB" do
+        response = generate_definitions_for_source(
+          '<%= I18n.translate("hello") %>',
+          { line: 0, character: 21 },
+          uri: URI("file:///fake.erb"),
+        )
+
+        actual_locations = response.map { |location| [location.uri, location.range.start.line] }.sort
+        assert_equal(expected_i18n_locations, actual_locations)
+      end
+
+      test "does not resolve scoped or dynamic I18n keys" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t("hello", scope: :messages)
+        RUBY
+
+        assert_empty(response)
+
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t(:hello, scope: :messages)
+        RUBY
+
+        assert_empty(response)
+
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t("hello", { scope: :messages })
+        RUBY
+
+        assert_empty(response)
+
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t("hello", separator: "/")
+        RUBY
+
+        assert_empty(response)
+
+        response = generate_definitions_for_source('I18n.t("#{prefix}.hello")', { line: 0, character: 10 })
+
+        assert_empty(response)
+      end
+
       test "handles incomplete routes" do
         response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 0 })
           _path
@@ -534,8 +599,16 @@ module RubyLsp
 
       private
 
-      def generate_definitions_for_source(source, position)
-        with_server(source) do |server, uri|
+      def expected_i18n_locations
+        [
+          [File.join(dummy_root, "config", "locales", "en.yml"), 30],
+          [File.join(dummy_root, "config", "locales", "es.yml"), 2],
+          [File.join(dummy_root, "config", "locales", "fr.yml"), 2],
+        ].map { |path, line| [URI::Generic.from_path(path: path).to_s, line] }.sort
+      end
+
+      def generate_definitions_for_source(source, position, uri: URI("file:///fake.rb"))
+        with_server(source, uri) do |server, uri|
           wait_for_rails_runner_client_boot
 
           server.process_message(

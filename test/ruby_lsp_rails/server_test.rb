@@ -130,6 +130,17 @@ class ServerTest < ActiveSupport::TestCase
     assert_match %r{test/dummy/config/routes.rb:5$}, location
   end
 
+  test "does not return YAML locations for a custom I18n backend" do
+    original_backend = I18n.backend
+    I18n.backend = Object.new
+
+    @server.execute("i18n_locations", { key: "hello" })
+
+    assert_empty(response.fetch(:result))
+  ensure
+    I18n.backend = original_backend
+  end
+
   test "route location returns nil for invalid routes" do
     @server.execute("route_location", { name: "invalid_path" })
     assert_nil response[:result]
