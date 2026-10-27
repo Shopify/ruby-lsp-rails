@@ -51,6 +51,7 @@ module RubyLsp
       #: (Prism::SymbolNode node) -> void
       def on_symbol_node_enter(node)
         handle_possible_dsl(node)
+        handle_i18n_translation(node)
       end
 
       #: (Prism::StringNode node) -> void
@@ -160,7 +161,7 @@ module RubyLsp
         @response_builder << Support::LocationBuilder.line_location_from_s(result.fetch(:location))
       end
 
-      #: (Prism::StringNode node) -> void
+      #: ((Prism::StringNode | Prism::SymbolNode) node) -> void
       def handle_i18n_translation(node)
         call_node = @node_context.call_node
         return unless i18n_translate?(call_node)

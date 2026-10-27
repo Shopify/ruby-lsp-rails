@@ -234,6 +234,21 @@ module RubyLsp
         assert_equal(expected_i18n_locations, actual_locations)
       end
 
+      test "provides definitions for symbol I18n translations" do
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t(:hello)
+        RUBY
+
+        actual_locations = response.map { |location| [location.uri, location.range.start.line] }.sort
+        assert_equal(expected_i18n_locations, actual_locations)
+      end
+
+      test "does not provide definitions for missing I18n translations" do
+        response = generate_definitions_for_source('I18n.t("missing.translation")', { line: 0, character: 12 })
+
+        assert_empty(response)
+      end
+
       test "provides definitions for I18n.translate in ERB" do
         response = generate_definitions_for_source(
           '<%= I18n.translate("hello") %>',
@@ -248,6 +263,12 @@ module RubyLsp
       test "does not resolve scoped or dynamic I18n keys" do
         response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
           I18n.t("hello", scope: :messages)
+        RUBY
+
+        assert_empty(response)
+
+        response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
+          I18n.t(:hello, scope: :messages)
         RUBY
 
         assert_empty(response)
