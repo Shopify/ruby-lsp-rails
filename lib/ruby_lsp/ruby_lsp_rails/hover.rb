@@ -101,7 +101,13 @@ module RubyLsp
           .gsub("::", "/")
           .downcase
 
-        Dir.glob("#{@client.rails_root}/app/views/#{controller_path}/#{action}*").filter_map do |path|
+        view_directory = File.join(@client.rails_root, "app/views", controller_path)
+        return [] unless File.directory?(view_directory)
+
+        Dir.children(view_directory).sort.filter_map do |filename|
+          next unless filename.start_with?("#{action}.")
+
+          path = File.join(view_directory, filename)
           next if File.directory?(path)
 
           [File.basename(path), URI::Generic.from_path(path: path).to_s]

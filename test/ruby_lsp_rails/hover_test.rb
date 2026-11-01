@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "tempfile"
 
 module RubyLsp
   module Rails
@@ -447,6 +448,21 @@ module RubyLsp
         assert_includes(contents, "[config/routes.rb:5](#{routes_uri}#L5)")
         assert_includes(contents, "[index.html.erb](#{html_view_uri})")
         assert_includes(contents, "[index.json.jbuilder](#{json_view_uri})")
+      end
+
+      test "does not include views whose action name only shares a prefix" do
+        views_path = "#{dummy_root}/app/views/users"
+
+        Tempfile.create(["index_archive", ".html.erb"], views_path) do |file|
+          response = hover_on_source(<<~RUBY, { line: 1, character: 7 }, wait_for_runner: true)
+            class UsersController < ApplicationController
+              def index
+              end
+            end
+          RUBY
+
+          refute_includes(response.contents.value, File.basename(file.path))
+        end
       end
 
       private
