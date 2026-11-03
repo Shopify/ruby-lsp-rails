@@ -465,6 +465,30 @@ module RubyLsp
         end
       end
 
+      test "finds action views for acronym and digit controller names" do
+        {
+          "APIUsersController" => "api_users",
+          "Admin::APIUsersController" => "admin/api_users",
+          "V2UsersController" => "v2_users",
+        }.each do |controller, controller_path|
+          Dir.mktmpdir do |root|
+            directory = File.join(root, "app/views", controller_path)
+            FileUtils.mkdir_p(directory)
+            path = File.join(directory, "index.html.erb")
+            File.write(path, "view")
+            client = mock("client")
+            client.stubs(:rails_root).returns(root)
+            hover = Hover.allocate
+            hover.instance_variable_set(:@client, client)
+
+            assert_equal(
+              [["index.html.erb", URI::Generic.from_path(path: path).to_s]],
+              hover.send(:controller_action_views, controller, "index"),
+            )
+          end
+        end
+      end
+
       private
 
       def hover_on_source(source, position, wait_for_runner: false)

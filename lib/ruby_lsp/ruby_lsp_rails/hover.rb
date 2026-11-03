@@ -97,7 +97,8 @@ module RubyLsp
       def controller_action_views(controller, action)
         controller_path = controller
           .delete_suffix("Controller")
-          .gsub(/([a-z])([A-Z])/, "\\1_\\2")
+          .gsub(/([A-Z]+)([A-Z][a-z])/, "\\1_\\2")
+          .gsub(/([a-z\d])([A-Z])/, "\\1_\\2")
           .gsub("::", "/")
           .downcase
 
