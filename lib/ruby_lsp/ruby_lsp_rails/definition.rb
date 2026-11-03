@@ -198,6 +198,7 @@ module RubyLsp
           next false unless argument.is_a?(Prism::KeywordHashNode) || argument.is_a?(Prism::HashNode)
 
           argument.elements.any? do |element|
+            next true if element.is_a?(Prism::AssocSplatNode)
             next false unless element.is_a?(Prism::AssocNode)
 
             key = element.key

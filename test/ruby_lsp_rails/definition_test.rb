@@ -260,6 +260,30 @@ module RubyLsp
         assert_equal(expected_i18n_locations, actual_locations)
       end
 
+      test "does not resolve I18n keys with splatted lookup options" do
+        [
+          'I18n.t("hello", **{ scope: :messages })',
+          'I18n.t("hello", **options)',
+          'I18n.translate("hello", locale: :en, **options)',
+          'I18n.t("hello", { **options })',
+        ].each do |source|
+          position = { line: 0, character: source.include?("translate") ? 18 : 10 }
+          response = generate_definitions_for_source(source, position)
+
+          assert_empty(response, source)
+        end
+      end
+
+      test "provides I18n definitions with explicit non-lookup options" do
+        response = generate_definitions_for_source(
+          'I18n.t("hello", locale: :en, name: "Ruby")',
+          { line: 0, character: 10 },
+        )
+
+        actual_locations = response.map { |location| [location.uri, location.range.start.line] }.sort
+        assert_equal(expected_i18n_locations, actual_locations)
+      end
+
       test "does not resolve scoped or dynamic I18n keys" do
         response = generate_definitions_for_source(<<~RUBY, { line: 0, character: 10 })
           I18n.t("hello", scope: :messages)
