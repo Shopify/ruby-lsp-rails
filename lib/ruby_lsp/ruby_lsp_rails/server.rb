@@ -4,6 +4,7 @@
 require "json"
 require "open3"
 require "delegate"
+require_relative "support/i18n_translation_locations"
 
 module RubyLsp
   module Rails
@@ -53,7 +54,7 @@ module RubyLsp
       end
 
       # Sends a result back to the client
-      #: (Hash[Symbol | String, untyped]?) -> void
+      #: (Hash[Symbol | String, untyped]? | Array[untyped]) -> void
       def send_result(result)
         send_message({ result: result })
       end
@@ -280,6 +281,7 @@ module RubyLsp
 
         @running = true #: bool
         @database_supports_indexing = nil #: bool?
+        @i18n_translation_locations = nil #: Support::I18nTranslationLocations?
       end
 
       #: -> void
@@ -343,6 +345,10 @@ module RubyLsp
           with_request_error_handling(request) do
             result = resolve_i18n_key(params.fetch(:key))
             send_result(result)
+          end
+        when "i18n_locations"
+          with_request_error_handling(request) do
+            send_result(resolve_i18n_locations(params.fetch(:key)))
           end
         when "reload_i18n"
           with_progress("rails-reload-i18n", "Reloading Ruby LSP Rails I18n") do
@@ -561,6 +567,19 @@ module RubyLsp
         I18n.available_locales.each_with_object({}) do |locale, result|
           result[locale] = I18n.t(key, locale: locale, default: "⚠️ translation missing")
         end
+      end
+
+      #: (String key) -> Array[String]
+      def resolve_i18n_locations(key)
+        return [] unless I18n.backend.is_a?(I18n::Backend::Simple)
+
+        @i18n_translation_locations ||= Support::I18nTranslationLocations.new
+        @i18n_translation_locations.locations(
+          key,
+          load_path: I18n.load_path,
+          available_locales: I18n.available_locales,
+          separator: I18n.default_separator,
+        )
       end
     end
   end
