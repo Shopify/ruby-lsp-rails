@@ -37,10 +37,40 @@ module RubyLsp
         addon.workspace_did_change_watched_files(changes)
       end
 
-      test "does not send reload notification if schema is not changed" do
+      test "sends reload notification if a model file changes" do
         changes = [
           {
             uri: "file://#{dummy_root}/app/models/foo.rb",
+            type: RubyLsp::Constant::FileChangeType::CHANGED,
+          },
+        ]
+
+        RunnerClient.any_instance.expects(:send_notification).with("reload").once
+        addon = Addon.new
+        addon.workspace_did_change_watched_files(changes)
+      end
+
+      test "watches Rails model files" do
+        global_state = GlobalState.new
+        global_state.apply_options({
+          capabilities: {
+            workspace: { didChangeWatchedFiles: { dynamicRegistration: true, relativePatternSupport: true } },
+          },
+        })
+        outgoing_queue = Thread::Queue.new
+        addon = Addon.new
+
+        addon.send(:register_additional_file_watchers, global_state: global_state, outgoing_queue: outgoing_queue)
+
+        request = outgoing_queue.pop
+        watchers = request.params.registrations.first.register_options.watchers
+        assert_includes(watchers.map(&:glob_pattern), "**/app/models/**/*.rb")
+      end
+
+      test "does not send reload notification if an unrelated Ruby file changes" do
+        changes = [
+          {
+            uri: "file://#{dummy_root}/app/controllers/foo_controller.rb",
             type: RubyLsp::Constant::FileChangeType::CHANGED,
           },
         ]
