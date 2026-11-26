@@ -53,6 +53,18 @@ class ServerTest < ActiveSupport::TestCase
     ActiveRecord::Tasks::DatabaseTasks.send(:alias_method, :schema_dump_path, :old_schema_dump_path)
   end
 
+  test "returns the table name prefix and suffix configured on ActiveRecord::Base" do
+    ActiveRecord::Base.stubs(:table_name_prefix).returns("base_")
+    ActiveRecord::Base.stubs(:table_name_suffix).returns("_base")
+    User.stubs(:table_name).returns("users")
+
+    @server.execute("model", { name: "User" })
+    result = response.fetch(:result)
+
+    assert_equal("base_", result[:base_table_name_prefix])
+    assert_equal("_base", result[:base_table_name_suffix])
+  end
+
   test "resolve association returns the location of the target class of a has_many association" do
     @server.execute(
       "association_target",

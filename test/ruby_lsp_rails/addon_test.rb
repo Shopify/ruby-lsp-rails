@@ -50,6 +50,32 @@ module RubyLsp
         addon.workspace_did_change_watched_files(changes)
       end
 
+      test "expires the schema table location cache if db/schema.rb is changed" do
+        changes = [
+          {
+            uri: "file://#{dummy_root}/db/schema.rb",
+            type: RubyLsp::Constant::FileChangeType::CHANGED,
+          },
+        ]
+
+        Support::SchemaTableLocationVisitor.expects(:expire_cache).once
+        addon = Addon.new
+        addon.workspace_did_change_watched_files(changes)
+      end
+
+      test "does not expire the schema table location cache if schema is not changed" do
+        changes = [
+          {
+            uri: "file://#{dummy_root}/app/models/foo.rb",
+            type: RubyLsp::Constant::FileChangeType::CHANGED,
+          },
+        ]
+
+        Support::SchemaTableLocationVisitor.expects(:expire_cache).never
+        addon = Addon.new
+        addon.workspace_did_change_watched_files(changes)
+      end
+
       test "handling window show message response to run migrations" do
         RunnerClient.any_instance.expects(:run_migrations).once.returns({ message: "Ran migrations!", status: 0 })
         outgoing_queue = Thread::Queue.new

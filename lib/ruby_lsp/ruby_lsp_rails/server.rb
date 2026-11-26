@@ -427,6 +427,9 @@ module RubyLsp
         return unless active_record_model?(const)
 
         info = {
+          table_name: const.table_name,
+          base_table_name_prefix: ::ActiveRecord::Base.table_name_prefix,
+          base_table_name_suffix: ::ActiveRecord::Base.table_name_suffix,
           columns: const.columns.map { |column| [column.name, column.type, column.default, column.null] },
           primary_keys: Array(const.primary_key),
           foreign_keys: collect_model_foreign_keys(const),
