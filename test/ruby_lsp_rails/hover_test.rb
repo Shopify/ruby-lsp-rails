@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "tempfile"
 
 module RubyLsp
   module Rails
@@ -428,10 +429,72 @@ module RubyLsp
         CONTENT
       end
 
+      test "returns route and view information when hovering a controller action" do
+        response = hover_on_source(<<~RUBY, { line: 1, character: 7 }, wait_for_runner: true)
+          class UsersController < ApplicationController
+            def index
+            end
+          end
+        RUBY
+
+        assert(response, "Expected controller route and view information in the hover response")
+
+        contents = response.contents.value
+        routes_uri = URI::Generic.from_path(path: "#{dummy_root}/config/routes.rb")
+        html_view_uri = URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.html.erb")
+        json_view_uri = URI::Generic.from_path(path: "#{dummy_root}/app/views/users/index.json.jbuilder")
+
+        assert_includes(contents, "GET /users(.:format)")
+        assert_includes(contents, "[config/routes.rb:5](#{routes_uri}#L5)")
+        assert_includes(contents, "[index.html.erb](#{html_view_uri})")
+        assert_includes(contents, "[index.json.jbuilder](#{json_view_uri})")
+      end
+
+      test "does not include views whose action name only shares a prefix" do
+        views_path = "#{dummy_root}/app/views/users"
+
+        Tempfile.create(["index_archive", ".html.erb"], views_path) do |file|
+          response = hover_on_source(<<~RUBY, { line: 1, character: 7 }, wait_for_runner: true)
+            class UsersController < ApplicationController
+              def index
+              end
+            end
+          RUBY
+
+          refute_includes(response.contents.value, File.basename(file.path))
+        end
+      end
+
+      test "finds action views for acronym and digit controller names" do
+        {
+          "APIUsersController" => "api_users",
+          "Admin::APIUsersController" => "admin/api_users",
+          "V2UsersController" => "v2_users",
+        }.each do |controller, controller_path|
+          Dir.mktmpdir do |root|
+            directory = File.join(root, "app/views", controller_path)
+            FileUtils.mkdir_p(directory)
+            path = File.join(directory, "index.html.erb")
+            File.write(path, "view")
+            client = mock("client")
+            client.stubs(:rails_root).returns(root)
+            hover = Hover.allocate
+            hover.instance_variable_set(:@client, client)
+
+            assert_equal(
+              [["index.html.erb", URI::Generic.from_path(path: path).to_s]],
+              hover.send(:controller_action_views, controller, "index"),
+            )
+          end
+        end
+      end
+
       private
 
-      def hover_on_source(source, position)
+      def hover_on_source(source, position, wait_for_runner: false)
         with_server(source, stub_no_typechecker: true) do |server, uri|
+          wait_for_rails_runner_client_boot if wait_for_runner
+
           server.process_message(
             id: 1,
             method: "textDocument/hover",
