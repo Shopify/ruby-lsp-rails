@@ -147,7 +147,7 @@ module RubyLsp
 
       #: (Array[{uri: String, type: Integer}] changes) -> void
       def workspace_did_change_watched_files(changes)
-        if changes.any? { |c| c[:uri].end_with?("db/schema.rb") || c[:uri].end_with?("structure.sql") }
+        if changes.any? { |c| c[:uri].end_with?("db/schema.rb", "structure.sql") || model_file?(c[:uri]) }
           @rails_runner_client.trigger_reload
         end
 
@@ -242,11 +242,19 @@ module RubyLsp
                 id: "workspace/didChangeWatchedFilesRails",
                 method: "workspace/didChangeWatchedFiles",
                 register_options: Interface::DidChangeWatchedFilesRegistrationOptions.new(
-                  watchers: [structure_sql_file_watcher, fixture_file_watcher, i18n_file_watcher],
+                  watchers: [model_file_watcher, structure_sql_file_watcher, fixture_file_watcher, i18n_file_watcher],
                 ),
               ),
             ],
           ),
+        )
+      end
+
+      #: -> Interface::FileSystemWatcher
+      def model_file_watcher
+        Interface::FileSystemWatcher.new(
+          glob_pattern: "**/app/models/**/*.rb",
+          kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
         )
       end
 
@@ -272,6 +280,11 @@ module RubyLsp
           glob_pattern: "**/config/locales/**/*.{yml,yaml}",
           kind: Constant::WatchKind::CREATE | Constant::WatchKind::CHANGE | Constant::WatchKind::DELETE,
         )
+      end
+
+      #: (String uri) -> bool
+      def model_file?(uri)
+        uri.match?(%r{(?:^|/)app/models/.+\.rb\z})
       end
 
       #: -> void
