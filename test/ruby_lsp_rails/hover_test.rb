@@ -219,11 +219,22 @@ module RubyLsp
       end
 
       test "returns has_many association information" do
-        expected_response = {
+        association_response = {
           location: "#{dummy_root}/app/models/membership.rb:5",
           name: "Bar",
         }
-        RunnerClient.any_instance.stubs(association_target: expected_response)
+        model_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["id", "integer", nil, false],
+            ["foo_id", "integer", nil, false],
+            ["name", "string", nil, true],
+          ],
+          primary_keys: ["id"],
+          foreign_keys: ["foo_id"],
+          indexes: [],
+        }
+        RunnerClient.any_instance.stubs(association_target: association_response, model: model_response)
 
         response = hover_on_source(<<~RUBY, { line: 1, character: 11 })
           class Foo < ApplicationRecord
@@ -241,15 +252,34 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L5,1-7,4)
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
+
+          ### Columns
+          - **id**: integer (PK)
+
+          - **foo_id**: integer (FK) - not null
+
+          - **name**: string
         CONTENT
       end
 
       test "returns belongs_to association information" do
-        expected_response = {
+        association_response = {
           location: "#{dummy_root}/app/models/membership.rb:1",
           name: "Foo",
         }
-        RunnerClient.any_instance.stubs(association_target: expected_response)
+        model_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["id", "integer", nil, false],
+            ["name", "string", nil, true],
+          ],
+          primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [],
+        }
+        RunnerClient.any_instance.stubs(association_target: association_response, model: model_response)
 
         response = hover_on_source(<<~RUBY, { line: 5, character: 14 })
           class Foo < ApplicationRecord
@@ -267,15 +297,32 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L1,1-3,4)
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
+
+          ### Columns
+          - **id**: integer (PK)
+
+          - **name**: string
         CONTENT
       end
 
       test "returns has_one association information" do
-        expected_response = {
+        association_response = {
           location: "#{dummy_root}/app/models/membership.rb:5",
           name: "Bar",
         }
-        RunnerClient.any_instance.stubs(association_target: expected_response)
+        model_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["id", "integer", nil, false],
+            ["foo_id", "integer", nil, false],
+          ],
+          primary_keys: ["id"],
+          foreign_keys: ["foo_id"],
+          indexes: [],
+        }
+        RunnerClient.any_instance.stubs(association_target: association_response, model: model_response)
 
         response = hover_on_source(<<~RUBY, { line: 1, character: 10 })
           class Foo < ApplicationRecord
@@ -292,15 +339,32 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L5,1-6,4)
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
+
+          ### Columns
+          - **id**: integer (PK)
+
+          - **foo_id**: integer (FK) - not null
         CONTENT
       end
 
       test "returns has_and_belongs_to association information" do
-        expected_response = {
+        association_response = {
           location: "#{dummy_root}/app/models/membership.rb:5",
           name: "Bar",
         }
-        RunnerClient.any_instance.stubs(association_target: expected_response)
+        model_response = {
+          schema_file: "#{dummy_root}/db/schema.rb",
+          columns: [
+            ["id", "integer", nil, false],
+            ["name", "string", nil, true],
+          ],
+          primary_keys: ["id"],
+          foreign_keys: [],
+          indexes: [],
+        }
+        RunnerClient.any_instance.stubs(association_target: association_response, model: model_response)
 
         response = hover_on_source(<<~RUBY, { line: 1, character: 26 })
           class Foo < ApplicationRecord
@@ -318,6 +382,13 @@ module RubyLsp
           ```
 
           **Definitions**: [fake.rb](file:///fake.rb#L5,1-7,4)
+
+          [Schema](#{URI::Generic.from_path(path: dummy_root + "/db/schema.rb")})
+
+          ### Columns
+          - **id**: integer (PK)
+
+          - **name**: string
         CONTENT
       end
 
